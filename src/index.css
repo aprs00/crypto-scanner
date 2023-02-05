@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* set dark mode on body */
+body {
+    @apply antialiased max-w-3xl mx-auto text-gray-900 bg-white dark:bg-gray-800 dark:text-white transition-colors;
+}

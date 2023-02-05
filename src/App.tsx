@@ -21,7 +21,6 @@ const App = () => (
                 },
             }}
         />
-        <button onClick={() => queryClient.clear()}>CLEAR CACHE</button>
     </QueryClientProvider>
 );
 

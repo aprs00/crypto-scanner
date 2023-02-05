@@ -1,71 +1,134 @@
 import {useEffect, useMemo, useState} from 'react';
-
-import {useDepthSnapshot, useStreamTicker} from '../api';
 import {homeRoute} from '@/features/home/routes';
 
-export const orderBookRoute = homeRoute.createRoute({
-    path: 'order-book',
-    loader: async () => {
-        return {};
-    },
-    component: () => {
-        const depthSnapshot = useDepthSnapshot('BTCUSDT');
-        const streamTicker = useStreamTicker('BTCUSDT');
-        const [previousStreamTicker, setPreviousStreamTicker] = useState(streamTicker);
-        let firstEventProcessed = false;
-        // console.log(depthSnapshot?.data);
+import {useDepthSnapshot, useStreamTicker} from '../api';
 
-        const hashOrderBookAsks =
-            depthSnapshot?.data?.asks.reduce((acc, [price, quantity]) => {
-                acc[price] = quantity;
-                return acc;
-            }, {} as Record<string, string>) || {};
+const OrderBook = () => {
+    const streamTicker = useStreamTicker('BTCUSDT');
+    const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a);
+    const [previousOrderBookUpdateId, setPreviousOrderBookUpdateId] = useState(0); // u - Last update ID in event
+    const [firstEventProcessed, setFirstEventProcessed] = useState(false);
+    const [numOfOrderBookRows, setNumOfOrderBookRows] = useState(20);
 
-        const hashOrderBookBids =
-            depthSnapshot?.data?.bids.reduce((acc, [price, quantity]) => {
-                acc[price] = quantity;
-                return acc;
-            }, {} as Record<string, string>) || {};
+    const [hashOrderBookAsks, setHashOrderBookAsks] = useState(
+        depthSnapshot?.data?.asks.reduce((acc, [price, quantity]) => {
+            acc[price] = quantity;
+            return acc;
+        }, {} as Record<string, string>) || {},
+    );
 
-        useEffect(() => {
-            if (streamTicker?.data?.a) {
-                if (streamTicker?.data?.u <= (depthSnapshot?.data?.lastUpdateId || 0)) return;
+    const [hashOrderBookBids, setHashOrderBookBids] = useState(
+        depthSnapshot?.data?.bids.reduce((acc, [price, quantity]) => {
+            acc[price] = quantity;
+            return acc;
+        }, {} as Record<string, string>) || {},
+    );
 
-                if (!firstEventProcessed) {
-                    if (streamTicker?.data?.U <= (depthSnapshot?.data?.lastUpdateId || 0) + 1) return;
-                    if (streamTicker?.data?.u >= (depthSnapshot?.data?.lastUpdateId || 0) + 1) return;
-                    firstEventProcessed = true;
-                }
+    useEffect(() => {
+        if (streamTicker?.data?.a) {
+            if (streamTicker?.data?.u <= (depthSnapshot?.data?.lastUpdateId || 0)) return;
 
-                console.log('fepwoih');
-
-                // While listening to the stream, each new event's U should be equal to the previous event's u+1.
-                if (streamTicker?.data?.U !== (previousStreamTicker?.data?.u || 0) + 1) return;
-                setPreviousStreamTicker(streamTicker);
-
-                for (let i = 0; i < streamTicker?.data?.a.length; i++) {
-                    if (streamTicker?.data?.a[i][1] === '0.00000000')
-                        delete hashOrderBookAsks[streamTicker?.data?.a[i][0]];
-                    const [price, quantity] = streamTicker?.data?.a[i];
-                    hashOrderBookAsks[price] = quantity;
-                }
+            if (!firstEventProcessed) {
+                if (streamTicker?.data?.U > (depthSnapshot?.data?.lastUpdateId || 0) + 1) return;
+                if (streamTicker?.data?.u < (depthSnapshot?.data?.lastUpdateId || 0) + 1) return;
+                setFirstEventProcessed(true);
             }
-        }, [streamTicker]);
 
-        const maxAsksQuantity = useMemo(
-            () => Object.entries(hashOrderBookAsks).reduce((acc, [, quantity]) => Math.max(acc, Number(quantity)), 0),
-            [streamTicker?.data?.u],
-        );
+            setPreviousOrderBookUpdateId(streamTicker?.data?.u || 0);
+            if (streamTicker?.data?.U !== (previousOrderBookUpdateId || 0) + 1) return;
 
-        // orderBookAsksTable update with streamTicker data
-        const orderBookAsksTable = useMemo(
-            () =>
-                Object.entries(hashOrderBookAsks).map(([price, quantity], index) => {
+            const updatedHashOrderBookAsks = {...hashOrderBookAsks};
+            for (let i = 0; i < streamTicker?.data?.a.length; i++) {
+                if (streamTicker?.data?.a[i][1] === '0.00000000') {
+                    delete updatedHashOrderBookAsks[streamTicker?.data?.a[i][0]];
+                    continue;
+                }
+                const [price, quantity] = streamTicker?.data?.a[i];
+                updatedHashOrderBookAsks[price] = quantity;
+
+                setHashOrderBookAsks(
+                    Object.entries(updatedHashOrderBookAsks)
+
+                        .sort((a, b) => Number(a[0]) - Number(b[0]))
+                        .reduce((acc, [price, quantity]) => {
+                            acc[price] = quantity;
+                            return acc;
+                        }, {} as Record<string, string>),
+                );
+            }
+
+            const updatedHashOrderBookBids = {...hashOrderBookBids};
+            for (let i = 0; i < streamTicker?.data?.b.length; i++) {
+                if (streamTicker?.data?.b[i][1] === '0.00000000') {
+                    delete updatedHashOrderBookBids[streamTicker?.data?.b[i][0]];
+                    continue;
+                }
+                const [price, quantity] = streamTicker?.data?.b[i];
+                updatedHashOrderBookBids[price] = quantity;
+
+                setHashOrderBookBids(
+                    Object.entries(updatedHashOrderBookBids)
+                        .sort((a, b) => Number(b[0]) - Number(a[0]))
+                        .reduce((acc, [price, quantity]) => {
+                            acc[price] = quantity;
+                            return acc;
+                        }, {} as Record<string, string>),
+                );
+            }
+        }
+    }, [streamTicker]);
+
+    const maxAsksQuantity = useMemo(
+        () =>
+            Object.entries(hashOrderBookAsks)
+                .slice(0, numOfOrderBookRows)
+                .reduce((acc, [, quantity]) => Math.max(acc, Number(quantity)), 0),
+        [streamTicker?.data?.u],
+    );
+
+    const orderBookAsksTable = useMemo(
+        () =>
+            Object.entries(hashOrderBookAsks)
+                .slice(0, numOfOrderBookRows)
+                .map(([price, quantity], index) => {
                     const percentage = (Number(quantity) / maxAsksQuantity) * 100;
                     return (
                         <div
                             className="grid grid-cols-2 gap-1"
-                            style={{background: `linear-gradient(90deg, rgb(255 0 0) ${percentage}%, #fff 0%)`}}
+                            style={{
+                                background: `linear-gradient(90deg, rgb(255 0 0) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
+                            }}
+                            key={price + quantity + index}
+                        >
+                            <div>{price}</div>
+                            <div>{quantity}</div>
+                        </div>
+                    );
+                }),
+
+        [streamTicker?.data?.u],
+    );
+
+    const maxBidsQuantity = useMemo(
+        () =>
+            Object.entries(hashOrderBookBids)
+                .slice(0, numOfOrderBookRows)
+                .reduce((acc, [, quantity]) => Math.max(acc, Number(quantity)), 0) || 0,
+        [hashOrderBookBids],
+    );
+
+    const orderBookBidsTable = useMemo(
+        () =>
+            Object.entries(hashOrderBookBids)
+                .slice(0, numOfOrderBookRows)
+                .map(([price, quantity], index) => {
+                    const percentage = (Number(quantity) / maxBidsQuantity) * 100;
+                    return (
+                        <div
+                            className="grid grid-cols-2 gap-1 bg-slate-500"
+                            style={{
+                                background: `linear-gradient(90deg, rgb(22 163 74) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
+                            }}
                             key={index}
                         >
                             <div>{price}</div>
@@ -73,43 +136,30 @@ export const orderBookRoute = homeRoute.createRoute({
                         </div>
                     );
                 }),
-            [streamTicker?.data?.u],
-        );
+        [streamTicker?.data?.u],
+    );
 
-        const maxBidsQuantity = useMemo(
-            () =>
-                Object.entries(hashOrderBookBids).reduce((acc, [, quantity]) => Math.max(acc, Number(quantity)), 0) ||
-                0,
-            [hashOrderBookBids],
-        );
-
-        const orderBookBidsTable = Object.entries(hashOrderBookBids).map(([price, quantity], index) => {
-            const percentage = (Number(quantity) / maxBidsQuantity) * 100;
-            return (
-                <div
-                    className="grid grid-cols-2 gap-1"
-                    style={{background: `linear-gradient(90deg, rgb(22 163 74) ${percentage}%, #fff 0%)`}}
-                    key={index}
-                >
-                    <div>{price}</div>
-                    <div>{quantity}</div>
-                </div>
-            );
-        });
-
-        return (
+    return (
+        <div>
             <div>
-                <div className="grid grid-cols-2 gap-1 mt-4">
-                    <div>ASKS</div>
-                    <div>QUANTITY</div>
-                </div>
-                <div className="flex flex-col-reverse">{orderBookAsksTable}</div>
-                <div className="grid grid-cols-2 gap-1 mt-10">
-                    <div>BIDS</div>
-                    <div>QUANTITY</div>
-                </div>
-                <div>{orderBookBidsTable}</div>
+                <label htmlFor="num_of_rows" className="mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Number of rows
+                </label>
+                <input
+                    type="text"
+                    id="num_of_rows"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg mb-10 focus:ring-blue-500 focus:border-blue-500 block p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-32"
+                    value={numOfOrderBookRows}
+                    onChange={(e) => setNumOfOrderBookRows(Number(e.target.value))}
+                    placeholder="Number of rows"
+                    required
+                />
             </div>
-        );
-    },
-});
+            <div className="flex flex-col-reverse">{orderBookAsksTable}</div>
+            <hr className="my-5" />
+            <div>{orderBookBidsTable}</div>
+        </div>
+    );
+};
+
+export default OrderBook;

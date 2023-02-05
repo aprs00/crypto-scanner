@@ -27,9 +27,9 @@ const streamTicker = async (symbol: string): Promise<StreamTickerResponseType> =
     });
 };
 
-const useDepthSnapshot = (symbol: string) => {
+const useDepthSnapshot = (symbol: string, streamedEvent: boolean) => {
     return useQuery(['depthSnapshot', symbol], () => fetchDepthSnapshot(symbol), {
-        enabled: !!symbol,
+        enabled: !!symbol && streamedEvent,
         refetchOnWindowFocus: false,
         staleTime: Infinity,
     });
