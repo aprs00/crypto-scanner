@@ -1,28 +1,47 @@
 import {useEffect, useMemo, useState} from 'react';
-import {homeRoute} from '@/features/home/routes';
 
 import {useDepthSnapshot, useStreamTicker} from '../api';
+import type {UpdateOrderBookPropsType} from '../types';
 
 const OrderBook = () => {
     const streamTicker = useStreamTicker('BTCUSDT');
     const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a);
     const [previousOrderBookUpdateId, setPreviousOrderBookUpdateId] = useState(0); // u - Last update ID in event
     const [firstEventProcessed, setFirstEventProcessed] = useState(false);
-    const [numOfOrderBookRows, setNumOfOrderBookRows] = useState(20);
-
+    const [numOfOrderBookRows, setNumOfOrderBookRows] = useState(10);
     const [hashOrderBookAsks, setHashOrderBookAsks] = useState(
         depthSnapshot?.data?.asks.reduce((acc, [price, quantity]) => {
             acc[price] = quantity;
             return acc;
         }, {} as Record<string, string>) || {},
     );
-
     const [hashOrderBookBids, setHashOrderBookBids] = useState(
         depthSnapshot?.data?.bids.reduce((acc, [price, quantity]) => {
             acc[price] = quantity;
             return acc;
         }, {} as Record<string, string>) || {},
     );
+
+    const updateOrderBook = (props: UpdateOrderBookPropsType) => {
+        const {getter, setter, newStream, sortByAscending} = props;
+        const updatedStateGetter = {...getter};
+        for (let i = 0; i < newStream.length; i++) {
+            if (newStream[i][1] === '0.00000000') {
+                delete updatedStateGetter[newStream[i][0]];
+                continue;
+            }
+            const [price, quantity] = newStream[i];
+            updatedStateGetter[price] = quantity;
+        }
+        setter(
+            Object.entries(updatedStateGetter)
+                .sort((a, b) => (sortByAscending ? Number(a[0]) - Number(b[0]) : Number(b[0]) - Number(a[0])))
+                .reduce((acc: Record<string, string>, [price, quantity]) => {
+                    acc[price] = quantity;
+                    return acc;
+                }, {}),
+        );
+    };
 
     useEffect(() => {
         if (streamTicker?.data?.a) {
@@ -37,44 +56,18 @@ const OrderBook = () => {
             setPreviousOrderBookUpdateId(streamTicker?.data?.u || 0);
             if (streamTicker?.data?.U !== (previousOrderBookUpdateId || 0) + 1) return;
 
-            const updatedHashOrderBookAsks = {...hashOrderBookAsks};
-            for (let i = 0; i < streamTicker?.data?.a.length; i++) {
-                if (streamTicker?.data?.a[i][1] === '0.00000000') {
-                    delete updatedHashOrderBookAsks[streamTicker?.data?.a[i][0]];
-                    continue;
-                }
-                const [price, quantity] = streamTicker?.data?.a[i];
-                updatedHashOrderBookAsks[price] = quantity;
-
-                setHashOrderBookAsks(
-                    Object.entries(updatedHashOrderBookAsks)
-
-                        .sort((a, b) => Number(a[0]) - Number(b[0]))
-                        .reduce((acc, [price, quantity]) => {
-                            acc[price] = quantity;
-                            return acc;
-                        }, {} as Record<string, string>),
-                );
-            }
-
-            const updatedHashOrderBookBids = {...hashOrderBookBids};
-            for (let i = 0; i < streamTicker?.data?.b.length; i++) {
-                if (streamTicker?.data?.b[i][1] === '0.00000000') {
-                    delete updatedHashOrderBookBids[streamTicker?.data?.b[i][0]];
-                    continue;
-                }
-                const [price, quantity] = streamTicker?.data?.b[i];
-                updatedHashOrderBookBids[price] = quantity;
-
-                setHashOrderBookBids(
-                    Object.entries(updatedHashOrderBookBids)
-                        .sort((a, b) => Number(b[0]) - Number(a[0]))
-                        .reduce((acc, [price, quantity]) => {
-                            acc[price] = quantity;
-                            return acc;
-                        }, {} as Record<string, string>),
-                );
-            }
+            updateOrderBook({
+                getter: hashOrderBookAsks,
+                setter: setHashOrderBookAsks,
+                newStream: streamTicker?.data?.a,
+                sortByAscending: true,
+            });
+            updateOrderBook({
+                getter: hashOrderBookBids,
+                setter: setHashOrderBookBids,
+                newStream: streamTicker?.data?.b,
+                sortByAscending: false,
+            });
         }
     }, [streamTicker]);
 
@@ -105,7 +98,6 @@ const OrderBook = () => {
                         </div>
                     );
                 }),
-
         [streamTicker?.data?.u],
     );
 
@@ -146,13 +138,12 @@ const OrderBook = () => {
                     Number of rows
                 </label>
                 <input
-                    type="text"
+                    type="number"
                     id="num_of_rows"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg mb-10 focus:ring-blue-500 focus:border-blue-500 block p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-32"
                     value={numOfOrderBookRows}
                     onChange={(e) => setNumOfOrderBookRows(Number(e.target.value))}
                     placeholder="Number of rows"
-                    required
                 />
             </div>
             <div className="flex flex-col-reverse">{orderBookAsksTable}</div>
