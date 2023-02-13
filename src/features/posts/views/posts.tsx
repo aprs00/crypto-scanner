@@ -1,4 +1,4 @@
-import {Link, Outlet} from '@tanstack/react-router';
+import {Link, Outlet, Route} from '@tanstack/react-router';
 import {useQuery} from '@tanstack/react-query';
 
 import {homeRoute} from '@/features/home/routes';
@@ -10,9 +10,10 @@ const usePosts = () => {
     return useQuery(['posts'], fetchPosts);
 };
 
-const postsRoute = homeRoute.createRoute({
+const postsRoute = new Route({
+    getParentRoute: () => homeRoute,
     path: 'posts',
-    loader: async () => {
+    onLoad: async () => {
         queryClient.getQueryData(['posts']) ?? (await queryClient.prefetchQuery(['posts'], fetchPosts));
         return {};
     },

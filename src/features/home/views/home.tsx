@@ -28,10 +28,18 @@ const Home = () => {
                     }}
                 >
                     Orderbook
+                </Link>{' '}
+                <Link
+                    to="/beta"
+                    activeProps={{
+                        className: 'font-bold',
+                    }}
+                >
+                    Beta
                 </Link>
             </div>
             <hr />
-            <Outlet /> {/* Start rendering router matches */}
+            <Outlet />
         </>
     );
 };

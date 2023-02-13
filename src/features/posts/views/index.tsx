@@ -1,6 +1,9 @@
+import {Route} from '@tanstack/react-router';
+
 import {homeRoute} from '@/features/home/routes';
 
-const indexRoute = homeRoute.createRoute({
+const indexRoute = new Route({
+    getParentRoute: () => homeRoute,
     path: '/',
     component: () => {
         return (

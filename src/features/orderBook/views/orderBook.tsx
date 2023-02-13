@@ -69,7 +69,7 @@ const OrderBook = () => {
                 sortByAscending: false,
             });
         }
-    }, [streamTicker]);
+    }, [streamTicker?.data?.u]);
 
     const maxAsksQuantity = useMemo(
         () =>
@@ -98,7 +98,7 @@ const OrderBook = () => {
                         </div>
                     );
                 }),
-        [streamTicker?.data?.u],
+        [streamTicker?.data?.u, depthSnapshot?.data?.lastUpdateId],
     );
 
     const maxBidsQuantity = useMemo(
@@ -128,8 +128,44 @@ const OrderBook = () => {
                         </div>
                     );
                 }),
-        [streamTicker?.data?.u],
+        [streamTicker?.data?.u, depthSnapshot?.data?.lastUpdateId],
     );
+
+    // const groupBy = (x) => (array) =>
+    //     array.reduce((acc, [price, quantity]) => {
+    //         const groupValue = Math.floor(Number(price) / x) * x;
+    //         if (!acc[groupValue]) {
+    //             acc[groupValue] = {price: groupValue, quantity: 0};
+    //         }
+    //         acc[groupValue].quantity += Number(quantity);
+    //         return acc;
+    //     }, {});
+
+    // const orderBookBidsTable = useMemo(() => {
+    //     const groupedBy10 = Object.values(groupBy(10)(Object.entries(hashOrderBookBids).reverse()));
+
+    //     return groupedBy10
+    //         .reverse()
+    //         .slice(0, numOfOrderBookRows)
+    //         .map(({price, quantity}, index) => {
+    //             // const percentage = (Number(quantity) / maxBidsQuantity) * 100;
+    //             const percentage = calculateMaxQuantity(groupedBy10);
+    //             return (
+    //                 <div
+    //                     className="grid grid-cols-2 gap-1 bg-slate-500"
+    //                     style={{
+    //                         background: `linear-gradient(90deg, rgb(22 163 74) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
+    //                     }}
+    //                     key={price + index}
+    //                 >
+    //                     <div>{price}</div>
+    //                     <div>{quantity}</div>
+    //                 </div>
+    //             );
+    //         });
+    // }, [streamTicker?.data?.u]);
+
+    if (!firstEventProcessed) return <div>Loading...</div>;
 
     return (
         <div>

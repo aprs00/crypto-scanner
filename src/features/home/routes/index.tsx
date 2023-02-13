@@ -1,8 +1,8 @@
-import {createRouteConfig, Link, Outlet} from '@tanstack/react-router';
+import {RootRoute} from '@tanstack/react-router';
 
 import Home from '../views/home';
 
-const homeRoute = createRouteConfig({
+const homeRoute = new RootRoute({
     component: () => {
         return <Home />;
     },

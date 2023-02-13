@@ -1,4 +1,4 @@
-import {useParams} from '@tanstack/react-router';
+import {Route, useParams} from '@tanstack/react-router';
 import {useQuery} from '@tanstack/react-query';
 
 import {queryClient} from '@/lib/react-query';
@@ -11,10 +11,12 @@ function usePost(postId: string) {
     });
 }
 
-export const postRoute = postsRoute.createRoute({
+export const postRoute = new Route({
+    getParentRoute: () => postsRoute,
     path: '$postId',
-    loader: async ({params: {postId}}) => {
-        queryClient.getQueryData(['posts', postId]) ?? (await queryClient.prefetchQuery(['posts', postId], () => fetchPostById(postId)));
+    onLoad: async ({params: {postId}}) => {
+        queryClient.getQueryData(['posts', postId]) ??
+            (await queryClient.prefetchQuery(['posts', postId], () => fetchPostById(postId)));
         return {};
     },
     component: () => {

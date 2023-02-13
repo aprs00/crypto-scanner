@@ -1,6 +1,8 @@
+import {Route} from '@tanstack/react-router';
 import {postsRoute} from './posts';
 
-const postsIndexRoute = postsRoute.createRoute({
+const postsIndexRoute = new Route({
+    getParentRoute: () => postsRoute,
     path: '/',
     component: () => {
         return (
