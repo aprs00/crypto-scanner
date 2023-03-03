@@ -4,5 +4,6 @@
 
 /* set dark mode on body */
 body {
-    @apply antialiased max-w-3xl mx-auto text-gray-900 bg-white dark:bg-gray-800 dark:text-white transition-colors;
+    @apply antialiased max-w-3xl mx-auto text-gray-900 bg-white dark:bg-slate-900 dark:text-white transition-colors;
+    background-color: #0c1222 !important;
 }

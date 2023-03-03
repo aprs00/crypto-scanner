@@ -18,5 +18,4 @@ export type UpdateOrderBookPropsType = {
     getter: Record<string, string>;
     setter: React.Dispatch<React.SetStateAction<Record<string, string>>>;
     newStream: string[][];
-    sortByAscending: boolean;
 };

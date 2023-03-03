@@ -1,46 +1,39 @@
 import axios from 'axios';
-import {useQuery} from '@tanstack/react-query';
+import {useQueries} from '@tanstack/react-query';
 
-import type {OrderBookResponseType, StreamTickerResponseType} from '../types';
-import {queryClient} from '@/lib/react-query';
+const fetchKlines = async (symbol: string) => {
+    const INTERVAL = '1m';
+    const LIMIT = 500;
 
-const fetchDepthSnapshot = async (symbol: string) => {
-    const response = await axios.get<OrderBookResponseType>(
-        `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=10`,
+    const response = await axios.get<any>(
+        `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${INTERVAL}&limit=${LIMIT}`,
     );
     return response.data;
+    // [
+    //     [
+    //       1499040000000,      // Kline open time
+    //       "0.01634790",       // Open price
+    //       "0.80000000",       // High price
+    //       "0.01575800",       // Low price
+    //       "0.01577100",       // Close price
+    //       "148976.11427815",  // Volume
+    //       1499644799999,      // Kline Close time
+    //       "2434.19055334",    // Quote asset volume
+    //       308,                // Number of trades
+    //       "1756.87402397",    // Taker buy base asset volume
+    //       "28.46694368",      // Taker buy quote asset volume
+    //       "0"                 // Unused field, ignore.
+    //     ]
+    // ]
 };
 
-const streamTicker = async (symbol: string): Promise<StreamTickerResponseType> => {
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@bookTicker`);
-
-    return new Promise((resolve, reject) => {
-        ws.onmessage = (event) => {
-            queryClient.setQueriesData(['ticker', symbol], JSON.parse(event.data));
-            resolve(JSON.parse(event.data));
-        };
-
-        ws.onerror = (error) => {
-            console.log(error);
-            reject(error);
-        };
+const useKlines = (symbols: string[]) =>
+    useQueries({
+        queries: symbols.map((ticker: string) => ({
+            queryKey: ['kline', ticker],
+            queryFn: () => fetchKlines(ticker),
+            refetchInterval: 5000,
+        })),
     });
-};
 
-const useDepthSnapshot = (symbol: string, streamedEvent: boolean) => {
-    return useQuery(['depthSnapshot', symbol], () => fetchDepthSnapshot(symbol), {
-        enabled: !!symbol && streamedEvent,
-        refetchOnWindowFocus: false,
-        staleTime: Infinity,
-    });
-};
-
-const useStreamTicker = (symbol: string) => {
-    return useQuery(['ticker', symbol], () => streamTicker(symbol), {
-        enabled: !!symbol,
-        refetchOnWindowFocus: false,
-        staleTime: Infinity,
-    });
-};
-
-export {useDepthSnapshot, useStreamTicker, streamTicker};
+export {useKlines};

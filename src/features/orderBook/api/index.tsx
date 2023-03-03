@@ -4,19 +4,19 @@ import {useQuery} from '@tanstack/react-query';
 import type {OrderBookResponseType, StreamTickerResponseType} from '../types';
 import {queryClient} from '@/lib/react-query';
 
-const fetchDepthSnapshot = async (symbol: string) => {
+const fetchDepthSnapshot = async (symbol: string, limit = 1000) => {
     const response = await axios.get<OrderBookResponseType>(
-        `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=10`,
+        `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=${limit}`,
     );
     return response.data;
 };
 
 const streamTicker = async (symbol: string): Promise<StreamTickerResponseType> => {
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth`);
+    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@100ms`);
 
     return new Promise((resolve, reject) => {
         ws.onmessage = (event) => {
-            queryClient.setQueriesData(['ticker', symbol], JSON.parse(event.data));
+            queryClient.setQueriesData(['ticker-depth-stream', symbol], JSON.parse(event.data));
             resolve(JSON.parse(event.data));
         };
 
@@ -36,7 +36,7 @@ const useDepthSnapshot = (symbol: string, streamedEvent: boolean) => {
 };
 
 const useStreamTicker = (symbol: string) => {
-    return useQuery(['ticker', symbol], () => streamTicker(symbol), {
+    return useQuery(['ticker-depth-stream', symbol], () => streamTicker(symbol), {
         enabled: !!symbol,
         refetchOnWindowFocus: false,
         staleTime: Infinity,

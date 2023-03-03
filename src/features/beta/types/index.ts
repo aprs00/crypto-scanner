@@ -19,3 +19,34 @@ export type UpdateOrderBookPropsType = {
     newStream: string[][];
     sortByAscending: boolean;
 };
+
+export type WindowSizeResponseType = {
+    C: number;
+    E: number;
+    F: number;
+    L: number;
+    O: number;
+    P: string;
+    c: string;
+    e: string;
+    h: string;
+    l: string;
+    n: number;
+    o: string;
+    p: string;
+    q: string;
+    s: string;
+    v: string;
+    w: string;
+};
+
+export type BetaTablePropsType = {
+    betaTickersList: string[];
+    results: any;
+};
+
+export type TickerCalculationsType = {
+    percentages: number[];
+    sum: number;
+    sumSq: number;
+};
