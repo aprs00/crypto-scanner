@@ -2,7 +2,7 @@
     "name": "crypto-scanner",
     "private": true,
     "version": "0.0.0",
-    "homepage": "https://aprskalo00.github.io/crypto-scanner",
+    "homepage": "https://aprskalo00.github.io/crypto-scanner/",
     "type": "module",
     "scripts": {
         "dev": "vite",
