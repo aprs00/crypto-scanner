@@ -1,5 +1,6 @@
 import {memo, useEffect, useMemo, useState} from 'react';
 
+import MultiSelect from '@/components/MultiSelect.tsx';
 import {useKlines} from '../../api';
 import type {TickerCalculationsType} from '../../types';
 
@@ -104,28 +105,24 @@ const BetaTable = () => {
         );
     }, [JSON.stringify(betaTickersListCorrelation)]);
 
-    return <div>{betaTable}</div>;
+    const [selectedPeople, setSelectedPeople] = useState<number[]>([]);
+
+    return (
+        <div>
+            <MultiSelect
+                options={[
+                    {id: 1, name: 'Durward Reynolds'},
+                    {id: 2, name: 'Kenton Towne'},
+                    {id: 3, name: 'Therese Wunsch'},
+                    {id: 4, name: 'Benedict Kessler'},
+                    {id: 5, name: 'Katelyn Rohan'},
+                ]}
+                values={selectedPeople}
+                onChange={setSelectedPeople}
+            />
+            {betaTable}
+        </div>
+    );
 };
 
 export default memo(BetaTable);
-
-// const calculateStandardDeviation = (arr: number[]): number => Math.sqrt(calculateVariance(arr) / (arr.length - 1));
-// const calculateVariance = (arr: number[]): number =>
-//     arr.reduce((acc, val) => acc + Math.pow(val - calculateMean(arr), 2), 0);
-// const calculateCovariance = (arr1: number[], arr2: number[]): number => {
-//     const mean1 = calculateMean(arr1);
-//     const mean2 = calculateMean(arr2);
-
-//     return arr1.reduce((acc, _, idx) => acc + (arr1[idx] - mean1) * (arr2[idx] - mean2), 0) / (arr1.length - 1);
-// };
-// const calculateMean = (arr: number[]): number => arr.reduce((acc, val) => acc + val, 0) / arr.length;
-
-// for (let i = 0; i < betaTickersListPercentages[betaTickersList[i]]?.percentages.length; i++) {
-//     for (let j = 0; j < betaTickersListPercentages[betaTickersList[j]]?.percentages.length; j++) {
-//         const correlation = calculatePearsonCorrelation(
-//             betaTickersListPercentages[betaTickersList[i]],
-//             betaTickersListPercentages[betaTickersList[j]],
-//         );
-//         tableArr.push(correlation);
-//     }
-// }
