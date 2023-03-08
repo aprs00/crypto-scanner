@@ -31,7 +31,7 @@ const BetaTable = () => {
     };
 
     useEffect(() => {
-        if (!results.length) return;
+        if (results.length !== betaTickersList.length) return;
         for (let i = 0; i < results?.length; i++) {
             const percentagePrices: number[] = [];
             for (let j = 0; j < results[i]?.data?.length; j++) {
@@ -54,18 +54,17 @@ const BetaTable = () => {
     }, [JSON.stringify(results)]);
 
     useEffect(() => {
+        if (results.length !== betaTickersList.length) return;
         const tableArr: number[] = [];
-        betaTickersList.map((_, index) => {
-            betaTickersList.map((_, index2) => {
-                const correlation = calculatePearsonCorrelation(
-                    betaTickersListPercentages[index],
-                    betaTickersListPercentages[index2],
-                );
-                tableArr.push(correlation);
-            });
-        });
+        betaTickersList.map((_, index) =>
+            betaTickersList.map((_, index2) =>
+                tableArr.push(
+                    calculatePearsonCorrelation(betaTickersListPercentages[index], betaTickersListPercentages[index2]),
+                ),
+            ),
+        );
         setBetaTickersListCorrelation(tableArr);
-    }, [JSON.stringify(results)]);
+    }, [JSON.stringify(betaTickersListPercentages)]);
 
     const betaTable = useMemo(() => {
         if (betaTickersListCorrelation.length === 0) return null;
@@ -103,7 +102,7 @@ const BetaTable = () => {
                 </tbody>
             </table>
         );
-    }, [JSON.stringify(results)]);
+    }, [JSON.stringify(betaTickersListCorrelation)]);
 
     return <div>{betaTable}</div>;
 };
