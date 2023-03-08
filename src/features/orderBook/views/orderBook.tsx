@@ -1,10 +1,11 @@
 import {useEffect, useMemo, useState} from 'react';
 
-import {useDepthSnapshot, useStreamTicker} from '../api';
+import {useDepthSnapshot, useStreamTicker, useStreamAggTrade} from '../api';
 import type {UpdateOrderBookPropsType} from '../types';
 
 const OrderBook = () => {
     const streamTicker = useStreamTicker('BTCUSDT');
+    const streamAggTrade = useStreamAggTrade('BTCUSDT');
     const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a);
 
     const [previousOrderBookUpdateId, setPreviousOrderBookUpdateId] = useState(0);
@@ -181,7 +182,12 @@ const OrderBook = () => {
                     />
                 </div>
             </div>
-            <div className="flex flex-col-reverse mb-4">{orderBookAsksTable}</div>
+            <div className="flex flex-col-reverse">{orderBookAsksTable}</div>
+            <div className="my-4 text-xl">
+                {parseFloat(streamAggTrade?.data?.p || '0')
+                    .toString()
+                    .replace(/\.?0+$/, '')}
+            </div>
             <div>{orderBookBidsTable}</div>
         </div>
     );
