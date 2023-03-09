@@ -3,7 +3,7 @@ import {Link, Outlet} from '@tanstack/react-router';
 const Home = () => {
     return (
         <>
-            <div className="p-2 flex gap-2 text-lg">
+            <div className="py-2 flex gap-2 text-lg mb-4">
                 <Link
                     to="/"
                     activeProps={{
@@ -38,7 +38,6 @@ const Home = () => {
                     Beta
                 </Link>
             </div>
-            <hr />
             <Outlet />
         </>
     );

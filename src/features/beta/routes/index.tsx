@@ -1,9 +1,10 @@
-import {Route} from '@tanstack/react-router';
-import {homeRoute} from '@/features/home/routes';
-import Beta from '../views/Beta';
+import {lazy, Route} from '@tanstack/react-router';
 
+import {homeRoute} from '@/features/home/routes';
 import {queryClient} from '@/lib/react-query';
 import {fetchKlines} from '../api';
+
+const Beta = lazy(() => import('../views/Beta'));
 
 const betaTickersList = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT'];
 

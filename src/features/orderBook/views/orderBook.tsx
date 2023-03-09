@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from 'react';
 
 import {useDepthSnapshot, useStreamTicker, useStreamAggTrade} from '../api';
-import type {UpdateOrderBookPropsType} from '../types';
+import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types';
 
 const OrderBook = () => {
     const streamTicker = useStreamTicker('BTCUSDT');
@@ -12,22 +12,20 @@ const OrderBook = () => {
     const [firstEventProcessed, setFirstEventProcessed] = useState(false);
     const [numOfOrderBookRows, setNumOfOrderBookRows] = useState(10);
     const [groupByNum, setGroupByNum] = useState(3);
-    const [hashOrderBookAsks, setHashOrderBookAsks] = useState(
-        Object.fromEntries(depthSnapshot?.data?.asks || ([] as string[][])),
-    );
-    const [hashOrderBookBids, setHashOrderBookBids] = useState(
-        Object.fromEntries(depthSnapshot?.data?.bids || ([] as string[][])),
-    );
+    const [tempOrderBookData, setTempOrderBookData] = useState<StreamTickerResponseType[]>([]);
+    const [tempOrderBookDataConsumed, setTempOrderBookDataConsumed] = useState(false);
+    const [hashOrderBookAsks, setHashOrderBookAsks] = useState({});
+    const [hashOrderBookBids, setHashOrderBookBids] = useState({});
 
     const updateOrderBook = (props: UpdateOrderBookPropsType) => {
         const {getter, setter, newStream} = props;
         const updatedStateGetter = {...getter};
         for (let i = 0; i < newStream.length; i++) {
-            if (newStream[i][1] === '0.00000000') {
+            const [price, quantity] = newStream[i];
+            if (quantity === '0.00000000') {
                 delete updatedStateGetter[newStream[i][0]];
                 continue;
             }
-            const [price, quantity] = newStream[i];
             updatedStateGetter[price] = quantity;
         }
         setter(
@@ -39,29 +37,56 @@ const OrderBook = () => {
     };
 
     useEffect(() => {
-        if (streamTicker?.data?.a) {
-            if (streamTicker?.data?.u <= (depthSnapshot?.data?.lastUpdateId || 0)) return;
+        setHashOrderBookAsks(Object.fromEntries(depthSnapshot?.data?.asks || ([] as string[][])));
+        setHashOrderBookBids(Object.fromEntries(depthSnapshot?.data?.bids || ([] as string[][])));
+    }, [depthSnapshot?.data?.lastUpdateId]);
 
-            if (!firstEventProcessed) {
-                if (!(streamTicker?.data?.U <= (depthSnapshot?.data?.lastUpdateId || 0) + 1)) return;
-                if (!(streamTicker?.data?.u >= (depthSnapshot?.data?.lastUpdateId || 0) + 1)) return;
-                setFirstEventProcessed(true);
+    useEffect(() => {
+        if (depthSnapshot.isLoading) {
+            if (streamTicker?.data?.u) setTempOrderBookData((prev) => [...prev, streamTicker?.data]);
+            return;
+        } else if (!tempOrderBookDataConsumed) {
+            for (let i = 0; i < tempOrderBookData.length; i++) {
+                if (!tempOrderBookData[i]?.u || !depthSnapshot?.data?.lastUpdateId) continue;
+                if (tempOrderBookData[i]?.u <= depthSnapshot?.data?.lastUpdateId) continue;
+
+                if (!firstEventProcessed) {
+                    if (!(tempOrderBookData[i]?.U <= depthSnapshot?.data?.lastUpdateId + 1)) continue;
+                    if (!(tempOrderBookData[i]?.u >= depthSnapshot?.data?.lastUpdateId + 1)) continue;
+                    setFirstEventProcessed(true);
+                }
+
+                setPreviousOrderBookUpdateId(tempOrderBookData[i]?.u);
             }
-
-            setPreviousOrderBookUpdateId(streamTicker?.data?.u || 0);
-            if (streamTicker?.data?.U !== (previousOrderBookUpdateId || 0) + 1) return;
-
-            updateOrderBook({
-                getter: hashOrderBookAsks,
-                setter: setHashOrderBookAsks,
-                newStream: streamTicker?.data?.a,
-            });
-            updateOrderBook({
-                getter: hashOrderBookBids,
-                setter: setHashOrderBookBids,
-                newStream: streamTicker?.data?.b,
-            });
+            setTempOrderBookDataConsumed(true);
         }
+
+        if (
+            !depthSnapshot?.data?.lastUpdateId ||
+            !streamTicker?.data?.u ||
+            streamTicker?.data?.u <= depthSnapshot?.data?.lastUpdateId
+        )
+            return;
+
+        if (!firstEventProcessed) {
+            if (!(streamTicker?.data?.U <= depthSnapshot?.data?.lastUpdateId + 1)) return;
+            if (!(streamTicker?.data?.u >= depthSnapshot?.data?.lastUpdateId + 1)) return;
+            setFirstEventProcessed(true);
+        }
+
+        setPreviousOrderBookUpdateId(streamTicker?.data?.u);
+        if (streamTicker?.data?.U !== previousOrderBookUpdateId + 1) return;
+
+        updateOrderBook({
+            getter: hashOrderBookAsks,
+            setter: setHashOrderBookAsks,
+            newStream: streamTicker?.data?.a,
+        });
+        updateOrderBook({
+            getter: hashOrderBookBids,
+            setter: setHashOrderBookBids,
+            newStream: streamTicker?.data?.b,
+        });
     }, [streamTicker?.data?.u]);
 
     /////////////////////
@@ -92,7 +117,7 @@ const OrderBook = () => {
                     const percentage = (Number(quantity) / maxAsksQuantity) * 100;
                     return (
                         <div
-                            className="grid grid-cols-2 mb-0.5 text-slate-200"
+                            className="grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5"
                             style={{
                                 background: `linear-gradient(90deg, rgba(198, 6, 6, 0.55) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
                             }}
@@ -136,7 +161,7 @@ const OrderBook = () => {
                     const percentage = (Number(quantity) / maxBidsQuantity) * 100;
                     return (
                         <div
-                            className="grid grid-cols-2 mb-0.5 text-slate-200"
+                            className="grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5"
                             style={{
                                 background: `linear-gradient(90deg, rgba(0, 185, 9, 0.55) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
                             }}

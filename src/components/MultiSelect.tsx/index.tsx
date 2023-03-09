@@ -9,7 +9,6 @@ type MultiSelectPropsType = {
 
 const MultiSelect = (props: MultiSelectPropsType) => {
     const {options, values, onChange} = props;
-    console.log(options);
 
     return (
         <Listbox value={values} onChange={onChange} multiple>
@@ -17,9 +16,35 @@ const MultiSelect = (props: MultiSelectPropsType) => {
                 <div className="">
                     <div className="mb-2 border rounded-md border-slate-700">
                         <Listbox.Button className="w-full bg-slate-800 rounded-md px-4 h-10 text-left relative">
-                            {values.map((value: number) => (
-                                <span key={value}>{options?.find((option) => option.id === value)?.name}</span>
-                            ))}
+                            <div className="flex items-center">
+                                {options
+                                    ?.filter((option) => values.includes(option.id))
+                                    .map((option) => (
+                                        <div className="flex items-center" key={option.id}>
+                                            <span className="text-slate-100">{option.name}</span>
+                                            <span
+                                                className="mr-2 hover:scale-110 self-baseline"
+                                                onClick={() => {
+                                                    onChange((prev) => prev.filter((id) => id !== option.id));
+                                                }}
+                                            >
+                                                <svg
+                                                    className="h-5 w-5 text-gray-400"
+                                                    viewBox="0 0 20 20"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        d="M6 18L18 6M6 6l12 12"
+                                                        strokeWidth="1.5"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    ))}
+                            </div>
                             <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                 <svg
                                     className="h-5 w-5 text-gray-400"
