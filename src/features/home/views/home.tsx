@@ -14,14 +14,6 @@ const Home = () => {
                     Home
                 </Link>{' '}
                 <Link
-                    to="/posts"
-                    activeProps={{
-                        className: 'font-bold',
-                    }}
-                >
-                    Posts
-                </Link>{' '}
-                <Link
                     to="/order-book"
                     activeProps={{
                         className: 'font-bold',

@@ -33,3 +33,18 @@ export type UpdateOrderBookPropsType = {
     setter: React.Dispatch<React.SetStateAction<Record<string, string>>>;
     newStream: string[][];
 };
+
+export type OrderBookFiltersPropsType = {
+    numOfOrderBookRows: number;
+    setNumOfOrderBookRows: (num: number) => void;
+    groupByNum: number;
+    setGroupByNum: (num: number) => void;
+};
+
+export type OrderBookTablePropsType = {
+    hashOrderBookAsks: Record<string, string>;
+    hashOrderBookBids: Record<string, string>;
+    groupByNum: number;
+    numOfOrderBookRows: number;
+    streamAggTradePrice: string;
+};

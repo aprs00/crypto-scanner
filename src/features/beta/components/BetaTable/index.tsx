@@ -4,10 +4,32 @@ import MultiSelect from '@/components/MultiSelect.tsx';
 import {useKlines} from '../../api';
 import type {TickerCalculationsType} from '../../types';
 
-const betaTickersList = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT'];
+const betaTickersList = [
+    'BTCUSDT',
+    'ETHUSDT',
+    'SOLUSDT',
+    'DOGEUSDT',
+    'DOTUSDT',
+    'ADAUSDT',
+    'BNBUSDT',
+    'LTCUSDT',
+    'LINKUSDT',
+    'XRPUSDT',
+    'UNIUSDT',
+    'BCHUSDT',
+    'VETUSDT',
+];
+
+const colors = {
+    positive: ['#8FC58F', '#64B964', '#3D8E3D', '#2D6B2D', '#1F4D1F', '#143114', '#0C210C'],
+    negative: ['#FF9999', '#FF6666', '#FF4D4D', '#FF3333', '#FF1A1A', '#FF0000', '#CC0000'],
+    perfect: '#701a75',
+};
 
 const BetaTable = () => {
     const results = useKlines(betaTickersList);
+    const [selectedPeople, setSelectedPeople] = useState<number[]>([]);
+    const [betaTickersListCorrelation, setBetaTickersListCorrelation] = useState<number[]>([]);
     const [betaTickersListPercentages, setBetaTickersListPercentages] = useState<TickerCalculationsType[]>(
         new Array(betaTickersList.length).fill({
             percentages: [],
@@ -15,8 +37,6 @@ const BetaTable = () => {
             sumSq: 0,
         }),
     );
-
-    const [betaTickersListCorrelation, setBetaTickersListCorrelation] = useState<number[]>([]);
 
     const calculatePearsonCorrelation = (arr1: TickerCalculationsType, arr2: TickerCalculationsType) => {
         const pSum = arr1.percentages.reduce((acc, _, idx) => acc + arr1.percentages[idx] * arr2.percentages[idx], 0);
@@ -29,6 +49,27 @@ const BetaTable = () => {
         );
 
         return num / den;
+    };
+
+    const minBetaTickersListCorrelation = useMemo(
+        () => Math.min(...betaTickersListCorrelation.filter((val) => val !== 1)),
+        [betaTickersListCorrelation],
+    );
+
+    const maxBetaTickersListCorrelation = useMemo(
+        () => Math.max(...betaTickersListCorrelation.filter((val) => val !== 1)),
+        [betaTickersListCorrelation],
+    );
+
+    const colorScale = (val: number) => {
+        if (val === 1) return colors.perfect;
+        const isPositive = val >= 0;
+        const index = Math.round(
+            (Math.abs(val - minBetaTickersListCorrelation) /
+                (maxBetaTickersListCorrelation - minBetaTickersListCorrelation)) *
+                (colors[isPositive ? 'positive' : 'negative'].length - 1),
+        );
+        return colors[isPositive ? 'positive' : 'negative'][index];
     };
 
     useEffect(() => {
@@ -69,7 +110,6 @@ const BetaTable = () => {
 
     const betaTable = useMemo(() => {
         if (betaTickersListCorrelation.length === 0) return null;
-
         return (
             <table className="table-auto">
                 <thead>
@@ -90,7 +130,11 @@ const BetaTable = () => {
                                     {betaTickersListCorrelation
                                         .slice(index, index + betaTickersList.length)
                                         .map((item, index) => (
-                                            <td key={index} className="bg-slate-800 p-2 text-center">
+                                            <td
+                                                key={index}
+                                                className="p-1.5 text-center"
+                                                style={{backgroundColor: colorScale(item)}}
+                                            >
                                                 {item.toString().slice(0, 5)}
                                             </td>
                                         ))}
@@ -105,22 +149,17 @@ const BetaTable = () => {
         );
     }, [JSON.stringify(betaTickersListCorrelation)]);
 
-    const [selectedPeople, setSelectedPeople] = useState<number[]>([]);
-
     return (
         <div>
             <MultiSelect
                 options={[
-                    {id: 1, name: 'Durward Reynolds'},
-                    {id: 2, name: 'Kenton Towne'},
-                    {id: 3, name: 'Therese Wunsch'},
-                    {id: 4, name: 'Benedict Kessler'},
-                    {id: 5, name: 'Katelyn Rohan'},
+                    {id: 1, name: 'BTCUSDT'},
+                    {id: 2, name: 'ETHUSDT'},
                 ]}
                 values={selectedPeople}
                 onChange={setSelectedPeople}
             />
-            {betaTable}
+            <div className="mt-10 flex justify-center">{betaTable}</div>
         </div>
     );
 };
