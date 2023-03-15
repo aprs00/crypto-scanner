@@ -12,7 +12,7 @@ const fetchDepthSnapshot = async (symbol: string, limit = 5000) => {
 };
 
 const streamTicker = async (symbol: string): Promise<StreamTickerResponseType> => {
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@1000ms`);
+    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@100ms`);
 
     return new Promise((resolve, reject) => {
         ws.onmessage = (event) => {
