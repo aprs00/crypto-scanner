@@ -7,7 +7,7 @@ import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types'
 
 const OrderBook = () => {
     const streamTicker = useStreamTicker('BTCUSDT');
-    const streamAggTrade = useStreamAggTrade('BTCUSDT');
+    // const streamAggTrade = useStreamAggTrade('BTCUSDT');
     const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a);
 
     const [previousOrderBookUpdateId, setPreviousOrderBookUpdateId] = useState(0);
@@ -19,23 +19,18 @@ const OrderBook = () => {
     const [hashOrderBookAsks, setHashOrderBookAsks] = useState({});
     const [hashOrderBookBids, setHashOrderBookBids] = useState({});
 
-    const updateOrderBook = (props: UpdateOrderBookPropsType) => {
+    const updateOrderBook = (props: UpdateOrderBookPropsType): void => {
         const {getter, setter, newStream} = props;
         const updatedStateGetter = {...getter};
-        for (let i = 0; i < newStream.length; i++) {
-            const [price, quantity] = newStream[i];
+        for (const [price, quantity] of newStream) {
             if (quantity === '0.00000000') {
-                delete updatedStateGetter[newStream[i][0]];
+                delete updatedStateGetter[price];
                 continue;
             }
             updatedStateGetter[price] = quantity;
         }
-        setter(
-            Object.entries(updatedStateGetter).reduce((acc: Record<string, string>, [price, quantity]) => {
-                acc[price] = quantity;
-                return acc;
-            }, {}),
-        );
+
+        setter(updatedStateGetter);
     };
 
     useEffect(() => {
@@ -118,7 +113,7 @@ const OrderBook = () => {
                 hashOrderBookBids={hashOrderBookBids}
                 groupByNum={groupByNum}
                 numOfOrderBookRows={numOfOrderBookRows}
-                streamAggTradePrice={streamAggTrade?.data?.p || ''}
+                streamAggTradePrice={''}
             />
         </>
     );

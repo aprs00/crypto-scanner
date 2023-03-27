@@ -1,87 +1,117 @@
-import {memo} from 'react';
+import {memo, useMemo} from 'react';
 
 import type {OrderBookTablePropsType} from '../types';
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
     const {hashOrderBookAsks, hashOrderBookBids, groupByNum, numOfOrderBookRows, streamAggTradePrice} = props;
 
-    const groupedOrderBookAsks = Object.entries(hashOrderBookAsks).reduce(
-        (acc: Record<string, string>, [priceStr, value]) => {
+    const groupedOrderBookAsks = useMemo(() => {
+        const result: Record<string, string> = {};
+        const sortedEntries = Object.entries(hashOrderBookAsks).sort(([a], [b]) => Number(a) - Number(b));
+        for (const [priceStr, value] of sortedEntries) {
             const price = Math.ceil(parseFloat(priceStr) / groupByNum) * groupByNum;
-            acc[price] = (Number(acc[price] || 0) + Number(value)).toString();
-            return acc;
-        },
-        {},
-    );
+            result[price] = (Number(result[price] || 0) + Number(value)).toString();
+        }
+        return result;
+    }, [hashOrderBookAsks, groupByNum]);
 
-    const maxAsksQuantity = () =>
-        Object.entries(groupedOrderBookAsks)
-            .slice(0, numOfOrderBookRows)
-            .reduce((acc, [, quantity]) => Math.max(acc, Number(quantity)), 0) || 0;
+    console.log(hashOrderBookAsks);
+    console.log(groupedOrderBookAsks);
 
-    const orderBookAsksTable = () =>
-        Object.entries(groupedOrderBookAsks)
-            .slice(0, numOfOrderBookRows)
-            .map(([price, quantity], index) => {
-                const percentage = (Number(quantity) / maxAsksQuantity()) * 100;
-                return (
-                    <div
-                        className="grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5"
-                        style={{
-                            background: `linear-gradient(90deg, rgba(198, 6, 6, 0.55) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
-                        }}
-                        key={price + quantity + index}
-                    >
-                        <div>{price}</div>
-                        <div>{Number(quantity).toPrecision(6)}</div>
-                    </div>
-                );
-            });
+    const maxAsksQuantity = useMemo(() => {
+        let maxQuantity = 0;
+        let index = 0;
+        const sortedEntries = Object.entries(groupedOrderBookAsks).sort(([a], [b]) => Number(a) - Number(b));
+        for (const [_, quantity] of sortedEntries) {
+            if (index >= numOfOrderBookRows) break;
+            maxQuantity = Math.max(maxQuantity, Number(quantity));
+            index++;
+        }
+        return maxQuantity;
+    }, [groupedOrderBookAsks]);
 
-    const groupedOrderBookBids = Object.entries(hashOrderBookBids).reduce(
-        (acc: Record<string, string>, [priceStr, value]) => {
+    const orderBookAsksTable = useMemo(() => {
+        const orderBookRows = [];
+        let index = 0;
+        const sortedEntries = Object.entries(groupedOrderBookAsks).sort(([a], [b]) => Number(a) - Number(b));
+        for (const [price, quantity] of sortedEntries) {
+            if (index >= numOfOrderBookRows) break;
+            const percentage = (Number(quantity) / maxAsksQuantity) * 100;
+            orderBookRows.push(
+                <div
+                    className="grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5"
+                    style={{
+                        background: `linear-gradient(90deg, rgba(198, 6, 6, 0.55) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
+                    }}
+                    key={price + quantity}
+                >
+                    <div>{price}</div>
+                    <div>{Number(quantity).toPrecision(6)}</div>
+                </div>,
+            );
+            index++;
+        }
+
+        return orderBookRows;
+    }, [groupedOrderBookAsks]);
+
+    const groupedOrderBookBids = useMemo(() => {
+        const result: Record<string, string> = {};
+        const sortedEntries = Object.entries(hashOrderBookBids).sort(([a], [b]) => Number(b) - Number(a));
+        for (const [priceStr, value] of sortedEntries) {
             const price = Math.floor(parseFloat(priceStr) / groupByNum) * groupByNum;
-            acc[price] = (Number(acc[price] || 0) + Number(value) || 0).toString();
-            return acc;
-        },
-        {},
-    );
+            result[price] = (Number(result[price] || 0) + Number(value)).toString();
+        }
+        return result;
+    }, [hashOrderBookBids, groupByNum]);
 
-    const maxBidsQuantity = () =>
-        Object.entries(groupedOrderBookBids)
-            .slice(-numOfOrderBookRows)
-            .reverse()
-            .reduce((acc, [, quantity]) => Math.max(acc, Number(quantity)), 0) || 0;
+    const maxBidsQuantity = useMemo(() => {
+        let maxQuantity = 0;
+        let index = 0;
+        const sortedEntries = Object.entries(groupedOrderBookBids).sort(([a], [b]) => Number(b) - Number(a));
+        for (const [_, quantity] of sortedEntries) {
+            if (index >= numOfOrderBookRows) break;
+            maxQuantity = Math.max(maxQuantity, Number(quantity));
+            index++;
+        }
+        return maxQuantity;
+    }, [groupedOrderBookBids]);
 
-    const orderBookBidsTable = () =>
-        Object.entries(groupedOrderBookBids)
-            .slice(-numOfOrderBookRows)
-            .reverse()
-            .map(([price, quantity], index) => {
-                const percentage = (Number(quantity) / maxBidsQuantity()) * 100;
-                return (
-                    <div
-                        className="grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5"
-                        style={{
-                            background: `linear-gradient(90deg, rgba(0, 185, 9, 0.55) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
-                        }}
-                        key={index}
-                    >
-                        <div>{price}</div>
-                        <div>{Number(quantity).toPrecision(6)}</div>
-                    </div>
-                );
-            });
+    const orderBookBidsTable = useMemo(() => {
+        const orderBookRows = [];
+        let index = 0;
+        const sortedEntries = Object.entries(groupedOrderBookBids).sort(([a], [b]) => Number(b) - Number(a));
+        for (const [price, quantity] of sortedEntries) {
+            if (index >= numOfOrderBookRows) break;
+            const percentage = (Number(quantity) / maxBidsQuantity) * 100;
+            orderBookRows.push(
+                <div
+                    className="grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5"
+                    style={{
+                        background: `linear-gradient(90deg, rgba(0, 185, 9, 0.55) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
+                    }}
+                    key={price + quantity}
+                >
+                    <div>{price}</div>
+                    <div>{Number(quantity).toPrecision(6)}</div>
+                </div>,
+            );
+            index++;
+        }
+
+        return orderBookRows;
+    }, [groupedOrderBookBids]);
 
     return (
         <div>
-            <div className="flex flex-col-reverse">{orderBookAsksTable()}</div>
-            <div className="my-4 text-xl">
+            <div className="flex flex-col-reverse">{orderBookAsksTable}</div>
+            {/* <div className="my-4 text-xl">
                 {parseFloat(streamAggTradePrice || '0')
                     .toString()
                     .replace(/\.?0+$/, '')}
-            </div>
-            <div>{orderBookBidsTable()}</div>
+            </div> */}
+            <div className="my-1"></div>
+            <div>{orderBookBidsTable}</div>
         </div>
     );
 };

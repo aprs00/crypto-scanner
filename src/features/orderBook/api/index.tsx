@@ -27,7 +27,6 @@ const streamTicker = async (symbol: string): Promise<StreamTickerResponseType> =
     });
 };
 
-// wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade
 const streamAggTrade = async (symbol: string): Promise<StreamAggTradeResponseType> => {
     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`);
 
