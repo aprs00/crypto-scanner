@@ -29,9 +29,10 @@ export type StreamAggTradeResponseType = {
 };
 
 export type UpdateOrderBookPropsType = {
-    getter: Record<string, string>;
-    setter: React.Dispatch<React.SetStateAction<Record<string, string>>>;
-    newStream: string[][];
+    asksGetter: Record<string, string>;
+    bidsGetter: Record<string, string>;
+    asksStream: string[][];
+    bidsStream: string[][];
 };
 
 export type OrderBookFiltersPropsType = {
@@ -42,8 +43,8 @@ export type OrderBookFiltersPropsType = {
 };
 
 export type OrderBookTablePropsType = {
-    hashOrderBookAsks: Record<string, string>;
-    hashOrderBookBids: Record<string, string>;
+    groupedOrderBookAsks: Record<string, string>;
+    groupedOrderBookBids: Record<string, string>;
     groupByNum: number;
     numOfOrderBookRows: number;
     streamAggTradePrice: string;

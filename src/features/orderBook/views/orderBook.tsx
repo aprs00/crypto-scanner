@@ -18,20 +18,42 @@ const OrderBook = () => {
     const [tempOrderBookDataConsumed, setTempOrderBookDataConsumed] = useState(false);
     const [hashOrderBookAsks, setHashOrderBookAsks] = useState({});
     const [hashOrderBookBids, setHashOrderBookBids] = useState({});
+    const [groupedOrderBookAsks, setGroupedOrderBookAsks] = useState({});
+    const [groupedOrderBookBids, setGroupedOrderBookBids] = useState({});
 
-    const updateOrderBook = (props: UpdateOrderBookPropsType): void => {
-        const {getter, setter, newStream} = props;
-        const updatedStateGetter = {...getter};
-        for (const [price, quantity] of newStream) {
-            if (quantity === '0.00000000') {
-                delete updatedStateGetter[price];
-                continue;
-            }
-            updatedStateGetter[price] = quantity;
-        }
+    const useUpdateOrderBookWorker = (): ((props: UpdateOrderBookPropsType) => void) => {
+        const [worker, setWorker] = useState<Worker | null>(null);
 
-        setter(updatedStateGetter);
+        useEffect(() => {
+            const newWorker = new Worker(new URL('../workers/orderBookWorker.ts', import.meta.url));
+            setWorker(newWorker);
+
+            return () => newWorker.terminate();
+        }, []);
+
+        return (props: UpdateOrderBookPropsType) => {
+            if (!worker) return;
+
+            worker.postMessage({
+                type: 'UPDATE_ORDER_BOOK',
+                groupByNum,
+                payload: props,
+            });
+
+            worker.onmessage = (event) => {
+                const {type, payload} = event.data;
+                const {updatedAsks, updatedBids, groupedOrderBookAsks, groupedOrderBookBids} = payload;
+                if (type === 'ORDER_BOOK_UPDATED') {
+                    setHashOrderBookBids(updatedBids);
+                    setHashOrderBookAsks(updatedAsks);
+                    setGroupedOrderBookAsks(groupedOrderBookAsks);
+                    setGroupedOrderBookBids(groupedOrderBookBids);
+                }
+            };
+        };
     };
+
+    const updateOrderBook = useUpdateOrderBookWorker();
 
     useEffect(() => {
         setHashOrderBookAsks(Object.fromEntries(depthSnapshot?.data?.asks || ([] as string[][])));
@@ -57,14 +79,10 @@ const OrderBook = () => {
                 if (streamTicker?.data?.U !== previousOrderBookUpdateId + 1) continue;
 
                 updateOrderBook({
-                    getter: hashOrderBookAsks,
-                    setter: setHashOrderBookAsks,
-                    newStream: streamTicker?.data?.a,
-                });
-                updateOrderBook({
-                    getter: hashOrderBookBids,
-                    setter: setHashOrderBookBids,
-                    newStream: streamTicker?.data?.b,
+                    asksGetter: hashOrderBookAsks,
+                    bidsGetter: hashOrderBookBids,
+                    asksStream: streamTicker?.data?.a,
+                    bidsStream: streamTicker?.data?.b,
                 });
             }
             setTempOrderBookDataConsumed(true);
@@ -87,14 +105,10 @@ const OrderBook = () => {
         if (streamTicker?.data?.U !== previousOrderBookUpdateId + 1) return;
 
         updateOrderBook({
-            getter: hashOrderBookAsks,
-            setter: setHashOrderBookAsks,
-            newStream: streamTicker?.data?.a,
-        });
-        updateOrderBook({
-            getter: hashOrderBookBids,
-            setter: setHashOrderBookBids,
-            newStream: streamTicker?.data?.b,
+            asksGetter: hashOrderBookAsks,
+            bidsGetter: hashOrderBookBids,
+            asksStream: streamTicker?.data?.a,
+            bidsStream: streamTicker?.data?.b,
         });
     }, [streamTicker?.data?.u]);
 
@@ -109,8 +123,8 @@ const OrderBook = () => {
                 setGroupByNum={setGroupByNum}
             />
             <OrderBookTable
-                hashOrderBookAsks={hashOrderBookAsks}
-                hashOrderBookBids={hashOrderBookBids}
+                groupedOrderBookAsks={groupedOrderBookAsks}
+                groupedOrderBookBids={groupedOrderBookBids}
                 groupByNum={groupByNum}
                 numOfOrderBookRows={numOfOrderBookRows}
                 streamAggTradePrice={''}

@@ -3,20 +3,7 @@ import {memo, useMemo} from 'react';
 import type {OrderBookTablePropsType} from '../types';
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const {hashOrderBookAsks, hashOrderBookBids, groupByNum, numOfOrderBookRows, streamAggTradePrice} = props;
-
-    const groupedOrderBookAsks = useMemo(() => {
-        const result: Record<string, string> = {};
-        const sortedEntries = Object.entries(hashOrderBookAsks).sort(([a], [b]) => Number(a) - Number(b));
-        for (const [priceStr, value] of sortedEntries) {
-            const price = Math.ceil(parseFloat(priceStr) / groupByNum) * groupByNum;
-            result[price] = (Number(result[price] || 0) + Number(value)).toString();
-        }
-        return result;
-    }, [hashOrderBookAsks, groupByNum]);
-
-    console.log(hashOrderBookAsks);
-    console.log(groupedOrderBookAsks);
+    const {groupedOrderBookBids, groupedOrderBookAsks, groupByNum, numOfOrderBookRows, streamAggTradePrice} = props;
 
     const maxAsksQuantity = useMemo(() => {
         let maxQuantity = 0;
@@ -54,16 +41,6 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
         return orderBookRows;
     }, [groupedOrderBookAsks]);
-
-    const groupedOrderBookBids = useMemo(() => {
-        const result: Record<string, string> = {};
-        const sortedEntries = Object.entries(hashOrderBookBids).sort(([a], [b]) => Number(b) - Number(a));
-        for (const [priceStr, value] of sortedEntries) {
-            const price = Math.floor(parseFloat(priceStr) / groupByNum) * groupByNum;
-            result[price] = (Number(result[price] || 0) + Number(value)).toString();
-        }
-        return result;
-    }, [hashOrderBookBids, groupByNum]);
 
     const maxBidsQuantity = useMemo(() => {
         let maxQuantity = 0;
