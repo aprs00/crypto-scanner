@@ -1,50 +1,83 @@
 onmessage = (event) => {
+    function findTargetPriceIndex(bids: string[][], price: string, ascending: boolean) {
+        let low = 0;
+        let high = bids.length - 1;
+        let exactMatch = false;
+        const parsedPrice = parseFloat(price);
+
+        while (low <= high) {
+            let mid = Math.floor((low + high) / 2);
+            let midPrice = parseFloat(bids[mid][0]);
+
+            if (midPrice === parsedPrice) return {exactMatch: true, index: mid};
+            else if ((ascending && midPrice < parsedPrice) || (!ascending && midPrice > parsedPrice)) low = mid + 1;
+            else high = mid - 1;
+        }
+        return {exactMatch, index: low};
+    }
+
     const {type, payload, groupByNum} = event.data;
     if (type === 'UPDATE_ORDER_BOOK') {
-        const {asksGetter, bidsGetter, asksStream, bidsStream} = payload;
-        const updatedAsks = {...asksGetter};
-        const updatedBids = {...bidsGetter};
-        for (const [price, quantity] of bidsStream) {
-            if (quantity === '0.00000000') {
-                delete updatedBids[price];
-                continue;
+        const {bidsGetter, asksGetter, bidsStream, asksStream} = payload;
+        let counter = 0;
+
+        const updateOrderBook = (getter: string[][], stream: string[][], ascending: boolean) => {
+            for (const [price, quantity] of stream) {
+                counter++;
+                if (quantity === '0.00000000') {
+                    const {exactMatch, index} = findTargetPriceIndex(getter, price, ascending);
+                    if (exactMatch) getter.splice(index, 1);
+                    continue;
+                } else {
+                    const {exactMatch, index} = findTargetPriceIndex(getter, price, ascending);
+                    if (exactMatch) getter[index][1] = quantity;
+                    else getter.splice(index, 0, [price, quantity]);
+                }
             }
-            updatedBids[price] = quantity;
-        }
-        for (const [price, quantity] of asksStream) {
-            if (quantity === '0.00000000') {
-                delete updatedAsks[price];
-                continue;
-            }
-            updatedAsks[price] = quantity;
-        }
-        const groupedOrderBookAsks = () => {
-            const result: Record<string, string> = {};
-            const sortedEntries = Object.entries(updatedAsks).sort(([a], [b]) => Number(a) - Number(b));
-            for (const [priceStr, value] of sortedEntries) {
-                const price = Math.ceil(parseFloat(priceStr) / groupByNum) * groupByNum;
-                result[price] = (Number(result[price] || 0) + Number(value)).toString();
-            }
-            return result;
+
+            return getter;
         };
 
-        const groupedOrderBookBids = () => {
-            const result: Record<string, string> = {};
-            const sortedEntries = Object.entries(updatedBids).sort(([a], [b]) => Number(b) - Number(a));
-            for (const [priceStr, value] of sortedEntries) {
-                const price = Math.floor(parseFloat(priceStr) / groupByNum) * groupByNum;
-                result[price] = (Number(result[price] || 0) + Number(value)).toString();
+        const groupOrders = (ordersGetter: string[][], groupByNum: number, isBid: boolean): Float32Array[] => {
+            const result = new Map<number, number>();
+            const groupedOrders = new Array(Math.ceil(ordersGetter.length / 2 / groupByNum))
+                .fill(null)
+                .map(() => new Float32Array(2));
+
+            for (const order of ordersGetter) {
+                const orderPrice = parseFloat(order[0]);
+                const roundedPrice = isBid
+                    ? Math.floor(orderPrice / groupByNum) * groupByNum
+                    : Math.ceil(orderPrice / groupByNum) * groupByNum;
+
+                const currentQuantity = result.get(roundedPrice) || 0;
+                const newQuantity = currentQuantity + parseFloat(order[1]);
+                result.set(roundedPrice, newQuantity);
             }
-            return result;
+
+            let index = 0;
+            for (const [price, quantity] of result) {
+                groupedOrders[index][0] = price;
+                groupedOrders[index][1] = quantity;
+                index++;
+            }
+
+            return groupedOrders;
         };
+
+        const updatedAsks = updateOrderBook(asksGetter, asksStream, true);
+        const updatedBids = updateOrderBook(bidsGetter, bidsStream, false);
+
+        const groupedAsks = groupOrders(updatedAsks, groupByNum, false);
+        const groupedBids = groupOrders(updatedBids, groupByNum, true);
 
         postMessage({
             type: 'ORDER_BOOK_UPDATED',
             payload: {
                 updatedAsks,
                 updatedBids,
-                groupedOrderBookAsks: groupedOrderBookAsks(),
-                groupedOrderBookBids: groupedOrderBookBids(),
+                groupedAsks,
+                groupedBids,
             },
         });
     }

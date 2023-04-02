@@ -3,26 +3,26 @@ import {memo, useMemo} from 'react';
 import type {OrderBookTablePropsType} from '../types';
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const {groupedOrderBookBids, groupedOrderBookAsks, groupByNum, numOfOrderBookRows, streamAggTradePrice} = props;
+    const {groupedBids, groupedAsks, numOfOrderBookRows, streamAggTradePrice} = props;
 
     const maxAsksQuantity = useMemo(() => {
         let maxQuantity = 0;
         let index = 0;
-        const sortedEntries = Object.entries(groupedOrderBookAsks).sort(([a], [b]) => Number(a) - Number(b));
-        for (const [_, quantity] of sortedEntries) {
+        for (let i = 0; i < groupedAsks.length; i++) {
             if (index >= numOfOrderBookRows) break;
+            const [_, quantity] = groupedAsks[i];
             maxQuantity = Math.max(maxQuantity, Number(quantity));
             index++;
         }
         return maxQuantity;
-    }, [groupedOrderBookAsks]);
+    }, [groupedAsks]);
 
     const orderBookAsksTable = useMemo(() => {
         const orderBookRows = [];
         let index = 0;
-        const sortedEntries = Object.entries(groupedOrderBookAsks).sort(([a], [b]) => Number(a) - Number(b));
-        for (const [price, quantity] of sortedEntries) {
+        for (let i = 0; i < groupedAsks.length; i++) {
             if (index >= numOfOrderBookRows) break;
+            const [price, quantity] = groupedAsks[i];
             const percentage = (Number(quantity) / maxAsksQuantity) * 100;
             orderBookRows.push(
                 <div
@@ -40,26 +40,26 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         }
 
         return orderBookRows;
-    }, [groupedOrderBookAsks]);
+    }, [groupedAsks]);
 
     const maxBidsQuantity = useMemo(() => {
         let maxQuantity = 0;
         let index = 0;
-        const sortedEntries = Object.entries(groupedOrderBookBids).sort(([a], [b]) => Number(b) - Number(a));
-        for (const [_, quantity] of sortedEntries) {
+        for (let i = 0; i < groupedBids.length; i++) {
             if (index >= numOfOrderBookRows) break;
+            const [_, quantity] = groupedBids[i];
             maxQuantity = Math.max(maxQuantity, Number(quantity));
             index++;
         }
         return maxQuantity;
-    }, [groupedOrderBookBids]);
+    }, [groupedBids]);
 
     const orderBookBidsTable = useMemo(() => {
         const orderBookRows = [];
         let index = 0;
-        const sortedEntries = Object.entries(groupedOrderBookBids).sort(([a], [b]) => Number(b) - Number(a));
-        for (const [price, quantity] of sortedEntries) {
+        for (let i = 0; i < groupedBids.length; i++) {
             if (index >= numOfOrderBookRows) break;
+            const [price, quantity] = groupedBids[i];
             const percentage = (Number(quantity) / maxBidsQuantity) * 100;
             orderBookRows.push(
                 <div
@@ -77,7 +77,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         }
 
         return orderBookRows;
-    }, [groupedOrderBookBids]);
+    }, [groupedBids]);
 
     return (
         <div>
@@ -88,7 +88,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                     .replace(/\.?0+$/, '')}
             </div> */}
             <div className="my-1"></div>
-            <div>{orderBookBidsTable}</div>
+            <div className="cols-reverse">{orderBookBidsTable}</div>
         </div>
     );
 };

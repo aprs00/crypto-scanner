@@ -29,8 +29,8 @@ export type StreamAggTradeResponseType = {
 };
 
 export type UpdateOrderBookPropsType = {
-    asksGetter: Record<string, string>;
-    bidsGetter: Record<string, string>;
+    asksGetter: string[][];
+    bidsGetter: string[][];
     asksStream: string[][];
     bidsStream: string[][];
 };
@@ -43,9 +43,8 @@ export type OrderBookFiltersPropsType = {
 };
 
 export type OrderBookTablePropsType = {
-    groupedOrderBookAsks: Record<string, string>;
-    groupedOrderBookBids: Record<string, string>;
-    groupByNum: number;
+    groupedAsks: string[][];
+    groupedBids: string[][];
     numOfOrderBookRows: number;
     streamAggTradePrice: string;
 };
