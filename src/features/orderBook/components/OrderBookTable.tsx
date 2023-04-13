@@ -5,17 +5,20 @@ import type {OrderBookTablePropsType} from '../types';
 const OrderBookTable = (props: OrderBookTablePropsType) => {
     const {groupedBids, groupedAsks, numOfOrderBookRows, streamAggTradePrice} = props;
 
-    const maxAsksQuantity = useMemo(() => {
-        let maxQuantity = 0;
+    const maxQuantity = useMemo(() => {
+        let max = 0;
         let index = 0;
-        for (let i = 0; i < groupedAsks.length; i++) {
+        const concattedAsksAndBids = [...groupedAsks, ...groupedBids];
+        if (concattedAsksAndBids.length === 0) return 0;
+
+        for (let i = 0; i <= concattedAsksAndBids.length; i++) {
             if (index >= numOfOrderBookRows) break;
-            const [_, quantity] = groupedAsks[i];
-            maxQuantity = Math.max(maxQuantity, Number(quantity));
+            const [_, quantity] = concattedAsksAndBids[i];
+            max = Math.max(max, Number(quantity));
             index++;
         }
-        return maxQuantity;
-    }, [groupedAsks]);
+        return max;
+    }, [groupedAsks, groupedBids]);
 
     const orderBookAsksTable = useMemo(() => {
         const orderBookRows = [];
@@ -23,7 +26,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         for (let i = 0; i < groupedAsks.length; i++) {
             if (index >= numOfOrderBookRows) break;
             const [price, quantity] = groupedAsks[i];
-            const percentage = (Number(quantity) / maxAsksQuantity) * 100;
+            const percentage = (Number(quantity) / maxQuantity) * 100;
             orderBookRows.push(
                 <div
                     className="grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5"
@@ -42,25 +45,13 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         return orderBookRows;
     }, [groupedAsks]);
 
-    const maxBidsQuantity = useMemo(() => {
-        let maxQuantity = 0;
-        let index = 0;
-        for (let i = 0; i < groupedBids.length; i++) {
-            if (index >= numOfOrderBookRows) break;
-            const [_, quantity] = groupedBids[i];
-            maxQuantity = Math.max(maxQuantity, Number(quantity));
-            index++;
-        }
-        return maxQuantity;
-    }, [groupedBids]);
-
     const orderBookBidsTable = useMemo(() => {
         const orderBookRows = [];
         let index = 0;
         for (let i = 0; i < groupedBids.length; i++) {
             if (index >= numOfOrderBookRows) break;
             const [price, quantity] = groupedBids[i];
-            const percentage = (Number(quantity) / maxBidsQuantity) * 100;
+            const percentage = (Number(quantity) / maxQuantity) * 100;
             orderBookRows.push(
                 <div
                     className="grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5"

@@ -16,8 +16,8 @@ const OrderBook = () => {
     const [groupByNum, setGroupByNum] = useState(1);
     const [tempOrderBookData, setTempOrderBookData] = useState<StreamTickerResponseType[]>([]);
     const [tempOrderBookDataConsumed, setTempOrderBookDataConsumed] = useState(false);
-    const [orderBookAsks, setOrderBookAsks] = useState<string[][]>([]);
-    const [orderBookBids, setOrderBookBids] = useState<string[][]>([]);
+    const [orderBookAsks, setOrderBookAsks] = useState<[string, string][]>([]);
+    const [orderBookBids, setOrderBookBids] = useState<[string, string][]>([]);
     const [groupedOrderBookAsks, setGroupedOrderBookAsks] = useState([]);
     const [groupedOrderBookBids, setGroupedOrderBookBids] = useState([]);
 
@@ -56,8 +56,8 @@ const OrderBook = () => {
     const updateOrderBook = useUpdateOrderBookWorker();
 
     useEffect(() => {
-        setOrderBookAsks(depthSnapshot?.data?.asks as SetStateAction<string[][]>);
-        setOrderBookBids(depthSnapshot?.data?.bids as SetStateAction<string[][]>);
+        setOrderBookAsks(depthSnapshot?.data?.asks as SetStateAction<[string, string][]>);
+        setOrderBookBids(depthSnapshot?.data?.bids as SetStateAction<[string, string][]>);
     }, [depthSnapshot?.data?.lastUpdateId]);
 
     useEffect(() => {

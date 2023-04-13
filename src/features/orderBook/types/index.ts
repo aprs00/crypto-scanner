@@ -1,14 +1,14 @@
 export type OrderBookResponseType = {
     lastUpdateId: number;
-    asks: string[][];
-    bids: string[][];
+    asks: [string, string][];
+    bids: [string, string][];
 };
 
 export type StreamTickerResponseType = {
     E: number;
     U: number;
-    a: string[][];
-    b: string[][];
+    a: [string, string][];
+    b: [string, string][];
     e: string;
     s: string;
     u: number;
@@ -29,10 +29,10 @@ export type StreamAggTradeResponseType = {
 };
 
 export type UpdateOrderBookPropsType = {
-    asksGetter: string[][];
-    bidsGetter: string[][];
-    asksStream: string[][];
-    bidsStream: string[][];
+    asksGetter: [string, string][];
+    bidsGetter: [string, string][];
+    asksStream: [string, string][];
+    bidsStream: [string, string][];
 };
 
 export type OrderBookFiltersPropsType = {
@@ -43,8 +43,8 @@ export type OrderBookFiltersPropsType = {
 };
 
 export type OrderBookTablePropsType = {
-    groupedAsks: string[][];
-    groupedBids: string[][];
+    groupedAsks: [string, string][];
+    groupedBids: [string, string][];
     numOfOrderBookRows: number;
     streamAggTradePrice: string;
 };

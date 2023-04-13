@@ -1,8 +1,7 @@
 onmessage = (event) => {
-    function findTargetPriceIndex(bids: string[][], price: string, ascending: boolean) {
+    function findTargetPriceIndex(bids: [string, string][], price: string, ascending: boolean) {
         let low = 0;
         let high = bids.length - 1;
-        let exactMatch = false;
         const parsedPrice = parseFloat(price);
 
         while (low <= high) {
@@ -13,7 +12,8 @@ onmessage = (event) => {
             else if ((ascending && midPrice < parsedPrice) || (!ascending && midPrice > parsedPrice)) low = mid + 1;
             else high = mid - 1;
         }
-        return {exactMatch, index: low};
+
+        return {exactMatch: false, index: low};
     }
 
     const {type, payload, groupByNum} = event.data;
@@ -21,7 +21,7 @@ onmessage = (event) => {
         const {bidsGetter, asksGetter, bidsStream, asksStream} = payload;
         let counter = 0;
 
-        const updateOrderBook = (getter: string[][], stream: string[][], ascending: boolean) => {
+        const updateOrderBook = (getter: [string, string][], stream: [string, string][], ascending: boolean) => {
             for (const [price, quantity] of stream) {
                 counter++;
                 if (quantity === '0.00000000') {
@@ -38,7 +38,7 @@ onmessage = (event) => {
             return getter;
         };
 
-        const groupOrders = (ordersGetter: string[][], groupByNum: number, isBid: boolean): Float32Array[] => {
+        const groupOrders = (ordersGetter: [string, string][], groupByNum: number, isBid: boolean): Float32Array[] => {
             const result = new Map<number, number>();
             const groupedOrders = new Array(Math.ceil(ordersGetter.length / 2 / groupByNum))
                 .fill(null)

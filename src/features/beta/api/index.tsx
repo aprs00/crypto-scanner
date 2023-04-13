@@ -1,10 +1,13 @@
 import axios from 'axios';
 import {useQueries} from '@tanstack/react-query';
 
+import type {KlinesResponseType} from '../types';
+
 const fetchKlines = async (symbol: string, interval = '1m', limit = 500) => {
     const response = await axios.get<any>(
         `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`,
     );
+    console.log(response);
     return response.data;
 };
 
@@ -13,8 +16,8 @@ const useKlines = (symbols: string[]) =>
         queries: symbols.map((ticker: string) => ({
             queryKey: ['kline', ticker],
             queryFn: () => fetchKlines(ticker),
-            refetchInterval: 20_000,
-            cacheTime: 20_000,
+            refetchInterval: 60_000,
+            cacheTime: 60_000,
         })),
     });
 

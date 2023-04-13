@@ -8,6 +8,7 @@ const betaTickersList = [
     'BTCUSDT',
     'ETHUSDT',
     'SOLUSDT',
+    'ARBUSDT',
     'DOGEUSDT',
     'DOTUSDT',
     'ADAUSDT',
@@ -27,7 +28,7 @@ const colors = {
 };
 
 const BetaTable = () => {
-    const results = useKlines(betaTickersList);
+    const klines = useKlines(betaTickersList);
     const [selectedPeople, setSelectedPeople] = useState<number[]>([]);
     const [betaTickersListCorrelation, setBetaTickersListCorrelation] = useState<number[]>([]);
     const [betaTickersListPercentages, setBetaTickersListPercentages] = useState<TickerCalculationsType[]>(
@@ -73,12 +74,12 @@ const BetaTable = () => {
     };
 
     useEffect(() => {
-        if (results.length !== betaTickersList.length) return;
-        for (let i = 0; i < results?.length; i++) {
+        if (klines.length !== betaTickersList.length) return;
+        for (let i = 0; i < klines?.length; i++) {
             const percentagePrices: number[] = [];
-            for (let j = 0; j < results[i]?.data?.length; j++) {
+            for (let j = 0; j < klines[i]?.data?.length; j++) {
                 percentagePrices.push(
-                    ((Number(results[i].data[j][4]) - Number(results[i].data[j][1])) / Number(results[i].data[j][1])) *
+                    ((Number(klines[i]?.data?.[j][4]) - Number(klines[i].data[j][1])) / Number(klines[i].data[j][1])) *
                         100,
                 );
             }
@@ -93,10 +94,10 @@ const BetaTable = () => {
                 return newState;
             });
         }
-    }, [JSON.stringify(results)]);
+    }, [JSON.stringify(klines)]);
 
     useEffect(() => {
-        if (results.length !== betaTickersList.length) return;
+        if (klines.length !== betaTickersList.length) return;
         const tableArr: number[] = [];
         betaTickersList.map((_, index) =>
             betaTickersList.map((_, index2) =>
