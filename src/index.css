@@ -27,3 +27,26 @@ body {
     cursor: se-resize;
     background-color: red;
 }
+::-webkit-scrollbar-track {
+    /* Change the background color */
+    background-color: #f1f1f1;
+}
+
+/* Select the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+    /* Change the background color */
+    background-color: transparent;
+
+    /* Change the size of the thumb */
+    height: 30px;
+    width: 10px;
+}
+/* 
+background    #171516,
+down          #ffffff,
+action        #136b9a,
+alert         #ff9e14,
+analysis line #17a3e8,
+up            #17a3e8,
+down          #ffffff",
+*/

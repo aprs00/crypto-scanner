@@ -1,6 +1,7 @@
 import {useEffect, useState, SetStateAction} from 'react';
 
 import OrderBookTable from '../components/OrderBookTable';
+import Tape from '../components/Tape';
 import OrderBookFilters from '../components/OrderBookFilters';
 import {useDepthSnapshot, useStreamTicker, useStreamAggTrade} from '../api';
 import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types';
@@ -128,6 +129,7 @@ const OrderBook = () => {
                 numOfOrderBookRows={numOfOrderBookRows}
                 streamAggTradePrice={''}
             />
+            <Tape streamAggTrade={''} />
         </>
     );
 };

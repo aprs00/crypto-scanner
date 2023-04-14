@@ -48,3 +48,7 @@ export type OrderBookTablePropsType = {
     numOfOrderBookRows: number;
     streamAggTradePrice: string;
 };
+
+export type TapePropsType = {
+    streamAggTrade: any;
+};

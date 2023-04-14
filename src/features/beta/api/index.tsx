@@ -7,7 +7,6 @@ const fetchKlines = async (symbol: string, interval = '1m', limit = 500) => {
     const response = await axios.get<any>(
         `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`,
     );
-    console.log(response);
     return response.data;
 };
 
