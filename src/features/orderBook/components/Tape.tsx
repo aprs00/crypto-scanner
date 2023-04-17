@@ -1,4 +1,4 @@
-import {useState, memo, useMemo, forwardRef, useEffect} from 'react';
+import {useState, memo, useMemo, forwardRef, useEffect, ReactNode} from 'react';
 import formatDistanceStrict from 'date-fns/formatDistanceStrict';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import {Resizable, ResizableBox} from 'react-resizable';
@@ -8,7 +8,7 @@ import {useDepthSnapshot, useStreamTicker, useStreamAggTrade} from '../api';
 
 import type {TapePropsType} from '../types';
 
-const TimeDisplay = ({timestamp}) => {
+const TimeDisplay = ({timestamp}: {timestamp: Date}) => {
     const [timeDiff, setTimeDiff] = useState(0);
 
     useEffect(() => {
@@ -21,9 +21,8 @@ const TimeDisplay = ({timestamp}) => {
         return () => clearInterval(intervalId);
     }, [timestamp]);
 
-    const formatTimeDiff = (diff) => {
-        // implement your own formatting logic here
-        return diff + ' seconds ago';
+    const formatTimeDiff = (diff: number) => {
+        return `${diff < 10 ? diff : diff} s ago`;
     };
 
     return <div className="text-xs">{formatTimeDiff(timeDiff)}</div>;
@@ -41,28 +40,10 @@ const OrderBookTable = (props: TapePropsType) => {
 
     const [height, setHeight] = useState(400);
     const [width, setWidth] = useState(250);
-    const [tapeTable, setTapeTable] = useState<Element[]>([]);
-    const [tapeData, setTapeData] = useState<any[]>([]);
+    const [tapeTable, setTapeTable] = useState<ReactNode[]>([]);
     const [numOfRows, setNumOfRows] = useState(calculateNumOfRows(26, height));
 
-    // const calculateFormatDistanceStrict = (date: string) => {
-    //     if (!date) return null;
-    //     const now = new Date();
-    //     const diff = formatDistanceStrict(new Date(date), now, {addSuffix: true});
-    //     return diff;
-    // };
-
-    const calculateFormatDistanceStrict = (date: string) => {
-        if (!date) return null;
-        console.log('calculating distance for:', date);
-        const now = new Date();
-        console.log('current time:', now);
-        const diff = formatDistanceStrict(new Date(date), now, {addSuffix: true});
-        console.log('distance:', diff);
-        return diff;
-    };
-
-    const onOrderBookResize = (_, data: any) => {
+    const onOrderBookResize = (_: any, data: any) => {
         const {size} = data;
         const orderBookTableHeight = size.height;
         const rowHeight = 24;
@@ -70,7 +51,7 @@ const OrderBookTable = (props: TapePropsType) => {
         setNumOfRows(numOfRows);
     };
 
-    const CustomResizeHandle = forwardRef((props, ref) => {
+    const CustomResizeHandle = forwardRef((props: any, ref) => {
         const {handleAxis, ...restProps} = props;
         return (
             <div className="bg-red-500 absolute bg-right-bottom" ref={ref} {...restProps}>
@@ -105,10 +86,10 @@ const OrderBookTable = (props: TapePropsType) => {
                     >
                         <div className="text-xs">{streamAggTrade?.data?.p.toString().replace(/\.?0+$/, '')}</div>
                         <div className="text-xs">{streamAggTrade?.data?.q.toString().replace(/\.?0+$/, '')}</div>
-                        <TimeDisplay timestamp={new Date(streamAggTrade?.data?.T)} />
+                        <TimeDisplay timestamp={new Date(streamAggTrade?.data?.T as number)} />
                     </div>,
                     ...prev.slice(0, 30),
-                ] as Element[],
+                ] as ReactNode[],
         );
     }, [streamAggTrade?.data?.T]);
 
@@ -148,9 +129,11 @@ const OrderBookTable = (props: TapePropsType) => {
 export default memo(OrderBookTable);
 
 {
-    /* <div className="my-4 text-xl">
+    /* 
+<div className="my-4 text-xl">
 {parseFloat(streamAggTradePrice || '0')
 .toString()
 .replace(/\.?0+$/, '')}
-</div> */
+</div> 
+*/
 }

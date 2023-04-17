@@ -21,7 +21,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     const [width, setWidth] = useState(250);
     const [numOfRows, setNumOfRows] = useState(calculateNumOfRows(26, height));
 
-    const onOrderBookResize = (_, data: any) => {
+    const onOrderBookResize = (_: any, data: {size: {height: number}}) => {
         const {size} = data;
         const orderBookTableHeight = size.height;
         const rowHeight = 24;
@@ -30,7 +30,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     };
 
     const CustomResizeHandle = forwardRef((props, ref) => {
-        const {handleAxis, ...restProps} = props;
+        const {handleAxis, ...restProps} = props as any;
         return (
             <div className="bg-red-500 absolute bg-right-bottom" ref={ref} {...restProps}>
                 <svg
