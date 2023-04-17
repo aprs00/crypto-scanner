@@ -122,7 +122,6 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     return (
         <>
             <div>
-                {numOfRows}
                 <Draggable grid={[25, 25]} handle="strong">
                     <div className="fixed">
                         <strong className="cursor-move">ORDER BOOK</strong>
