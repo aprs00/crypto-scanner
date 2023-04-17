@@ -2,6 +2,7 @@ import {useEffect, useState, SetStateAction} from 'react';
 
 import OrderBookTable from '../components/OrderBookTable';
 import Tape from '../components/Tape';
+// import OrderBookDepth from '../components/OrderBookDepth';
 import OrderBookFilters from '../components/OrderBookFilters';
 import {useDepthSnapshot, useStreamTicker, useStreamAggTrade} from '../api';
 import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types';
@@ -130,6 +131,7 @@ const OrderBook = () => {
                 streamAggTradePrice={''}
             />
             <Tape streamAggTrade={''} />
+            {/* <OrderBookDepth groupedAsks={groupedOrderBookAsks} groupedBids={groupedOrderBookBids} /> */}
         </>
     );
 };
