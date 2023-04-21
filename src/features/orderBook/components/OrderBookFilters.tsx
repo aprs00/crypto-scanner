@@ -7,7 +7,7 @@ const OrderBookFilters = (props: OrderBookFiltersPropsType) => {
 
     return (
         <div className="flex space-x-4">
-            <div>
+            {/* <div>
                 <label htmlFor="num_of_rows" className="mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Number of rows
                 </label>
@@ -19,7 +19,7 @@ const OrderBookFilters = (props: OrderBookFiltersPropsType) => {
                     onChange={(e) => setNumOfOrderBookRows(Number(e.target.value))}
                     placeholder="Number of rows"
                 />
-            </div>
+            </div> */}
             <div>
                 <label htmlFor="num_of_rows" className="mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Group By
@@ -27,7 +27,7 @@ const OrderBookFilters = (props: OrderBookFiltersPropsType) => {
                 <input
                     type="number"
                     id="num_of_rows"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg mb-10 focus:ring-blue-500 focus:border-blue-500 block p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-32"
+                    className=" border border-gray-300 text-sm rounded-lg mb-10 block p-1.5 dark:bg-gray-900 dark:border-gray-800 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-900 dark:focus:border-blue-900 w-32"
                     value={groupByNum}
                     onChange={(e) => setGroupByNum(Number(e.target.value))}
                     placeholder="Group by"

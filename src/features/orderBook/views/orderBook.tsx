@@ -2,14 +2,12 @@ import {useEffect, useState, SetStateAction} from 'react';
 
 import OrderBookTable from '../components/OrderBookTable';
 import Tape from '../components/Tape';
-// import OrderBookDepth from '../components/OrderBookDepth';
 import OrderBookFilters from '../components/OrderBookFilters';
-import {useDepthSnapshot, useStreamTicker, useStreamAggTrade} from '../api';
+import {useDepthSnapshot, useStreamTicker} from '../api';
 import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types';
 
 const OrderBook = () => {
     const streamTicker = useStreamTicker('BTCUSDT');
-    // const streamAggTrade = useStreamAggTrade('BTCUSDT');
     const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a);
 
     const [previousOrderBookUpdateId, setPreviousOrderBookUpdateId] = useState(0);
@@ -77,8 +75,8 @@ const OrderBook = () => {
                     setFirstEventProcessed(true);
                 }
 
-                setPreviousOrderBookUpdateId(tempOrderBookData[i]?.u);
                 if (streamTicker?.data?.U !== previousOrderBookUpdateId + 1) continue;
+                setPreviousOrderBookUpdateId(tempOrderBookData[i]?.u);
 
                 updateOrderBook({
                     asksGetter: orderBookAsks,
@@ -119,19 +117,12 @@ const OrderBook = () => {
     return (
         <>
             <OrderBookFilters
-                numOfOrderBookRows={numOfOrderBookRows}
                 setNumOfOrderBookRows={setNumOfOrderBookRows}
                 groupByNum={groupByNum}
                 setGroupByNum={setGroupByNum}
             />
-            <OrderBookTable
-                groupedAsks={groupedOrderBookAsks}
-                groupedBids={groupedOrderBookBids}
-                numOfOrderBookRows={numOfOrderBookRows}
-                streamAggTradePrice={''}
-            />
-            <Tape streamAggTrade={''} />
-            {/* <OrderBookDepth groupedAsks={groupedOrderBookAsks} groupedBids={groupedOrderBookBids} /> */}
+            <OrderBookTable groupedAsks={groupedOrderBookAsks} groupedBids={groupedOrderBookBids} />
+            <Tape />
         </>
     );
 };

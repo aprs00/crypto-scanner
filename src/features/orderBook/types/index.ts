@@ -36,7 +36,6 @@ export type UpdateOrderBookPropsType = {
 };
 
 export type OrderBookFiltersPropsType = {
-    numOfOrderBookRows: number;
     setNumOfOrderBookRows: (num: number) => void;
     groupByNum: number;
     setGroupByNum: (num: number) => void;
@@ -45,10 +44,4 @@ export type OrderBookFiltersPropsType = {
 export type OrderBookTablePropsType = {
     groupedAsks: [string, string][];
     groupedBids: [string, string][];
-    numOfOrderBookRows: number;
-    streamAggTradePrice: string;
-};
-
-export type TapePropsType = {
-    streamAggTrade: any;
 };

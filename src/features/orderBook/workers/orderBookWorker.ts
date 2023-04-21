@@ -19,17 +19,15 @@ onmessage = (event) => {
     const {type, payload, groupByNum} = event.data;
     if (type === 'UPDATE_ORDER_BOOK') {
         const {bidsGetter, asksGetter, bidsStream, asksStream} = payload;
-        let counter = 0;
 
         const updateOrderBook = (getter: [string, string][], stream: [string, string][], ascending: boolean) => {
             for (const [price, quantity] of stream) {
-                counter++;
+                const {exactMatch, index} = findTargetPriceIndex(getter, price, ascending);
                 if (quantity === '0.00000000') {
-                    const {exactMatch, index} = findTargetPriceIndex(getter, price, ascending);
-                    if (exactMatch) getter.splice(index, 1);
+                    if (!exactMatch) continue;
+                    else getter.splice(index, 1);
                     continue;
                 } else {
-                    const {exactMatch, index} = findTargetPriceIndex(getter, price, ascending);
                     if (exactMatch) getter[index][1] = quantity;
                     else getter.splice(index, 0, [price, quantity]);
                 }
@@ -44,11 +42,17 @@ onmessage = (event) => {
                 .fill(null)
                 .map(() => new Float32Array(2));
 
+            const makeCalculateRoundedPrice = () =>
+                isBid
+                    ? (orderPrice: number) => Math.floor(orderPrice / groupByNum) * groupByNum
+                    : (orderPrice: number) => Math.ceil(orderPrice / groupByNum) * groupByNum;
+
+            const calculateRoundedPrice = makeCalculateRoundedPrice();
+
             for (const order of ordersGetter) {
                 const orderPrice = parseFloat(order[0]);
-                const roundedPrice = isBid
-                    ? Math.floor(orderPrice / groupByNum) * groupByNum
-                    : Math.ceil(orderPrice / groupByNum) * groupByNum;
+
+                const roundedPrice = calculateRoundedPrice(orderPrice);
 
                 const currentQuantity = result.get(roundedPrice) || 0;
                 const newQuantity = currentQuantity + parseFloat(order[1]);

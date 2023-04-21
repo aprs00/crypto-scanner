@@ -1,13 +1,13 @@
 import {Route} from '@tanstack/react-router';
 import {homeRoute} from '@/features/home/routes';
 
-import OrderBook from '../views/OrderBook';
+import Heatmap from '../views/Heatmap';
 
-export const orderBookRoute = new Route({
+export const heatmapRoute = new Route({
     getParentRoute: () => homeRoute,
-    path: 'order-book',
+    path: 'heatmap',
     onLoad: async () => {
         return {};
     },
-    component: () => <OrderBook />,
+    component: () => <Heatmap />,
 });

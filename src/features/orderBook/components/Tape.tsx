@@ -1,12 +1,8 @@
 import {useState, memo, useMemo, forwardRef, useEffect, ReactNode} from 'react';
-import formatDistanceStrict from 'date-fns/formatDistanceStrict';
-import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import {Resizable, ResizableBox} from 'react-resizable';
 import Draggable from 'react-draggable';
 
-import {useDepthSnapshot, useStreamTicker, useStreamAggTrade} from '../api';
-
-import type {TapePropsType} from '../types';
+import {useStreamAggTrade} from '../api';
 
 const TimeDisplay = ({timestamp}: {timestamp: Date}) => {
     const [timeDiff, setTimeDiff] = useState(0);
@@ -34,7 +30,7 @@ const calculateNumOfRows = (rowHeight: number, boxHeight: number) => {
     return numOfRows;
 };
 
-const OrderBookTable = (props: TapePropsType) => {
+const OrderBookTable = () => {
     // const {streamAggTrade} = props;
     const streamAggTrade = useStreamAggTrade('BTCUSDT');
 
@@ -96,7 +92,6 @@ const OrderBookTable = (props: TapePropsType) => {
     return (
         <>
             <div>
-                {numOfRows}
                 <Draggable grid={[25, 25]} handle="strong">
                     <div className="fixed">
                         <strong className="cursor-move">TAPE</strong>

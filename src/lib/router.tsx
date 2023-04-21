@@ -6,11 +6,13 @@ import {postsRoute} from '@/features/posts/views/posts';
 import {indexRoute} from '@/features/posts/views/index';
 import {postsIndexRoute} from '@/features/posts/views/postsIndex';
 import {orderBookRoute} from '@/features/orderBook/routes';
+import {heatmapRoute} from '@/features/heatmap/routes';
 import {betaRoute} from '@/features/beta/routes';
 
 const routeTree = homeRoute.addChildren([
     indexRoute,
     orderBookRoute,
+    heatmapRoute,
     postsRoute.addChildren([postsIndexRoute, postRoute]),
     betaRoute,
 ]);

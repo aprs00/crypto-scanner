@@ -15,7 +15,7 @@ const formatter = new Intl.NumberFormat(undefined, {
 });
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const {groupedBids, groupedAsks, numOfOrderBookRows, streamAggTradePrice} = props;
+    const {groupedBids, groupedAsks} = props;
 
     const [height, setHeight] = useState(400);
     const [width, setWidth] = useState(250);

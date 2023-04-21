@@ -22,6 +22,14 @@ const Home = () => {
                     Orderbook
                 </Link>{' '}
                 <Link
+                    to="/heatmap"
+                    activeProps={{
+                        className: 'font-bold',
+                    }}
+                >
+                    Heatmap
+                </Link>{' '}
+                <Link
                     to="/beta"
                     activeProps={{
                         className: 'font-bold',
