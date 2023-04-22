@@ -9,6 +9,7 @@ const fetchDepthSnapshot = async (symbol: string, limit = 5000) => {
     const response = await axios.get<OrderBookResponseType>(
         `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=${limit}`,
     );
+    console.log('depth snapshot', response.data);
     return response.data;
 };
 

@@ -12,7 +12,6 @@ const OrderBook = () => {
 
     const [previousOrderBookUpdateId, setPreviousOrderBookUpdateId] = useState(0);
     const [firstEventProcessed, setFirstEventProcessed] = useState(false);
-    const [numOfOrderBookRows, setNumOfOrderBookRows] = useState(10);
     const [groupByNum, setGroupByNum] = useState(1);
     const [tempOrderBookData, setTempOrderBookData] = useState<StreamTickerResponseType[]>([]);
     const [tempOrderBookDataConsumed, setTempOrderBookDataConsumed] = useState(false);
@@ -86,6 +85,7 @@ const OrderBook = () => {
                 });
             }
             setTempOrderBookDataConsumed(true);
+            return;
         }
 
         if (
@@ -116,11 +116,7 @@ const OrderBook = () => {
 
     return (
         <>
-            <OrderBookFilters
-                setNumOfOrderBookRows={setNumOfOrderBookRows}
-                groupByNum={groupByNum}
-                setGroupByNum={setGroupByNum}
-            />
+            <OrderBookFilters groupByNum={groupByNum} setGroupByNum={setGroupByNum} />
             <OrderBookTable groupedAsks={groupedOrderBookAsks} groupedBids={groupedOrderBookBids} />
             <Tape />
         </>

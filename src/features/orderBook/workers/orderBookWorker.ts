@@ -42,12 +42,12 @@ onmessage = (event) => {
                 .fill(null)
                 .map(() => new Float32Array(2));
 
-            const makeCalculateRoundedPrice = () =>
+            const makeCalculateRoundedPrice = (isBid: boolean) =>
                 isBid
                     ? (orderPrice: number) => Math.floor(orderPrice / groupByNum) * groupByNum
                     : (orderPrice: number) => Math.ceil(orderPrice / groupByNum) * groupByNum;
 
-            const calculateRoundedPrice = makeCalculateRoundedPrice();
+            const calculateRoundedPrice = makeCalculateRoundedPrice(isBid);
 
             for (const order of ordersGetter) {
                 const orderPrice = parseFloat(order[0]);
@@ -74,6 +74,9 @@ onmessage = (event) => {
 
         const groupedAsks = groupOrders(updatedAsks, groupByNum, false);
         const groupedBids = groupOrders(updatedBids, groupByNum, true);
+
+        // const groupedAsks = updatedAsks;
+        // const groupedBids = updatedBids;
 
         postMessage({
             type: 'ORDER_BOOK_UPDATED',

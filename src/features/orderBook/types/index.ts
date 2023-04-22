@@ -36,7 +36,6 @@ export type UpdateOrderBookPropsType = {
 };
 
 export type OrderBookFiltersPropsType = {
-    setNumOfOrderBookRows: (num: number) => void;
     groupByNum: number;
     setGroupByNum: (num: number) => void;
 };

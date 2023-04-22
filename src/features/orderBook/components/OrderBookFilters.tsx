@@ -3,7 +3,7 @@ import {memo} from 'react';
 import type {OrderBookFiltersPropsType} from '../types';
 
 const OrderBookFilters = (props: OrderBookFiltersPropsType) => {
-    const {numOfOrderBookRows, setNumOfOrderBookRows, groupByNum, setGroupByNum} = props;
+    const {groupByNum, setGroupByNum} = props;
 
     return (
         <div className="flex space-x-4">
