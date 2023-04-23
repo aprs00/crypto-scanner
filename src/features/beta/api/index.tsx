@@ -1,13 +1,13 @@
-import axios from 'axios';
+import ky from 'ky';
 import {useQueries} from '@tanstack/react-query';
 
 import type {KlinesResponseType} from '../types';
 
 const fetchKlines = async (symbol: string, interval = '1m', limit = 500) => {
-    const response = await axios.get<any>(
-        `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`,
-    );
-    return response.data;
+    const data = await ky
+        .get(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`)
+        .json();
+    return data;
 };
 
 const useKlines = (symbols: string[]) =>

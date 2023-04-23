@@ -1,16 +1,16 @@
 import {useEffect, useState} from 'react';
-import axios from 'axios';
+import ky from 'ky';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 
 import type {OrderBookResponseType, StreamTickerResponseType, StreamAggTradeResponseType} from '../types';
 import {queryClient} from '@/lib/react-query';
 
-const fetchDepthSnapshot = async (symbol: string, limit = 5000) => {
-    const response = await axios.get<OrderBookResponseType>(
-        `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=${limit}`,
-    );
-    console.log('depth snapshot', response.data);
-    return response.data;
+const fetchDepthSnapshot = async (symbol: string, limit = 5000): Promise<OrderBookResponseType> => {
+    const data = (await ky
+        .get(`https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=${limit}`)
+        .json()) as OrderBookResponseType;
+    console.log('depth snapshot', data);
+    return data;
 };
 
 const useDepthSnapshot = (symbol: string, streamedEvent: boolean) => {
