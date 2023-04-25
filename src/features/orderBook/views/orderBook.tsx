@@ -1,8 +1,8 @@
 import {useEffect, useState, SetStateAction} from 'react';
 
-import OrderBookTable from '../components/OrderBookTable';
+import OrderBookTable from '../components/Table';
 import Tape from '../components/Tape';
-import OrderBookFilters from '../components/OrderBookFilters';
+import OrderBookFilters from '../components/Filters';
 import {useDepthSnapshot, useStreamTicker} from '../api';
 import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types';
 
@@ -117,8 +117,14 @@ const OrderBook = () => {
     return (
         <>
             <OrderBookFilters groupByNum={groupByNum} setGroupByNum={setGroupByNum} />
-            <OrderBookTable groupedAsks={groupedOrderBookAsks} groupedBids={groupedOrderBookBids} />
-            <Tape />
+            <div className="flex">
+                <div>
+                    <OrderBookTable groupedAsks={groupedOrderBookAsks} groupedBids={groupedOrderBookBids} />
+                </div>
+                <div>
+                    <Tape />
+                </div>
+            </div>
         </>
     );
 };

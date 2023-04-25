@@ -44,31 +44,6 @@ const useStreamTicker = (symbol: string) => {
     });
 };
 
-// const streamAggTrade = async (symbol: string): Promise<StreamAggTradeResponseType> => {
-//     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`);
-
-//     return new Promise((resolve, reject) => {
-//         ws.onmessage = (event) => {
-//             queryClient.setQueriesData(['ticker-agg-trade-stream', symbol], JSON.parse(event.data));
-//             console.log(JSON.parse(event.data)?.p, JSON.parse(event.data)?.q);
-//             resolve(JSON.parse(event.data));
-//         };
-
-//         ws.onerror = (error) => {
-//             console.log(error);
-//             reject(error);
-//         };
-//     });
-// };
-
-// const useStreamAggTrade = (symbol: string) => {
-//     return useQuery(['ticker-agg-trade-stream', symbol], () => streamAggTrade(symbol), {
-//         enabled: !!symbol,
-//         refetchOnWindowFocus: false,
-//         staleTime: Infinity,
-//     });
-// };
-
 const useStreamAggTrade = (symbol: string) => {
     const queryClient = useQueryClient();
     const [streamData, setStreamData] = useState<StreamAggTradeResponseType>();
