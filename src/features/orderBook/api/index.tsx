@@ -105,7 +105,7 @@ const useStreamAggTrade = (symbol: string) => {
         };
     }, [queryClient, symbol]);
 
-    return useQuery(['ticker-agg-trade-stream', symbol], () => streamData, {
+    return useQuery(['ticker-agg-trade-stream', symbol], () => streamData ?? null, {
         enabled: !!symbol,
         refetchOnWindowFocus: false,
         staleTime: Infinity,
