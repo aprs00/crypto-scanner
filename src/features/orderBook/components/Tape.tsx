@@ -1,6 +1,4 @@
-import {useState, memo, useMemo, forwardRef, useEffect, ReactNode} from 'react';
-import {Resizable, ResizableBox} from 'react-resizable';
-import Draggable from 'react-draggable';
+import {useState, memo, forwardRef, useEffect, ReactNode} from 'react';
 
 import {useStreamAggTrade} from '../api';
 
@@ -91,32 +89,12 @@ const OrderBookTable = () => {
 
     return (
         <>
-            <div>
-                <Draggable grid={[25, 25]} handle="strong">
-                    <div className="fixed">
-                        <strong className="cursor-move">TAPE</strong>
-                        <ResizableBox
-                            width={250}
-                            height={height}
-                            minConstraints={[250, height]}
-                            draggableOpts={{grid: [25, 25]}}
-                            handleSize={[10, 10]}
-                            className="border border-1 relative overflow-auto"
-                            onResize={onOrderBookResize}
-                            handle={<CustomResizeHandle />}
-                        >
-                            <div>
-                                <div className="flex justify-between">
-                                    <div className="text-xs">PRICE</div>
-                                    <div className="text-xs">SIZE</div>
-                                    <div className="text-xs">Time</div>
-                                </div>
-                                <div>{tapeTable}</div>
-                            </div>
-                        </ResizableBox>
-                    </div>
-                </Draggable>
+            <div className="flex justify-between">
+                <div className="text-xs">PRICE</div>
+                <div className="text-xs">SIZE</div>
+                <div className="text-xs">Time</div>
             </div>
+            <div>{tapeTable}</div>
         </>
     );
 };

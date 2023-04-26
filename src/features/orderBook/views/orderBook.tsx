@@ -1,13 +1,16 @@
-import {useEffect, useState, SetStateAction} from 'react';
+import {useRef, useEffect, useState, SetStateAction} from 'react';
+import RGL, {WidthProvider} from 'react-grid-layout';
 
-import OrderBookTable from '../components/Table';
+import Table from '../components/Table';
 import Tape from '../components/Tape';
 import OrderBookFilters from '../components/Filters';
 import {useDepthSnapshot, useStreamTicker} from '../api';
 import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types';
 
+const ResponsiveReactGridLayout = WidthProvider(RGL);
+
 const OrderBook = () => {
-    const streamTicker = useStreamTicker('BTCUSDT');
+    const streamTicker = useStreamTicker('BTCUSDT') as {data: StreamTickerResponseType};
     const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a);
 
     const [previousOrderBookUpdateId, setPreviousOrderBookUpdateId] = useState(0);
@@ -19,6 +22,10 @@ const OrderBook = () => {
     const [orderBookBids, setOrderBookBids] = useState<[string, string][]>([]);
     const [groupedOrderBookAsks, setGroupedOrderBookAsks] = useState([]);
     const [groupedOrderBookBids, setGroupedOrderBookBids] = useState([]);
+    const [gridLayoutRowHeight, setGridLayoutRowHeight] = useState(30);
+    const [tableHeight, setTableHeight] = useState(10 * gridLayoutRowHeight);
+
+    const tableRef = useRef<HTMLDivElement>(null);
 
     const useUpdateOrderBookWorker = (): ((props: UpdateOrderBookPropsType) => void) => {
         const [worker, setWorker] = useState<Worker | null>(null);
@@ -112,19 +119,38 @@ const OrderBook = () => {
         });
     }, [streamTicker?.data?.u]);
 
+    useEffect(() => {
+        if (tableRef.current) {
+            console.log(tableRef.current);
+        }
+    }, [tableRef]);
+
     if (!firstEventProcessed) return <>Loading...</>;
 
     return (
         <>
             <OrderBookFilters groupByNum={groupByNum} setGroupByNum={setGroupByNum} />
-            <div className="flex">
-                <div>
-                    <OrderBookTable groupedAsks={groupedOrderBookAsks} groupedBids={groupedOrderBookBids} />
+            <ResponsiveReactGridLayout
+                rowHeight={gridLayoutRowHeight}
+                onResize={(grids) => {
+                    grids.forEach((grid) => {
+                        if (grid.i === 'table') {
+                            setTableHeight(grid.h * gridLayoutRowHeight);
+                        }
+                    });
+                }}
+            >
+                <div key="table" data-grid={{x: 0, y: 0, w: 5, h: 10}} className="bg-gray-900 overflow-hidden">
+                    <Table
+                        groupedAsks={groupedOrderBookAsks}
+                        groupedBids={groupedOrderBookBids}
+                        tableHeight={tableHeight}
+                    />
                 </div>
-                <div>
+                <div key="tape" data-grid={{x: 0, y: 0, w: 5, h: 10}} className="bg-gray-900">
                     <Tape />
                 </div>
-            </div>
+            </ResponsiveReactGridLayout>
         </>
     );
 };

@@ -43,4 +43,5 @@ export type OrderBookFiltersPropsType = {
 export type OrderBookTablePropsType = {
     groupedAsks: [string, string][];
     groupedBids: [string, string][];
+    tableHeight: number;
 };

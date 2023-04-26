@@ -20,24 +20,58 @@ const useDepthSnapshot = (symbol: string, streamedEvent: boolean) => {
     });
 };
 
-const streamTicker = async (symbol: string): Promise<StreamTickerResponseType> => {
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@100ms`);
+// const streamTicker = async (symbol: string): Promise<StreamTickerResponseType> => {
+//     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@100ms`);
 
-    return new Promise((resolve, reject) => {
+//     return new Promise((resolve, reject) => {
+//         ws.onmessage = (event) => {
+//             queryClient.setQueriesData(['ticker-depth-stream', symbol], JSON.parse(event.data));
+//             resolve(JSON.parse(event.data));
+//         };
+
+//         ws.onerror = (error) => {
+//             console.log(error);
+//             reject(error);
+//         };
+//     });
+// };
+
+// const useStreamTicker = (symbol: string) => {
+//     return useQuery(['ticker-depth-stream', symbol], () => streamTicker(symbol), {
+//         enabled: !!symbol,
+//         refetchOnWindowFocus: false,
+//         staleTime: Infinity,
+//     });
+// };
+
+const useStreamTicker = (symbol: string) => {
+    const queryClient = useQueryClient();
+    const [streamData, setStreamData] = useState<StreamTickerResponseType>();
+
+    useEffect(() => {
+        const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@100ms`);
+
+        ws.onopen = () => {
+            console.log('WebSocket connected');
+        };
+
         ws.onmessage = (event) => {
-            queryClient.setQueriesData(['ticker-depth-stream', symbol], JSON.parse(event.data));
-            resolve(JSON.parse(event.data));
+            const data = JSON.parse(event.data);
+            queryClient.setQueryData(['ticker-depth-stream', symbol], data);
+            setStreamData(data);
         };
 
         ws.onerror = (error) => {
-            console.log(error);
-            reject(error);
+            console.log('WebSocket error:', error);
         };
-    });
-};
 
-const useStreamTicker = (symbol: string) => {
-    return useQuery(['ticker-depth-stream', symbol], () => streamTicker(symbol), {
+        return () => {
+            ws.close();
+            console.log('WebSocket disconnected');
+        };
+    }, [queryClient, symbol]);
+
+    return useQuery(['ticker-depth-stream', symbol], () => streamData ?? [], {
         enabled: !!symbol,
         refetchOnWindowFocus: false,
         staleTime: Infinity,
