@@ -91,3 +91,4 @@ onmessage = (event) => {
 };
 
 export {};
+console.log('something');
