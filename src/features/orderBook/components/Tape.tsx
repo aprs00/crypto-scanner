@@ -1,4 +1,4 @@
-import {useState, memo, forwardRef, useEffect, ReactNode} from 'react';
+import {useState, memo, useEffect, ReactNode} from 'react';
 
 import {useStreamAggTrade} from '../api';
 
@@ -22,49 +22,10 @@ const TimeDisplay = ({timestamp}: {timestamp: Date}) => {
     return <div className="text-xs">{formatTimeDiff(timeDiff)}</div>;
 };
 
-const calculateNumOfRows = (rowHeight: number, boxHeight: number) => {
-    const numOfRowsCalculated = Math.floor(boxHeight / rowHeight);
-    const numOfRows = (numOfRowsCalculated % 2 === 0 ? numOfRowsCalculated : numOfRowsCalculated - 1) / 2;
-    return numOfRows;
-};
-
 const OrderBookTable = () => {
-    // const {streamAggTrade} = props;
     const streamAggTrade = useStreamAggTrade('BTCUSDT');
 
-    const [height, setHeight] = useState(400);
-    const [width, setWidth] = useState(250);
     const [tapeTable, setTapeTable] = useState<ReactNode[]>([]);
-    const [numOfRows, setNumOfRows] = useState(calculateNumOfRows(26, height));
-
-    const onOrderBookResize = (_: any, data: any) => {
-        const {size} = data;
-        const orderBookTableHeight = size.height;
-        const rowHeight = 24;
-        const numOfRows = calculateNumOfRows(rowHeight, orderBookTableHeight);
-        setNumOfRows(numOfRows);
-    };
-
-    const CustomResizeHandle = forwardRef((props: any, ref) => {
-        const {handleAxis, ...restProps} = props;
-        return (
-            <div className="bg-red-500 absolute bg-right-bottom" ref={ref} {...restProps}>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" /> <path d="M16 8v8h-8" />{' '}
-                </svg>
-            </div>
-        );
-    });
 
     useEffect(() => {
         if (!streamAggTrade || (Number(streamAggTrade?.data?.q) || 0) <= 0.1) return;

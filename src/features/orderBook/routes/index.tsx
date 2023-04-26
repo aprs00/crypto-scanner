@@ -1,7 +1,7 @@
 import {Route} from '@tanstack/react-router';
 import {homeRoute} from '@/features/home/routes';
 
-import OrderBook from '../views/OrderBook';
+import OrderBook from '../views/OrderBook2';
 
 export const orderBookRoute = new Route({
     getParentRoute: () => homeRoute,

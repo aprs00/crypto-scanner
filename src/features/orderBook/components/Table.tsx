@@ -1,4 +1,4 @@
-import {useState, memo, useMemo, forwardRef, useCallback, useRef, useEffect} from 'react';
+import {memo, useMemo, useCallback} from 'react';
 
 import type {OrderBookTablePropsType} from '../types';
 
@@ -7,9 +7,6 @@ const calculateNumOfRows = (rowHeight: number, boxHeight: number) => {
     console.log(boxHeight, rowHeight);
     const numOfRows =
         (numOfRowsCalculated % 2 === 0 ? numOfRowsCalculated : numOfRowsCalculated - 1) / 2 + numOfRowsCalculated / 4;
-    // const numOfRows = Math.floor(numOfRowsCalculated / 2);
-    console.log('numOfRowsCalculated', numOfRowsCalculated);
-    console.log('numOfRows', numOfRows);
     return numOfRows;
 };
 
@@ -20,53 +17,12 @@ const formatter = new Intl.NumberFormat(undefined, {
 const OrderBookTable = (props: OrderBookTablePropsType) => {
     const {groupedBids, groupedAsks, tableHeight} = props;
 
-    const [height, setHeight] = useState(400);
-    const [width, setWidth] = useState(250);
-    // const [numOfRows, setNumOfRows] = useState(tableHeight);
-    const [numOfRows, setNumOfRows] = useState(() => calculateNumOfRows(24, height));
-    // const [numOfRows2, setNumOfRows2] = useState(() => calculateNumOfRows(26, tableHeight));
-    // console.log('tableHeight: ', tableHeight);
-    // console.log(numOfRows2);
-
-    const tableRef = useRef<HTMLDivElement>(null);
+    const memoizedGroupedAsks = useMemo(() => groupedAsks, [groupedAsks]);
+    const memoizedGroupedBids = useMemo(() => groupedBids, [groupedBids]);
 
     const calculatedNumOfRows = useMemo(() => {
         return calculateNumOfRows(30, tableHeight);
     }, [tableHeight]);
-
-    // console.log(calculatedNumOfRows);
-
-    const onOrderBookResize = (_: any, data: {size: {height: number}}) => {
-        const {size} = data;
-        const orderBookTableHeight = size.height;
-        const rowHeight = 24;
-        const numOfRows = calculateNumOfRows(rowHeight, orderBookTableHeight);
-        setNumOfRows(numOfRows);
-    };
-
-    const CustomResizeHandle = forwardRef((props, ref) => {
-        const {handleAxis, ...restProps} = props as any;
-        return (
-            <div className="bg-red-500 absolute bg-right-bottom" ref={ref} {...restProps}>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" /> <path d="M16 8v8h-8" />{' '}
-                </svg>
-            </div>
-        );
-    });
-
-    const memoizedGroupedAsks = useMemo(() => groupedAsks, [groupedAsks]);
-    const memoizedGroupedBids = useMemo(() => groupedBids, [groupedBids]);
 
     const maxQuantity = useCallback(() => {
         let max = 0;
@@ -80,6 +36,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
             max = Math.max(max, Number(quantity));
             index++;
         }
+
         return max;
     }, [memoizedGroupedAsks, memoizedGroupedBids, calculatedNumOfRows]);
 
@@ -135,7 +92,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     }, [memoizedGroupedBids, maxQuantity, calculatedNumOfRows]);
 
     return (
-        <div ref={tableRef}>
+        <div>
             <div className="flex flex-col-reverse">{orderBookAsksTable()}</div>
             <div className="my-1"></div>
             <div className="cols-reverse">{orderBookBidsTable()}</div>

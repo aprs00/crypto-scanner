@@ -58,6 +58,7 @@ body {
     background-origin: content-box;
     box-sizing: border-box;
     cursor: se-resize;
+    filter: invert(1);
 }
 
 /* 

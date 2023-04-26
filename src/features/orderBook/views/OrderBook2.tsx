@@ -9,6 +9,11 @@ import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types'
 
 const ResponsiveReactGridLayout = WidthProvider(RGL);
 
+const GRID_LAYOUT_ROW_HEIGHT = 30;
+const GRID_LAYOUT_TABLE_HEIGHT = 10;
+const tableLayout = {x: 0, y: 0, w: 5, h: 10};
+const tapeLayout = {x: 5, y: 0, w: 5, h: 10};
+
 const OrderBook = () => {
     const streamTicker = useStreamTicker('BTCUSDT') as {data: StreamTickerResponseType};
     const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a);
@@ -22,8 +27,7 @@ const OrderBook = () => {
     const [orderBookBids, setOrderBookBids] = useState<[string, string][]>([]);
     const [groupedOrderBookAsks, setGroupedOrderBookAsks] = useState([]);
     const [groupedOrderBookBids, setGroupedOrderBookBids] = useState([]);
-    const [gridLayoutRowHeight, setGridLayoutRowHeight] = useState(30);
-    const [tableHeight, setTableHeight] = useState(10 * gridLayoutRowHeight);
+    const [tableHeight, setTableHeight] = useState(GRID_LAYOUT_TABLE_HEIGHT * GRID_LAYOUT_ROW_HEIGHT);
 
     const tableRef = useRef<HTMLDivElement>(null);
 
@@ -131,23 +135,23 @@ const OrderBook = () => {
         <>
             <OrderBookFilters groupByNum={groupByNum} setGroupByNum={setGroupByNum} />
             <ResponsiveReactGridLayout
-                rowHeight={gridLayoutRowHeight}
+                rowHeight={GRID_LAYOUT_ROW_HEIGHT}
                 onResize={(grids) => {
                     grids.forEach((grid) => {
                         if (grid.i === 'table') {
-                            setTableHeight(grid.h * gridLayoutRowHeight);
+                            setTableHeight(grid.h * GRID_LAYOUT_ROW_HEIGHT);
                         }
                     });
                 }}
             >
-                <div key="table" data-grid={{x: 0, y: 0, w: 5, h: 10}} className="bg-gray-900 overflow-hidden">
+                <div key="table" data-grid={tableLayout} className="bg-gray-900 overflow-hidden">
                     <Table
                         groupedAsks={groupedOrderBookAsks}
                         groupedBids={groupedOrderBookBids}
                         tableHeight={tableHeight}
                     />
                 </div>
-                <div key="tape" data-grid={{x: 0, y: 0, w: 5, h: 10}} className="bg-gray-900">
+                <div key="tape" data-grid={tapeLayout} className="bg-gray-900 overflow-hidden">
                     <Tape />
                 </div>
             </ResponsiveReactGridLayout>
