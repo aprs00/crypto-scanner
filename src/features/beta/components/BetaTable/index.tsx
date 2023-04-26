@@ -1,5 +1,6 @@
 import {memo, useEffect, useMemo, useState} from 'react';
 
+import Spinner from '@/components/Spinner';
 import MultiSelect from '@/components/MultiSelect.tsx';
 import {useKlines} from '../../api';
 import type {TickerCalculationsType, KlinesResponseType} from '../../types';
@@ -28,7 +29,7 @@ const colors = {
 };
 
 const BetaTable = () => {
-    const klines = useKlines(betaTickersList) as {data: KlinesResponseType}[];
+    const klines = useKlines(betaTickersList) as {data: KlinesResponseType; isLoading: boolean}[];
     const [selectedPeople, setSelectedPeople] = useState<number[]>([]);
     const [betaTickersListCorrelation, setBetaTickersListCorrelation] = useState<number[]>([]);
     const [betaTickersListPercentages, setBetaTickersListPercentages] = useState<TickerCalculationsType[]>(
@@ -150,8 +151,12 @@ const BetaTable = () => {
         );
     }, [JSON.stringify(betaTickersListCorrelation)]);
 
+    const isAllFetched = useMemo(() => {
+        return klines.every((item) => item.isLoading === false);
+    }, [klines]);
+
     return (
-        <div>
+        <div className="relative">
             <MultiSelect
                 options={[
                     {id: 1, name: 'BTCUSDT'},
@@ -160,7 +165,13 @@ const BetaTable = () => {
                 values={selectedPeople}
                 onChange={setSelectedPeople}
             />
-            <div className="mt-10 flex justify-center">{betaTable}</div>
+            {isAllFetched ? (
+                <div className="mt-10 flex justify-center">{betaTable}</div>
+            ) : (
+                <div className="absolute left-1/2 -translate-x-1/2 translate-y-1/2">
+                    <Spinner />
+                </div>
+            )}
         </div>
     );
 };
