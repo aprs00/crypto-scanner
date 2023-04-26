@@ -1,10 +1,10 @@
-import {useRef, useEffect, useState, SetStateAction} from 'react';
+import {useEffect, useState, SetStateAction} from 'react';
 import RGL, {WidthProvider} from 'react-grid-layout';
 
 import Spinner from '@/components/Spinner';
 import Table from '../components/Table';
 import Tape from '../components/Tape';
-import OrderBookFilters from '../components/Filters';
+import Filters from '../components/Filters';
 import {useDepthSnapshot, useStreamTicker} from '../api';
 import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types';
 
@@ -16,21 +16,19 @@ const tableLayout = {x: 0, y: 0, w: 6, h: 10};
 const tapeLayout = {x: 6, y: 0, w: 4, h: 10};
 
 const OrderBook = () => {
+    const [firstEventProcessed, setFirstEventProcessed] = useState(false);
     const streamTicker = useStreamTicker('BTCUSDT') as {data: StreamTickerResponseType};
-    const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a);
+    const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a, firstEventProcessed);
 
     const [previousOrderBookUpdateId, setPreviousOrderBookUpdateId] = useState(0);
-    const [firstEventProcessed, setFirstEventProcessed] = useState(false);
     const [groupByNum, setGroupByNum] = useState(1);
+    const [tableHeight, setTableHeight] = useState(() => GRID_LAYOUT_TABLE_HEIGHT * GRID_LAYOUT_ROW_HEIGHT);
     const [tempOrderBookData, setTempOrderBookData] = useState<StreamTickerResponseType[]>([]);
     const [tempOrderBookDataConsumed, setTempOrderBookDataConsumed] = useState(false);
     const [orderBookAsks, setOrderBookAsks] = useState<[string, string][]>([]);
     const [orderBookBids, setOrderBookBids] = useState<[string, string][]>([]);
     const [groupedOrderBookAsks, setGroupedOrderBookAsks] = useState([]);
     const [groupedOrderBookBids, setGroupedOrderBookBids] = useState([]);
-    const [tableHeight, setTableHeight] = useState(GRID_LAYOUT_TABLE_HEIGHT * GRID_LAYOUT_ROW_HEIGHT);
-
-    const tableRef = useRef<HTMLDivElement>(null);
 
     const useUpdateOrderBookWorker = (): ((props: UpdateOrderBookPropsType) => void) => {
         const [worker, setWorker] = useState<Worker | null>(null);
@@ -124,15 +122,9 @@ const OrderBook = () => {
         });
     }, [streamTicker?.data?.u]);
 
-    useEffect(() => {
-        if (tableRef.current) {
-            console.log(tableRef.current);
-        }
-    }, [tableRef]);
-
     return (
         <>
-            <OrderBookFilters groupByNum={groupByNum} setGroupByNum={setGroupByNum} />
+            <Filters groupByNum={groupByNum} setGroupByNum={setGroupByNum} />
             <ResponsiveReactGridLayout
                 rowHeight={GRID_LAYOUT_ROW_HEIGHT}
                 onResize={(grids) => {

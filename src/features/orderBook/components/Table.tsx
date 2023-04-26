@@ -4,7 +4,6 @@ import type {OrderBookTablePropsType} from '../types';
 
 const calculateNumOfRows = (rowHeight: number, boxHeight: number) => {
     const numOfRowsCalculated = Math.floor(boxHeight / rowHeight);
-    console.log(boxHeight, rowHeight);
     const numOfRows =
         (numOfRowsCalculated % 2 === 0 ? numOfRowsCalculated : numOfRowsCalculated - 1) / 2 + numOfRowsCalculated / 4;
     return numOfRows;
