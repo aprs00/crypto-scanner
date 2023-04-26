@@ -18,12 +18,12 @@ const postsRoute = new Route({
         return {};
     },
     component: () => {
-        const postsQuery = usePosts();
+        const postsQuery = usePosts() as any;
 
         return (
             <div className="p-2 flex gap-2">
                 <ul className="list-disc pl-4">
-                    {postsQuery.data?.map((post) => {
+                    {postsQuery.data?.map((post: any) => {
                         return (
                             <li key={post.id} className="whitespace-nowrap">
                                 <Link
