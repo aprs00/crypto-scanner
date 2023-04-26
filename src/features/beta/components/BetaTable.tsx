@@ -1,9 +1,8 @@
 import {memo, useEffect, useMemo, useState} from 'react';
 
 import Spinner from '@/components/Spinner';
-import MultiSelect from '@/components/MultiSelect.tsx';
-import {useKlines} from '../../api';
-import type {TickerCalculationsType, KlinesResponseType} from '../../types';
+import {useKlines} from '../api';
+import type {TickerCalculationsType, KlinesResponseType} from '../types';
 
 const betaTickersList = [
     'BTCUSDT',
@@ -30,7 +29,6 @@ const colors = {
 
 const BetaTable = () => {
     const klines = useKlines(betaTickersList) as {data: KlinesResponseType; isLoading: boolean}[];
-    const [selectedPeople, setSelectedPeople] = useState<number[]>([]);
     const [betaTickersListCorrelation, setBetaTickersListCorrelation] = useState<number[]>([]);
     const [betaTickersListPercentages, setBetaTickersListPercentages] = useState<TickerCalculationsType[]>(
         new Array(betaTickersList.length).fill({
@@ -53,14 +51,19 @@ const BetaTable = () => {
         return num / den;
     };
 
-    const minBetaTickersListCorrelation = useMemo(
-        () => Math.min(...betaTickersListCorrelation.filter((val) => val !== 1)),
+    const filteredBetaTickersListCorrelation = useMemo(
+        () => betaTickersListCorrelation.filter((val) => val !== 1),
         [betaTickersListCorrelation],
     );
 
+    const minBetaTickersListCorrelation = useMemo(
+        () => Math.min(...filteredBetaTickersListCorrelation),
+        [filteredBetaTickersListCorrelation],
+    );
+
     const maxBetaTickersListCorrelation = useMemo(
-        () => Math.max(...betaTickersListCorrelation.filter((val) => val !== 1)),
-        [betaTickersListCorrelation],
+        () => Math.max(...filteredBetaTickersListCorrelation),
+        [filteredBetaTickersListCorrelation],
     );
 
     const colorScale = (val: number) => {
@@ -95,7 +98,7 @@ const BetaTable = () => {
                 return newState;
             });
         }
-    }, [JSON.stringify(klines)]);
+    }, [klines]);
 
     useEffect(() => {
         if (klines.length !== betaTickersList.length) return;
@@ -108,7 +111,7 @@ const BetaTable = () => {
             ),
         );
         setBetaTickersListCorrelation(tableArr);
-    }, [JSON.stringify(betaTickersListPercentages)]);
+    }, [betaTickersListPercentages]);
 
     const betaTable = useMemo(() => {
         if (betaTickersListCorrelation.length === 0) return null;
@@ -149,7 +152,7 @@ const BetaTable = () => {
                 </tbody>
             </table>
         );
-    }, [JSON.stringify(betaTickersListCorrelation)]);
+    }, [betaTickersListCorrelation]);
 
     const isAllFetched = useMemo(() => {
         return klines.every((item) => item.isLoading === false);
@@ -157,14 +160,14 @@ const BetaTable = () => {
 
     return (
         <div className="relative">
-            <MultiSelect
+            {/* <MultiSelect
                 options={[
                     {id: 1, name: 'BTCUSDT'},
                     {id: 2, name: 'ETHUSDT'},
                 ]}
                 values={selectedPeople}
                 onChange={setSelectedPeople}
-            />
+            /> */}
             {isAllFetched ? (
                 <div className="mt-10 flex justify-center">{betaTable}</div>
             ) : (

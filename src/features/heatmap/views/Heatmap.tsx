@@ -31,20 +31,22 @@ const Heatmap = () => {
                 visualDimension: 4,
                 leafDepth: 1,
                 visibleMin: 300,
-                colorMappingBy: 'value',
                 label: {
                     show: true,
                     formatter: (params: any) => {
                         return `${params.data.coinName}\n${params.data.colorValue?.toFixed(2)}%`;
                     },
                 },
-                // visualMap: {
-                //     min: minCryptoPercentage,
-                //     max: maxCryptoPercentage,
-                //     inRange: {
-                //         color: ['#FF3333', '#DDDDDD', '#33FF33'],
+                // itemStyle: {
+                //     color: (params: any) => {
+                //         return '#000';
                 //     },
                 // },
+                breadcrumb: {
+                    itemStyle: {
+                        color: '#0369a1',
+                    },
+                },
                 levels: [
                     {
                         itemStyle: {
@@ -63,14 +65,13 @@ const Heatmap = () => {
                 ],
             },
         };
+
         chart.setOption(option);
 
         return () => {
             chart.dispose();
         };
     }, [heatmap?.data]);
-
-    // if (cryptoData?.isLoading) return <h1>LOADING...</h1>;
 
     return <div ref={chartRef} style={{height: '50vh'}} />;
 };

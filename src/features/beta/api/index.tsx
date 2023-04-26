@@ -15,8 +15,8 @@ const useKlines = (symbols: string[]) =>
         queries: symbols.map((ticker: string) => ({
             queryKey: ['kline', ticker],
             queryFn: () => fetchKlines(ticker),
-            refetchInterval: 3 * 60 * 1000,
-            cacheTime: 3 * 60 * 1000,
+            refetchInterval: 30_000,
+            cacheTime: 30_000,
             refetchOnWindowFocus: false,
         })),
     });
