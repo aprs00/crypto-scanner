@@ -1,6 +1,7 @@
 import {useRef, useEffect, useState, SetStateAction} from 'react';
 import RGL, {WidthProvider} from 'react-grid-layout';
 
+import Spinner from '@/components/Spinner';
 import Table from '../components/Table';
 import Tape from '../components/Tape';
 import OrderBookFilters from '../components/Filters';
@@ -11,8 +12,8 @@ const ResponsiveReactGridLayout = WidthProvider(RGL);
 
 const GRID_LAYOUT_ROW_HEIGHT = 30;
 const GRID_LAYOUT_TABLE_HEIGHT = 10;
-const tableLayout = {x: 0, y: 0, w: 5, h: 10};
-const tapeLayout = {x: 5, y: 0, w: 5, h: 10};
+const tableLayout = {x: 0, y: 0, w: 6, h: 10};
+const tapeLayout = {x: 6, y: 0, w: 4, h: 10};
 
 const OrderBook = () => {
     const streamTicker = useStreamTicker('BTCUSDT') as {data: StreamTickerResponseType};
@@ -129,8 +130,6 @@ const OrderBook = () => {
         }
     }, [tableRef]);
 
-    if (!firstEventProcessed) return <>Loading...</>;
-
     return (
         <>
             <OrderBookFilters groupByNum={groupByNum} setGroupByNum={setGroupByNum} />
@@ -144,14 +143,20 @@ const OrderBook = () => {
                     });
                 }}
             >
-                <div key="table" data-grid={tableLayout} className="bg-gray-900 overflow-hidden">
-                    <Table
-                        groupedAsks={groupedOrderBookAsks}
-                        groupedBids={groupedOrderBookBids}
-                        tableHeight={tableHeight}
-                    />
+                <div key="table" data-grid={tableLayout} className="bg-slate-900 overflow-hidden">
+                    {firstEventProcessed ? (
+                        <Table
+                            groupedAsks={groupedOrderBookAsks}
+                            groupedBids={groupedOrderBookBids}
+                            tableHeight={tableHeight}
+                        />
+                    ) : (
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <Spinner />
+                        </div>
+                    )}
                 </div>
-                <div key="tape" data-grid={tapeLayout} className="bg-gray-900 overflow-hidden">
+                <div key="tape" data-grid={tapeLayout} className="bg-slate-900 overflow-hidden">
                     <Tape />
                 </div>
             </ResponsiveReactGridLayout>

@@ -33,14 +33,14 @@ const OrderBookTable = () => {
             (prev) =>
                 [
                     <div
-                        className="flex justify-between bg-red-600"
+                        className="flex justify-between text-xs px-1 py-px"
                         key={crypto.randomUUID()}
                         style={{
-                            background: streamAggTrade?.data?.m ? 'rgba(0, 185, 9, 0.55)' : 'rgba(198, 6, 6, 0.55)',
+                            color: streamAggTrade?.data?.m ? 'rgba(0, 215, 9, 1)' : 'rgba(215, 6, 6, 1)',
                         }}
                     >
-                        <div className="text-xs">{streamAggTrade?.data?.p.toString().replace(/\.?0+$/, '')}</div>
-                        <div className="text-xs">{streamAggTrade?.data?.q.toString().replace(/\.?0+$/, '')}</div>
+                        <div>{streamAggTrade?.data?.p.toString().replace(/\.?0+$/, '')}</div>
+                        <div>{streamAggTrade?.data?.q.toString().replace(/\.?0+$/, '')}</div>
                         <TimeDisplay timestamp={new Date(streamAggTrade?.data?.T as number)} />
                     </div>,
                     ...prev.slice(0, 30),
@@ -50,10 +50,10 @@ const OrderBookTable = () => {
 
     return (
         <>
-            <div className="flex justify-between">
-                <div className="text-xs">PRICE</div>
-                <div className="text-xs">SIZE</div>
-                <div className="text-xs">Time</div>
+            <div className="flex justify-between border-b border-slate-600 mb-1 text-sm p-1">
+                <div className="">PRICE</div>
+                <div className="">SIZE</div>
+                <div className="">Time</div>
             </div>
             <div>{tapeTable}</div>
         </>
