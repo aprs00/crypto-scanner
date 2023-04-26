@@ -89,3 +89,5 @@ onmessage = (event) => {
         });
     }
 };
+
+export {};

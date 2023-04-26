@@ -3,10 +3,10 @@ import {useQueries} from '@tanstack/react-query';
 
 import type {KlinesResponseType} from '../types';
 
-const fetchKlines = async (symbol: string, interval = '1m', limit = 500) => {
-    const data = await ky
+const fetchKlines = async (symbol: string, interval = '1m', limit = 500): Promise<KlinesResponseType> => {
+    const data = (await ky
         .get(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`)
-        .json();
+        .json()) as KlinesResponseType;
     return data;
 };
 

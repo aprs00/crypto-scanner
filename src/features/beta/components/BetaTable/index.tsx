@@ -2,7 +2,7 @@ import {memo, useEffect, useMemo, useState} from 'react';
 
 import MultiSelect from '@/components/MultiSelect.tsx';
 import {useKlines} from '../../api';
-import type {TickerCalculationsType} from '../../types';
+import type {TickerCalculationsType, KlinesResponseType} from '../../types';
 
 const betaTickersList = [
     'BTCUSDT',
@@ -28,7 +28,7 @@ const colors = {
 };
 
 const BetaTable = () => {
-    const klines = useKlines(betaTickersList);
+    const klines = useKlines(betaTickersList) as {data: KlinesResponseType}[];
     const [selectedPeople, setSelectedPeople] = useState<number[]>([]);
     const [betaTickersListCorrelation, setBetaTickersListCorrelation] = useState<number[]>([]);
     const [betaTickersListPercentages, setBetaTickersListPercentages] = useState<TickerCalculationsType[]>(

@@ -4,6 +4,17 @@ export type TickerCalculationsType = {
     sumSq: number;
 };
 
-export type KlinesResponseType = {
-    data: [number, string, string, string, string, string, number, string, number, string, string, string][];
-};
+export type KlinesResponseType = [
+    number,
+    string,
+    string,
+    string,
+    string,
+    string,
+    number,
+    string,
+    number,
+    string,
+    string,
+    string,
+][];
