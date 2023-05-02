@@ -4,8 +4,8 @@ import RGL, {Responsive, WidthProvider} from 'react-grid-layout';
 import Spinner from '@/components/Spinner';
 import Table from '../components/Table';
 import Tape from '../components/Tape';
-import Filters from '../components/Filters';
-import TradingViewWidget from '../components/TradingViewWidget';
+// import TradingViewWidget from '../components/TradingViewWidget';
+import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
 import {useDepthSnapshot, useStreamTicker} from '../api';
 import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types';
 
@@ -159,7 +159,7 @@ const OrderBook = () => {
                     <Tape />
                 </div>
                 <div key="tradingViewWidget" data-grid={tradingViewLayout} className="bg-slate-900 overflow-hidden">
-                    <TradingViewWidget />
+                    <TradingViewRealTimeChart theme="dark" autosize symbol="BINANCE:BTCUSDT" />
                 </div>
             </ResponsiveReactGridLayout>
         </>

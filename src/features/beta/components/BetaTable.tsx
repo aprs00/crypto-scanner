@@ -158,23 +158,16 @@ const BetaTable = () => {
         return klines.every((item) => item.isLoading === false);
     }, [klines]);
 
+    if (!isAllFetched)
+        return (
+            <div className="absolute left-1/2 -translate-x-1/2 translate-y-1/2">
+                <Spinner />
+            </div>
+        );
+
     return (
-        <div className="relative">
-            {/* <MultiSelect
-                options={[
-                    {id: 1, name: 'BTCUSDT'},
-                    {id: 2, name: 'ETHUSDT'},
-                ]}
-                values={selectedPeople}
-                onChange={setSelectedPeople}
-            /> */}
-            {isAllFetched ? (
-                <div className="mt-10 flex justify-center">{betaTable}</div>
-            ) : (
-                <div className="absolute left-1/2 -translate-x-1/2 translate-y-1/2">
-                    <Spinner />
-                </div>
-            )}
+        <div className="overflow-auto">
+            <div className="mt-10 flex justify-center">{betaTable}</div>
         </div>
     );
 };
