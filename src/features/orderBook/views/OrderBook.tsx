@@ -24,6 +24,7 @@ const OrderBook = () => {
 
     const [previousOrderBookUpdateId, setPreviousOrderBookUpdateId] = useState(0);
     const [groupByVal, setGroupByVal] = useState(() => 1);
+    const [tableAlignment, setTableAlignment] = useState('V');
     const [tableHeight, setTableHeight] = useState(() => GRID_LAYOUT_TABLE_HEIGHT * GRID_LAYOUT_ROW_HEIGHT);
     const [tempOrderBookData, setTempOrderBookData] = useState<StreamTickerResponseType[]>([]);
     const [tempOrderBookDataConsumed, setTempOrderBookDataConsumed] = useState(false);
@@ -145,6 +146,8 @@ const OrderBook = () => {
                             tableHeight={tableHeight}
                             setGroupByVal={setGroupByVal}
                             groupByVal={groupByVal}
+                            tableAlignment={tableAlignment}
+                            setTableAlignment={setTableAlignment}
                         />
                     ) : (
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">

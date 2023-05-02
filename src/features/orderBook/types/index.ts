@@ -46,4 +46,6 @@ export type OrderBookTablePropsType = {
     tableHeight: number;
     setGroupByVal: (num: number) => void;
     groupByVal: number;
+    tableAlignment: string;
+    setTableAlignment: (alignment: string) => void;
 };

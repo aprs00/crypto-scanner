@@ -3,10 +3,11 @@ import {memo, useMemo, useCallback} from 'react';
 import CustomSelect from '@/components/Select';
 import type {OrderBookTablePropsType} from '../types';
 
-const calculateNumOfRows = (rowHeight: number, boxHeight: number) => {
+const calculateNumOfRows = (rowHeight: number, boxHeight: number, divideBy: number) => {
     const numOfRowsCalculated = Math.floor(boxHeight / rowHeight);
     const numOfRows =
-        (numOfRowsCalculated % 2 === 0 ? numOfRowsCalculated : numOfRowsCalculated - 1) / 2 + numOfRowsCalculated / 4;
+        (numOfRowsCalculated % 2 === 0 ? numOfRowsCalculated : numOfRowsCalculated - 1) / 2 +
+        numOfRowsCalculated / divideBy;
     return numOfRows;
 };
 
@@ -15,14 +16,15 @@ const formatter = new Intl.NumberFormat(undefined, {
 });
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const {groupedBids, groupedAsks, tableHeight, setGroupByVal, groupByVal} = props;
+    const {groupedBids, groupedAsks, tableHeight, setGroupByVal, groupByVal, tableAlignment, setTableAlignment} = props;
 
     const memoizedGroupedAsks = useMemo(() => groupedAsks, [groupedAsks]);
     const memoizedGroupedBids = useMemo(() => groupedBids, [groupedBids]);
 
     const calculatedNumOfRows = useMemo(() => {
-        return calculateNumOfRows(30, tableHeight);
-    }, [tableHeight]);
+        const divideBy = tableAlignment === 'V' ? 4 : 1;
+        return calculateNumOfRows(30, tableHeight, divideBy);
+    }, [tableHeight, tableAlignment]);
 
     const maxQuantity = useCallback(() => {
         let max = 0;
@@ -56,7 +58,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                     }}
                     key={price + quantity}
                 >
-                    <div>{price}</div>
+                    <div className={`${tableAlignment === 'H' ? 'order-1' : ''}`}>{price}</div>
                     <div>{formattedQuantity}</div>
                 </div>,
             );
@@ -65,6 +67,10 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
         return orderBookRows;
     }, [memoizedGroupedAsks, maxQuantity, calculatedNumOfRows]);
+
+    const linearGradingDeg = useMemo(() => {
+        return tableAlignment === 'V' ? '90deg' : '270deg';
+    }, [tableAlignment]);
 
     const orderBookBidsTable = useCallback(() => {
         const orderBookRows = [];
@@ -75,13 +81,15 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
             const percentage = (Number(quantity) / maxQuantity()) * 100;
             orderBookRows.push(
                 <div
-                    className="grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5"
+                    className={`grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5 ${
+                        tableAlignment === 'H' ? 'text-right' : ''
+                    }`}
                     style={{
-                        background: `linear-gradient(90deg, rgba(0, 185, 9, 0.55) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
+                        background: `linear-gradient(${linearGradingDeg}, rgba(0, 185, 9, 0.55) ${percentage}%, rgba(255, 255, 255, 0) 0%)`,
                     }}
                     key={price + quantity}
                 >
-                    <div>{price}</div>
+                    <div className={`${tableAlignment === 'V' ? '' : ''}`}>{price}</div>
                     <div>{Number(quantity).toPrecision(6)}</div>
                 </div>,
             );
@@ -93,7 +101,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
     return (
         <div>
-            <div className="flex justify-between border-solid border-b border-slate-700 mb-1">
+            <div className="flex border-solid border-b border-slate-700 mb-1">
                 <CustomSelect
                     options={[
                         {label: '1', value: '1'},
@@ -105,11 +113,23 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                         setGroupByVal(Number(e));
                     }}
                 />
+                <CustomSelect
+                    options={[
+                        {label: 'V', value: 'V'},
+                        {label: 'H', value: 'H'},
+                    ]}
+                    value={tableAlignment}
+                    onChange={(e) => {
+                        setTableAlignment(e as string);
+                    }}
+                />
             </div>
-            <div className="m-1">
-                <div className="flex flex-col-reverse">{orderBookAsksTable()}</div>
+            <div className={`m-1 ${tableAlignment === 'H' ? 'flex flex-row-reverse' : ''}`}>
+                <div className="flex flex-1 flex-col-reverse">{orderBookAsksTable()}</div>
                 <div className="my-1"></div>
-                <div className="cols-reverse">{orderBookBidsTable()}</div>
+                <div className={`${tableAlignment === 'H' ? 'flex flex-col-reverse flex-1' : ''}`}>
+                    {orderBookBidsTable()}
+                </div>
             </div>
         </div>
     );
