@@ -10,10 +10,10 @@ const orderBookReducer = (state: any, action: any) => {
                 ...state,
                 firstEventProcessed: action.payload,
             };
-        case 'updateGroupByNum':
+        case 'updategroupByVal':
             return {
                 ...state,
-                groupByNum: action.payload,
+                groupByVal: action.payload,
             };
         case 'updateTempData':
             return {

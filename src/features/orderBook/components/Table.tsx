@@ -1,5 +1,6 @@
 import {memo, useMemo, useCallback} from 'react';
 
+import CustomSelect from '@/components/Select';
 import type {OrderBookTablePropsType} from '../types';
 
 const calculateNumOfRows = (rowHeight: number, boxHeight: number) => {
@@ -14,7 +15,7 @@ const formatter = new Intl.NumberFormat(undefined, {
 });
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const {groupedBids, groupedAsks, tableHeight} = props;
+    const {groupedBids, groupedAsks, tableHeight, setGroupByVal, groupByVal} = props;
 
     const memoizedGroupedAsks = useMemo(() => groupedAsks, [groupedAsks]);
     const memoizedGroupedBids = useMemo(() => groupedBids, [groupedBids]);
@@ -92,9 +93,24 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
     return (
         <div>
-            <div className="flex flex-col-reverse">{orderBookAsksTable()}</div>
-            <div className="my-1"></div>
-            <div className="cols-reverse">{orderBookBidsTable()}</div>
+            <div className="flex justify-between border-solid border-b border-slate-700 mb-1">
+                <CustomSelect
+                    options={[
+                        {label: '1', value: '1'},
+                        {label: '5', value: '5'},
+                        {label: '10', value: '10'},
+                    ]}
+                    value={groupByVal.toString()}
+                    onChange={(e) => {
+                        setGroupByVal(Number(e));
+                    }}
+                />
+            </div>
+            <div className="m-1">
+                <div className="flex flex-col-reverse">{orderBookAsksTable()}</div>
+                <div className="my-1"></div>
+                <div className="cols-reverse">{orderBookBidsTable()}</div>
+            </div>
         </div>
     );
 };

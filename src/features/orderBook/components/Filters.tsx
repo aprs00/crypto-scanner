@@ -3,7 +3,7 @@ import {memo} from 'react';
 import type {OrderBookFiltersPropsType} from '../types';
 
 const OrderBookFilters = (props: OrderBookFiltersPropsType) => {
-    const {groupByNum, setGroupByNum} = props;
+    const {groupByVal, setGroupByVal} = props;
 
     return (
         <div className="flex space-x-4">
@@ -28,8 +28,8 @@ const OrderBookFilters = (props: OrderBookFiltersPropsType) => {
                     type="number"
                     id="num_of_rows"
                     className=" border border-gray-300 text-sm rounded-lg mb-10 block p-1.5 dark:bg-gray-900 dark:border-gray-800 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-900 dark:focus:border-blue-900 w-32"
-                    value={groupByNum}
-                    onChange={(e) => setGroupByNum(Number(e.target.value))}
+                    value={groupByVal}
+                    onChange={(e) => setGroupByVal(Number(e.target.value))}
                     placeholder="Group by"
                 />
             </div>

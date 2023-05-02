@@ -16,7 +16,7 @@ onmessage = (event) => {
         return {exactMatch: false, index: low};
     }
 
-    const {type, payload, groupByNum} = event.data;
+    const {type, payload, groupByVal} = event.data;
     if (type === 'UPDATE_ORDER_BOOK') {
         const {bidsGetter, asksGetter, bidsStream, asksStream} = payload;
 
@@ -36,16 +36,16 @@ onmessage = (event) => {
             return getter;
         };
 
-        const groupOrders = (ordersGetter: [string, string][], groupByNum: number, isBid: boolean): Float32Array[] => {
+        const groupOrders = (ordersGetter: [string, string][], groupByVal: number, isBid: boolean): Float32Array[] => {
             const result = new Map<number, number>();
-            const groupedOrders = new Array(Math.ceil(ordersGetter.length / 2 / groupByNum))
+            const groupedOrders = new Array(Math.ceil(ordersGetter.length / 2 / groupByVal))
                 .fill(null)
                 .map(() => new Float32Array(2));
 
             const makeCalculateRoundedPrice = (isBid: boolean) =>
                 isBid
-                    ? (orderPrice: number) => Math.floor(orderPrice / groupByNum) * groupByNum
-                    : (orderPrice: number) => Math.ceil(orderPrice / groupByNum) * groupByNum;
+                    ? (orderPrice: number) => Math.floor(orderPrice / groupByVal) * groupByVal
+                    : (orderPrice: number) => Math.ceil(orderPrice / groupByVal) * groupByVal;
 
             const calculateRoundedPrice = makeCalculateRoundedPrice(isBid);
 
@@ -72,8 +72,8 @@ onmessage = (event) => {
         const updatedAsks = updateOrderBook(asksGetter, asksStream, true);
         const updatedBids = updateOrderBook(bidsGetter, bidsStream, false);
 
-        const groupedAsks = groupOrders(updatedAsks, groupByNum, false);
-        const groupedBids = groupOrders(updatedBids, groupByNum, true);
+        const groupedAsks = groupOrders(updatedAsks, groupByVal, false);
+        const groupedBids = groupOrders(updatedBids, groupByVal, true);
 
         // const groupedAsks = updatedAsks;
         // const groupedBids = updatedBids;

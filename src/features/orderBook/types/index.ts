@@ -36,12 +36,14 @@ export type UpdateOrderBookPropsType = {
 };
 
 export type OrderBookFiltersPropsType = {
-    groupByNum: number;
-    setGroupByNum: (num: number) => void;
+    groupByVal: number;
+    setGroupByVal: (num: number) => void;
 };
 
 export type OrderBookTablePropsType = {
     groupedAsks: [string, string][];
     groupedBids: [string, string][];
     tableHeight: number;
+    setGroupByVal: (num: number) => void;
+    groupByVal: number;
 };

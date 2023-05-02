@@ -3,7 +3,7 @@ import {useState, memo, useEffect, ReactNode} from 'react';
 import TimeDisplay from './TimeDisplay';
 import {useStreamAggTrade} from '../api';
 
-const OrderBookTable = () => {
+const Tape = () => {
     const streamAggTrade = useStreamAggTrade('BTCUSDT');
 
     const [tapeTable, setTapeTable] = useState<ReactNode[]>([]);
@@ -41,7 +41,7 @@ const OrderBookTable = () => {
     );
 };
 
-export default memo(OrderBookTable);
+export default memo(Tape);
 
 {
     /* 

@@ -23,7 +23,7 @@ const OrderBook = () => {
     const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a, firstEventProcessed);
 
     const [previousOrderBookUpdateId, setPreviousOrderBookUpdateId] = useState(0);
-    const [groupByNum, setGroupByNum] = useState(1);
+    const [groupByVal, setGroupByVal] = useState(() => 1);
     const [tableHeight, setTableHeight] = useState(() => GRID_LAYOUT_TABLE_HEIGHT * GRID_LAYOUT_ROW_HEIGHT);
     const [tempOrderBookData, setTempOrderBookData] = useState<StreamTickerResponseType[]>([]);
     const [tempOrderBookDataConsumed, setTempOrderBookDataConsumed] = useState(false);
@@ -47,7 +47,7 @@ const OrderBook = () => {
 
             worker.postMessage({
                 type: 'UPDATE_ORDER_BOOK',
-                groupByNum,
+                groupByVal,
                 payload: props,
             });
 
@@ -126,7 +126,6 @@ const OrderBook = () => {
 
     return (
         <>
-            <Filters groupByNum={groupByNum} setGroupByNum={setGroupByNum} />
             <ResponsiveReactGridLayout
                 cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
                 rowHeight={GRID_LAYOUT_ROW_HEIGHT}
@@ -144,6 +143,8 @@ const OrderBook = () => {
                             groupedAsks={groupedOrderBookAsks}
                             groupedBids={groupedOrderBookBids}
                             tableHeight={tableHeight}
+                            setGroupByVal={setGroupByVal}
+                            groupByVal={groupByVal}
                         />
                     ) : (
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
