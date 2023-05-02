@@ -1,19 +1,21 @@
 import {useEffect, useState, SetStateAction} from 'react';
-import RGL, {WidthProvider} from 'react-grid-layout';
+import RGL, {Responsive, WidthProvider} from 'react-grid-layout';
 
 import Spinner from '@/components/Spinner';
 import Table from '../components/Table';
 import Tape from '../components/Tape';
 import Filters from '../components/Filters';
+import TradingViewWidget from '../components/TradingViewWidget';
 import {useDepthSnapshot, useStreamTicker} from '../api';
 import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types';
 
-const ResponsiveReactGridLayout = WidthProvider(RGL);
+const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const GRID_LAYOUT_ROW_HEIGHT = 30;
 const GRID_LAYOUT_TABLE_HEIGHT = 10;
-const tableLayout = {x: 0, y: 0, w: 6, h: 10};
-const tapeLayout = {x: 6, y: 0, w: 4, h: 10};
+const tradingViewLayout = {x: 0, y: 0, w: 12, h: 16};
+const tableLayout = {x: 0, y: 12, w: 8, h: 13};
+const tapeLayout = {x: 8, y: 12, w: 4, h: 13};
 
 const OrderBook = () => {
     const [firstEventProcessed, setFirstEventProcessed] = useState(false);
@@ -126,6 +128,7 @@ const OrderBook = () => {
         <>
             <Filters groupByNum={groupByNum} setGroupByNum={setGroupByNum} />
             <ResponsiveReactGridLayout
+                cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
                 rowHeight={GRID_LAYOUT_ROW_HEIGHT}
                 onResize={(grids) => {
                     grids.forEach((grid) => {
@@ -150,6 +153,9 @@ const OrderBook = () => {
                 </div>
                 <div key="tape" data-grid={tapeLayout} className="bg-slate-900 overflow-hidden">
                     <Tape />
+                </div>
+                <div key="tradingViewWidget" data-grid={tradingViewLayout} className="bg-slate-900 overflow-hidden">
+                    <TradingViewWidget />
                 </div>
             </ResponsiveReactGridLayout>
         </>
