@@ -138,6 +138,9 @@ const OrderBook = () => {
                     });
                 }}
             >
+                <div key="tradingViewWidget" data-grid={tradingViewLayout} className="bg-slate-900 overflow-hidden">
+                    <TradingViewRealTimeChart theme="dark" autosize symbol="BINANCE:BTCUSDT" />
+                </div>
                 <div key="table" data-grid={tableLayout} className="bg-slate-900 overflow-hidden">
                     {firstEventProcessed ? (
                         <Table
@@ -157,9 +160,6 @@ const OrderBook = () => {
                 </div>
                 <div key="tape" data-grid={tapeLayout} className="bg-slate-900 overflow-hidden">
                     <Tape />
-                </div>
-                <div key="tradingViewWidget" data-grid={tradingViewLayout} className="bg-slate-900 overflow-hidden">
-                    <TradingViewRealTimeChart theme="dark" autosize symbol="BINANCE:BTCUSDT" />
                 </div>
             </ResponsiveReactGridLayout>
         </>
