@@ -6,7 +6,7 @@ import Table from '../components/Table';
 import Tape from '../components/Tape';
 // import TradingViewWidget from '../components/TradingViewWidget';
 import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
-import {useDepthSnapshot, useStreamTicker} from '../api';
+import {useExchangeInfo, useDepthSnapshot, useStreamTicker} from '../api';
 import type {UpdateOrderBookPropsType, StreamTickerResponseType} from '../types';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
@@ -19,6 +19,7 @@ const tapeLayout = {x: 8, y: 12, w: 4, h: 13};
 
 const OrderBook = () => {
     const [firstEventProcessed, setFirstEventProcessed] = useState(false);
+    const exchangeInfo = useExchangeInfo();
     const streamTicker = useStreamTicker('BTCUSDT') as {data: StreamTickerResponseType};
     const depthSnapshot = useDepthSnapshot('BTCUSDT', !!streamTicker?.data?.a, firstEventProcessed);
 

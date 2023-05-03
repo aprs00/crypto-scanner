@@ -2,7 +2,24 @@ import {useEffect, useState} from 'react';
 import ky from 'ky';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 
-import type {OrderBookResponseType, StreamTickerResponseType, StreamAggTradeResponseType} from '../types';
+import type {
+    OrderBookResponseType,
+    StreamTickerResponseType,
+    StreamAggTradeResponseType,
+    ExchangeInfoResponseType,
+} from '../types';
+
+const fetchExchangeInfo = async (): Promise<ExchangeInfoResponseType> => {
+    const data = (await ky.get(`https://api.binance.com/api/v3/exchangeInfo`).json()) as ExchangeInfoResponseType;
+    return data;
+};
+
+const useExchangeInfo = () => {
+    return useQuery(['exchange-info'], () => fetchExchangeInfo(), {
+        refetchOnWindowFocus: false,
+        staleTime: Infinity,
+    });
+};
 
 const fetchDepthSnapshot = async (symbol: string, limit = 5000): Promise<OrderBookResponseType> => {
     const data = (await ky
@@ -87,4 +104,4 @@ const useStreamAggTrade = (symbol: string) => {
     });
 };
 
-export {fetchDepthSnapshot, useDepthSnapshot, useStreamTicker, useStreamAggTrade};
+export {useExchangeInfo, useDepthSnapshot, useStreamTicker, useStreamAggTrade};
