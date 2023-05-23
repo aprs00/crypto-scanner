@@ -1,7 +1,7 @@
 import ky from 'ky';
 import {useQuery} from '@tanstack/react-query';
 
-import type {HeatmapResponseType} from '../types';
+import type {HeatmapResponseType} from './types';
 
 const fetchHeatmapData = async (): Promise<HeatmapResponseType[]> => {
     const data = (await ky

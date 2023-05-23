@@ -26,54 +26,50 @@ onmessage = (event) => {
                 if (quantity === '0.00000000') {
                     if (!exactMatch) continue;
                     else getter.splice(index, 1);
-                    continue;
                 } else {
                     if (exactMatch) getter[index][1] = quantity;
                     else getter.splice(index, 0, [price, quantity]);
                 }
             }
 
-            return getter;
+            return {getter};
         };
 
-        const groupOrders = (ordersGetter: [string, string][], groupByVal: number, isBid: boolean): Float32Array[] => {
-            const result = new Map<number, number>();
-            const groupedOrders = new Array(Math.ceil(ordersGetter.length / 2 / groupByVal))
-                .fill(null)
-                .map(() => new Float32Array(2));
+        const groupOrders = (getter: [string, string][], groupByVal: number, isBid: boolean, numOfRows: number) => {
+            const groupedGetter = new Map();
 
             const makeCalculateRoundedPrice = (isBid: boolean) =>
                 isBid
-                    ? (orderPrice: number) => Math.floor(orderPrice / groupByVal) * groupByVal
-                    : (orderPrice: number) => Math.ceil(orderPrice / groupByVal) * groupByVal;
+                    ? (orderPrice: number) => Math.ceil(orderPrice / groupByVal) * groupByVal
+                    : (orderPrice: number) => Math.floor(orderPrice / groupByVal) * groupByVal;
 
             const calculateRoundedPrice = makeCalculateRoundedPrice(isBid);
 
-            for (const order of ordersGetter) {
-                const orderPrice = parseFloat(order[0]);
-
+            for (let i = 0; i < getter.length; i++) {
+                const [priceStr, quantityStr] = getter[i];
+                const orderPrice = parseFloat(priceStr);
+                const quantity = parseFloat(quantityStr);
                 const roundedPrice = calculateRoundedPrice(orderPrice);
 
-                const currentQuantity = result.get(roundedPrice) || 0;
-                const newQuantity = currentQuantity + parseFloat(order[1]);
-                result.set(roundedPrice, newQuantity);
+                if (groupedGetter.has(roundedPrice))
+                    groupedGetter.set(roundedPrice, groupedGetter.get(roundedPrice) + quantity);
+                else groupedGetter.set(roundedPrice, quantity);
             }
 
-            let index = 0;
-            for (const [price, quantity] of result) {
-                groupedOrders[index][0] = price;
-                groupedOrders[index][1] = quantity;
-                index++;
+            const roundedAsks = [];
+
+            for (const [roundedPrice, quantity] of Array.from(groupedGetter)) {
+                roundedAsks.push([roundedPrice.toString(), quantity.toString()]);
             }
 
-            return groupedOrders;
+            return roundedAsks;
         };
 
         const updatedAsks = updateOrderBook(asksGetter, asksStream, true);
         const updatedBids = updateOrderBook(bidsGetter, bidsStream, false);
 
-        const groupedAsks = groupOrders(updatedAsks, groupByVal, false);
-        const groupedBids = groupOrders(updatedBids, groupByVal, true);
+        const groupedAsks = groupOrders(updatedAsks, groupByVal, true);
+        const groupedBids = groupOrders(updatedBids, groupByVal, false);
 
         // const groupedAsks = updatedAsks;
         // const groupedBids = updatedBids;

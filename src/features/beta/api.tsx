@@ -1,7 +1,7 @@
 import ky from 'ky';
 import {useQueries} from '@tanstack/react-query';
 
-import type {KlinesResponseType} from '../types';
+import type {KlinesResponseType} from './routes';
 
 const fetchKlines = async (symbol: string, interval = '1m', limit = 500): Promise<KlinesResponseType> => {
     const data = (await ky

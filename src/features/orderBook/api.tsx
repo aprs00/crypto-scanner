@@ -1,13 +1,10 @@
 import {useEffect, useState} from 'react';
 import ky from 'ky';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 
-import type {
-    OrderBookResponseType,
-    StreamTickerResponseType,
-    StreamAggTradeResponseType,
-    ExchangeInfoResponseType,
-} from '../types';
+import {queryClient} from '@/lib/react-query';
+import {groupOrders, updateOrderBook, shouldEventBeProcessed} from './utils';
+import type {OrderBookResponseType, StreamAggTradeResponseType, ExchangeInfoResponseType} from './types';
 
 const fetchExchangeInfo = async (): Promise<ExchangeInfoResponseType> => {
     const data = (await ky.get(`https://api.binance.com/api/v3/exchangeInfo`).json()) as ExchangeInfoResponseType;
@@ -32,13 +29,14 @@ const useDepthSnapshot = (symbol: string, streamedEvent: boolean, firstEventProc
     return useQuery(['depth-snapshot', symbol], () => fetchDepthSnapshot(symbol), {
         enabled: !!symbol && streamedEvent,
         refetchOnWindowFocus: false,
-        refetchInterval: firstEventProcessed ? 17_000 : 1700,
+        refetchInterval: firstEventProcessed ? 120_000 : 1_000,
     });
 };
 
-const useStreamTicker = (symbol: string) => {
-    const queryClient = useQueryClient();
-    const [streamData, setStreamData] = useState<StreamTickerResponseType>();
+const useStreamTicker = (symbol: string, groupByVal: number, numOfRows: number) => {
+    const [firstEventProcessed, setFirstEventProcessed] = useState(false);
+    const [streamDataReceived, setStreamDataReceived] = useState(false);
+    const depthSnapshot = useDepthSnapshot(symbol, streamDataReceived, firstEventProcessed);
 
     useEffect(() => {
         const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@100ms`);
@@ -48,9 +46,30 @@ const useStreamTicker = (symbol: string) => {
         };
 
         ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            queryClient.setQueryData(['ticker-depth-stream', symbol], data);
-            setStreamData(data);
+            setStreamDataReceived(true);
+            const streamData = JSON.parse(event.data);
+            const depthSnapshot = queryClient.getQueryData(['depth-snapshot', symbol]) as OrderBookResponseType;
+
+            if (!shouldEventBeProcessed(depthSnapshot, streamData, firstEventProcessed, setFirstEventProcessed)) return;
+
+            const {getter: updatedAsks} = updateOrderBook(depthSnapshot?.asks ?? [], streamData.a, true);
+            const {getter: updatedBids} = updateOrderBook(depthSnapshot?.bids ?? [], streamData.b, false);
+
+            const newLastUpdateId = streamData.u;
+
+            const groupedAsks = groupOrders(updatedAsks, groupByVal, true, numOfRows);
+            const groupedBids = groupOrders(updatedBids, groupByVal, false, numOfRows);
+
+            const newDepthSnapshot = {
+                lastUpdateId: newLastUpdateId,
+                asks: updatedAsks,
+                bids: updatedBids,
+                groupedAsks: groupedAsks,
+                groupedBids: groupedBids,
+                firstEventProcessed: true,
+            };
+
+            queryClient.setQueryData(['depth-snapshot', symbol], newDepthSnapshot as OrderBookResponseType);
         };
 
         ws.onerror = (error) => {
@@ -61,9 +80,9 @@ const useStreamTicker = (symbol: string) => {
             ws.close();
             console.log('WebSocket disconnected');
         };
-    }, [queryClient, symbol]);
+    }, [symbol]);
 
-    return useQuery(['ticker-depth-stream', symbol], () => streamData ?? [], {
+    return useQuery(['depth-snapshot', symbol], () => depthSnapshot ?? [], {
         enabled: !!symbol,
         refetchOnWindowFocus: false,
         staleTime: Infinity,
@@ -71,7 +90,6 @@ const useStreamTicker = (symbol: string) => {
 };
 
 const useStreamAggTrade = (symbol: string) => {
-    const queryClient = useQueryClient();
     const [streamData, setStreamData] = useState<StreamAggTradeResponseType>();
 
     useEffect(() => {
