@@ -2,7 +2,7 @@ import {memo, useEffect, useMemo, useState} from 'react';
 
 import Spinner from '@/components/Spinner';
 import {useKlines} from '../api';
-import type {TickerCalculationsType, KlinesResponseType} from '../routes';
+import type {TickerCalculationsType, KlinesResponseType} from '../types';
 
 const betaTickersList = [
     'BTCUSDT',

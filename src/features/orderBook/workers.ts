@@ -35,7 +35,7 @@ onmessage = (event) => {
             return {getter};
         };
 
-        const groupOrders = (getter: [string, string][], groupByVal: number, isBid: boolean, numOfRows: number) => {
+        const groupOrders = (getter: [string, string][], groupByVal: number, isBid: boolean) => {
             const groupedGetter = new Map();
 
             const makeCalculateRoundedPrice = (isBid: boolean) =>
@@ -86,4 +86,4 @@ onmessage = (event) => {
     }
 };
 
-// export {};
+export {};
