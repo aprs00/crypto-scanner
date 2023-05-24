@@ -3,7 +3,7 @@ import ky from 'ky';
 import {useQuery} from '@tanstack/react-query';
 
 import {queryClient} from '@/lib/react-query';
-import {groupOrders, updateOrderBook, shouldEventBeProcessed} from './utils';
+import {groupOrders, updateOrderBook, isEventValid} from './utils';
 import type {OrderBookResponseType, StreamAggTradeResponseType, ExchangeInfoResponseType} from './types';
 
 const fetchExchangeInfo = async (): Promise<ExchangeInfoResponseType> => {
@@ -35,7 +35,8 @@ const useDepthSnapshot = (symbol: string, firstEventProcessed: boolean) => {
 
 const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
     const [firstEventProcessed, setFirstEventProcessed] = useState(() => false);
-    const depthSnapshot = useDepthSnapshot(symbol, firstEventProcessed);
+    useDepthSnapshot(symbol, firstEventProcessed);
+
     const groupByValRef = useRef(groupByVal);
     const numOfRowsRef = useRef(numOfRows);
 
@@ -53,17 +54,12 @@ const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
 
         ws.onmessage = (event) => {
             const streamData = JSON.parse(event.data);
-            const depthSnapshot = queryClient.getQueryData(['depth-snapshot', symbol]) as OrderBookResponseType;
+            const depthSnapshotCache = queryClient.getQueryData(['depth-snapshot', symbol]) as OrderBookResponseType;
 
-            queryClient.setQueryData(['depth-snapshot', symbol], {
-                ...depthSnapshot,
-                lastUpdateId: streamData.u,
-            });
+            if (!isEventValid(depthSnapshotCache, streamData, firstEventProcessed, setFirstEventProcessed)) return;
 
-            if (!shouldEventBeProcessed(depthSnapshot, streamData, firstEventProcessed, setFirstEventProcessed)) return;
-
-            const {getter: updatedAsks} = updateOrderBook(depthSnapshot?.asks ?? [], streamData.a, true);
-            const {getter: updatedBids} = updateOrderBook(depthSnapshot?.bids ?? [], streamData.b, false);
+            const {getter: updatedAsks} = updateOrderBook(depthSnapshotCache.asks, streamData.a, true);
+            const {getter: updatedBids} = updateOrderBook(depthSnapshotCache.bids, streamData.b, false);
 
             const groupedAsks = groupOrders(updatedAsks, groupByValRef.current, true, numOfRowsRef.current);
             const groupedBids = groupOrders(updatedBids, groupByValRef.current, false, numOfRowsRef.current);
@@ -74,10 +70,9 @@ const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
                 bids: updatedBids,
                 groupedAsks: groupedAsks,
                 groupedBids: groupedBids,
-                firstEventProcessed: true,
             };
 
-            queryClient.setQueryData(['depth-snapshot', symbol], newDepthSnapshot as OrderBookResponseType);
+            queryClient.setQueryData(['depth-snapshot', symbol], newDepthSnapshot);
         };
 
         ws.onerror = (error) => {
@@ -90,11 +85,7 @@ const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
         };
     }, [symbol]);
 
-    return useQuery(['depth-snapshot', symbol], () => depthSnapshot || [], {
-        enabled: !!symbol,
-        refetchOnWindowFocus: false,
-        staleTime: Infinity,
-    });
+    return queryClient.getQueryData(['depth-snapshot', symbol]) as OrderBookResponseType;
 };
 
 const useStreamAggTrade = (symbol: string) => {

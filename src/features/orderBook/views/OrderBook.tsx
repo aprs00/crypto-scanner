@@ -9,7 +9,6 @@ import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeCh
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const gridLayoutRowHeight = 30;
-const gridLayoutTableHeight = 10;
 const tradingViewLayout = {x: 0, y: 0, w: 12, h: 16};
 const tableLayout = {x: 0, y: 12, w: 8, h: 13};
 const tapeLayout = {x: 8, y: 12, w: 4, h: 13};
@@ -19,7 +18,7 @@ const OrderBook = () => {
 
     const [symbol, setSymbol] = useState('BTCUSDT');
     const symbolInfo = exchangeInfo?.data?.symbols.find((s) => s.symbol === symbol);
-    const [tableHeight, setTableHeight] = useState(() => gridLayoutRowHeight * gridLayoutTableHeight);
+    const [tableHeight, setTableHeight] = useState(() => gridLayoutRowHeight * 13);
 
     return (
         <>

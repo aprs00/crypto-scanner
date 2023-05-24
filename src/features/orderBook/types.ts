@@ -55,9 +55,8 @@ export type OrderBookResponseType = {
     lastUpdateId: number;
     asks: [string, string][];
     bids: [string, string][];
-    groupedAsks: [string, string][];
-    groupedBids: [string, string][];
-    firstEventProcessed: boolean;
+    groupedAsks: [number, number][];
+    groupedBids: [number, number][];
 };
 
 export type StreamTickerResponseType = {

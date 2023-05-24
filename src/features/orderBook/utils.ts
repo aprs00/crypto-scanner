@@ -19,6 +19,21 @@ const findTargetPriceIndex = (bids: [string, string][], price: string, ascending
     return {exactMatch: false, index: low};
 };
 
+const updateOrderBook = (getter: [string, string][], stream: [string, string][], ascending: boolean) => {
+    for (const [price, quantity] of stream) {
+        const {exactMatch, index} = findTargetPriceIndex(getter, price, ascending);
+        if (quantity === '0.00000000') {
+            if (!exactMatch) continue;
+            else getter.splice(index, 1);
+        } else {
+            if (exactMatch) getter[index][1] = quantity;
+            else getter.splice(index, 0, [price, quantity]);
+        }
+    }
+
+    return {getter};
+};
+
 const groupOrders = (getter: [string, string][], groupByVal: number, isBid: boolean, numOfRows: number) => {
     const groupedGetter = new Map();
 
@@ -40,33 +55,17 @@ const groupOrders = (getter: [string, string][], groupByVal: number, isBid: bool
         else groupedGetter.set(roundedPrice, quantity);
     }
 
-    const roundedGetter = [];
+    const roundedGetter: [number, number][] = [];
 
     for (let i = 0; i < numOfRows; i++) {
         const [roundedPrice, quantity] = Array.from(groupedGetter)[i];
         roundedGetter.push([roundedPrice, quantity]);
-        // roundedGetter.push([roundedPrice.toString(), quantity.toString()]);
     }
 
     return roundedGetter;
 };
 
-const updateOrderBook = (getter: [string, string][], stream: [string, string][], ascending: boolean) => {
-    for (const [price, quantity] of stream) {
-        const {exactMatch, index} = findTargetPriceIndex(getter, price, ascending);
-        if (quantity === '0.00000000') {
-            if (!exactMatch) continue;
-            else getter.splice(index, 1);
-        } else {
-            if (exactMatch) getter[index][1] = quantity;
-            else getter.splice(index, 0, [price, quantity]);
-        }
-    }
-
-    return {getter};
-};
-
-const shouldEventBeProcessed = (
+const isEventValid = (
     depthSnapshot: OrderBookResponseType,
     streamData: StreamTickerResponseType,
     firstEventProcessed: boolean,
@@ -104,4 +103,4 @@ const tableBackgroundStyle = (type: string, tableAlignment: string, percentage: 
     } ${percentage}%, rgba(255, 255, 255, 0) 0%)`;
 };
 
-export {findTargetPriceIndex, groupOrders, updateOrderBook, shouldEventBeProcessed, tableBackgroundStyle};
+export {findTargetPriceIndex, groupOrders, updateOrderBook, isEventValid, tableBackgroundStyle};

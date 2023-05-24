@@ -27,31 +27,26 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         return Math.floor(numOfRows);
     }, [tableHeight, tableAlignment]);
 
-    const streamTicker = useStreamTicker('BTCUSDT', groupByVal, calculatedNumOfRows);
-    const groupedBids = streamTicker?.data?.groupedBids;
-    const groupedAsks = streamTicker?.data?.groupedAsks;
-    const firstEventProcessed = streamTicker?.data?.firstEventProcessed;
+    const {groupedBids, groupedAsks} = useStreamTicker('BTCUSDT', groupByVal, calculatedNumOfRows) || {};
 
     const maxQuantity = useMemo(() => {
         const bidsAndAsks = groupedAsks?.concat(groupedBids) || [];
-        return Math.max(...bidsAndAsks.map(([_, quantity]: [string, string]) => Number(quantity)));
+        return Math.max(...bidsAndAsks.map(([_, quantity]: [number, number]) => quantity));
     }, [groupedAsks, groupedBids, calculatedNumOfRows]);
 
     const orderBookTable = useCallback(
-        (groupedGetter: [string, string][], type: string) => {
-            const orderBookRows = [];
+        (groupedGetter: [number, number][], type: string) => {
+            const rows = [];
             for (let i = 0; i < groupedGetter?.length; i++) {
                 const [price, quantity] = groupedGetter?.[i];
                 const percentage = (Number(quantity) / maxQuantity) * 100;
                 const formattedQuantity = quantityFormatter.format(Number(quantity));
-                orderBookRows.push(
+                rows.push(
                     <div
                         className={`grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5 ${
                             tableAlignment === 'H' && type === 'bids' ? 'text-right' : ''
                         }`}
-                        style={{
-                            background: tableBackgroundStyle(type, tableAlignment, percentage),
-                        }}
+                        style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
                         key={price + quantity}
                     >
                         <div className={`${tableAlignment === 'H' && type === 'bids' ? 'order-1' : ''}`}>{price}</div>
@@ -60,14 +55,14 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 );
             }
 
-            return orderBookRows;
+            return rows;
         },
         [groupedBids, groupedAsks, maxQuantity, calculatedNumOfRows],
     );
 
     return (
         <>
-            {!firstEventProcessed && (
+            {!groupedAsks && (
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <Spinner />
                 </div>
