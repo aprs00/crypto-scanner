@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef} from 'react';
 import ky from 'ky';
 import {useQuery} from '@tanstack/react-query';
 
@@ -25,18 +25,24 @@ const fetchDepthSnapshot = async (symbol: string, limit = 5000): Promise<OrderBo
     return data;
 };
 
-const useDepthSnapshot = (symbol: string, streamedEvent: boolean, firstEventProcessed: boolean) => {
+const useDepthSnapshot = (symbol: string, firstEventProcessed: boolean) => {
     return useQuery(['depth-snapshot', symbol], () => fetchDepthSnapshot(symbol), {
-        enabled: !!symbol && streamedEvent,
+        enabled: !!symbol,
         refetchOnWindowFocus: false,
         refetchInterval: firstEventProcessed ? 120_000 : 1_000,
     });
 };
 
-const useStreamTicker = (symbol: string, groupByVal: number, numOfRows: number) => {
-    const [firstEventProcessed, setFirstEventProcessed] = useState(false);
-    const [streamDataReceived, setStreamDataReceived] = useState(false);
-    const depthSnapshot = useDepthSnapshot(symbol, streamDataReceived, firstEventProcessed);
+const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
+    const [firstEventProcessed, setFirstEventProcessed] = useState(() => false);
+    const depthSnapshot = useDepthSnapshot(symbol, firstEventProcessed);
+    const groupByValRef = useRef(groupByVal);
+    const numOfRowsRef = useRef(numOfRows);
+
+    useEffect(() => {
+        groupByValRef.current = groupByVal;
+        numOfRowsRef.current = numOfRows;
+    }, [groupByVal, numOfRows]);
 
     useEffect(() => {
         const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@100ms`);
@@ -46,22 +52,24 @@ const useStreamTicker = (symbol: string, groupByVal: number, numOfRows: number) 
         };
 
         ws.onmessage = (event) => {
-            setStreamDataReceived(true);
             const streamData = JSON.parse(event.data);
             const depthSnapshot = queryClient.getQueryData(['depth-snapshot', symbol]) as OrderBookResponseType;
+
+            queryClient.setQueryData(['depth-snapshot', symbol], {
+                ...depthSnapshot,
+                lastUpdateId: streamData.u,
+            });
 
             if (!shouldEventBeProcessed(depthSnapshot, streamData, firstEventProcessed, setFirstEventProcessed)) return;
 
             const {getter: updatedAsks} = updateOrderBook(depthSnapshot?.asks ?? [], streamData.a, true);
             const {getter: updatedBids} = updateOrderBook(depthSnapshot?.bids ?? [], streamData.b, false);
 
-            const newLastUpdateId = streamData.u;
-
-            const groupedAsks = groupOrders(updatedAsks, groupByVal, true, numOfRows);
-            const groupedBids = groupOrders(updatedBids, groupByVal, false, numOfRows);
+            const groupedAsks = groupOrders(updatedAsks, groupByValRef.current, true, numOfRowsRef.current);
+            const groupedBids = groupOrders(updatedBids, groupByValRef.current, false, numOfRowsRef.current);
 
             const newDepthSnapshot = {
-                lastUpdateId: newLastUpdateId,
+                lastUpdateId: streamData.u,
                 asks: updatedAsks,
                 bids: updatedBids,
                 groupedAsks: groupedAsks,
@@ -82,7 +90,7 @@ const useStreamTicker = (symbol: string, groupByVal: number, numOfRows: number) 
         };
     }, [symbol]);
 
-    return useQuery(['depth-snapshot', symbol], () => depthSnapshot ?? [], {
+    return useQuery(['depth-snapshot', symbol], () => depthSnapshot || [], {
         enabled: !!symbol,
         refetchOnWindowFocus: false,
         staleTime: Infinity,

@@ -3,33 +3,32 @@ import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import Table from '../components/Table';
 import Tape from '../components/Tape';
+import {useExchangeInfo} from '../api';
 import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
-const GRID_LAYOUT_ROW_HEIGHT = 30;
-const GRID_LAYOUT_TABLE_HEIGHT = 10;
+const gridLayoutRowHeight = 30;
+const gridLayoutTableHeight = 10;
 const tradingViewLayout = {x: 0, y: 0, w: 12, h: 16};
 const tableLayout = {x: 0, y: 12, w: 8, h: 13};
 const tapeLayout = {x: 8, y: 12, w: 4, h: 13};
 
 const OrderBook = () => {
-    // const exchangeInfo = useExchangeInfo();
+    const exchangeInfo = useExchangeInfo();
 
-    const [groupByVal, setGroupByVal] = useState(() => 1);
-    const [tableAlignment, setTableAlignment] = useState('V');
-    const [tableHeight, setTableHeight] = useState(() => GRID_LAYOUT_TABLE_HEIGHT * GRID_LAYOUT_ROW_HEIGHT);
+    const [symbol, setSymbol] = useState('BTCUSDT');
+    const symbolInfo = exchangeInfo?.data?.symbols.find((s) => s.symbol === symbol);
+    const [tableHeight, setTableHeight] = useState(() => gridLayoutRowHeight * gridLayoutTableHeight);
 
     return (
         <>
             <ResponsiveReactGridLayout
                 cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
-                rowHeight={GRID_LAYOUT_ROW_HEIGHT}
+                rowHeight={gridLayoutRowHeight}
                 onResize={(grids) => {
                     grids.forEach((grid) => {
-                        if (grid.i === 'table') {
-                            setTableHeight(grid.h * GRID_LAYOUT_ROW_HEIGHT);
-                        }
+                        if (grid.i === 'table') setTableHeight(grid.h * gridLayoutRowHeight);
                     });
                 }}
             >
@@ -37,15 +36,7 @@ const OrderBook = () => {
                     <TradingViewRealTimeChart theme="dark" autosize symbol="BINANCE:BTCUSDT" />
                 </div>
                 <div key="table" data-grid={tableLayout} className="bg-slate-900 overflow-hidden">
-                    <Table
-                        groupedAsks={[]}
-                        groupedBids={[]}
-                        tableHeight={tableHeight}
-                        setGroupByVal={setGroupByVal}
-                        groupByVal={groupByVal}
-                        tableAlignment={tableAlignment}
-                        setTableAlignment={setTableAlignment}
-                    />
+                    <Table tableHeight={tableHeight} symbol={symbol} symbolInfo={symbolInfo} />
                 </div>
                 <div key="tape" data-grid={tapeLayout} className="bg-slate-900 overflow-hidden">
                     <Tape />
