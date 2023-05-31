@@ -32,7 +32,7 @@ const NumberInput = (props: NumberInputPropsType) => {
                     </button>
                     <button
                         onClick={() => {
-                            if (value === 0) return;
+                            if (value === 1) return;
                             if (value > 1000) return;
                             onChange((value) => Number(value) - 1);
                         }}
