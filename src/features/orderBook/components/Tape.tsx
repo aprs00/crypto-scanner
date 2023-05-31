@@ -31,7 +31,7 @@ const Tape = () => {
 
     return (
         <>
-            <div className="flex justify-between border-b border-slate-600 mb-1 text-sm p-1">
+            <div id="drag-handle" className="flex justify-between border-b border-slate-600 mb-1 text-sm p-1">
                 <div className="">PRICE</div>
                 <div className="">SIZE</div>
                 <div className="">Time</div>

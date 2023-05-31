@@ -8,6 +8,10 @@ body {
     background-color: #0c1222 !important;
 }
 
+#drag-handle {
+    @apply cursor-move;
+}
+
 .react-grid-layout {
     position: relative;
     transition: height 200ms ease;

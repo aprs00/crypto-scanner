@@ -76,7 +76,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 </div>
             )}
             <div>
-                <div className="flex border-solid border-b border-slate-700 mb-1">
+                <div id="drag-handle" className="flex border-solid border-b border-slate-700 mb-1">
                     <CustomSelect
                         options={[
                             {label: 'V', value: 'V'},

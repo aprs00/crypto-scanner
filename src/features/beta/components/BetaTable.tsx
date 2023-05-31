@@ -38,6 +38,10 @@ const BetaTable = () => {
         }),
     );
 
+    const isAllFetched = useMemo(() => {
+        return klines.every((item) => item.isLoading === false);
+    }, [klines]);
+
     const calculatePearsonCorrelation = (arr1: TickerCalculationsType, arr2: TickerCalculationsType) => {
         const pSum = arr1.percentages.reduce((acc, _, idx) => acc + arr1.percentages[idx] * arr2.percentages[idx], 0);
 
@@ -78,7 +82,7 @@ const BetaTable = () => {
     };
 
     useEffect(() => {
-        if (klines.length !== betaTickersList.length) return;
+        if (klines.length !== betaTickersList.length || !isAllFetched) return;
         for (let i = 0; i < klines?.length; i++) {
             const percentagePrices: number[] = [];
             for (let j = 0; j < klines[i]?.data?.length; j++) {
@@ -153,10 +157,6 @@ const BetaTable = () => {
             </table>
         );
     }, [betaTickersListCorrelation]);
-
-    const isAllFetched = useMemo(() => {
-        return klines.every((item) => item.isLoading === false);
-    }, [klines]);
 
     if (!isAllFetched)
         return (
