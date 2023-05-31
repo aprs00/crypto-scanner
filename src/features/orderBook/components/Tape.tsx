@@ -24,7 +24,7 @@ const Tape = () => {
                         <div>{streamAggTrade?.data?.q.toString().replace(/\.?0+$/, '')}</div>
                         <TimeDisplay timestamp={new Date(streamAggTrade?.data?.T as number)} />
                     </div>,
-                    ...prev.slice(0, 30),
+                    ...prev.slice(0, 100),
                 ] as ReactNode[],
         );
     }, [streamAggTrade?.data?.T]);
