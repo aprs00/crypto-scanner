@@ -49,7 +49,7 @@ const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
         const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@100ms`);
 
         ws.onopen = () => {
-            console.log('WebSocket connected');
+            console.log('Orderbook WebSocket connected');
         };
 
         ws.onmessage = (event) => {
@@ -76,12 +76,12 @@ const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
         };
 
         ws.onerror = (error) => {
-            console.log('WebSocket error:', error);
+            console.log('Orderbook WebSocket error:', error);
         };
 
         return () => {
             ws.close();
-            console.log('WebSocket disconnected');
+            console.log('Orderbook WebSocket disconnected');
         };
     }, [symbol]);
 
@@ -95,7 +95,7 @@ const useStreamAggTrade = (symbol: string) => {
         const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@aggTrade`);
 
         ws.onopen = () => {
-            console.log('WebSocket connected');
+            console.log('Trades WebSocket connected');
         };
 
         ws.onmessage = (event) => {
@@ -105,12 +105,12 @@ const useStreamAggTrade = (symbol: string) => {
         };
 
         ws.onerror = (error) => {
-            console.log('WebSocket error:', error);
+            console.log('Trades WebSocket error:', error);
         };
 
         return () => {
             ws.close();
-            console.log('WebSocket disconnected');
+            console.log('Trades WebSocket disconnected');
         };
     }, [queryClient, symbol]);
 

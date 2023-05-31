@@ -5,7 +5,7 @@ import OrderBook from './views/OrderBook';
 
 export const orderBookRoute = new Route({
     getParentRoute: () => homeRoute,
-    path: 'order-book',
+    path: '/',
     onLoad: async () => {
         return {};
     },

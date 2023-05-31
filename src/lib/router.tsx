@@ -5,17 +5,8 @@ import {indexRoute} from '@/features/posts/views/index';
 import {orderBookRoute} from '@/features/orderBook/routes';
 import {heatmapRoute} from '@/features/heatmap/routes';
 import {betaRoute} from '@/features/beta/routes';
-// import {postRoute} from '@/features/posts/views/post';
-// import {postsRoute} from '@/features/posts/views/posts';
-// import {postsIndexRoute} from '@/features/posts/views/postsIndex';
 
-const routeTree = homeRoute.addChildren([
-    indexRoute,
-    orderBookRoute,
-    heatmapRoute,
-    betaRoute,
-    // postsRoute.addChildren([postsIndexRoute, postRoute]),
-]);
+const routeTree = homeRoute.addChildren([indexRoute, orderBookRoute, heatmapRoute, betaRoute]);
 
 const router = new ReactRouter({
     routeTree,

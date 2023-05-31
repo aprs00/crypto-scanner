@@ -16,6 +16,7 @@ const NumberInput = (props: NumberInputPropsType) => {
                 onChange={(e) => {
                     console.log(e.target.value);
                     if (isNaN(Number(e.target.value))) return;
+                    if (Number(e.target.value) > 1000) return;
                     onChange(Number(e.target.value));
                 }}
                 placeholder="Ticks"
@@ -24,6 +25,7 @@ const NumberInput = (props: NumberInputPropsType) => {
                 <div className="flex flex-col pr-px">
                     <button
                         onClick={() => {
+                            if (value > 1000) return;
                             onChange((value) => Number(value) + 1);
                         }}
                     >
@@ -32,6 +34,7 @@ const NumberInput = (props: NumberInputPropsType) => {
                     <button
                         onClick={() => {
                             if (value === 0) return;
+                            if (value > 1000) return;
                             onChange((value) => Number(value) - 1);
                         }}
                     >

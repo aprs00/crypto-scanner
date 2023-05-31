@@ -4,7 +4,7 @@ import {homeRoute} from '@/features/home/routes';
 
 const indexRoute = new Route({
     getParentRoute: () => homeRoute,
-    path: '/',
+    path: '/home',
     component: () => {
         return (
             <div className="p-2">

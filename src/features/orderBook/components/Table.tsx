@@ -18,7 +18,13 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     const [tableAlignment, setTableAlignment] = useState('V');
 
     const tickSize = useMemo(() => Number(symbolInfo?.filters[0].tickSize), [symbolInfo]);
-    const groupByVal = useMemo(() => tickSize * numOfTicks, [tickSize]);
+    const groupByVal = useMemo(() => tickSize * numOfTicks, [tickSize, numOfTicks]);
+
+    const tickSizeDecimalPlaces = useMemo(() => {
+        const tickSizeStr = tickSize.toString();
+        const decimalIndex = tickSizeStr.indexOf('.');
+        return decimalIndex === -1 ? 0 : tickSizeStr.length - decimalIndex - 1;
+    }, [tickSize]);
 
     const calculatedNumOfRows = useMemo(() => {
         const divideBy = tableAlignment === 'V' ? 4 : 1;
@@ -49,7 +55,9 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                         style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
                         key={price + quantity}
                     >
-                        <div className={`${tableAlignment === 'H' && type === 'bids' ? 'order-1' : ''}`}>{price}</div>
+                        <div className={`${tableAlignment === 'H' && type === 'bids' ? 'order-1' : ''}`}>
+                            {price.toFixed(tickSizeDecimalPlaces)}
+                        </div>
                         <div>{formattedQuantity}</div>
                     </div>,
                 );
