@@ -14,9 +14,8 @@ const NumberInput = (props: NumberInputPropsType) => {
                 className="w-full bg-slate-800 rounded-sm px-3 h-6 text-left"
                 value={value}
                 onChange={(e) => {
-                    console.log(e.target.value);
                     if (isNaN(Number(e.target.value))) return;
-                    if (Number(e.target.value) > 1000) return;
+                    if (Number(e.target.value) > 1000 || Number(e.target.value) <= 0) return;
                     onChange(Number(e.target.value));
                 }}
                 placeholder="Ticks"
