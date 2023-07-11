@@ -14,7 +14,7 @@ const quantityFormatter = new Intl.NumberFormat(undefined, {
 const OrderBookTable = (props: OrderBookTablePropsType) => {
     const {tableHeight, symbolInfo} = props;
 
-    const [numOfTicks, setNumOfTicks] = useState(() => 1);
+    const [numOfTicks, setNumOfTicks] = useState(() => 15);
     const [tableAlignment, setTableAlignment] = useState('V');
 
     const tickSize = useMemo(() => Number(symbolInfo?.filters[0].tickSize), [symbolInfo]);
