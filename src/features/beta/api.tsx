@@ -17,17 +17,17 @@ const fetchHeatMapData = async (): Promise<any> => {
     const data = [];
 
     // Fetch data from the backend server
-    fetch(backendUrl, { redirect: 'manual' })
-      .then((response) => {
-        if (response.status === 307) {
-          // Handle the redirect manually by fetching from the new URL
-          return fetch(response.headers.get('Location'));
-        } else {
-          return response.json();
-        }
-      })
-      .then((data) => data = data)
-      .catch((error) => console.error('Error fetching data:', error));
+    // fetch(backendUrl, { redirect: 'manual' })
+    //   .then((response) => {
+    //     if (response.status === 307) {
+    //       // Handle the redirect manually by fetching from the new URL
+    //       return fetch(response.headers.get('Location'));
+    //     } else {
+    //       return response.json();
+    //     }
+    //   })
+    //   .then((data) => data = data)
+    //   .catch((error) => console.error('Error fetching data:', error));
 
 }
 

@@ -8,4 +8,4 @@ const Beta = () => {
     );
 };
 
-export default Beta; 
+export default Beta;
