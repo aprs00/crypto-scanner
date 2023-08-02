@@ -12,15 +12,15 @@ export const betaRoute = new Route({
     getParentRoute: () => homeRoute,
     path: 'beta',
     onLoad: async () => {
-        queryClient.getQueriesData({queryKey: ['kline']}).length ||
-            betaTickersList.map((ticker) =>
-                queryClient.prefetchQuery({
-                    queryKey: ['kline', ticker],
-                    queryFn: () => fetchKlines(ticker),
-                }),
-            );
+        // queryClient.getQueriesData({queryKey: ['kline']}).length ||
+        //     betaTickersList.map((ticker) =>
+        //         queryClient.prefetchQuery({
+        //             queryKey: ['kline', ticker],
+        //             queryFn: () => fetchKlines(ticker),
+        //         }),
+        //     );
 
-        return {};
+        // return {};
     },
     component: () => <Beta />,
 });
