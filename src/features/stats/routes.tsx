@@ -4,13 +4,13 @@ import {homeRoute} from '@/features/home/routes';
 import {queryClient} from '@/lib/react-query';
 import {fetchKlines} from './api';
 
-const Beta = lazy(() => import('./views/Beta'));
+const Beta = lazy(() => import('./views/Stats'));
 
 const betaTickersList = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT'];
 
-export const betaRoute = new Route({
+export const statsRoute = new Route({
     getParentRoute: () => homeRoute,
-    path: 'beta',
+    path: 'stats',
     onLoad: async () => {
         // queryClient.getQueriesData({queryKey: ['kline']}).length ||
         //     betaTickersList.map((ticker) =>

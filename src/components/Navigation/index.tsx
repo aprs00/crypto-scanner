@@ -10,14 +10,14 @@ const Navigation = () => {
                 }}
             >
                 Orderbook
-            </Link>{' '}
+            </Link>
             <Link
-                to="/beta"
+                to="/stats"
                 activeProps={{
                     className: 'font-bold',
                 }}
             >
-                Beta
+                Stats
             </Link>
             <Link
                 to="/heatmap"

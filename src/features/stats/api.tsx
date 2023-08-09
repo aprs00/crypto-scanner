@@ -4,31 +4,13 @@ import {useQueries} from '@tanstack/react-query';
 import type {KlinesResponseType} from './types';
 
 const fetchHeatMapData = async (): Promise<any> => {
-    // const data = await ky.get('http://64.225.101.235:8000/pearson-correlation/3m', {
-    //     headers: {
-    //         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-    //     },
-    //     retry: 1
-    // }).json();
-    // return data;
-
-    // rewrite above code using fetch
-    const backendUrl = 'http://64.225.101.235:8000/average-price/select';
-    const data = [];
-
-    // Fetch data from the backend server
-    // fetch(backendUrl, { redirect: 'manual' })
-    //   .then((response) => {
-    //     if (response.status === 307) {
-    //       // Handle the redirect manually by fetching from the new URL
-    //       return fetch(response.headers.get('Location'));
-    //     } else {
-    //       return response.json();
-    //     }
-    //   })
-    //   .then((data) => data = data)
-    //   .catch((error) => console.error('Error fetching data:', error));
-
+    const data = await ky.get('http://64.225.101.235:8000/average-price/select', {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+        },
+        retry: 1
+    }).json();
+    return data;
 }
 
 const useHeatMapData = () => useQueries({

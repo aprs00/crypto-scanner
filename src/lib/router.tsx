@@ -4,9 +4,9 @@ import {homeRoute} from '@/features/home/routes';
 import {indexRoute} from '@/features/posts/views/index';
 import {orderBookRoute} from '@/features/orderBook/routes';
 import {heatmapRoute} from '@/features/heatmap/routes';
-import {betaRoute} from '@/features/beta/routes';
+import {statsRoute} from '@/features/stats/routes';
 
-const routeTree = homeRoute.addChildren([indexRoute, orderBookRoute, heatmapRoute, betaRoute]);
+const routeTree = homeRoute.addChildren([indexRoute, orderBookRoute, heatmapRoute, statsRoute]);
 
 const router = new ReactRouter({
     routeTree,

@@ -1,9 +1,9 @@
-import BetaTable from '../components/BetaTable';
+import BetaHeatmap from '../components/BetaHeatmap';
 
 const Beta = () => {
     return (
         <>
-            <BetaTable />
+            <BetaHeatmap />
         </>
     );
 };

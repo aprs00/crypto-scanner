@@ -8,6 +8,22 @@ body {
     background-color: #0c1222 !important;
 }
 
+/* #heatmap-container div, canvas {
+    @apply w-full
+} */
+
+/* #heatmap-container {
+    width: 100% !important
+}
+
+#heatmap-container div {
+    width: 100% !important
+}
+
+#heatmap-container canvas {
+    width: 100% !important
+} */
+
 #drag-handle {
     @apply cursor-move;
 }
