@@ -4,12 +4,7 @@ import {useQueries} from '@tanstack/react-query';
 import type {KlinesResponseType} from './types';
 
 const fetchHeatMapData = async (): Promise<any> => {
-    const data = await ky.get('http://64.225.101.235:8000/average-price/select', {
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-        },
-        retry: 1
-    }).json();
+    const data = await ky.get('http://49.13.59.156:8000/snippets').json();
     return data;
 }
 
