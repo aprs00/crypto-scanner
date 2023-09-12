@@ -4,6 +4,22 @@ export type TickerCalculationsType = {
     sumSq: number;
 };
 
+export type BetaHeatmapResponseType = {
+    data: [[number, number, number]][];
+    xAxis: string[];
+    yAxis: string[];
+}
+
+export type PriceChangePerDayOfWeekResponseType = {
+    data: {
+        value: number;
+        itemStyle: {
+            color: string
+        }
+    }[];
+    xAxis: string[];
+}
+
 export type KlinesResponseType = [
     number,
     string,

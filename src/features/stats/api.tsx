@@ -1,22 +1,42 @@
 import ky from 'ky';
-import {useQueries} from '@tanstack/react-query';
+import {useQueries, useQuery} from '@tanstack/react-query';
 
-import type {KlinesResponseType} from './types';
+import type {KlinesResponseType, BetaHeatmapResponseType, PriceChangePerDayOfWeekResponseType} from './types';
+import {API_URL} from '@/config/env';
 
-const fetchHeatMapData = async (): Promise<any> => {
-    const data = await ky.get('https://api.crypto-scanner.xyz/stats-select-options').json();
+const fetchPriceChangePerDayOfWeekData = async (duration: string): Promise<PriceChangePerDayOfWeekResponseType> => {
+    const data = (await ky
+        .get(`${API_URL}/average-price/BTCUSDT/${duration}`)
+        .json()) as PriceChangePerDayOfWeekResponseType;
     return data;
-}
+};
 
-const useHeatMapData = () => useQueries({
-    queries: [{
-        queryKey: ['heatmap'],
-        queryFn: () => fetchHeatMapData(),
-        refetchInterval: 120_000,
+const fetchBetaHeatMapData = async (duration: string): Promise<BetaHeatmapResponseType> => {
+    const data = (await ky.get(`${API_URL}/pearson-correlation/${duration}`).json()) as BetaHeatmapResponseType;
+    return data;
+};
+
+const usePriceChangePerDayOfWeek = (duration: string) => {
+    return useQuery({
+        queryKey: ['price-change-per-day-of-week', duration],
+        queryFn: () => fetchPriceChangePerDayOfWeekData(duration),
         cacheTime: 120_000,
+        refetchInterval: 120_000,
+        staleTime: 120_000,
         refetchOnWindowFocus: false,
-    }],
-});
+    });
+};
+
+const useBetaHeatMapData = (duration: string) => {
+    return useQuery({
+        queryKey: ['beta-heatmap-data'],
+        queryFn: () => fetchBetaHeatMapData(duration),
+        cacheTime: 120_000,
+        refetchInterval: 120_000,
+        staleTime: 120_000,
+        refetchOnWindowFocus: false,
+    });
+};
 
 const fetchKlines = async (symbol: string, interval = '1m', limit = 500): Promise<KlinesResponseType> => {
     const data = (await ky
@@ -36,21 +56,4 @@ const useKlines = (symbols: string[]) =>
         })),
     });
 
-export {useKlines, fetchKlines, useHeatMapData};
-
-// [
-//     [
-//       1499040000000,      // Kline open time
-//       "0.01634790",       // Open price
-//       "0.80000000",       // High price
-//       "0.01575800",       // Low price
-//       "0.01577100",       // Close price
-//       "148976.11427815",  // Volume
-//       1499644799999,      // Kline Close time
-//       "2434.19055334",    // Quote asset volume
-//       308,                // Number of trades
-//       "1756.87402397",    // Taker buy base asset volume
-//       "28.46694368",      // Taker buy quote asset volume
-//       "0"                 // Unused field, ignore.
-//     ]
-// ]
+export {useKlines, useBetaHeatMapData, usePriceChangePerDayOfWeek};
