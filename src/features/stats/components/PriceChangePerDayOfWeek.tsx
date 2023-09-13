@@ -14,6 +14,12 @@ const PriceChangePerDayOfWeek = () => {
 
     const option = useMemo(
         () => ({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow',
+                },
+            },
             xAxis: {
                 type: 'category',
                 data: priceChangePerDayOfWeekData?.data?.xAxis,
