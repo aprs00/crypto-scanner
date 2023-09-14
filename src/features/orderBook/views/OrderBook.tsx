@@ -23,7 +23,7 @@ const OrderBook = () => {
     return (
         <>
             <ResponsiveReactGridLayout
-                cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
+                cols={{lg: 12, md: 12, sm: 6, xs: 4, xxs: 2}}
                 rowHeight={gridLayoutRowHeight}
                 draggableHandle="#drag-handle"
                 onResize={(grids) => {

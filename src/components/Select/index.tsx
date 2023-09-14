@@ -58,10 +58,8 @@ const CustomSelect = (props: SelectPropsType) => {
                                         className="cursor-pointer hover:bg-slate-700 px-3 py-1 rounded-sm"
                                     >
                                         {({selected}) => {
-                                            // console.log(selected);
                                             return (
-                                                <div className="">
-                                                    {/* {selected} */}
+                                                <div>
                                                     <div className="flex justify-between">
                                                         <span
                                                             className={`${

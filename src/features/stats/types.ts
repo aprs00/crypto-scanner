@@ -25,6 +25,11 @@ export type SelectOptionsResponseType = {
     label: string;
 }
 
+export type ChartContainerPropsType = {
+    header: JSX.Element;
+    body: JSX.Element;
+};
+
 export type KlinesResponseType = [
     number,
     string,

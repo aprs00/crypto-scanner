@@ -1,6 +1,8 @@
 import {memo, useMemo} from 'react';
 import ReactEcharts from 'echarts-for-react';
 
+import ChartContainer from './ChartContainer';
+
 import {useBetaHeatMapData} from '../api';
 
 const BetaHeatmap = () => {
@@ -57,19 +59,10 @@ const BetaHeatmap = () => {
     );
 
     return (
-        <div className="border-2 border-slate-800 rounded m-1">
-            <div className="flex justify-between items-center pl-3 py-1 rounded-t-xs bg-slate-800">
-                <h3>Pearson correlation</h3>
-                {/* <CustomSelect
-                        options={statsSelectOptions || []}
-                        value={tf as string}
-                        onChange={(e) => {
-                            // setTableAlignment(e as string);
-                        }}
-                    /> */}
-            </div>
-            <ReactEcharts option={option} style={{width: '100%', height: '400px'}}></ReactEcharts>
-        </div>
+        <ChartContainer
+            header={<h3>Pearson correlation</h3>}
+            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
+        />
     );
 };
 

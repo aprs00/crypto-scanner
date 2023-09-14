@@ -1,25 +1,29 @@
 import {memo, useMemo} from 'react';
 import ReactEcharts from 'echarts-for-react';
-import {queryClient} from '@/lib/react-query';
+// import {queryClient} from '@/lib/react-query';
 
-import CustomSelect from '@/components/Select';
+import ChartContainer from './ChartContainer';
+
 import {usePriceChangePerDayOfWeek} from '../api';
-import {SelectOptionsResponseType} from '../types';
 
 const PriceChangePerDayOfWeek = (props: {tf: string}) => {
     const {tf = '1m'} = props;
 
-    const statsSelectOptions = queryClient.getQueryData(['stats-select-options']);
+    // const statsSelectOptions = queryClient.getQueryData(['stats-select-options']);
 
     const priceChangePerDayOfWeekData = usePriceChangePerDayOfWeek(tf);
 
     const option = useMemo(
         () => ({
-            grid: {top: 20, right: 20, bottom: 30, left: 40},
+            grid: {top: 20, right: 20, bottom: 30, left: 45},
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
                     type: 'shadow',
+                },
+                formatter: function (params: any) {
+                    const colorDot = `<span style="display:inline-block; width: 8px; height: 8px; border-radius: 50%; background-color:${params[0].color}; margin-right: 4px;"></span>`;
+                    return colorDot + params[0].name + ': ' + params[0].value + '%';
                 },
             },
             xAxis: {
@@ -28,6 +32,9 @@ const PriceChangePerDayOfWeek = (props: {tf: string}) => {
             },
             yAxis: {
                 type: 'value',
+                axisLabel: {
+                    formatter: '{value}%',
+                },
             },
             series: [
                 {
@@ -40,19 +47,10 @@ const PriceChangePerDayOfWeek = (props: {tf: string}) => {
     );
 
     return (
-        <div className="border-2 border-slate-800 rounded m-1">
-            <div className="flex justify-between items-center pl-3 py-1 rounded-t-xs bg-slate-800">
-                <h3>Average price change per day of week: {tf}</h3>
-                {/* <CustomSelect
-                        options={statsSelectOptions || []}
-                        value={tf as string}
-                        onChange={(e) => {
-                            // setTableAlignment(e as string);
-                        }}
-                    /> */}
-            </div>
-            <ReactEcharts option={option} style={{width: '100%', height: '400px'}}></ReactEcharts>
-        </div>
+        <ChartContainer
+            header={<h3>BTC average price change per day of week for last {tf}</h3>}
+            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
+        />
     );
 };
 
