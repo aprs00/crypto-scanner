@@ -1,26 +1,16 @@
-import {memo, useEffect, useMemo, useRef} from 'react';
-import * as echarts from 'echarts';
+import {memo, useMemo} from 'react';
+import ReactEcharts from 'echarts-for-react';
 
 import {useBetaHeatMapData} from '../api';
 
-type EChartsOption = echarts.EChartsOption;
-
-let option: EChartsOption;
-
 const BetaHeatmap = () => {
-    const chartRef = useRef(null);
-
     const betaHeatmap = useBetaHeatMapData('3m');
-    console.log('betaHeatmap', betaHeatmap);
 
     const option = useMemo(
         () => ({
+            grid: {top: 20, right: 60, bottom: 30, left: 50},
             tooltip: {
                 position: 'top',
-            },
-            grid: {
-                height: '70%',
-                top: '10%',
             },
             xAxis: {
                 type: 'category',
@@ -40,9 +30,12 @@ const BetaHeatmap = () => {
                 min: -1,
                 max: 1,
                 calculable: true,
-                orient: 'horizontal',
-                left: 'center',
-                bottom: '0%',
+                orient: 'vertical',
+                right: '2',
+                bottom: '25%',
+                textStyle: {
+                    color: '#fff',
+                },
             },
             series: [
                 {
@@ -63,20 +56,19 @@ const BetaHeatmap = () => {
         [betaHeatmap.isFetched],
     );
 
-    useEffect(() => {
-        if (!betaHeatmap.isFetched) return;
-        const myChart = echarts.init(chartRef.current!);
-
-        myChart.setOption(option);
-
-        return () => {
-            myChart.dispose();
-        };
-    }, [betaHeatmap.isFetched]);
-
     return (
-        <div id="heatmap-container">
-            <div ref={chartRef} style={{width: '100% !important', height: '400px'}} />
+        <div className="border-2 border-slate-800 rounded m-1">
+            <div className="flex justify-between items-center pl-3 py-1 rounded-t-xs bg-slate-800">
+                <h3>Pearson correlation</h3>
+                {/* <CustomSelect
+                        options={statsSelectOptions || []}
+                        value={tf as string}
+                        onChange={(e) => {
+                            // setTableAlignment(e as string);
+                        }}
+                    /> */}
+            </div>
+            <ReactEcharts option={option} style={{width: '100%', height: '400px'}}></ReactEcharts>
         </div>
     );
 };

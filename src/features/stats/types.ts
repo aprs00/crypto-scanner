@@ -20,6 +20,11 @@ export type PriceChangePerDayOfWeekResponseType = {
     xAxis: string[];
 }
 
+export type SelectOptionsResponseType = {
+    value: string;
+    label: string;
+}
+
 export type KlinesResponseType = [
     number,
     string,
