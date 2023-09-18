@@ -9,9 +9,13 @@ const BetaHeatmap = () => {
     const betaHeatmap = useBetaHeatMapData('6m');
 
     const option = {
-        grid: {top: 20, right: 60, bottom: 30, left: 50},
+        grid: {top: 20, right: 115, bottom: 30, left: 50},
         tooltip: {
             position: 'top',
+            formatter: function (params: any) {
+                const yLabel = betaHeatmap?.data?.xAxis[params?.data?.[1]];
+                return `${params.marker}${yLabel} - ${params.name}: <strong>${params.value[2]}</strong>`;
+            },
         },
         xAxis: {
             type: 'category',
@@ -28,17 +32,19 @@ const BetaHeatmap = () => {
             },
         },
         visualMap: {
+            type: 'piecewise',
             min: -1,
             max: 1,
             calculable: true,
             orient: 'vertical',
             right: '3',
-            bottom: '25%',
+            bottom: '32%',
             textStyle: {
-                color: '#fff',
+                color: '#B8A3A5',
             },
+            precision: 2,
             inRange: {
-                color: ['#d94e5d', '#eac736', '#50a3ba'].reverse(),
+                color: ['#67001f', '#a50f15', '#d6604d', '#f4a582', '#ffffff', '#92c5de', '#4393c3', '#2166ac'],
             },
         },
         series: [

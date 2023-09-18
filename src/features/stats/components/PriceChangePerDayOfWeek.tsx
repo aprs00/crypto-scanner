@@ -21,8 +21,7 @@ const PriceChangePerDayOfWeek = (props: {tf: string}) => {
                 type: 'shadow',
             },
             formatter: function (params: any) {
-                const colorDot = `<span style="display:inline-block; width: 8px; height: 8px; border-radius: 50%; background-color:${params[0].color}; margin-right: 4px;"></span>`;
-                return colorDot + params[0].name + ': ' + params[0].value + '%';
+                return params[0].marker + params[0].name + ': ' + params[0].value + '%';
             },
         },
         xAxis: {
@@ -45,7 +44,7 @@ const PriceChangePerDayOfWeek = (props: {tf: string}) => {
 
     return (
         <ChartContainer
-            header={<h3>BTC average price change per day of week for last {tf}</h3>}
+            header={<h3>BTC average price change per day of week: {tf}</h3>}
             body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
         />
     );
