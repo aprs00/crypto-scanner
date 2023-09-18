@@ -32,10 +32,13 @@ const BetaHeatmap = () => {
             max: 1,
             calculable: true,
             orient: 'vertical',
-            right: '2',
+            right: '3',
             bottom: '25%',
             textStyle: {
                 color: '#fff',
+            },
+            inRange: {
+                color: ['#d94e5d', '#eac736', '#50a3ba'].reverse(),
             },
         },
         series: [
