@@ -19,22 +19,26 @@ const Beta = () => {
     const gridLayouts = [
         {
             gridLayout: betaHeatmapLayout1,
-            component: <BetaHeatmap tf="4h" options={statsSelectOptions?.data?.all || []} />,
+            component: <BetaHeatmap tf="4h" selectOptions={statsSelectOptions?.data?.all || []} />,
             key: 'betaHeatmap1',
         },
         {
             gridLayout: betaHeatmapLayout2,
-            component: <BetaHeatmap tf="1w" options={statsSelectOptions?.data?.all || []} />,
+            component: <BetaHeatmap tf="1w" selectOptions={statsSelectOptions?.data?.all || []} />,
             key: 'betaHeatmap2',
         },
         {
             gridLayout: priceChangePerDayOfWeek1,
-            component: <PriceChangePerDayOfWeek tf="2w" options={statsSelectOptions?.data?.htf || []} />,
+            component: (
+                <PriceChangePerDayOfWeek tf="2w" symbol="BTCUSDT" selectOptions={statsSelectOptions?.data?.htf || []} />
+            ),
             key: 'priceChangePerDayOfWeek1',
         },
         {
             gridLayout: priceChangePerDayOfWeek2,
-            component: <PriceChangePerDayOfWeek tf="1m" options={statsSelectOptions?.data?.htf || []} />,
+            component: (
+                <PriceChangePerDayOfWeek tf="1m" symbol="ETHUSDT" selectOptions={statsSelectOptions?.data?.htf || []} />
+            ),
             key: 'priceChangePerDayOfWeek2',
         },
     ];

@@ -6,35 +6,47 @@ import type {
     BetaHeatmapResponseType,
     PriceChangePerDayOfWeekResponseType,
     SelectOptionsResponseType,
+    SelectOptionType,
 } from './types';
 import {API_URL} from '@/config/env';
 
-const fetchPriceChangePerDayOfWeekData = async (duration: string): Promise<PriceChangePerDayOfWeekResponseType> => {
+const fetchPriceChangePerDayOfWeekData = async (symbol: string, duration: string) => {
     const data = (await ky
-        .get(`${API_URL}/average-price/BTCUSDT/${duration}`)
+        .get(`${API_URL}/average-price/${symbol}/${duration}`)
         .json()) as PriceChangePerDayOfWeekResponseType;
     return data;
 };
 
-const fetchBetaHeatmapData = async (duration: string): Promise<BetaHeatmapResponseType> => {
-    const data = (await ky.get(`${API_URL}/pearson-correlation/${duration}`).json()) as BetaHeatmapResponseType;
-    return data;
-};
-
-const fetchStatsSelectOptions = async (): Promise<SelectOptionsResponseType> => {
-    const data = (await ky.get(`${API_URL}/stats-select-options`).json()) as SelectOptionsResponseType;
-    return data;
-};
-
-const usePriceChangePerDayOfWeek = (duration: string) => {
+const usePriceChangePerDayOfWeek = (symbol: string, duration: string) => {
     return useQuery({
-        queryKey: ['price-change-per-day-of-week', duration],
-        queryFn: () => fetchPriceChangePerDayOfWeekData(duration),
+        queryKey: ['price-change-per-day-of-week', duration, symbol],
+        queryFn: () => fetchPriceChangePerDayOfWeekData(symbol, duration),
         cacheTime: 120_000,
         refetchInterval: 120_000,
         staleTime: 120_000,
         refetchOnWindowFocus: false,
     });
+};
+
+const fetchTickersOptions = async () => {
+    const data = (await ky.get(`${API_URL}/tickers-options`).json()) as SelectOptionType[];
+    return data;
+};
+
+const useFetchTickersOptions = () => {
+    return useQuery({
+        queryKey: ['ticker-options'],
+        queryFn: () => fetchTickersOptions(),
+        cacheTime: 60 * 60 * 1000,
+        refetchInterval: 60 * 60 * 1000,
+        staleTime: 60 * 60 * 1000,
+        refetchOnWindowFocus: false,
+    });
+};
+
+const fetchBetaHeatmapData = async (duration: string) => {
+    const data = (await ky.get(`${API_URL}/pearson-correlation/${duration}`).json()) as BetaHeatmapResponseType;
+    return data;
 };
 
 const useBetaHeatmapData = (duration: string) => {
@@ -48,6 +60,11 @@ const useBetaHeatmapData = (duration: string) => {
     });
 };
 
+const fetchStatsSelectOptions = async () => {
+    const data = (await ky.get(`${API_URL}/stats-select-options`).json()) as SelectOptionsResponseType;
+    return data;
+};
+
 const useStatsSelectOptions = () => {
     return useQuery({
         queryKey: ['stats-select-options'],
@@ -59,7 +76,7 @@ const useStatsSelectOptions = () => {
     });
 };
 
-const fetchKlines = async (symbol: string, interval = '1m', limit = 500): Promise<KlinesResponseType> => {
+const fetchKlines = async (symbol: string, interval = '1m', limit = 500) => {
     const data = (await ky
         .get(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`)
         .json()) as KlinesResponseType;
@@ -77,4 +94,4 @@ const useKlines = (symbols: string[]) =>
         })),
     });
 
-export {useKlines, useBetaHeatmapData, usePriceChangePerDayOfWeek, useStatsSelectOptions};
+export {useKlines, useBetaHeatmapData, usePriceChangePerDayOfWeek, useStatsSelectOptions, useFetchTickersOptions};

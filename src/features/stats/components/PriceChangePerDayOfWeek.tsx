@@ -4,15 +4,17 @@ import ReactEcharts from 'echarts-for-react';
 import ChartContainer from './ChartContainer';
 import CustomSelect from '@/components/Select';
 
-import {usePriceChangePerDayOfWeek} from '../api';
+import {usePriceChangePerDayOfWeek, useFetchTickersOptions} from '../api';
 import type {PriceChangePerDayOfWeekPropsType} from '../types';
 
 const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
-    const {tf, options} = props;
+    const {tf, symbol, selectOptions} = props;
 
     const [selectedTf, setSelectedTf] = useState(tf);
+    const [selectedTicker, setSelectedTicker] = useState(symbol);
 
-    const priceChangePerDayOfWeekData = usePriceChangePerDayOfWeek(selectedTf);
+    const tickersOptions = useFetchTickersOptions();
+    const priceChangePerDayOfWeekData = usePriceChangePerDayOfWeek(symbol, selectedTf);
 
     const option = {
         grid: {top: 20, right: 20, bottom: 30, left: 45},
@@ -47,10 +49,16 @@ const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
         <ChartContainer
             header={
                 <>
-                    <h3>BTC average price change per day of week: {tf}</h3>
-                    <div className="z-50">
+                    <h3>Average price change per day of week</h3>
+                    <div className="z-50 flex gap-2">
                         <CustomSelect
-                            options={options || []}
+                            options={tickersOptions?.data || []}
+                            value={selectedTicker}
+                            onChange={setSelectedTicker}
+                            classes="w-32"
+                        />
+                        <CustomSelect
+                            options={selectOptions || []}
                             value={selectedTf}
                             onChange={(e) => {
                                 setSelectedTf(e as string);

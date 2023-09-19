@@ -8,7 +8,7 @@ import {useBetaHeatmapData} from '../api';
 import type {BetaHeatmapPropsType} from '../types';
 
 const BetaHeatmap = (props: BetaHeatmapPropsType) => {
-    const {options, tf} = props;
+    const {selectOptions, tf} = props;
 
     const [selectedTf, setSelectedTf] = useState(tf);
 
@@ -75,16 +75,9 @@ const BetaHeatmap = (props: BetaHeatmapPropsType) => {
         <ChartContainer
             header={
                 <>
-                    <h3>Pearson correlation</h3>{' '}
+                    <h3>Pearson correlation</h3>
                     <div className="z-50">
-                        <CustomSelect
-                            options={options || []}
-                            value={selectedTf}
-                            onChange={(e) => {
-                                // setTableAlignment(e as string);
-                                setSelectedTf(e as string);
-                            }}
-                        />
+                        <CustomSelect options={selectOptions || []} value={selectedTf} onChange={setSelectedTf} />
                     </div>
                 </>
             }

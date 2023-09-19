@@ -6,14 +6,17 @@ import type {SelectPropsType} from './types';
 import CheckIcon from './CheckIcon';
 
 const CustomSelect = (props: SelectPropsType) => {
-    const {options, value, onChange} = props;
+    const {options, value, onChange, classes = 'w-20'} = props;
 
     return (
         <Listbox value={value} onChange={onChange}>
             {({open}) => (
-                <div className="w-20">
+                <div className={`${classes}`}>
                     <div>
-                        <Listbox.Button className="w-full border rounded-sm border-slate-500 px-2 h-7 text-left relative">
+                        <Listbox.Button
+                            className="w-full rounded-sm border border-slate-500 px-2 h-7 text-left relative"
+                            // style={{boxShadow: 'inset 1px 1px 10px rgba(2, 6, 23, 0.7)'}}
+                        >
                             <div className="flex items-center">
                                 {options
                                     ?.filter((option) => value === option.value)
