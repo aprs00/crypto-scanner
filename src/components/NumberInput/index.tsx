@@ -9,7 +9,7 @@ const NumberInput = (props: NumberInputPropsType) => {
     const {value, onChange} = props;
 
     return (
-        <div className="w-20">
+        <div className="w-20 relative">
             <input
                 className="w-full border bg-slate-800 rounded-sm border-slate-500 px-2 h-7 text-left relative"
                 value={value}

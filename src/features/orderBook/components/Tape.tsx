@@ -10,6 +10,7 @@ const Tape = () => {
 
     useEffect(() => {
         // if (!streamAggTrade || (Number(streamAggTrade?.data?.q) || 0) <= 0.1) return;
+        if (!streamAggTrade?.data?.p) return;
         setTapeTable(
             (prev) =>
                 [
