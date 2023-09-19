@@ -1,15 +1,21 @@
-import {memo, useMemo} from 'react';
+import {memo, useState} from 'react';
 import ReactEcharts from 'echarts-for-react';
 
+import CustomSelect from '@/components/Select';
 import ChartContainer from './ChartContainer';
 
-import {useBetaHeatMapData} from '../api';
+import {useBetaHeatmapData} from '../api';
+import type {BetaHeatmapPropsType} from '../types';
 
-const BetaHeatmap = () => {
-    const betaHeatmap = useBetaHeatMapData('6m');
+const BetaHeatmap = (props: BetaHeatmapPropsType) => {
+    const {options, tf} = props;
+
+    const [selectedTf, setSelectedTf] = useState(tf);
+
+    const betaHeatmap = useBetaHeatmapData(selectedTf);
 
     const option = {
-        grid: {top: 20, right: 115, bottom: 30, left: 50},
+        grid: {top: 20, right: 82, bottom: 30, left: 50},
         tooltip: {
             position: 'top',
             formatter: function (params: any) {
@@ -32,16 +38,17 @@ const BetaHeatmap = () => {
             },
         },
         visualMap: {
-            type: 'piecewise',
+            // type: 'piecewise',
             min: -1,
             max: 1,
             calculable: true,
             orient: 'vertical',
             right: '3',
-            bottom: '32%',
+            bottom: '25%',
             textStyle: {
                 color: '#B8A3A5',
             },
+            splitNumber: 10,
             precision: 2,
             inRange: {
                 color: ['#67001f', '#a50f15', '#d6604d', '#f4a582', '#ffffff', '#92c5de', '#4393c3', '#2166ac'],
@@ -66,7 +73,21 @@ const BetaHeatmap = () => {
 
     return (
         <ChartContainer
-            header={<h3>Pearson correlation: 6m</h3>}
+            header={
+                <>
+                    <h3>Pearson correlation</h3>{' '}
+                    <div className="z-50">
+                        <CustomSelect
+                            options={options || []}
+                            value={selectedTf}
+                            onChange={(e) => {
+                                // setTableAlignment(e as string);
+                                setSelectedTf(e as string);
+                            }}
+                        />
+                    </div>
+                </>
+            }
             body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
         />
     );

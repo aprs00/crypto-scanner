@@ -16,13 +16,13 @@ const fetchPriceChangePerDayOfWeekData = async (duration: string): Promise<Price
     return data;
 };
 
-const fetchBetaHeatMapData = async (duration: string): Promise<BetaHeatmapResponseType> => {
+const fetchBetaHeatmapData = async (duration: string): Promise<BetaHeatmapResponseType> => {
     const data = (await ky.get(`${API_URL}/pearson-correlation/${duration}`).json()) as BetaHeatmapResponseType;
     return data;
 };
 
-const fetchStatsSelectOptions = async (): Promise<SelectOptionsResponseType[]> => {
-    const data = (await ky.get(`${API_URL}/stats-select-options`).json()) as SelectOptionsResponseType[];
+const fetchStatsSelectOptions = async (): Promise<SelectOptionsResponseType> => {
+    const data = (await ky.get(`${API_URL}/stats-select-options`).json()) as SelectOptionsResponseType;
     return data;
 };
 
@@ -37,10 +37,10 @@ const usePriceChangePerDayOfWeek = (duration: string) => {
     });
 };
 
-const useBetaHeatMapData = (duration: string) => {
+const useBetaHeatmapData = (duration: string) => {
     return useQuery({
-        queryKey: ['beta-heatmap-data'],
-        queryFn: () => fetchBetaHeatMapData(duration),
+        queryKey: ['beta-heatmap-data', duration],
+        queryFn: () => fetchBetaHeatmapData(duration),
         cacheTime: 120_000,
         refetchInterval: 120_000,
         staleTime: 120_000,
@@ -77,4 +77,4 @@ const useKlines = (symbols: string[]) =>
         })),
     });
 
-export {useKlines, useBetaHeatMapData, usePriceChangePerDayOfWeek, useStatsSelectOptions};
+export {useKlines, useBetaHeatmapData, usePriceChangePerDayOfWeek, useStatsSelectOptions};

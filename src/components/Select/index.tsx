@@ -11,9 +11,9 @@ const CustomSelect = (props: SelectPropsType) => {
     return (
         <Listbox value={value} onChange={onChange}>
             {({open}) => (
-                <div className="w-20 m-1">
-                    <div className="">
-                        <Listbox.Button className="w-full bg-slate-800 rounded-sm px-3 h-6 text-left relative">
+                <div className="w-20">
+                    <div>
+                        <Listbox.Button className="w-full border rounded-sm border-slate-500 px-2 h-7 text-left relative">
                             <div className="flex items-center">
                                 {options
                                     ?.filter((option) => value === option.value)
@@ -50,12 +50,12 @@ const CustomSelect = (props: SelectPropsType) => {
                         leaveTo="transform opacity-0 scale-95"
                     >
                         <div className="relative">
-                            <Listbox.Options className="bg-slate-800 rounded-sm absolute w-full px-1 py-1">
+                            <Listbox.Options className="bg-slate-800 rounded-sm absolute w-full px-1 py-1 mt-2 border border-slate-500">
                                 {options.map((item) => (
                                     <Listbox.Option
                                         key={item.value.toString()}
                                         value={item.value}
-                                        className="cursor-pointer hover:bg-slate-700 px-3 py-1 rounded-sm"
+                                        className="cursor-pointer hover:bg-slate-700 px-2 py-1 rounded-sm"
                                     >
                                         {({selected}) => {
                                             return (

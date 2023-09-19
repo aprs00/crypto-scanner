@@ -20,15 +20,31 @@ export type PriceChangePerDayOfWeekResponseType = {
     xAxis: string[];
 }
 
-export type SelectOptionsResponseType = {
+export type SelectOptionType = {
     value: string;
     label: string;
+}
+
+export type SelectOptionsResponseType = {
+    all: SelectOptionType[];
+    ltf: SelectOptionType[]
+    htf: SelectOptionType[]
 }
 
 export type ChartContainerPropsType = {
     header: JSX.Element;
     body: JSX.Element;
 };
+
+export type BetaHeatmapPropsType = {
+    options: SelectOptionType[];
+    tf: string;
+}
+
+export type PriceChangePerDayOfWeekPropsType = {
+    options: SelectOptionType[];
+    tf: string;
+}
 
 export type KlinesResponseType = [
     number,

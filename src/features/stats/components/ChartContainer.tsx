@@ -7,7 +7,7 @@ const ChartContainer = (props: ChartContainerPropsType) => {
 
     return (
         <div className="border-4 border-slate-800 rounded h-full">
-            <div id="drag-handle" className="flex justify-between items-center pl-2 py-1 bg-slate-800">
+            <div id="drag-handle" className="flex justify-between items-center pb-1 bg-slate-800">
                 {header}
             </div>
             {body}

@@ -1,17 +1,18 @@
-import {memo, useMemo} from 'react';
+import {memo, useState} from 'react';
 import ReactEcharts from 'echarts-for-react';
-// import {queryClient} from '@/lib/react-query';
 
 import ChartContainer from './ChartContainer';
+import CustomSelect from '@/components/Select';
 
 import {usePriceChangePerDayOfWeek} from '../api';
+import type {PriceChangePerDayOfWeekPropsType} from '../types';
 
-const PriceChangePerDayOfWeek = (props: {tf: string}) => {
-    const {tf = '1m'} = props;
+const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
+    const {tf, options} = props;
 
-    // const statsSelectOptions = queryClient.getQueryData(['stats-select-options']);
+    const [selectedTf, setSelectedTf] = useState(tf);
 
-    const priceChangePerDayOfWeekData = usePriceChangePerDayOfWeek(tf);
+    const priceChangePerDayOfWeekData = usePriceChangePerDayOfWeek(selectedTf);
 
     const option = {
         grid: {top: 20, right: 20, bottom: 30, left: 45},
@@ -44,7 +45,20 @@ const PriceChangePerDayOfWeek = (props: {tf: string}) => {
 
     return (
         <ChartContainer
-            header={<h3>BTC average price change per day of week: {tf}</h3>}
+            header={
+                <>
+                    <h3>BTC average price change per day of week: {tf}</h3>
+                    <div className="z-50">
+                        <CustomSelect
+                            options={options || []}
+                            value={selectedTf}
+                            onChange={(e) => {
+                                setSelectedTf(e as string);
+                            }}
+                        />
+                    </div>
+                </>
+            }
             body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
         />
     );

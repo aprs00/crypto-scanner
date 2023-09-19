@@ -30,14 +30,14 @@ const Tape = () => {
     }, [streamAggTrade?.data?.T]);
 
     return (
-        <>
-            <div id="drag-handle" className="flex justify-between border-b border-slate-600 mb-1 text-sm p-1">
+        <div className="border-4 border-slate-800 rounded h-full">
+            <div id="drag-handle" className="flex items-center justify-between px-1 pb-1 bg-slate-800">
                 <div className="">PRICE</div>
                 <div className="">SIZE</div>
                 <div className="">Time</div>
             </div>
             <div>{tapeTable}</div>
-        </>
+        </div>
     );
 };
 

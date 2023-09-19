@@ -6,38 +6,38 @@ import PriceChangePerDayOfWeek from '../components/PriceChangePerDayOfWeek';
 import {useStatsSelectOptions} from '../api';
 
 const gridLayoutRowHeight = 30;
-const betaHeatMapLayout = {x: 0, y: 0, w: 12, h: 12};
+const betaHeatmapLayout1 = {x: 0, y: 0, w: 6, h: 12};
+const betaHeatmapLayout2 = {x: 6, y: 0, w: 6, h: 12};
 const priceChangePerDayOfWeek1 = {x: 0, y: 12, w: 6, h: 12};
 const priceChangePerDayOfWeek2 = {x: 6, y: 12, w: 6, h: 12};
-const priceChangePerDayOfWeek3 = {x: 0, y: 24, w: 12, h: 12};
-
-const gridLayouts = [
-    {
-        gridLayout: betaHeatMapLayout,
-        component: <BetaHeatmap />,
-        key: 'betaHeatMap',
-    },
-    {
-        gridLayout: priceChangePerDayOfWeek1,
-        component: <PriceChangePerDayOfWeek tf="2w" />,
-        key: 'priceChangePerDayOfWeek1',
-    },
-    {
-        gridLayout: priceChangePerDayOfWeek2,
-        component: <PriceChangePerDayOfWeek tf="1m" />,
-        key: 'priceChangePerDayOfWeek2',
-    },
-    {
-        gridLayout: priceChangePerDayOfWeek3,
-        component: <PriceChangePerDayOfWeek tf="6m" />,
-        key: 'priceChangePerDayOfWeek3',
-    },
-];
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const Beta = () => {
     const statsSelectOptions = useStatsSelectOptions();
+
+    const gridLayouts = [
+        {
+            gridLayout: betaHeatmapLayout1,
+            component: <BetaHeatmap tf="4h" options={statsSelectOptions?.data?.all || []} />,
+            key: 'betaHeatmap1',
+        },
+        {
+            gridLayout: betaHeatmapLayout2,
+            component: <BetaHeatmap tf="1w" options={statsSelectOptions?.data?.all || []} />,
+            key: 'betaHeatmap2',
+        },
+        {
+            gridLayout: priceChangePerDayOfWeek1,
+            component: <PriceChangePerDayOfWeek tf="2w" options={statsSelectOptions?.data?.htf || []} />,
+            key: 'priceChangePerDayOfWeek1',
+        },
+        {
+            gridLayout: priceChangePerDayOfWeek2,
+            component: <PriceChangePerDayOfWeek tf="1m" options={statsSelectOptions?.data?.htf || []} />,
+            key: 'priceChangePerDayOfWeek2',
+        },
+    ];
 
     return (
         <ResponsiveReactGridLayout

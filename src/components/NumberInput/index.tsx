@@ -9,9 +9,9 @@ const NumberInput = (props: NumberInputPropsType) => {
     const {value, onChange} = props;
 
     return (
-        <div className="w-20 relative m-1">
+        <div className="w-20">
             <input
-                className="w-full bg-slate-800 rounded-sm px-3 h-6 text-left"
+                className="w-full border bg-slate-800 rounded-sm border-slate-500 px-2 h-7 text-left relative"
                 value={value}
                 onChange={(e) => {
                     if (isNaN(Number(e.target.value))) return;

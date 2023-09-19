@@ -75,8 +75,8 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                     <Spinner />
                 </div>
             )}
-            <div>
-                <div id="drag-handle" className="flex border-solid border-b border-slate-700 mb-1">
+            <div className="border-4 border-slate-800 rounded h-full">
+                <div id="drag-handle" className="flex items-center bg-slate-800 gap-1 pb-1">
                     <CustomSelect
                         options={[
                             {label: 'V', value: 'V'},
