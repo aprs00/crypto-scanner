@@ -29,7 +29,8 @@
         "ky": "^0.33.3",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "react-grid-layout": "^1.3.4"
+        "react-grid-layout": "^1.3.4",
+        "vite-plugin-svgr": "^4.0.0"
     },
     "devDependencies": {
         "@testing-library/react-hooks": "^8.0.1",

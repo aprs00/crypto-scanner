@@ -3,6 +3,8 @@ import {memo, useMemo, useCallback, useState} from 'react';
 import NumberInput from '@/components/NumberInput';
 import Spinner from '@/components/Spinner';
 import CustomSelect from '@/components/Select';
+import DraggableLogo from '@/assets/svg/draggable.svg?react';
+
 import {useStreamTicker} from '../api';
 import {tableBackgroundStyle} from '../utils';
 import type {OrderBookTablePropsType} from '../types';
@@ -51,7 +53,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                     <div
                         className={`grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5 ${
                             tableAlignment === 'H' && type === 'bids' ? 'text-right' : ''
-                        }`}
+                        } rounded-sm`}
                         style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
                         key={price + quantity}
                     >
@@ -75,19 +77,22 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                     <Spinner />
                 </div>
             )}
-            <div className="border-4 border-slate-800 rounded h-full">
-                <div id="drag-handle" className="flex items-center bg-slate-800 gap-2 pb-1">
-                    <CustomSelect
-                        options={[
-                            {label: 'V', value: 'V'},
-                            {label: 'H', value: 'H'},
-                        ]}
-                        value={tableAlignment}
-                        onChange={(e) => {
-                            setTableAlignment(e as string);
-                        }}
-                    />
-                    <NumberInput value={numOfTicks} onChange={(e) => setNumOfTicks(e)} />
+            <div className="border-4 border-slate-800 rounded h-full z-50">
+                <div className="flex items-center bg-slate-800 pb-1 justify-between">
+                    <DraggableLogo id="drag-handle" />
+                    <div className="flex items-center gap-2">
+                        <CustomSelect
+                            options={[
+                                {label: 'V', value: 'V'},
+                                {label: 'H', value: 'H'},
+                            ]}
+                            value={tableAlignment}
+                            onChange={(e) => {
+                                setTableAlignment(e as string);
+                            }}
+                        />
+                        <NumberInput value={numOfTicks} onChange={(e) => setNumOfTicks(e)} />
+                    </div>
                 </div>
                 <div className={`m-1 ${tableAlignment === 'H' ? 'flex flex-row-reverse' : ''}`}>
                     <div className="flex flex-1 flex-col-reverse">{orderBookTable(groupedAsks, 'asks')}</div>
@@ -102,11 +107,3 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 };
 
 export default memo(OrderBookTable);
-
-{
-    /* <div className="my-4 text-xl">
-{parseFloat(streamAggTradePrice || '0')
-.toString()
-.replace(/\.?0+$/, '')}
-</div> */
-}

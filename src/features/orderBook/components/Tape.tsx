@@ -43,13 +43,3 @@ const Tape = () => {
 };
 
 export default memo(Tape);
-
-{
-    /* 
-<div className="my-4 text-xl">
-{parseFloat(streamAggTradePrice || '0')
-.toString()
-.replace(/\.?0+$/, '')}
-</div> 
-*/
-}
