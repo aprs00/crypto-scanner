@@ -3,7 +3,7 @@ import {memo, useMemo, useCallback, useState} from 'react';
 import NumberInput from '@/components/NumberInput';
 import Spinner from '@/components/Spinner';
 import CustomSelect from '@/components/Select';
-import DraggableLogo from '@/assets/svg/draggable.svg?react';
+import DraggableIcon from '@/assets/svg/draggable.svg?react';
 
 import {useStreamTicker} from '../api';
 import {tableBackgroundStyle} from '../utils';
@@ -79,7 +79,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
             )}
             <div className="border-4 border-slate-800 rounded h-full z-50">
                 <div className="flex items-center bg-slate-800 pb-1 justify-between">
-                    <DraggableLogo id="drag-handle" />
+                    <DraggableIcon id="drag-handle" />
                     <div className="flex items-center gap-2">
                         <CustomSelect
                             options={[
