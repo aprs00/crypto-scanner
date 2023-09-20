@@ -14,7 +14,7 @@ const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
     const [selectedTicker, setSelectedTicker] = useState(symbol);
 
     const tickersOptions = useFetchTickersOptions();
-    const priceChangePerDayOfWeekData = usePriceChangePerDayOfWeek(symbol, selectedTf);
+    const priceChangePerDayOfWeekData = usePriceChangePerDayOfWeek(selectedTicker, selectedTf);
 
     const option = {
         grid: {top: 20, right: 20, bottom: 30, left: 45},
