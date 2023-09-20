@@ -51,9 +51,9 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 const formattedQuantity = quantityFormatter.format(Number(quantity));
                 rows.push(
                     <div
-                        className={`grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5 ${
+                        className={`grid grid-cols-2 mb-0.5 rounded text-slate-200 text-sm p-0.5 ${
                             tableAlignment === 'H' && type === 'bids' ? 'text-right' : ''
-                        } rounded-sm`}
+                        }`}
                         style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
                         key={price + quantity}
                     >
