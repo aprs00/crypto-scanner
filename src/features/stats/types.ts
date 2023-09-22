@@ -37,14 +37,30 @@ export type ChartContainerPropsType = {
 };
 
 export type BetaHeatmapPropsType = {
-    selectOptions: SelectOptionType[];
     tf: string;
+    timeFrameOptions: SelectOptionType[];
 }
 
 export type PriceChangePerDayOfWeekPropsType = {
     tf: string;
     symbol: string;
-    selectOptions: SelectOptionType[];
+    timeFrameOptions: SelectOptionType[];
+    tickerOptions: SelectOptionType[];
+}
+
+export type ScatterPropsType = {
+    timeFrameOptions: SelectOptionType[];
+    xAxis: string;
+    yAxis: string;
+    tf: string;
+}
+
+export type ZScoreMatrixResponseType = {
+    type: string;
+    name: string;
+    data: [string, string][],
+    color: string;
+    symbolSize: number;
 }
 
 export type KlinesResponseType = [

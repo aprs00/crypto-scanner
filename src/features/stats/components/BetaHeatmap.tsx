@@ -8,7 +8,7 @@ import {useBetaHeatmapData} from '../api';
 import type {BetaHeatmapPropsType} from '../types';
 
 const BetaHeatmap = (props: BetaHeatmapPropsType) => {
-    const {selectOptions, tf} = props;
+    const {timeFrameOptions, tf} = props;
 
     const [selectedTf, setSelectedTf] = useState(tf);
 
@@ -77,7 +77,7 @@ const BetaHeatmap = (props: BetaHeatmapPropsType) => {
                 <>
                     <h3>Pearson correlation</h3>
                     <div className="z-50">
-                        <CustomSelect options={selectOptions || []} value={selectedTf} onChange={setSelectedTf} />
+                        <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
                     </div>
                 </>
             }

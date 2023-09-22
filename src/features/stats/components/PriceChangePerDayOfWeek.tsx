@@ -4,16 +4,15 @@ import ReactEcharts from 'echarts-for-react';
 import ChartContainer from './ChartContainer';
 import CustomSelect from '@/components/Select';
 
-import {usePriceChangePerDayOfWeek, useFetchTickersOptions} from '../api';
+import {usePriceChangePerDayOfWeek} from '../api';
 import type {PriceChangePerDayOfWeekPropsType} from '../types';
 
 const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
-    const {tf, symbol, selectOptions} = props;
+    const {tf, symbol, timeFrameOptions, tickerOptions} = props;
 
     const [selectedTf, setSelectedTf] = useState(tf);
     const [selectedTicker, setSelectedTicker] = useState(symbol);
 
-    const tickersOptions = useFetchTickersOptions();
     const priceChangePerDayOfWeekData = usePriceChangePerDayOfWeek(selectedTicker, selectedTf);
 
     const option = {
@@ -36,6 +35,11 @@ const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
             axisLabel: {
                 formatter: '{value}%',
             },
+            splitLine: {
+                lineStyle: {
+                    color: '#334155',
+                },
+            },
         },
         series: [
             {
@@ -52,18 +56,12 @@ const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
                     <h3>Average price change per day of week</h3>
                     <div className="z-50 flex gap-2">
                         <CustomSelect
-                            options={tickersOptions?.data || []}
+                            options={tickerOptions}
                             value={selectedTicker}
                             onChange={setSelectedTicker}
                             classes="w-32"
                         />
-                        <CustomSelect
-                            options={selectOptions || []}
-                            value={selectedTf}
-                            onChange={(e) => {
-                                setSelectedTf(e as string);
-                            }}
-                        />
+                        <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
                     </div>
                 </>
             }

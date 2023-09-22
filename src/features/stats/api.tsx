@@ -1,5 +1,5 @@
 import ky from 'ky';
-import {useQueries, useQuery} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 
 import type {
     KlinesResponseType,
@@ -7,6 +7,7 @@ import type {
     PriceChangePerDayOfWeekResponseType,
     SelectOptionsResponseType,
     SelectOptionType,
+    ZScoreMatrixResponseType,
 } from './types';
 import {API_URL} from '@/config/env';
 
@@ -60,6 +61,26 @@ const useBetaHeatmapData = (duration: string) => {
     });
 };
 
+const fetchZScoreMatrix = async (xAxis: string, yAxis: string, duration: string) => {
+    const url = new URL(`z-score-matrix/${duration}`, API_URL);
+    url.searchParams.set('x_axis', xAxis);
+    url.searchParams.set('y_axis', yAxis);
+
+    const data = (await ky.get(url).json()) as ZScoreMatrixResponseType[];
+    return data;
+};
+
+const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
+    return useQuery({
+        queryKey: ['z-score-matrix', xAxis, yAxis, duration],
+        queryFn: () => fetchZScoreMatrix(xAxis, yAxis, duration),
+        cacheTime: 120_000,
+        refetchInterval: 120_000,
+        staleTime: 120_000,
+        refetchOnWindowFocus: false,
+    });
+};
+
 const fetchStatsSelectOptions = async () => {
     const data = (await ky.get(`${API_URL}/stats-select-options`).json()) as SelectOptionsResponseType;
     return data;
@@ -76,22 +97,4 @@ const useStatsSelectOptions = () => {
     });
 };
 
-const fetchKlines = async (symbol: string, interval = '1m', limit = 500) => {
-    const data = (await ky
-        .get(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`)
-        .json()) as KlinesResponseType;
-    return data;
-};
-
-const useKlines = (symbols: string[]) =>
-    useQueries({
-        queries: symbols.map((ticker: string) => ({
-            queryKey: ['kline', ticker],
-            queryFn: () => fetchKlines(ticker),
-            refetchInterval: 120_000,
-            cacheTime: 120_000,
-            refetchOnWindowFocus: false,
-        })),
-    });
-
-export {useKlines, useBetaHeatmapData, usePriceChangePerDayOfWeek, useStatsSelectOptions, useFetchTickersOptions};
+export {useBetaHeatmapData, usePriceChangePerDayOfWeek, useStatsSelectOptions, useFetchTickersOptions, useZScoreMatrix};
