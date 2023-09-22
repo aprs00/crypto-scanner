@@ -1,9 +1,3 @@
-export type TickerCalculationsType = {
-    percentages: number[];
-    sum: number;
-    sumSq: number;
-};
-
 export type BetaHeatmapResponseType = {
     data: [[number, number, number]][];
     xAxis: string[];
@@ -62,18 +56,3 @@ export type ZScoreMatrixResponseType = {
     color: string;
     symbolSize: number;
 }
-
-export type KlinesResponseType = [
-    number,
-    string,
-    string,
-    string,
-    string,
-    string,
-    number,
-    string,
-    number,
-    string,
-    string,
-    string,
-][];

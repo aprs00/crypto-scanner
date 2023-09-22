@@ -2,7 +2,6 @@ import ky from 'ky';
 import {useQuery} from '@tanstack/react-query';
 
 import type {
-    KlinesResponseType,
     BetaHeatmapResponseType,
     PriceChangePerDayOfWeekResponseType,
     SelectOptionsResponseType,

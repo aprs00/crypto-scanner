@@ -16,7 +16,7 @@ const priceChangePerDayOfWeek2 = {x: 6, y: 26, w: 6, h: 12};
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
-const Beta = () => {
+const Stats = () => {
     const timeFrameOptions = useStatsSelectOptions();
     const tickerOptions = useFetchTickersOptions();
 
@@ -86,4 +86,4 @@ const Beta = () => {
     );
 };
 
-export default Beta;
+export default Stats;
