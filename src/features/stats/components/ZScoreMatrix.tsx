@@ -21,9 +21,9 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
                 color: '#d1d5db',
             },
         },
-        dataZoom: {
-            type: 'inside',
-        },
+        // dataZoom: {
+        //     type: 'inside',
+        // },
         tooltip: {
             formatter: function (params: any) {
                 return `${params.marker}${params.seriesName}: <span>x: ${params.data[0]} y: ${params.data[1]}</span>`;
