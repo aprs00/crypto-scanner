@@ -53,7 +53,7 @@ const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
         <ChartContainer
             header={
                 <>
-                    <h3>Average price change per day of week</h3>
+                    <h3 className="text-gray-300">Average price change per day of week</h3>
                     <div className="z-50 flex gap-2">
                         <CustomSelect
                             options={tickerOptions}

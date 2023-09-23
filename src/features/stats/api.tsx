@@ -7,6 +7,7 @@ import type {
     SelectOptionsResponseType,
     SelectOptionType,
     ZScoreMatrixResponseType,
+    ZScoreHistoryResponseType,
 } from './types';
 import {API_URL} from '@/config/env';
 
@@ -80,6 +81,24 @@ const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
     });
 };
 
+const fetchZScoreHistory = async (type: string, duration: string) => {
+    const url = new URL(`z-score-history/${duration}/${type}`, API_URL);
+
+    const data = (await ky.get(url).json()) as ZScoreHistoryResponseType;
+    return data;
+};
+
+const useZScoreHistory = (type: string, duration: string) => {
+    return useQuery({
+        queryKey: ['z-score-history', type, duration],
+        queryFn: () => fetchZScoreHistory(type, duration),
+        cacheTime: 120_000,
+        refetchInterval: 120_000,
+        staleTime: 120_000,
+        refetchOnWindowFocus: false,
+    });
+};
+
 const fetchStatsSelectOptions = async () => {
     const data = (await ky.get(`${API_URL}/stats-select-options`).json()) as SelectOptionsResponseType;
     return data;
@@ -96,4 +115,11 @@ const useStatsSelectOptions = () => {
     });
 };
 
-export {useBetaHeatmapData, usePriceChangePerDayOfWeek, useStatsSelectOptions, useFetchTickersOptions, useZScoreMatrix};
+export {
+    useBetaHeatmapData,
+    usePriceChangePerDayOfWeek,
+    useStatsSelectOptions,
+    useFetchTickersOptions,
+    useZScoreMatrix,
+    useZScoreHistory,
+};

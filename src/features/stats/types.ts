@@ -49,6 +49,22 @@ export type ScatterPropsType = {
     tf: string;
 }
 
+export type ZScoreHistoryPropsType = {
+    timeFrameOptions: SelectOptionType[];
+    tf: string;
+    type: string;
+}
+
+export type ZScoreHistoryResponseType = {
+    legend: string[];
+    data: {
+        name: string;
+        stack: string;
+        data: number[];
+    }[]
+    xAxis: string[];
+}
+
 export type ZScoreMatrixResponseType = {
     type: string;
     name: string;

@@ -1,18 +1,21 @@
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import BetaHeatmap from '../components/BetaHeatmap';
+import Scatter from '../components/ZScoreMatrix';
+import ZScoreHistory from '../components/ZScoreHistory';
 import PriceChangePerDayOfWeek from '../components/PriceChangePerDayOfWeek';
 
 import {useStatsSelectOptions, useFetchTickersOptions} from '../api';
-import Scatter from '../components/ZScoreMatrix';
 
 const gridLayoutRowHeight = 30;
 const betaHeatmapLayout1 = {x: 0, y: 0, w: 6, h: 12};
 const betaHeatmapLayout2 = {x: 6, y: 0, w: 6, h: 12};
 const scatterLayout1 = {x: 0, y: 12, w: 6, h: 14};
 const scatterLayout2 = {x: 6, y: 12, w: 6, h: 14};
-const priceChangePerDayOfWeek1 = {x: 0, y: 26, w: 6, h: 12};
-const priceChangePerDayOfWeek2 = {x: 6, y: 26, w: 6, h: 12};
+const zScoreHistoryLayout1 = {x: 0, y: 26, w: 12, h: 14};
+const zScoreHistoryLayout2 = {x: 0, y: 38, w: 12, h: 14};
+const priceChangePerDayOfWeek1 = {x: 0, y: 52, w: 6, h: 12};
+const priceChangePerDayOfWeek2 = {x: 6, y: 52, w: 6, h: 12};
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -44,6 +47,16 @@ const Stats = () => {
                 <Scatter tf="2w" xAxis="trades" yAxis="volume" timeFrameOptions={timeFrameOptions?.data?.all || []} />
             ),
             key: 'scatter2',
+        },
+        {
+            gridLayout: zScoreHistoryLayout1,
+            component: <ZScoreHistory tf="1d" type="price" timeFrameOptions={timeFrameOptions?.data?.all || []} />,
+            key: 'zScoreHistory1',
+        },
+        {
+            gridLayout: zScoreHistoryLayout2,
+            component: <ZScoreHistory tf="1d" type="trades" timeFrameOptions={timeFrameOptions?.data?.all || []} />,
+            key: 'zScoreHistory2',
         },
         {
             gridLayout: priceChangePerDayOfWeek1,

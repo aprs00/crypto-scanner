@@ -23,6 +23,11 @@ const BetaHeatmap = (props: BetaHeatmapPropsType) => {
                 return `${params.marker}${yLabel} - ${params.name}: <strong>${params.value[2]}</strong>`;
             },
         },
+        // toolbox: {
+        //     feature: {
+        //         saveAsImage: {},
+        //     },
+        // },
         xAxis: {
             type: 'category',
             data: betaHeatmap?.data?.xAxis,
@@ -38,7 +43,6 @@ const BetaHeatmap = (props: BetaHeatmapPropsType) => {
             },
         },
         visualMap: {
-            // type: 'piecewise',
             min: -1,
             max: 1,
             calculable: true,
@@ -75,7 +79,7 @@ const BetaHeatmap = (props: BetaHeatmapPropsType) => {
         <ChartContainer
             header={
                 <>
-                    <h3>Pearson correlation</h3>
+                    <h3 className="text-gray-300">Pearson correlation</h3>
                     <div className="z-50">
                         <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
                     </div>

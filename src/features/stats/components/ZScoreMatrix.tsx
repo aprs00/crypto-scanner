@@ -15,7 +15,12 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
     const zScoreMatrix = useZScoreMatrix(xAxis, yAxis, selectedTf);
 
     const option = {
-        legend: {top: '10', textStyle: {color: '#cbd5e1'}},
+        legend: {
+            top: '10',
+            textStyle: {
+                color: '#d1d5db',
+            },
+        },
         dataZoom: {
             type: 'inside',
         },
@@ -78,7 +83,7 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
         <ChartContainer
             header={
                 <>
-                    <h3>Z-Score</h3>
+                    <h3 className="text-gray-300">Z-Score</h3>
                     <div className="z-50 flex gap-2">
                         <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
                     </div>
