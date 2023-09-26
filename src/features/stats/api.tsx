@@ -3,7 +3,7 @@ import {useQuery} from '@tanstack/react-query';
 
 import type {
     BetaHeatmapResponseType,
-    PriceChangePerDayOfWeekResponseType,
+    AveragePriceChangeResponseType,
     SelectOptionsResponseType,
     SelectOptionType,
     ZScoreMatrixResponseType,
@@ -11,17 +11,17 @@ import type {
 } from './types';
 import {API_URL} from '@/config/env';
 
-const fetchPriceChangePerDayOfWeekData = async (symbol: string, duration: string) => {
+const fetchPriceChangePercentage = async (symbol: string, duration: string, type: string) => {
     const data = (await ky
-        .get(`${API_URL}/average-price/${symbol}/${duration}`)
-        .json()) as PriceChangePerDayOfWeekResponseType;
+        .get(`${API_URL}/average-price-${type}/${symbol}/${duration}`)
+        .json()) as AveragePriceChangeResponseType;
     return data;
 };
 
-const usePriceChangePerDayOfWeek = (symbol: string, duration: string) => {
+const usePriceChangePercentage = (symbol: string, duration: string, type: string) => {
     return useQuery({
-        queryKey: ['price-change-per-day-of-week', duration, symbol],
-        queryFn: () => fetchPriceChangePerDayOfWeekData(symbol, duration),
+        queryKey: ['price-change-percentage', symbol, duration, type],
+        queryFn: () => fetchPriceChangePercentage(symbol, duration, type),
         cacheTime: 120_000,
         refetchInterval: 120_000,
         staleTime: 120_000,
@@ -117,7 +117,7 @@ const useStatsSelectOptions = () => {
 
 export {
     useBetaHeatmapData,
-    usePriceChangePerDayOfWeek,
+    usePriceChangePercentage,
     useStatsSelectOptions,
     useFetchTickersOptions,
     useZScoreMatrix,

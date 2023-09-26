@@ -29,7 +29,7 @@ const useDepthSnapshot = (symbol: string, firstEventProcessed: boolean) => {
     return useQuery(['depth-snapshot', symbol], () => fetchDepthSnapshot(symbol), {
         enabled: !!symbol,
         refetchOnWindowFocus: false,
-        refetchInterval: firstEventProcessed ? 120_000 : 1_000,
+        refetchInterval: firstEventProcessed ? 120_000 : 1_800,
     });
 };
 

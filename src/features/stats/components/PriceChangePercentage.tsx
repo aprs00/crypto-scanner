@@ -4,16 +4,16 @@ import ReactEcharts from 'echarts-for-react';
 import ChartContainer from './ChartContainer';
 import CustomSelect from '@/components/Select';
 
-import {usePriceChangePerDayOfWeek} from '../api';
+import {usePriceChangePercentage} from '../api';
 import type {PriceChangePerDayOfWeekPropsType} from '../types';
 
-const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
-    const {tf, symbol, timeFrameOptions, tickerOptions} = props;
+const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
+    const {tf, symbol, timeFrameOptions, tickerOptions, type} = props;
 
-    const [selectedTf, setSelectedTf] = useState(tf);
     const [selectedTicker, setSelectedTicker] = useState(symbol);
+    const [selectedTf, setSelectedTf] = useState(tf);
 
-    const priceChangePerDayOfWeekData = usePriceChangePerDayOfWeek(selectedTicker, selectedTf);
+    const priceChangePercentageApi = usePriceChangePercentage(selectedTicker, selectedTf, type);
 
     const option = {
         grid: {top: 20, right: 20, bottom: 30, left: 45},
@@ -28,7 +28,7 @@ const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
         },
         xAxis: {
             type: 'category',
-            data: priceChangePerDayOfWeekData?.data?.xAxis,
+            data: priceChangePercentageApi?.data?.xAxis,
         },
         yAxis: {
             type: 'value',
@@ -43,7 +43,7 @@ const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
         },
         series: [
             {
-                data: priceChangePerDayOfWeekData?.data?.data,
+                data: priceChangePercentageApi?.data?.data,
                 type: 'bar',
             },
         ],
@@ -70,4 +70,4 @@ const PriceChangePerDayOfWeek = (props: PriceChangePerDayOfWeekPropsType) => {
     );
 };
 
-export default memo(PriceChangePerDayOfWeek);
+export default memo(PriceChangePercentage);

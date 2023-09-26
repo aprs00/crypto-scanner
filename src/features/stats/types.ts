@@ -4,7 +4,7 @@ export type BetaHeatmapResponseType = {
     yAxis: string[];
 }
 
-export type PriceChangePerDayOfWeekResponseType = {
+export type AveragePriceChangeResponseType = {
     data: {
         value: number;
         itemStyle: {
@@ -40,6 +40,7 @@ export type PriceChangePerDayOfWeekPropsType = {
     symbol: string;
     timeFrameOptions: SelectOptionType[];
     tickerOptions: SelectOptionType[];
+    type: string;   
 }
 
 export type ScatterPropsType = {

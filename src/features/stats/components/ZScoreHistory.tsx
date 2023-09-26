@@ -14,8 +14,6 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
 
     const zScoreHistory = useZScoreHistory(type, selectedTf);
 
-    console.log('zScoreHistory', zScoreHistory);
-
     const option = {
         tooltip: {
             trigger: 'axis',
@@ -31,9 +29,9 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
                 saveAsImage: {},
             },
         },
-        dataZoom: {
-            type: 'inside',
-        },
+        // dataZoom: {
+        //     type: 'inside',
+        // },
         grid: {
             left: '1.5%',
             right: '1.5%',
@@ -66,7 +64,7 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
             header={
                 <>
                     <h3 className="text-gray-300">
-                        Z-Score - {`${type.slice(0, 1).toUpperCase()}${type.slice(1)}`} - 1d
+                        Z-Score - {`${type.slice(0, 1).toUpperCase()}${type.slice(1)}`} - {tf}
                     </h3>
                     {/* <div className="z-50 flex gap-2">
                         <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
