@@ -15,6 +15,10 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
 
     const priceChangePercentageApi = usePriceChangePercentage(selectedTicker, selectedTf, type);
 
+    let title;
+    if (type === 'day') title = 'Average price change per day of week';
+    else if (type === 'hour') title = 'Average price change per hour of day';
+
     const option = {
         grid: {top: 20, right: 20, bottom: 30, left: 45},
         tooltip: {
@@ -53,7 +57,7 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
         <ChartContainer
             header={
                 <>
-                    <h3 className="text-gray-300">Average price change per day of week</h3>
+                    <h3 className="text-gray-300">{title}</h3>
                     <div className="z-50 flex gap-2">
                         <CustomSelect
                             options={tickerOptions}
