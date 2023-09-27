@@ -17,7 +17,7 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
 
     let title;
     if (type === 'day') title = 'Average price change per day of week';
-    else if (type === 'hour') title = 'Average price change per hour of day';
+    else if (type === 'hour') title = 'Average price change per hour of day (UTC)';
 
     const option = {
         grid: {top: 20, right: 20, bottom: 30, left: 45},
