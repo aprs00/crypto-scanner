@@ -32,20 +32,20 @@ const Stats = () => {
         },
         {
             gridLayout: betaHeatmapLayout2,
-            component: <BetaHeatmap tf="1w" timeFrameOptions={timeFrameOptions?.data?.all || []} />,
+            component: <BetaHeatmap tf="1d" timeFrameOptions={timeFrameOptions?.data?.all || []} />,
             key: 'betaHeatmap2',
         },
         {
             gridLayout: scatterLayout1,
             component: (
-                <Scatter tf="1m" xAxis="price" yAxis="volume" timeFrameOptions={timeFrameOptions?.data?.all || []} />
+                <Scatter tf="4h" xAxis="price" yAxis="volume" timeFrameOptions={timeFrameOptions?.data?.all || []} />
             ),
             key: 'scatter1',
         },
         {
             gridLayout: scatterLayout2,
             component: (
-                <Scatter tf="2w" xAxis="trades" yAxis="volume" timeFrameOptions={timeFrameOptions?.data?.all || []} />
+                <Scatter tf="1d" xAxis="trades" yAxis="volume" timeFrameOptions={timeFrameOptions?.data?.all || []} />
             ),
             key: 'scatter2',
         },
@@ -63,7 +63,7 @@ const Stats = () => {
             gridLayout: priceChangePerDayOfWeek1,
             component: (
                 <PriceChangePerDayOfWeek
-                    tf="2w"
+                    tf="1m"
                     symbol="BTCUSDT"
                     timeFrameOptions={timeFrameOptions?.data?.htf || []}
                     tickerOptions={tickerOptions?.data || []}
