@@ -1,10 +1,10 @@
 import {Route} from '@tanstack/react-router';
-import {homeRoute} from '@/features/home/routes';
+import {indexRoute} from '@/lib/router';
 
 import Heatmap from './views/Heatmap';
 
 export const heatmapRoute = new Route({
-    getParentRoute: () => homeRoute,
+    getParentRoute: () => indexRoute,
     path: 'heatmap',
     onLoad: async () => {
         return {};

@@ -107,7 +107,7 @@ const Stats = () => {
             draggableHandle="#drag-handle"
         >
             {gridLayouts.map((grid) => (
-                <div key={grid.key} data-grid={grid.gridLayout} className="bg-slate-900 overflow-hidden">
+                <div key={grid.key} data-grid={grid.gridLayout} className="bg-slate-900 overflow-hidden rounded">
                     {grid.component}
                 </div>
             ))}

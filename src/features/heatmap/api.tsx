@@ -3,10 +3,10 @@ import {useQuery} from '@tanstack/react-query';
 
 import type {HeatmapResponseType} from './types';
 
-const fetchHeatmapData = async (): Promise<HeatmapResponseType[]> => {
-    const data = (await ky
-        .get('https://api.coingecko.com/api/v3/global/tree_map_chart_data?vs_currency=usd')
-        .json()) as HeatmapResponseType[];
+const fetchHeatmapData = async () => {
+    const url = new URL('api/v3/global/tree_map_chart_data', 'https://api.coingecko.com');
+
+    const data = (await ky.get(url).json()) as HeatmapResponseType[];
     return data;
 };
 

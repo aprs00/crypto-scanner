@@ -1,11 +1,11 @@
 import {lazy, Route} from '@tanstack/react-router';
 
-import {homeRoute} from '@/features/home/routes';
+import {indexRoute} from '@/lib/router';
 
 const Beta = lazy(() => import('./views/Stats'));
 
 export const statsRoute = new Route({
-    getParentRoute: () => homeRoute,
+    getParentRoute: () => indexRoute,
     path: 'stats',
     onLoad: async () => {},
     component: () => <Beta />,

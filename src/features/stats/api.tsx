@@ -12,9 +12,9 @@ import type {
 import {API_URL} from '@/config/env';
 
 const fetchPriceChangePercentage = async (symbol: string, duration: string, type: string) => {
-    const data = (await ky
-        .get(`${API_URL}/average-price-${type}/${symbol}/${duration}`)
-        .json()) as AveragePriceChangeResponseType;
+    const url = new URL(`average-price-${type}/${symbol}/${duration}`, API_URL);
+
+    const data = (await ky.get(url).json()) as AveragePriceChangeResponseType;
     return data;
 };
 
@@ -30,7 +30,9 @@ const usePriceChangePercentage = (symbol: string, duration: string, type: string
 };
 
 const fetchTickersOptions = async () => {
-    const data = (await ky.get(`${API_URL}/tickers-options`).json()) as SelectOptionType[];
+    const url = new URL('tickers-options', API_URL);
+
+    const data = (await ky.get(url).json()) as SelectOptionType[];
     return data;
 };
 
@@ -46,7 +48,9 @@ const useFetchTickersOptions = () => {
 };
 
 const fetchBetaHeatmapData = async (duration: string) => {
-    const data = (await ky.get(`${API_URL}/pearson-correlation/${duration}`).json()) as BetaHeatmapResponseType;
+    const url = new URL(`pearson-correlation/${duration}`, API_URL);
+
+    const data = (await ky.get(url).json()) as BetaHeatmapResponseType;
     return data;
 };
 
@@ -100,7 +104,9 @@ const useZScoreHistory = (type: string, duration: string) => {
 };
 
 const fetchStatsSelectOptions = async () => {
-    const data = (await ky.get(`${API_URL}/stats-select-options`).json()) as SelectOptionsResponseType;
+    const url = new URL(`stats-select-options`, API_URL);
+
+    const data = (await ky.get(url).json()) as SelectOptionsResponseType;
     return data;
 };
 

@@ -1,3 +1,6 @@
+//
+// THIS API IS CURRENTLY NOT USED
+//
 import ky from 'ky';
 import {useQuery} from '@tanstack/react-query';
 
@@ -5,7 +8,8 @@ import type {SelectOptionType} from './types';
 import {API_URL} from '@/config/env';
 
 const fetchTickersOptions = async () => {
-    const data = (await ky.get(`${API_URL}/tickers-options`).json()) as SelectOptionType[];
+    const url = new URL('tickers-options', API_URL);
+    const data = (await ky.get(url).json()) as SelectOptionType[];
     return data;
 };
 

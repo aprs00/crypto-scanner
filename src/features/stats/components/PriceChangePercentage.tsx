@@ -27,7 +27,7 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
                 type: 'shadow',
             },
             formatter: function (params: any) {
-                return params[0].marker + params[0].name + ': ' + params[0].value + '%';
+                return `${params[0].marker}${params[0].name}: ${params[0].value}%`;
             },
         },
         xAxis: {

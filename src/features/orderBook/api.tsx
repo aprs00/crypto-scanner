@@ -2,12 +2,14 @@ import {useEffect, useState, useRef} from 'react';
 import ky from 'ky';
 import {useQuery} from '@tanstack/react-query';
 
+import {BINANCE_API_URL} from '@/config/env';
 import {queryClient} from '@/lib/react-query';
 import {groupOrders, updateOrderBook, isEventValid} from './utils';
 import type {OrderBookResponseType, StreamAggTradeResponseType, ExchangeInfoResponseType} from './types';
 
-const fetchExchangeInfo = async (): Promise<ExchangeInfoResponseType> => {
-    const data = (await ky.get(`https://api.binance.com/api/v3/exchangeInfo`).json()) as ExchangeInfoResponseType;
+const fetchExchangeInfo = async () => {
+    const url = new URL('api/v3/exchangeInfo', BINANCE_API_URL);
+    const data = (await ky.get(url).json()) as ExchangeInfoResponseType;
     return data;
 };
 
@@ -18,10 +20,12 @@ const useExchangeInfo = () => {
     });
 };
 
-const fetchDepthSnapshot = async (symbol: string, limit = 5000): Promise<OrderBookResponseType> => {
-    const data = (await ky
-        .get(`https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=${limit}`)
-        .json()) as OrderBookResponseType;
+const fetchDepthSnapshot = async (symbol: string, limit = 5000) => {
+    const url = new URL('api/v3/depth', BINANCE_API_URL);
+    url.searchParams.set('symbol', symbol);
+    url.searchParams.set('limit', limit.toString());
+
+    const data = (await ky.get(url).json()) as OrderBookResponseType;
     return data;
 };
 

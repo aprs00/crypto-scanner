@@ -23,6 +23,7 @@ const Heatmap = () => {
     useEffect(() => {
         if (!chartRef.current) return;
         if (!heatmap?.data) return;
+
         const chart = echarts.init(chartRef.current as any);
         const option: EChartsOption = {
             series: {
