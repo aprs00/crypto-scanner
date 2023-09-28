@@ -12,7 +12,10 @@ import type {
 } from './types';
 
 const fetchPriceChangePercentage = async (symbol: string, duration: string, type: string) => {
-    const url = new URL(`average-price-${type}/${symbol}/${duration}`, API_URL);
+    const url = new URL('average-prices', API_URL);
+    url.searchParams.set('duration', duration);
+    url.searchParams.set('symbol', symbol);
+    url.searchParams.set('type', type);
 
     const data = (await api.get(url).json()) as AveragePriceChangeResponseType;
     return data;
@@ -48,7 +51,8 @@ const useFetchTickersOptions = () => {
 };
 
 const fetchBetaHeatmapData = async (duration: string) => {
-    const url = new URL(`pearson-correlation/${duration}`, API_URL);
+    const url = new URL('pearson-correlation', API_URL);
+    url.searchParams.set('duration', duration);
 
     const data = (await api.get(url).json()) as BetaHeatmapResponseType;
     return data;
@@ -66,7 +70,8 @@ const useBetaHeatmapData = (duration: string) => {
 };
 
 const fetchZScoreMatrix = async (xAxis: string, yAxis: string, duration: string) => {
-    const url = new URL(`z-score-matrix/${duration}`, API_URL);
+    const url = new URL('z-score-matrix', API_URL);
+    url.searchParams.set('duration', duration);
     url.searchParams.set('x_axis', xAxis);
     url.searchParams.set('y_axis', yAxis);
 
@@ -86,7 +91,9 @@ const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
 };
 
 const fetchZScoreHistory = async (type: string, duration: string) => {
-    const url = new URL(`z-score-history/${duration}/${type}`, API_URL);
+    const url = new URL('z-score-history', API_URL);
+    url.searchParams.set('duration', duration);
+    url.searchParams.set('type', type);
 
     const data = (await api.get(url).json()) as ZScoreHistoryResponseType;
     return data;
