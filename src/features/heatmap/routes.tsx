@@ -1,7 +1,7 @@
-import {Route} from '@tanstack/react-router';
+import {lazy, Route} from '@tanstack/react-router';
 import {indexRoute} from '@/lib/router';
 
-import Heatmap from './views/Heatmap';
+const Heatmap = lazy(() => import('.'));
 
 export const heatmapRoute = new Route({
     getParentRoute: () => indexRoute,

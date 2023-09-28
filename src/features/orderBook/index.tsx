@@ -1,9 +1,9 @@
 import {useState} from 'react';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
-import Table from '../components/Table';
-import Tape from '../components/Tape';
-import {useExchangeInfo} from '../api';
+import Table from './components/Table';
+import Tape from './components/Tape';
+import {useExchangeInfo} from './api';
 import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);

@@ -1,11 +1,11 @@
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
-import BetaHeatmap from '../components/BetaHeatmap';
-import Scatter from '../components/ZScoreMatrix';
-import ZScoreHistory from '../components/ZScoreHistory';
-import PriceChangePerDayOfWeek from '../components/PriceChangePercentage';
+import BetaHeatmap from './components/BetaHeatmap';
+import Scatter from './components/ZScoreMatrix';
+import ZScoreHistory from './components/ZScoreHistory';
+import PriceChangePerDayOfWeek from './components/PriceChangePercentage';
 
-import {useStatsSelectOptions, useFetchTickersOptions} from '../api';
+import {useStatsSelectOptions, useFetchTickersOptions} from './api';
 
 const gridLayoutRowHeight = 30;
 const betaHeatmapLayout1 = {x: 0, y: 0, w: 6, h: 14};

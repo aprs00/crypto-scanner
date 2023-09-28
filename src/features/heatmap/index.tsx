@@ -2,7 +2,7 @@ import {useEffect, useRef, useMemo} from 'react';
 import * as echarts from 'echarts';
 import type {EChartsOption} from 'echarts';
 
-import {useHeatmapData} from '../api';
+import {useHeatmapData} from './api';
 
 const Heatmap = () => {
     const heatmap = useHeatmapData();

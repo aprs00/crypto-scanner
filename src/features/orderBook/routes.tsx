@@ -1,10 +1,10 @@
-import {Route} from '@tanstack/react-router';
+import {lazy, Route} from '@tanstack/react-router';
 
 import {indexRoute} from '@/lib/router';
 
-import OrderBook from './views/OrderBook';
+const OrderBook = lazy(() => import('.'));
 
-export const orderBookRoute = new Route({
+const orderBookRoute = new Route({
     getParentRoute: () => indexRoute,
     path: '/',
     onLoad: async () => {
@@ -12,3 +12,5 @@ export const orderBookRoute = new Route({
     },
     component: () => <OrderBook />,
 });
+
+export {orderBookRoute};
