@@ -1,6 +1,7 @@
-import ky from 'ky';
 import {useQuery} from '@tanstack/react-query';
 
+import {api} from '@/lib/ky';
+import {API_URL} from '@/config/env';
 import type {
     BetaHeatmapResponseType,
     AveragePriceChangeResponseType,
@@ -9,12 +10,11 @@ import type {
     ZScoreMatrixResponseType,
     ZScoreHistoryResponseType,
 } from './types';
-import {API_URL} from '@/config/env';
 
 const fetchPriceChangePercentage = async (symbol: string, duration: string, type: string) => {
     const url = new URL(`average-price-${type}/${symbol}/${duration}`, API_URL);
 
-    const data = (await ky.get(url).json()) as AveragePriceChangeResponseType;
+    const data = (await api.get(url).json()) as AveragePriceChangeResponseType;
     return data;
 };
 
@@ -32,7 +32,7 @@ const usePriceChangePercentage = (symbol: string, duration: string, type: string
 const fetchTickersOptions = async () => {
     const url = new URL('tickers-options', API_URL);
 
-    const data = (await ky.get(url).json()) as SelectOptionType[];
+    const data = (await api.get(url).json()) as SelectOptionType[];
     return data;
 };
 
@@ -50,7 +50,7 @@ const useFetchTickersOptions = () => {
 const fetchBetaHeatmapData = async (duration: string) => {
     const url = new URL(`pearson-correlation/${duration}`, API_URL);
 
-    const data = (await ky.get(url).json()) as BetaHeatmapResponseType;
+    const data = (await api.get(url).json()) as BetaHeatmapResponseType;
     return data;
 };
 
@@ -70,7 +70,7 @@ const fetchZScoreMatrix = async (xAxis: string, yAxis: string, duration: string)
     url.searchParams.set('x_axis', xAxis);
     url.searchParams.set('y_axis', yAxis);
 
-    const data = (await ky.get(url).json()) as ZScoreMatrixResponseType[];
+    const data = (await api.get(url).json()) as ZScoreMatrixResponseType[];
     return data;
 };
 
@@ -88,7 +88,7 @@ const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
 const fetchZScoreHistory = async (type: string, duration: string) => {
     const url = new URL(`z-score-history/${duration}/${type}`, API_URL);
 
-    const data = (await ky.get(url).json()) as ZScoreHistoryResponseType;
+    const data = (await api.get(url).json()) as ZScoreHistoryResponseType;
     return data;
 };
 
@@ -106,7 +106,7 @@ const useZScoreHistory = (type: string, duration: string) => {
 const fetchStatsSelectOptions = async () => {
     const url = new URL(`stats-select-options`, API_URL);
 
-    const data = (await ky.get(url).json()) as SelectOptionsResponseType;
+    const data = (await api.get(url).json()) as SelectOptionsResponseType;
     return data;
 };
 

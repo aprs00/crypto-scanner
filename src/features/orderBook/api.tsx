@@ -1,15 +1,15 @@
 import {useEffect, useState, useRef} from 'react';
-import ky from 'ky';
 import {useQuery} from '@tanstack/react-query';
 
-import {BINANCE_API_URL} from '@/config/env';
+import {api} from '@/lib/ky';
 import {queryClient} from '@/lib/react-query';
+import {BINANCE_API_URL} from '@/config/env';
 import {groupOrders, updateOrderBook, isEventValid} from './utils';
 import type {OrderBookResponseType, StreamAggTradeResponseType, ExchangeInfoResponseType} from './types';
 
 const fetchExchangeInfo = async () => {
     const url = new URL('api/v3/exchangeInfo', BINANCE_API_URL);
-    const data = (await ky.get(url).json()) as ExchangeInfoResponseType;
+    const data = (await api.get(url).json()) as ExchangeInfoResponseType;
     return data;
 };
 
@@ -25,7 +25,7 @@ const fetchDepthSnapshot = async (symbol: string, limit = 5000) => {
     url.searchParams.set('symbol', symbol);
     url.searchParams.set('limit', limit.toString());
 
-    const data = (await ky.get(url).json()) as OrderBookResponseType;
+    const data = (await api.get(url).json()) as OrderBookResponseType;
     return data;
 };
 
