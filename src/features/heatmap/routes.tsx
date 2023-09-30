@@ -3,7 +3,7 @@ import {indexRoute} from '@/lib/router';
 
 const Heatmap = lazy(() => import('.'));
 
-export const heatmapRoute = new Route({
+const heatmapRoute = new Route({
     getParentRoute: () => indexRoute,
     path: 'heatmap',
     onLoad: async () => {
@@ -11,3 +11,5 @@ export const heatmapRoute = new Route({
     },
     component: () => <Heatmap />,
 });
+
+export {heatmapRoute};

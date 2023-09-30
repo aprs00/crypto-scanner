@@ -64,7 +64,7 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
             header={
                 <>
                     <h3 className="text-gray-300">
-                        Z-Score - {`${type.slice(0, 1).toUpperCase()}${type.slice(1)}`} - {tf}
+                        Z-Score - {`${type.slice(0, 1).toUpperCase()}${type.slice(1)}`} - {tf} (UTC)
                     </h3>
                     {/* <div className="z-50 flex gap-2">
                         <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />

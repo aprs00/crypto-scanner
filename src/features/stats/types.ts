@@ -1,3 +1,11 @@
+export type SelectOptionType = {
+    value: string;
+    label: string;
+}
+
+//
+// RESPONSE TYPES
+//
 export type BetaHeatmapResponseType = {
     data: [[number, number, number]][];
     xAxis: string[];
@@ -14,17 +22,33 @@ export type AveragePriceChangeResponseType = {
     xAxis: string[];
 }
 
-export type SelectOptionType = {
-    value: string;
-    label: string;
-}
-
 export type SelectOptionsResponseType = {
     all: SelectOptionType[];
     ltf: SelectOptionType[]
     htf: SelectOptionType[]
 }
 
+export type ZScoreHistoryResponseType = {
+    legend: string[];
+    data: {
+        name: string;
+        stack: string;
+        data: number[];
+    }[]
+    xAxis: string[];
+}
+
+export type ZScoreMatrixResponseType = {
+    type: string;
+    name: string;
+    data: [string, string][],
+    color: string;
+    symbolSize: number;
+}
+
+//
+// PROP TYPES
+//
 export type ChartContainerPropsType = {
     header: JSX.Element;
     body: JSX.Element;
@@ -54,22 +78,4 @@ export type ZScoreHistoryPropsType = {
     timeFrameOptions: SelectOptionType[];
     tf: string;
     type: string;
-}
-
-export type ZScoreHistoryResponseType = {
-    legend: string[];
-    data: {
-        name: string;
-        stack: string;
-        data: number[];
-    }[]
-    xAxis: string[];
-}
-
-export type ZScoreMatrixResponseType = {
-    type: string;
-    name: string;
-    data: [string, string][],
-    color: string;
-    symbolSize: number;
 }
