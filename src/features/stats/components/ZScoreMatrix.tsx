@@ -17,6 +17,8 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
     const option = {
         legend: {
             top: '10',
+            left: '70',
+            type: 'scroll',
             textStyle: {
                 color: '#d1d5db',
             },
@@ -32,8 +34,8 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
         grid: {
             left: '70',
             right: '20',
-            bottom: '55',
-            top: '80',
+            bottom: '50',
+            top: '60',
         },
         xAxis: {
             type: 'value',
@@ -57,7 +59,7 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
         graphic: [
             {
                 type: 'text',
-                left: '1.5%',
+                left: '10',
                 top: '44%',
                 style: {
                     text: yAxis.slice(0, 1).toUpperCase() + yAxis.slice(1),
@@ -69,7 +71,7 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
             {
                 type: 'text',
                 left: '50%',
-                bottom: '1%',
+                bottom: '1',
                 style: {
                     text: `${xAxis.slice(0, 1).toUpperCase()}${xAxis.slice(1)}`,
                     fontSize: 18,

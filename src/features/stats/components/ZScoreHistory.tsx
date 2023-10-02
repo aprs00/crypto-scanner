@@ -20,22 +20,28 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
         },
         legend: {
             top: '10',
+            left: '15',
+            type: 'scroll',
             textStyle: {
                 color: '#d1d5db',
             },
-        },
-        toolbox: {
-            feature: {
-                saveAsImage: {},
+            itemStyle: {
+                borderWidth: 100,
+                borderJoin: 'miter',
             },
         },
+        // toolbox: {
+        //     feature: {
+        //         saveAsImage: {},
+        //     },
+        // },
         // dataZoom: {
         //     type: 'inside',
         // },
         grid: {
-            left: '1.5%',
-            right: '1.5%',
-            bottom: '0%',
+            left: '15',
+            right: '15',
+            bottom: '0',
             containLabel: true,
         },
         yAxis: {
