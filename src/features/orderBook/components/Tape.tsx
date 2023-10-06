@@ -27,7 +27,6 @@ const Tape = () => {
     useEffect(() => {
         // if (!streamAggTrade || (Number(streamAggTrade?.data?.q) || 0) <= 0.1) return;
         if (!streamAggTrade?.data?.p) return;
-        console.log(streamAggTrade);
         const newTape = {
             price: streamAggTrade?.data?.p.toString().replace(/\.?0+$/, ''),
             size: streamAggTrade?.data?.q.toString().replace(/\.?0+$/, ''),

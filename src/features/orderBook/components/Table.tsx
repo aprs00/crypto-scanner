@@ -54,7 +54,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                             tableAlignment === 'H' && type === 'bids' ? 'text-right' : ''
                         }`}
                         style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
-                        key={id}
+                        key={`${price}-${quantity}-${type}`}
                     >
                         <div className={`${tableAlignment === 'H' && type === 'bids' ? 'order-1' : ''}`}>
                             {price.toFixed(tickSizeDecimalPlaces)}
