@@ -6,7 +6,7 @@ const Beta = lazy(() => import('.'));
 
 const statsRoute = new Route({
     getParentRoute: () => indexRoute,
-    path: 'stats',
+    path: '/',
     onLoad: async () => {},
     component: () => <Beta />,
 });

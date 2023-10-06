@@ -1,33 +1,41 @@
-import {useState, memo, useEffect, ReactNode} from 'react';
+import {useState, useEffect} from 'react';
 
 import TimeDisplay from './TimeDisplay';
 import {useStreamAggTrade} from '../api';
+import type {TapeStateType} from '../types';
 
 const Tape = () => {
     const streamAggTrade = useStreamAggTrade('BTCUSDT');
 
-    const [tapeTable, setTapeTable] = useState<ReactNode[]>([]);
+    const [tapeData, setTapeData] = useState<TapeStateType[]>([]);
+
+    const tapeTable = tapeData.map((data) => (
+        <div
+            className="flex justify-between text-xs px-1 py-px"
+            key={data.aggregateTradeId}
+            style={{
+                color: data.market ? 'rgba(0, 215, 9, 1)' : 'rgba(215, 6, 6, 1)',
+            }}
+        >
+            <div>{data.price}</div>
+            <div>{data.size}</div>
+            {/* <div>{data.time.toLocaleTimeString()}</div> */}
+            <TimeDisplay timestamp={data.time} />
+        </div>
+    ));
 
     useEffect(() => {
         // if (!streamAggTrade || (Number(streamAggTrade?.data?.q) || 0) <= 0.1) return;
         if (!streamAggTrade?.data?.p) return;
-        setTapeTable(
-            (prev) =>
-                [
-                    <div
-                        className="flex justify-between text-xs px-1 py-px"
-                        key={crypto.randomUUID()}
-                        style={{
-                            color: streamAggTrade?.data?.m ? 'rgba(0, 215, 9, 1)' : 'rgba(215, 6, 6, 1)',
-                        }}
-                    >
-                        <div>{streamAggTrade?.data?.p.toString().replace(/\.?0+$/, '')}</div>
-                        <div>{streamAggTrade?.data?.q.toString().replace(/\.?0+$/, '')}</div>
-                        <TimeDisplay timestamp={new Date(streamAggTrade?.data?.T as number)} />
-                    </div>,
-                    ...prev.slice(0, 100),
-                ] as ReactNode[],
-        );
+        console.log(streamAggTrade);
+        const newTape = {
+            price: streamAggTrade?.data?.p.toString().replace(/\.?0+$/, ''),
+            size: streamAggTrade?.data?.q.toString().replace(/\.?0+$/, ''),
+            time: streamAggTrade?.data?.T as number,
+            aggregateTradeId: streamAggTrade?.data?.a,
+            market: streamAggTrade?.data?.m,
+        };
+        setTapeData((prev) => [newTape, ...prev.slice(0, 100)]);
     }, [streamAggTrade?.data?.T]);
 
     return (
@@ -37,9 +45,9 @@ const Tape = () => {
                 <div className="">SIZE</div>
                 <div className="">Time</div>
             </div>
-            <div>{tapeTable}</div>
+            <div className="h-full overflow-y-auto">{tapeTable}</div>
         </div>
     );
 };
 
-export default memo(Tape);
+export default Tape;

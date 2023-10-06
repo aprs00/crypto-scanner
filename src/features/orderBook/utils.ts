@@ -55,11 +55,12 @@ const groupOrders = (getter: [string, string][], groupByVal: number, isBid: bool
         else groupedGetter.set(roundedPrice, quantity);
     }
 
-    const roundedGetter: [number, number][] = [];
+    const roundedGetter = [];
 
     for (let i = 0; i < numOfRows; i++) {
         const [roundedPrice, quantity] = Array.from(groupedGetter)[i];
-        roundedGetter.push([roundedPrice, quantity]);
+        const randomUUID = crypto.randomUUID();
+        roundedGetter.push([roundedPrice, quantity, randomUUID]);
     }
 
     return roundedGetter;

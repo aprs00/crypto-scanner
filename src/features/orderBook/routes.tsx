@@ -6,7 +6,7 @@ const OrderBook = lazy(() => import('.'));
 
 const orderBookRoute = new Route({
     getParentRoute: () => indexRoute,
-    path: '/',
+    path: '/chart',
     onLoad: async () => {
         return {};
     },

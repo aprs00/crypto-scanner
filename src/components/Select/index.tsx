@@ -4,6 +4,7 @@ import {Listbox, Transition} from '@headlessui/react';
 import type {SelectPropsType} from './types';
 
 import CheckIcon from './CheckIcon';
+import SelectIcon from './SelectIcon';
 
 const CustomSelect = (props: SelectPropsType) => {
     const {options, value, onChange, classes = 'w-20'} = props;
@@ -27,19 +28,7 @@ const CustomSelect = (props: SelectPropsType) => {
                                     ))}
                             </div>
                             <span className="absolute inset-y-0 right-0 flex items-center pr-1 pointer-events-none">
-                                <svg
-                                    className="h-5 w-5 text-gray-400"
-                                    viewBox="0 0 20 20"
-                                    fill="none"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        d="M7 7l3-3 3 3m0 6l-3 3-3-3"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
+                                <SelectIcon />
                             </span>
                         </Listbox.Button>
                     </div>
@@ -53,25 +42,23 @@ const CustomSelect = (props: SelectPropsType) => {
                         leaveTo="transform opacity-0 scale-95"
                     >
                         <div className="relative">
-                            <Listbox.Options className="bg-slate-800 rounded-sm absolute w-full px-1 py-1 mt-2 border border-slate-500">
+                            <Listbox.Options className="bg-slate-800 rounded-sm absolute w-full px-1 py-1 mt-2 border border-slate-600 flex flex-col gap-0.5">
                                 {options.map((item) => (
                                     <Listbox.Option
                                         key={item.value.toString()}
                                         value={item.value}
-                                        className="cursor-pointer hover:bg-slate-700 px-2 py-1 rounded-sm"
+                                        className="cursor-pointer hover:bg-slate-900 rounded-sm gap-2"
                                     >
                                         {({selected}) => {
                                             return (
-                                                <div>
+                                                <div
+                                                    className={`${
+                                                        selected ? 'bg-slate-900' : ''
+                                                    } px-2 py-0.5 rounded-sm grow`}
+                                                >
                                                     <div className="flex justify-between">
-                                                        <span
-                                                            className={`${
-                                                                selected ? 'font-bold' : 'font-normal'
-                                                            } block truncate relative`}
-                                                        >
-                                                            {item.label}
-                                                        </span>
-                                                        <span>{selected ? <CheckIcon /> : null}</span>
+                                                        <span className={`block truncate relative`}>{item.label}</span>
+                                                        {/* <span>{selected ? <CheckIcon /> : null}</span> */}
                                                     </div>
                                                 </div>
                                             );

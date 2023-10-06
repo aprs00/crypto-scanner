@@ -1,4 +1,4 @@
-import {memo, useMemo, useCallback, useState} from 'react';
+import {useMemo, useCallback, useState} from 'react';
 
 import NumberInput from '@/components/NumberInput';
 import Spinner from '@/components/Spinner';
@@ -14,19 +14,18 @@ const quantityFormatter = new Intl.NumberFormat(undefined, {
 });
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const {tableHeight, symbolInfo} = props;
+    const {tableHeight, symbolTickSize, tickSize} = props;
 
-    const [numOfTicks, setNumOfTicks] = useState(() => 15);
+    const [numOfTicks, setNumOfTicks] = useState(tickSize);
     const [tableAlignment, setTableAlignment] = useState('V');
 
-    const tickSize = useMemo(() => Number(symbolInfo?.filters[0].tickSize), [symbolInfo]);
-    const groupByVal = useMemo(() => tickSize * numOfTicks, [tickSize, numOfTicks]);
+    const groupByVal = useMemo(() => symbolTickSize * numOfTicks, [symbolTickSize, numOfTicks]);
 
     const tickSizeDecimalPlaces = useMemo(() => {
-        const tickSizeStr = tickSize.toString();
+        const tickSizeStr = symbolTickSize.toString();
         const decimalIndex = tickSizeStr.indexOf('.');
         return decimalIndex === -1 ? 0 : tickSizeStr.length - decimalIndex - 1;
-    }, [tickSize]);
+    }, [symbolTickSize]);
 
     const calculatedNumOfRows = useMemo(() => {
         const divideBy = tableAlignment === 'V' ? 4 : 1;
@@ -39,14 +38,14 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
     const maxQuantity = useMemo(() => {
         const bidsAndAsks = groupedAsks?.concat(groupedBids) || [];
-        return Math.max(...bidsAndAsks.map(([_, quantity]: [number, number]) => quantity));
+        return Math.max(...bidsAndAsks.map(([_, quantity, __]: [number, number, string]) => quantity));
     }, [groupedAsks, groupedBids, calculatedNumOfRows]);
 
     const orderBookTable = useCallback(
-        (groupedGetter: [number, number][], type: string) => {
+        (groupedGetter: [number, number, string][], type: string) => {
             const rows = [];
             for (let i = 0; i < groupedGetter?.length; i++) {
-                const [price, quantity] = groupedGetter?.[i];
+                const [price, quantity, id] = groupedGetter?.[i];
                 const percentage = (Number(quantity) / maxQuantity) * 100;
                 const formattedQuantity = quantityFormatter.format(Number(quantity));
                 rows.push(
@@ -55,7 +54,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                             tableAlignment === 'H' && type === 'bids' ? 'text-right' : ''
                         }`}
                         style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
-                        key={price + quantity}
+                        key={id}
                     >
                         <div className={`${tableAlignment === 'H' && type === 'bids' ? 'order-1' : ''}`}>
                             {price.toFixed(tickSizeDecimalPlaces)}
@@ -106,4 +105,4 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     );
 };
 
-export default memo(OrderBookTable);
+export default OrderBookTable;

@@ -1,14 +1,9 @@
-export type ExchangeInfoResponseType = {
-    timezone: string;
-    serverTime: number;
-    rateLimits: {
-        rateLimitType: string;
-        interval: string;
-        intervalNum: number;
-        limit: number;
-    }[];
-    exchangeFilters: any[];
-    symbols: SymbolInfoType[];
+export type TapeStateType = {
+    price: string;
+    size: string;
+    time: number;
+    market: boolean;
+    aggregateTradeId: number;
 };
 
 export type SymbolInfoType = {
@@ -51,12 +46,28 @@ export type SymbolInfoType = {
     allowedSelfTradePreventionModes: string[];
 };
 
+//
+// RESPOSNE TYPES
+//
+export type ExchangeInfoResponseType = {
+    timezone: string;
+    serverTime: number;
+    rateLimits: {
+        rateLimitType: string;
+        interval: string;
+        intervalNum: number;
+        limit: number;
+    }[];
+    exchangeFilters: any[];
+    symbols: SymbolInfoType[];
+};
+
 export type OrderBookResponseType = {
     lastUpdateId: number;
     asks: [string, string][];
     bids: [string, string][];
-    groupedAsks: [number, number][];
-    groupedBids: [number, number][];
+    groupedAsks: [number, number, string][];
+    groupedBids: [number, number, string][];
 };
 
 export type StreamTickerResponseType = {
@@ -83,6 +94,9 @@ export type StreamAggTradeResponseType = {
     s: string;
 };
 
+//
+// PROP TYPES
+//
 export type UpdateOrderBookPropsType = {
     asksGetter: [string, string][];
     bidsGetter: [string, string][];
@@ -98,5 +112,6 @@ export type OrderBookFiltersPropsType = {
 export type OrderBookTablePropsType = {
     tableHeight: number;
     symbol: string;
-    symbolInfo?: SymbolInfoType;
+    tickSize: number;
+    symbolTickSize: number;
 };

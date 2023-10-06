@@ -61,7 +61,7 @@ const Stats = () => {
             key: 'zScoreHistory2',
         },
         {
-            gridLayout: zScoreHistoryLayout2,
+            gridLayout: zScoreHistoryLayout3,
             component: <ZScoreHistory tf="12h" type="trades" timeFrameOptions={timeFrameOptions?.data?.all || []} />,
             key: 'zScoreHistory3',
         },
