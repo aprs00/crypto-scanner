@@ -10,7 +10,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const gridLayoutRowHeight = 30;
 const tradingViewLayout = {x: 0, y: 0, w: 12, h: 15};
-const tableLayout1 = {x: 0, y: 16, w: 4, h: 14};
+const tableLayout1 = {x: 0, y: 16, w: 8, h: 14};
 const tapeLayout = {x: 8, y: 16, w: 4, h: 14};
 
 const OrderBook = () => {
