@@ -3,8 +3,9 @@ import {ReactRouter, RootRoute, Outlet} from '@tanstack/react-router';
 import Navigation from '@/components/Navigation';
 
 import {orderBookRoute} from '@/features/orderBook/routes';
-import {heatmapRoute} from '@/features/heatmap/routes';
 import {statsRoute} from '@/features/stats/routes';
+import {tableRoute} from '@/features/table/routes';
+import {heatmapRoute} from '@/features/heatmap/routes';
 
 const indexRoute = new RootRoute({
     component: () => {
@@ -17,7 +18,7 @@ const indexRoute = new RootRoute({
     },
 });
 
-const routeTree = indexRoute.addChildren([orderBookRoute, heatmapRoute, statsRoute]);
+const routeTree = indexRoute.addChildren([statsRoute, orderBookRoute, tableRoute, heatmapRoute]);
 
 const router = new ReactRouter({
     routeTree,

@@ -24,6 +24,14 @@ const Navigation = () => {
                     Chart
                 </Link>
                 <Link
+                    to="/table"
+                    activeProps={{
+                        className: 'font-bold',
+                    }}
+                >
+                    Table
+                </Link>
+                <Link
                     to="/heatmap"
                     activeProps={{
                         className: 'font-bold',
