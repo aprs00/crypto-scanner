@@ -18,4 +18,4 @@ const useHeatmapData = () => {
     });
 };
 
-export {useHeatmapData};
+export {fetchHeatmapData, useHeatmapData};

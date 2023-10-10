@@ -1,28 +1,14 @@
-import {useEffect, useRef} from 'react';
+import {useEffect, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {queryClient} from '@/lib/react-query';
 
-import {api} from '@/lib/ky';
-import type {HeatmapResponseType} from './types';
+import {API_WS_URL} from '@/config/env';
 
 const useStreamTable = () => {
+    const [streamData, setStreamData] = useState();
+
     useEffect(() => {
-        const url = new URL('/ws/crypto_scanner/table', 'wss://api.crypto-scanner.xyz');
-        const jsonExample = {
-            volume: {
-                '30s': ['avg', 'sum', 'std.p'],
-                '15m': ['twa', 'var.p', 'std.s'],
-            },
-            price: {
-                '30s': ['avg', 'sum', 'std.p'],
-                '15m': ['twa', 'var.p', 'std.s'],
-            },
-            trades: {
-                '30s': ['avg', 'sum', 'std.p'],
-                '15m': ['twa', 'var.p', 'std.s'],
-            },
-        };
-        // url.searchParams.append('jsonObj', JSON.stringify(jsonExample));
+        const url = new URL('/ws/crypto_scanner/table', API_WS_URL);
 
         const ws = new WebSocket(url);
 
@@ -31,11 +17,9 @@ const useStreamTable = () => {
         };
 
         ws.onmessage = (event) => {
-            const streamData = JSON.parse(event.data);
-
-            console.log(streamData);
-
-            queryClient.setQueryData(['table-streams'], streamData);
+            const data = JSON.parse(event.data);
+            queryClient.setQueryData(['table-streams'], data);
+            setStreamData(data);
         };
 
         ws.onerror = (error) => {
@@ -48,6 +32,10 @@ const useStreamTable = () => {
         };
     }, []);
 
-    return queryClient.getQueryData(['table-streams']);
+    return useQuery(['table-streams'], () => streamData ?? null, {
+        refetchOnWindowFocus: false,
+        staleTime: Infinity,
+    });
 };
+
 export {useStreamTable};
