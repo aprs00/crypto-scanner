@@ -81,20 +81,26 @@ function Table() {
     const table = useReactTable({
         data,
         columns,
+        // columnResizeMode: 'onChange',
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        defaultColumn: {
+            minSize: 150,
+            size: Number.MAX_SAFE_INTEGER,
+            maxSize: Number.MAX_SAFE_INTEGER,
+        },
     });
 
     return (
         <div className="p-2 pb-32">
-            <table className="border border-slate-700 w-full text-left text-slate-200">
+            <table className="border border-slate-700 w-full text-left text-slate-200 text-sm">
                 <thead className="bg-slate-900">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <th
                                     key={header.id}
-                                    className="capitalize px-3.5 py-2 border border-slate-800"
+                                    className="capitalize p-1 border border-slate-800"
                                     colSpan={header.colSpan}
                                 >
                                     {header.isPlaceholder ? null : (
@@ -123,7 +129,16 @@ function Table() {
                         table.getRowModel().rows.map((row, i) => (
                             <tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => (
-                                    <td key={cell.id} className="px-3.5 py-2 border border-slate-800">
+                                    <td
+                                        style={{
+                                            width:
+                                                cell.column.getSize() === Number.MAX_SAFE_INTEGER
+                                                    ? 'auto'
+                                                    : cell.column.getSize(),
+                                        }}
+                                        key={cell.id}
+                                        className="p-1 border border-slate-800"
+                                    >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
                                 ))}
