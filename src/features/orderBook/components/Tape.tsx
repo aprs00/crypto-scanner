@@ -44,7 +44,7 @@ const Tape = () => {
                 <div className="">SIZE</div>
                 <div className="">Time</div>
             </div>
-            <div className="h-full overflow-y-auto">{tapeTable}</div>
+            <div className="h-full overflow-none">{tapeTable}</div>
         </div>
     );
 };

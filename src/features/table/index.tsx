@@ -26,6 +26,11 @@ const columns = [
         header: () => 'Symbol',
         id: 'symbol',
     }),
+    columnHelper.accessor('p_twa_15m', {
+        cell: (info) => info.getValue(),
+        header: () => 'p twa 15m',
+        id: 'p_twa_15m',
+    }),
     columnHelper.accessor('v_sum_30s', {
         cell: (info) => info.getValue(),
         header: () => 'v sum 30s',
