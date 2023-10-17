@@ -1,5 +1,3 @@
-import {memo} from 'react';
-
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
 
 import type {ChartContainerPropsType} from '../types';
@@ -18,4 +16,4 @@ const ChartContainer = (props: ChartContainerPropsType) => {
     );
 };
 
-export default memo(ChartContainer);
+export default ChartContainer;

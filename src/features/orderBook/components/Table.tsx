@@ -9,14 +9,19 @@ import {useStreamTicker} from '../api';
 import {tableBackgroundStyle} from '../utils';
 import type {OrderBookTablePropsType} from '../types';
 
+const tableAlignmentOptions = [
+    {label: 'V', value: 'V'},
+    {label: 'H', value: 'H'},
+];
+
 const quantityFormatter = new Intl.NumberFormat(undefined, {
     maximumFractionDigits: 6,
 });
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const {tableHeight, symbolTickSize, tickSize} = props;
+    const {tableHeight, symbolTickSize} = props;
 
-    const [numOfTicks, setNumOfTicks] = useState(tickSize);
+    const [numOfTicks, setNumOfTicks] = useState(100);
     const [tableAlignment, setTableAlignment] = useState('V');
 
     const groupByVal = useMemo(() => symbolTickSize * numOfTicks, [symbolTickSize, numOfTicks]);
@@ -81,14 +86,9 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                     <DraggableIcon id="drag-handle" />
                     <div className="flex items-center gap-2">
                         <CustomSelect
-                            options={[
-                                {label: 'V', value: 'V'},
-                                {label: 'H', value: 'H'},
-                            ]}
+                            options={tableAlignmentOptions}
                             value={tableAlignment}
-                            onChange={(e) => {
-                                setTableAlignment(e as string);
-                            }}
+                            onChange={setTableAlignment}
                         />
                         <NumberInput value={numOfTicks} onChange={(e) => setNumOfTicks(e)} />
                     </div>

@@ -1,4 +1,4 @@
-import {memo, useState} from 'react';
+import {memo, useState, useMemo} from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 import CustomSelect from '@/components/Select';
@@ -9,6 +9,8 @@ import type {BetaHeatmapPropsType} from '../types';
 
 const BetaHeatmap = (props: BetaHeatmapPropsType) => {
     const {timeFrameOptions, tf} = props;
+
+    // const [counter, setCounter] = useState(0);
 
     const [selectedTf, setSelectedTf] = useState(tf);
 
@@ -75,18 +77,38 @@ const BetaHeatmap = (props: BetaHeatmapPropsType) => {
         ],
     };
 
+    // const headerMemo = useMemo(
+    //     () => (
+    //         <>
+    //             <h3 className="text-gray-300">Pearson correlation</h3>
+    //             <div className="z-50">
+    //                 <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
+    //             </div>
+    //         </>
+    //     ),
+    //     [],
+    // );
+
+    // const bodyMemo = useMemo(
+    //     () => <ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>,
+    //     [],
+    // );
+
     return (
-        <ChartContainer
-            header={
-                <>
-                    <h3 className="text-gray-300">Pearson correlation</h3>
-                    <div className="z-50">
-                        <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
-                    </div>
-                </>
-            }
-            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
-        />
+        <>
+            {/* <button onClick={() => setCounter((prev) => prev + 1)}>RERENDER {counter}</button> */}
+            <ChartContainer
+                header={
+                    <>
+                        <h3 className="text-gray-300">Pearson correlation</h3>
+                        <div className="z-50">
+                            <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
+                        </div>
+                    </>
+                }
+                body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
+            />
+        </>
     );
 };
 

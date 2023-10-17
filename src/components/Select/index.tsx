@@ -3,7 +3,6 @@ import {Listbox, Transition} from '@headlessui/react';
 
 import type {SelectPropsType} from './types';
 
-import CheckIcon from './CheckIcon';
 import SelectIcon from './SelectIcon';
 
 const CustomSelect = (props: SelectPropsType) => {

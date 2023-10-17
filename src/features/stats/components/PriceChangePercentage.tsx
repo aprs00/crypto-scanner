@@ -1,4 +1,4 @@
-import {memo, useState} from 'react';
+import {useState} from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 import ChartContainer from './ChartContainer';
@@ -74,4 +74,4 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
     );
 };
 
-export default memo(PriceChangePercentage);
+export default PriceChangePercentage;

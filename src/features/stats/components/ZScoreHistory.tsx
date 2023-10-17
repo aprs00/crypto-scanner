@@ -1,4 +1,4 @@
-import {memo, useState} from 'react';
+import {useState} from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 import CustomSelect from '@/components/Select';
@@ -82,4 +82,4 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
     );
 };
 
-export default memo(ZScoreHistory);
+export default ZScoreHistory;

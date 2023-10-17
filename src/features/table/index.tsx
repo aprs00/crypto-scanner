@@ -140,6 +140,7 @@ function Table() {
                                                 cell.column.getSize() === Number.MAX_SAFE_INTEGER
                                                     ? 'auto'
                                                     : cell.column.getSize(),
+                                            boxShadow: 'inset 5px 5px 10px rgba(0, 0, 0, 1)',
                                         }}
                                         key={cell.id}
                                         className="p-1 border border-slate-800"

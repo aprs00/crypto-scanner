@@ -1,4 +1,4 @@
-import {memo, useState} from 'react';
+import {useState} from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 import CustomSelect from '@/components/Select';
@@ -96,4 +96,4 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
     );
 };
 
-export default memo(ZScoreMatrix);
+export default ZScoreMatrix;

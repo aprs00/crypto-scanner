@@ -40,7 +40,7 @@ const OrderBook = () => {
                     <TradingViewRealTimeChart theme="dark" autosize symbol="BINANCE:BTCUSDT" />
                 </div>
                 <div key="table" data-grid={tableLayout1} className="bg-slate-900 overflow-hidden">
-                    <Table tableHeight={tableHeight} symbol={symbol} symbolTickSize={symbolTickSize} tickSize={100} />
+                    <Table tableHeight={tableHeight} symbol={symbol} symbolTickSize={symbolTickSize} />
                 </div>
                 <div key="tape" data-grid={tapeLayout} className="bg-slate-900 overflow-hidden">
                     <Tape />

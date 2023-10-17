@@ -47,7 +47,7 @@ export type SymbolInfoType = {
 };
 
 //
-// RESPOSNE TYPES
+// RESPONSE TYPES
 //
 export type ExchangeInfoResponseType = {
     timezone: string;
@@ -112,6 +112,5 @@ export type OrderBookFiltersPropsType = {
 export type OrderBookTablePropsType = {
     tableHeight: number;
     symbol: string;
-    tickSize: number;
     symbolTickSize: number;
 };

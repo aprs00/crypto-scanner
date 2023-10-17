@@ -14,7 +14,8 @@ const useHeatmapData = () => {
     return useQuery({
         queryKey: ['heatmap-data'],
         queryFn: () => fetchHeatmapData(),
-        staleTime: 180 * 1000,
+        staleTime: 30 * 1000,
+        cacheTime: 30 * 1000,
     });
 };
 
