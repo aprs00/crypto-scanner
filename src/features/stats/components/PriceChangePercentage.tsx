@@ -20,7 +20,7 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
     else if (type === 'hour') title = 'Average price change per hour of day (UTC)';
 
     const option = {
-        grid: {top: 20, right: 20, bottom: 30, left: 45},
+        grid: {top: 20, right: 20, bottom: 60, left: 45},
         tooltip: {
             trigger: 'axis',
             axisPointer: {

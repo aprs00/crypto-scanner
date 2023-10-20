@@ -6,7 +6,7 @@ import Tape from './components/Tape';
 import {useExchangeInfo} from './api';
 import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
 
-const ResponsiveReactGridLayout = WidthProvider(Responsive);
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const gridLayoutRowHeight = 30;
 const tradingViewLayout = {x: 0, y: 0, w: 12, h: 15};
@@ -26,7 +26,7 @@ const OrderBook = () => {
 
     return (
         <>
-            <ResponsiveReactGridLayout
+            <ResponsiveGridLayout
                 cols={{lg: 12, md: 12, sm: 6, xs: 4, xxs: 2}}
                 rowHeight={gridLayoutRowHeight}
                 draggableHandle="#drag-handle"
@@ -45,7 +45,7 @@ const OrderBook = () => {
                 <div key="tape" data-grid={tapeLayout} className="bg-slate-900 overflow-hidden">
                     <Tape />
                 </div>
-            </ResponsiveReactGridLayout>
+            </ResponsiveGridLayout>
         </>
     );
 };
