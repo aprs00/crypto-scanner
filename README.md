@@ -1,3 +1,3 @@
 # crypto-scanner
 
-## https://crypto-scanner-phi.vercel.app/
+## https://www.crypto-scanner.xyz/
