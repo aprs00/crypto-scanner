@@ -17,7 +17,6 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
     const option = {
         legend: {
             top: '10',
-            left: '70',
             type: 'scroll',
             textStyle: {
                 color: '#d1d5db',
