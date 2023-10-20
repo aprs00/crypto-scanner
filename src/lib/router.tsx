@@ -2,7 +2,7 @@ import {ReactRouter, RootRoute, Outlet} from '@tanstack/react-router';
 
 import Navigation from '@/components/Navigation';
 
-import {orderBookRoute} from '@/features/orderBook/routes';
+import {orderBookRoute} from '@/features/chart/routes';
 import {statsRoute} from '@/features/stats/routes';
 import {tableRoute} from '@/features/table/routes';
 import {heatmapRoute} from '@/features/heatmap/routes';
