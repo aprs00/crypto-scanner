@@ -12,7 +12,6 @@
         "lint:format": "prettier  --loglevel warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
         "lint": "yarn lint:format && yarn lint:fix ",
         "predeploy": "npm run build",
-        "deploy": "gh-pages -d dist",
         "test": "jest"
     },
     "dependencies": {
