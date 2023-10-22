@@ -7,6 +7,7 @@ import ZScoreHistory from './components/ZScoreHistory';
 import PriceChangePerDayOfWeek from './components/PriceChangePercentage';
 
 import {useStatsSelectOptions, useFetchTickersOptions} from './api';
+import type {GridLayoutType} from './types';
 
 const gridLayoutRowHeight = 30;
 
@@ -16,7 +17,7 @@ const Stats = () => {
     const timeFrameOptions = useStatsSelectOptions();
     const tickerOptions = useFetchTickersOptions();
 
-    const [layouts, setLayouts] = useState<any>();
+    const [layouts, setLayouts] = useState<GridLayoutType>();
     // const [breakpoint, setBreakpoint] = useState('lg');
 
     const gridLayouts = useMemo(
