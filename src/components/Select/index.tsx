@@ -22,7 +22,7 @@ const CustomSelect = (props: SelectPropsType) => {
                                     ?.filter((option) => value === option.value)
                                     .map((option) => (
                                         <div className="flex items-center" key={option.value.toString()}>
-                                            <span className="text-slate-100">{option.label}</span>
+                                            <span className="text-slate-200">{option.label}</span>
                                         </div>
                                     ))}
                             </div>

@@ -4,11 +4,12 @@ import {queryClient} from '@/lib/react-query';
 
 import {API_WS_URL} from '@/config/env';
 
-const useStreamTable = () => {
+const useStreamTable = (selectedAggregations: string[]) => {
     const [streamData, setStreamData] = useState();
 
     useEffect(() => {
         const url = new URL('/ws/crypto_scanner/table', API_WS_URL);
+        url.searchParams.set('aggregations', selectedAggregations.join(','));
 
         const ws = new WebSocket(url);
 
@@ -30,7 +31,7 @@ const useStreamTable = () => {
             ws.close();
             console.log('Table WebSocket disconnected');
         };
-    }, []);
+    }, [selectedAggregations]);
 
     return useQuery(['table-streams'], () => streamData ?? null, {
         refetchOnWindowFocus: false,

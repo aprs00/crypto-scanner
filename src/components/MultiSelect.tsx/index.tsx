@@ -1,46 +1,50 @@
-import {memo, Dispatch, SetStateAction} from 'react';
+import {memo, useState} from 'react';
 import {Listbox, Transition} from '@headlessui/react';
 
-type MultiSelectPropsType = {
-    options: {id: number; name: string}[];
-    values: number[];
-    onChange: Dispatch<SetStateAction<number[]>>;
-};
+import XIcon from './XIcon';
+import type {MultiSelectPropsType} from './types';
 
 const MultiSelect = (props: MultiSelectPropsType) => {
-    const {options, values, onChange} = props;
+    const {options, values = [], onChange = () => {}, label} = props;
+
+    console.log(options);
+
+    // const [parsedOptions, setParsedOptions] = useState<OptionsObjectType[]>();
+
+    // ["avg", "sum", "std_p", "std_s", "var_p", "var_s", "twa"]
+    // ["30s", "1m", "5m", "15m"]
+
+    // v_var_p_5m
+
+    // if (Array.isArray(options)) {
+    //     const parsedOptions = options.map((option) => ({
+    //         label: option,
+    //         value: option,
+    //     }));
+
+    //     setParsedOptions(parsedOptions as OptionsObjectType[]);
+    // } else setParsedOptions(options);
 
     return (
         <Listbox value={values} onChange={onChange} multiple>
             {({open}) => (
-                <div className="">
-                    <div className="mb-2 border rounded-md border-slate-700">
-                        <Listbox.Button className="w-full bg-slate-800 rounded-md px-4 h-10 text-left relative">
-                            <div className="flex items-center">
+                <div>
+                    <div>
+                        {!!label?.length && <p className="text-lg">{label}</p>}
+                        <Listbox.Button className="w-full rounded-sm border border-slate-500 px-2 min-h-[28px] h-auto text-left relative">
+                            <div className="flex items-center flex-wrap mr-5">
                                 {options
-                                    ?.filter((option) => values.includes(option.id))
+                                    ?.filter((option) => values.includes(option.value))
                                     .map((option) => (
-                                        <div className="flex items-center" key={option.id}>
-                                            <span className="text-slate-100">{option.name}</span>
+                                        <div className="flex items-center gap-1" key={option.value}>
+                                            <span className="text-slate-200">{option.label}</span>
                                             <span
-                                                className="mr-2 hover:scale-110 self-baseline"
+                                                className="mr-2 hover:scale-125 self-center"
                                                 onClick={() => {
-                                                    onChange((prev) => prev.filter((id) => id !== option.id));
+                                                    onChange((prev) => prev.filter((id) => id !== option.value));
                                                 }}
                                             >
-                                                <svg
-                                                    className="h-5 w-5 text-gray-400"
-                                                    viewBox="0 0 20 20"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                >
-                                                    <path
-                                                        d="M6 18L18 6M6 6l12 12"
-                                                        strokeWidth="1.5"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    />
-                                                </svg>
+                                                <XIcon />
                                             </span>
                                         </div>
                                     ))}
@@ -72,12 +76,12 @@ const MultiSelect = (props: MultiSelectPropsType) => {
                         leaveTo="transform opacity-0 scale-95"
                     >
                         <div className="relative">
-                            <Listbox.Options className="bg-slate-800 rounded-md absolute w-full px-1 py-1">
-                                {options.map((person) => (
+                            <Listbox.Options className="bg-slate-900 rounded-md absolute w-full px-1 py-1 mt-2">
+                                {options?.map((item) => (
                                     <Listbox.Option
-                                        key={person.id}
-                                        value={person.id}
-                                        className="cursor-pointer hover:bg-slate-700 px-4 py-1 rounded-sm"
+                                        key={item.value}
+                                        value={item.value}
+                                        className="cursor-pointer hover:bg-slate-800 px-4 py-1 rounded-sm"
                                     >
                                         {({selected}) => (
                                             <div className="flex items-center">
@@ -87,10 +91,10 @@ const MultiSelect = (props: MultiSelectPropsType) => {
                                                         selected ? 'font-semibold' : 'font-normal'
                                                     } block truncate`}
                                                 >
-                                                    {person.name}
+                                                    {item.label}
                                                 </span>
                                                 {selected && (
-                                                    <span className="text-slate-100 ml-3">
+                                                    <span className="text-slate-200 ml-3">
                                                         <svg
                                                             className="h-5 w-5"
                                                             xmlns="http://www.w3.org/2000/svg"

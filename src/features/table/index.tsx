@@ -1,92 +1,95 @@
-import {useMemo} from 'react';
+import {useMemo, useState, useCallback} from 'react';
 import {createColumnHelper, flexRender, getCoreRowModel, getSortedRowModel, useReactTable} from '@tanstack/react-table';
 
 import Spinner from '@/components/Spinner';
+import Filters from './components/Filters';
 import {useStreamTable} from './api';
+import type {ColumnDefType} from './types';
 
-type ColumnDef = {
-    symbol: string;
-    p_twa_15m: string;
-    v_sum_30s: string;
-    t_sum_30s: string;
-    v_twa_1m: string;
-    v_twa_5m: string;
-    v_sum_5m: string;
-    t_sum_5m: string;
-    v_var_s_5m: string;
-    v_var_p_5m: string;
-    t_var_p_5m: string;
-};
+const columnHelper = createColumnHelper<ColumnDefType>();
 
-const columnHelper = createColumnHelper<ColumnDef>();
-
-const columns = [
-    columnHelper.accessor('symbol', {
-        cell: (info) => info.getValue(),
-        header: () => 'Symbol',
-        id: 'symbol',
-    }),
-    columnHelper.accessor('p_twa_15m', {
-        cell: (info) => info.getValue(),
-        header: () => 'p twa 15m',
-        id: 'p_twa_15m',
-    }),
-    columnHelper.accessor('v_sum_30s', {
-        cell: (info) => info.getValue(),
-        header: () => 'v sum 30s',
-        id: 'v_sum_30s',
-    }),
-    columnHelper.accessor('t_sum_30s', {
-        cell: (info) => info.getValue(),
-        header: () => 't sum 30s',
-        id: 't_sum_30s',
-    }),
-    columnHelper.accessor('v_twa_1m', {
-        cell: (info) => info.getValue(),
-        header: () => 'v twa 1m',
-        id: 'v_twa_1m',
-    }),
-    columnHelper.accessor('v_twa_5m', {
-        cell: (info) => info.getValue(),
-        header: () => 'v twa 5m',
-        id: 'v_twa_5m',
-    }),
-    columnHelper.accessor('v_sum_5m', {
-        cell: (info) => info.getValue(),
-        header: () => 'v sum 5m',
-        id: 'v_sum_5m',
-    }),
-    columnHelper.accessor('t_sum_5m', {
-        cell: (info) => info.getValue(),
-        header: () => 't sum 5m',
-        id: 't_sum_5m',
-    }),
-    columnHelper.accessor('v_var_s_5m', {
-        cell: (info) => info.getValue(),
-        header: () => 'v var s 5m',
-        id: 'v_var_s_5m',
-    }),
-    columnHelper.accessor('v_var_p_5m', {
-        cell: (info) => info.getValue(),
-        header: () => 'v var p 5m',
-        id: 'v_var_p_5m',
-    }),
-    columnHelper.accessor('t_var_p_5m', {
-        cell: (info) => info.getValue(),
-        header: () => 't var p 5m',
-        id: 't_var_p_5m',
-    }),
+const aggregationOptions = ['avg', 'sum', 'std_p', 'std_s', 'var_p', 'var_s', 'twa'];
+const timeFrameOptions = ['30s', '1m', '5m', '15m'];
+const dataTypes = [
+    {value: 'p', label: 'Price'},
+    {value: 'v', label: 'Volume'},
+    {value: 't', label: 'Trade'},
 ];
 
 function Table() {
-    const streamTableData = useStreamTable() || {};
+    const [selectedAggregations, setSelectedAggregations] = useState<string[]>([
+        'p_twa_15m',
+        't_avg_1m',
+        'v_sum_5m',
+        't_sum_5m',
+        't_var_p_5m',
+        'v_twa_15m',
+    ]);
 
+    const columns = useMemo(() => {
+        const parsed = selectedAggregations.map((aggregation) => {
+            const [dataType, aggregationType, timeFrame] = aggregation.split('_');
+            const label = `${dataType} ${aggregationType} ${timeFrame}`;
+
+            return {
+                accessorKey: aggregation,
+                cell: ({getValue}: {getValue: () => void}) => getValue(),
+                header: () => label,
+                id: aggregation,
+            };
+        });
+
+        return [
+            columnHelper.accessor('symbol', {
+                cell: (info) => info.getValue(),
+                header: () => 'Symbol',
+                id: 'symbol',
+            }),
+            ...parsed,
+        ];
+    }, [selectedAggregations]);
+
+    const streamTableData = useStreamTable(selectedAggregations) || {};
     const data = useMemo(() => streamTableData?.data || [], [streamTableData]);
+
+    const isAggregationSelected = useCallback(
+        (aggregation: string) => selectedAggregations.includes(aggregation),
+        [selectedAggregations],
+    );
+
+    const toggleSwitch = useCallback(
+        (aggregation: string) => {
+            const isSelected = selectedAggregations.includes(aggregation);
+
+            isSelected
+                ? setSelectedAggregations(selectedAggregations.filter((agg: string) => agg !== aggregation))
+                : setSelectedAggregations([...selectedAggregations, aggregation]);
+        },
+        [selectedAggregations],
+    );
+
+    const formatAggregationOption = useCallback((aggregation: string) => {
+        const parsed = aggregation
+            .split('_')
+            .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
+            .join(' ');
+
+        return parsed;
+    }, []);
+
+    const formattedAggregationOptions = useMemo(
+        () =>
+            aggregationOptions.reduce((acc, curr) => {
+                const parsed = formatAggregationOption(curr);
+                acc[curr] = parsed;
+                return acc;
+            }, {} as Record<string, string>),
+        [],
+    );
 
     const table = useReactTable({
         data,
         columns,
-        // columnResizeMode: 'onChange',
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         defaultColumn: {
@@ -98,6 +101,15 @@ function Table() {
 
     return (
         <div className="p-2 pb-32">
+            <Filters
+                dataTypes={dataTypes}
+                timeFrameOptions={timeFrameOptions}
+                aggregationOptions={aggregationOptions}
+                formattedAggregationOptions={formattedAggregationOptions}
+                isAggregationSelected={isAggregationSelected}
+                toggleSwitch={toggleSwitch}
+            />
+
             <table className="border border-slate-700 w-full text-left text-slate-200 text-sm">
                 <thead className="bg-slate-900">
                     {table.getHeaderGroups().map((headerGroup) => (
