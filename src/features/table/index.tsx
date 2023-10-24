@@ -19,11 +19,13 @@ const dataTypes = [
 function Table() {
     const [selectedAggregations, setSelectedAggregations] = useState<string[]>([
         'p_twa_15m',
-        't_avg_1m',
-        'v_sum_5m',
-        't_sum_5m',
-        't_var_p_5m',
-        'v_twa_15m',
+        'v_avg_30s',
+        'v_avg_5m',
+        'v_avg_15m',
+        't_avg_30s',
+        't_avg_5m',
+        't_avg_15m',
+        't_std_p_15m',
     ]);
 
     const columns = useMemo(() => {
