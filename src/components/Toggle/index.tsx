@@ -12,7 +12,7 @@ function MyToggle(props: MyTogglePropsType) {
                 checked={enabled}
                 onChange={setEnabled}
                 className={`${
-                    enabled ? 'bg-teal-600' : 'bg-gray-700'
+                    enabled ? 'bg-sky-600' : 'bg-gray-700'
                 } relative inline-flex h-5 w-10 items-center rounded-full`}
             >
                 <span className="sr-only">Enable notifications</span>
