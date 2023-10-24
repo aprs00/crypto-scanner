@@ -19,14 +19,13 @@ const Tape = () => {
         >
             <div>{data.price}</div>
             <div>{data.size}</div>
-            {/* <div>{data.time.toLocaleTimeString()}</div> */}
             <TimeDisplay timestamp={data.time} />
         </div>
     ));
 
     useEffect(() => {
-        // if (!streamAggTrade || (Number(streamAggTrade?.data?.q) || 0) <= 0.1) return;
         if (!streamAggTrade?.data?.p) return;
+        if (!streamAggTrade || (Number(streamAggTrade?.data?.q) || 0) <= 0.05) return;
         const newTape = {
             price: streamAggTrade?.data?.p.toString().replace(/\.?0+$/, ''),
             size: streamAggTrade?.data?.q.toString().replace(/\.?0+$/, ''),

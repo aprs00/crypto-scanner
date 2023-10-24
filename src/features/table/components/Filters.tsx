@@ -20,7 +20,7 @@ function Filters(props: FiltersPropsType) {
             {dataTypes.map((dataType) => (
                 <span key={dataType.label} className="mr-4">
                     <Disclosure title={dataType.label}>
-                        <section className="flex flex-col gap-5 mt-5 text-slate-200 mr-10">
+                        <section className="flex flex-col gap-5 mt-5 text-slate-200 max-w-4xl">
                             {timeFrameOptions.map((timeFrame) => (
                                 <Fragment key={`${timeFrame}_${dataType.label}`}>
                                     <div className="flex flex-col gap-1">
