@@ -1,11 +1,11 @@
-import {Fragment} from 'react';
+import {Fragment, memo} from 'react';
 
 import Toggle from '@/components/Toggle';
 import Disclosure from '@/components/Disclosure';
 
 import type {FiltersPropsType} from '../types';
 
-function Filters(props: FiltersPropsType) {
+const Filters = (props: FiltersPropsType) => {
     const {
         dataTypes,
         timeFrameOptions,
@@ -49,6 +49,6 @@ function Filters(props: FiltersPropsType) {
             ))}
         </div>
     );
-}
+};
 
-export default Filters;
+export default memo(Filters);

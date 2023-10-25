@@ -16,7 +16,7 @@ const dataTypes = [
     {value: 't', label: 'Trade'},
 ];
 
-function Table() {
+const Table = () => {
     const [selectedAggregations, setSelectedAggregations] = useState<string[]>([
         'p_twa_15m',
         'v_avg_30s',
@@ -175,6 +175,6 @@ function Table() {
             </table>
         </div>
     );
-}
+};
 
 export default Table;
