@@ -1,3 +1,5 @@
+import {Dispatch} from 'react';
+
 export type HeatmapResponseType = {
     coinId: string;
     coinImageUrl: string;
@@ -19,7 +21,6 @@ export type FiltersPropsType = {
     }[];
     aggregationOptions: string[];
     timeFrameOptions: string[];
-    formattedAggregationOptions: Record<string, string>;
-    isAggregationSelected(label: string): boolean;
-    toggleSwitch: (label: string) => void;
+    selectedAggregations: string[];
+    setSelectedAggregations: Dispatch<React.SetStateAction<string[]>>;
 };

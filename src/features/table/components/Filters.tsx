@@ -1,4 +1,4 @@
-import {Fragment, memo} from 'react';
+import {Fragment, memo, useCallback, useMemo} from 'react';
 
 import Toggle from '@/components/Toggle';
 import Disclosure from '@/components/Disclosure';
@@ -6,14 +6,42 @@ import Disclosure from '@/components/Disclosure';
 import type {FiltersPropsType} from '../types';
 
 const Filters = (props: FiltersPropsType) => {
-    const {
-        dataTypes,
-        timeFrameOptions,
-        aggregationOptions,
-        formattedAggregationOptions,
-        isAggregationSelected,
-        toggleSwitch,
-    } = props;
+    const {dataTypes, timeFrameOptions, aggregationOptions, selectedAggregations, setSelectedAggregations} = props;
+
+    const isAggregationSelected = useCallback(
+        (aggregation: string) => selectedAggregations.includes(aggregation),
+        [selectedAggregations],
+    );
+
+    const toggleSwitch = useCallback(
+        (aggregation: string) => {
+            const isSelected = selectedAggregations.includes(aggregation);
+
+            isSelected
+                ? setSelectedAggregations(selectedAggregations.filter((agg: string) => agg !== aggregation))
+                : setSelectedAggregations([...selectedAggregations, aggregation]);
+        },
+        [selectedAggregations],
+    );
+
+    const formatAggregationOption = useCallback((aggregation: string) => {
+        const parsed = aggregation
+            .split('_')
+            .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
+            .join(' ');
+
+        return parsed;
+    }, []);
+
+    const formattedAggregationOptions = useMemo(
+        () =>
+            aggregationOptions.reduce((acc, curr) => {
+                const parsed = formatAggregationOption(curr);
+                acc[curr] = parsed;
+                return acc;
+            }, {} as Record<string, string>),
+        [],
+    );
 
     return (
         <div className="mb-8">

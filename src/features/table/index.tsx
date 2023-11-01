@@ -1,12 +1,8 @@
-import {useMemo, useState, useCallback} from 'react';
-import {createColumnHelper, flexRender, getCoreRowModel, getSortedRowModel, useReactTable} from '@tanstack/react-table';
+import {useState} from 'react';
 
 import Spinner from '@/components/Spinner';
 import Filters from './components/Filters';
 import {useStreamTable} from './api';
-import type {ColumnDefType} from './types';
-
-const columnHelper = createColumnHelper<ColumnDefType>();
 
 const aggregationOptions = ['avg', 'sum', 'std_p', 'std_s', 'var_p', 'var_s', 'twa'];
 const timeFrameOptions = ['30s', '1m', '5m', '15m'];
@@ -28,78 +24,7 @@ const Table = () => {
         't_std_p_15m',
     ]);
 
-    const columns = useMemo(() => {
-        const parsed = selectedAggregations.map((aggregation) => {
-            const [dataType, aggregationType, timeFrame] = aggregation.split('_');
-            const label = `${dataType} ${aggregationType} ${timeFrame}`;
-
-            return {
-                accessorKey: aggregation,
-                cell: ({getValue}: {getValue: () => void}) => getValue(),
-                header: () => label,
-                id: aggregation,
-            };
-        });
-
-        return [
-            columnHelper.accessor('symbol', {
-                cell: (info) => info.getValue(),
-                header: () => 'Symbol',
-                id: 'symbol',
-            }),
-            ...parsed,
-        ];
-    }, [selectedAggregations]);
-
-    const streamTableData = useStreamTable(selectedAggregations) || {};
-    const data = useMemo(() => streamTableData?.data || [], [streamTableData]);
-
-    const isAggregationSelected = useCallback(
-        (aggregation: string) => selectedAggregations.includes(aggregation),
-        [selectedAggregations],
-    );
-
-    const toggleSwitch = useCallback(
-        (aggregation: string) => {
-            const isSelected = selectedAggregations.includes(aggregation);
-
-            isSelected
-                ? setSelectedAggregations(selectedAggregations.filter((agg: string) => agg !== aggregation))
-                : setSelectedAggregations([...selectedAggregations, aggregation]);
-        },
-        [selectedAggregations],
-    );
-
-    const formatAggregationOption = useCallback((aggregation: string) => {
-        const parsed = aggregation
-            .split('_')
-            .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
-            .join(' ');
-
-        return parsed;
-    }, []);
-
-    const formattedAggregationOptions = useMemo(
-        () =>
-            aggregationOptions.reduce((acc, curr) => {
-                const parsed = formatAggregationOption(curr);
-                acc[curr] = parsed;
-                return acc;
-            }, {} as Record<string, string>),
-        [],
-    );
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        defaultColumn: {
-            minSize: 150,
-            size: Number.MAX_SAFE_INTEGER,
-            maxSize: Number.MAX_SAFE_INTEGER,
-        },
-    });
+    const {data} = useStreamTable(selectedAggregations) as any;
 
     return (
         <div className="p-2 pb-32">
@@ -107,64 +32,35 @@ const Table = () => {
                 dataTypes={dataTypes}
                 timeFrameOptions={timeFrameOptions}
                 aggregationOptions={aggregationOptions}
-                formattedAggregationOptions={formattedAggregationOptions}
-                isAggregationSelected={isAggregationSelected}
-                toggleSwitch={toggleSwitch}
+                selectedAggregations={selectedAggregations}
+                setSelectedAggregations={setSelectedAggregations}
             />
 
             <table className="border border-slate-700 w-full text-left text-slate-200 text-sm">
-                <thead className="bg-slate-900">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <th
-                                    key={header.id}
-                                    className="capitalize p-1 border border-slate-800"
-                                    colSpan={header.colSpan}
-                                >
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            {...{
-                                                className: header.column.getCanSort()
-                                                    ? 'cursor-pointer select-none'
-                                                    : '',
-                                                onClick: header.column.getToggleSortingHandler(),
-                                            }}
-                                        >
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                            {{
-                                                asc: ' ↑',
-                                                desc: ' ↓',
-                                            }[header.column.getIsSorted() as string] ?? null}
-                                        </div>
-                                    )}
-                                </th>
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        {selectedAggregations.map((key: string) => (
+                            <th key={key} className="p-1 border border-slate-800">
+                                {key
+                                    .split('_')
+                                    .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
+                                    .join(' ') ?? null}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {data?.map((row: any, i: number) => (
+                        <tr key={i}>
+                            {Object.values(row).map((value: any, j) => (
+                                <td key={i + j} className="p-1 border border-slate-800">
+                                    {value}
+                                </td>
                             ))}
                         </tr>
                     ))}
-                </thead>
-                <tbody className="w-full">
-                    {table.getRowModel().rows.length ? (
-                        table.getRowModel().rows.map((row, i) => (
-                            <tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <td
-                                        style={{
-                                            width:
-                                                cell.column.getSize() === Number.MAX_SAFE_INTEGER
-                                                    ? 'auto'
-                                                    : cell.column.getSize(),
-                                            boxShadow: 'inset 5px 5px 10px rgba(0, 0, 0, 1)',
-                                        }}
-                                        key={cell.id}
-                                        className="p-1 border border-slate-800"
-                                    >
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))
-                    ) : (
+                    {!data?.length && (
                         <tr className="relative h-32 w-full">
                             <td colSpan={12} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                                 <Spinner />
