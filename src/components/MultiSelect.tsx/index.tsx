@@ -1,8 +1,8 @@
-import {memo, useState} from 'react';
 import {Listbox, Transition} from '@headlessui/react';
+import {memo, useState} from 'react';
 
-import XIcon from './XIcon';
 import type {MultiSelectPropsType} from './types';
+import XIcon from './XIcon';
 
 const MultiSelect = (props: MultiSelectPropsType) => {
     const {options, values = [], onChange = () => {}, label} = props;

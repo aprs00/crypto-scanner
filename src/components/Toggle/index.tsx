@@ -1,5 +1,5 @@
-import {memo} from 'react';
 import {Switch} from '@headlessui/react';
+import {memo} from 'react';
 
 import type {MyTogglePropsType} from './types';
 

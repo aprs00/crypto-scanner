@@ -1,11 +1,11 @@
-import {useState} from 'react';
 import ReactEcharts from 'echarts-for-react';
+import {useState} from 'react';
 
 import CustomSelect from '@/components/Select';
-import ChartContainer from './ChartContainer';
 
 import {useZScoreHistory} from '../api';
 import type {ZScoreHistoryPropsType} from '../types';
+import ChartContainer from './ChartContainer';
 
 const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
     const {timeFrameOptions, tf, type} = props;

@@ -1,4 +1,5 @@
-import {useCallback, useState, useEffect} from 'react';
+import {useCallback, useEffect, useState} from 'react';
+
 import {useWindowEvent} from './useWindowEvent';
 
 const eventListerOptions = {

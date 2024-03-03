@@ -8,8 +8,8 @@ const findTargetPriceIndex = (bids: [string, string][], price: string, ascending
     const parsedPrice = parseFloat(price);
 
     while (low <= high) {
-        let mid = Math.floor((low + high) / 2);
-        let midPrice = parseFloat(bids[mid][0]);
+        const mid = Math.floor((low + high) / 2);
+        const midPrice = parseFloat(bids[mid][0]);
 
         if (midPrice === parsedPrice) return {exactMatch: true, index: mid};
         else if ((ascending && midPrice < parsedPrice) || (!ascending && midPrice > parsedPrice)) low = mid + 1;
@@ -104,4 +104,4 @@ const tableBackgroundStyle = (type: string, tableAlignment: string, percentage: 
     } ${percentage}%, rgba(255, 255, 255, 0) 0%)`;
 };
 
-export {findTargetPriceIndex, groupOrders, updateOrderBook, isEventValid, tableBackgroundStyle};
+export {findTargetPriceIndex, groupOrders, isEventValid, tableBackgroundStyle, updateOrderBook};

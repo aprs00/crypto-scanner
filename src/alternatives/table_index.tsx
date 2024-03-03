@@ -1,10 +1,10 @@
-import {useMemo, useState} from 'react';
 import {createColumnHelper, flexRender, getCoreRowModel, getSortedRowModel, useReactTable} from '@tanstack/react-table';
+import {useMemo, useState} from 'react';
 
 import Spinner from '@/components/Spinner';
-import Filters from '@/features/table/components/Filters';
 import {useStreamTable} from '@/features/table//api';
 import type {ColumnDefType} from '@/features/table//types';
+import Filters from '@/features/table/components/Filters';
 
 const columnHelper = createColumnHelper<ColumnDefType>();
 

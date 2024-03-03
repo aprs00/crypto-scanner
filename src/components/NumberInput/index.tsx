@@ -1,9 +1,8 @@
 import {memo} from 'react';
 
-import type {NumberInputPropsType} from './types';
-
-import UpIcon from './UpIcon';
 import DownIcon from './DownIcon';
+import type {NumberInputPropsType} from './types';
+import UpIcon from './UpIcon';
 
 const NumberInput = (props: NumberInputPropsType) => {
     const {value, onChange} = props;

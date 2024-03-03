@@ -1,11 +1,11 @@
-import {useState} from 'react';
 import ReactEcharts from 'echarts-for-react';
+import {useState} from 'react';
 
-import ChartContainer from './ChartContainer';
 import CustomSelect from '@/components/Select';
 
 import {usePriceChangePercentage} from '../api';
 import type {PriceChangePerDayOfWeekPropsType} from '../types';
+import ChartContainer from './ChartContainer';
 
 const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
     const {tf, symbol, timeFrameOptions, tickerOptions, type} = props;

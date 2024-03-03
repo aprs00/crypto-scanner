@@ -1,6 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 
 import {api} from '@/lib/ky';
+
 import type {HeatmapResponseType} from './types';
 
 const fetchHeatmapData = async () => {

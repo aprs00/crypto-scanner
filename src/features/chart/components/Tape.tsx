@@ -1,8 +1,8 @@
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 
-import TimeDisplay from './TimeDisplay';
 import {useStreamAggTrade} from '../api';
 import type {TapeStateType} from '../types';
+import TimeDisplay from './TimeDisplay';
 
 const Tape = () => {
     const streamAggTrade = useStreamAggTrade('BTCUSDT');

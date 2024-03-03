@@ -1,11 +1,12 @@
-import {useEffect, useState, useRef} from 'react';
 import {useQuery} from '@tanstack/react-query';
+import {useEffect, useRef, useState} from 'react';
 
+import {BINANCE_API_URL} from '@/config/env';
 import {api} from '@/lib/ky';
 import {queryClient} from '@/lib/react-query';
-import {BINANCE_API_URL} from '@/config/env';
-import {groupOrders, updateOrderBook, isEventValid} from './utils';
-import type {OrderBookResponseType, StreamAggTradeResponseType, ExchangeInfoResponseType} from './types';
+
+import type {ExchangeInfoResponseType, OrderBookResponseType, StreamAggTradeResponseType} from './types';
+import {groupOrders, isEventValid, updateOrderBook} from './utils';
 
 const fetchExchangeInfo = async () => {
     const url = new URL('api/v3/exchangeInfo', BINANCE_API_URL);
@@ -125,4 +126,4 @@ const useStreamAggTrade = (symbol: string) => {
     });
 };
 
-export {useExchangeInfo, useDepthSnapshot, useStreamTicker, useStreamAggTrade};
+export {useDepthSnapshot, useExchangeInfo, useStreamAggTrade, useStreamTicker};

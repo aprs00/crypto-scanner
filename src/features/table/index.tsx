@@ -1,8 +1,9 @@
 import {useState} from 'react';
 
 import Spinner from '@/components/Spinner';
-import Filters from './components/Filters';
+
 import {useStreamTable} from './api';
+import Filters from './components/Filters';
 
 const aggregationOptions = ['avg', 'sum', 'std_p', 'std_s', 'var_p', 'var_s', 'twa'];
 const timeFrameOptions = ['30s', '1m', '5m', '15m'];

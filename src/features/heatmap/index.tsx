@@ -1,7 +1,7 @@
-import {useEffect, useRef, useMemo} from 'react';
 import type {EChartsOption} from 'echarts';
 import * as echarts from 'echarts';
 import ReactEcharts from 'echarts-for-react';
+import {useEffect, useMemo, useRef} from 'react';
 
 import {useHeatmapData} from './api';
 

@@ -1,7 +1,7 @@
 import {Fragment, memo, useCallback, useMemo} from 'react';
 
-import Toggle from '@/components/Toggle';
 import Disclosure from '@/components/Disclosure';
+import Toggle from '@/components/Toggle';
 
 import type {FiltersPropsType} from '../types';
 

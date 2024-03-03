@@ -1,11 +1,10 @@
-import {ReactRouter, RootRoute, Outlet} from '@tanstack/react-router';
+import {Outlet, ReactRouter, RootRoute} from '@tanstack/react-router';
 
 import Navigation from '@/components/Navigation';
-
 import {orderBookRoute} from '@/features/chart/routes';
+import {heatmapRoute} from '@/features/heatmap/routes';
 import {statsRoute} from '@/features/stats/routes';
 import {tableRoute} from '@/features/table/routes';
-import {heatmapRoute} from '@/features/heatmap/routes';
 
 const indexRoute = new RootRoute({
     component: () => {
@@ -31,4 +30,4 @@ declare module '@tanstack/react-router' {
     }
 }
 
-export {router, indexRoute};
+export {indexRoute, router};

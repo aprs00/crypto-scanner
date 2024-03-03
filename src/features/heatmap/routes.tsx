@@ -1,7 +1,8 @@
 import {lazy, Route} from '@tanstack/react-router';
-import {indexRoute} from '@/lib/router';
 
 import {queryClient} from '@/lib/react-query';
+import {indexRoute} from '@/lib/router';
+
 import {fetchHeatmapData} from './api';
 
 const Heatmap = lazy(() => import('.'));

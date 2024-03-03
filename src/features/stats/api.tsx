@@ -1,14 +1,15 @@
 import {useQuery} from '@tanstack/react-query';
 
-import {api} from '@/lib/ky';
 import {API_URL} from '@/config/env';
+import {api} from '@/lib/ky';
+
 import type {
-    BetaHeatmapResponseType,
     AveragePriceChangeResponseType,
+    BetaHeatmapResponseType,
     SelectOptionsResponseType,
     SelectOptionType,
-    ZScoreMatrixResponseType,
     ZScoreHistoryResponseType,
+    ZScoreMatrixResponseType,
 } from './types';
 
 const fetchPriceChangePercentage = async (symbol: string, duration: string, type: string) => {
@@ -130,9 +131,9 @@ const useStatsSelectOptions = () => {
 
 export {
     useBetaHeatmapData,
+    useFetchTickersOptions,
     usePriceChangePercentage,
     useStatsSelectOptions,
-    useFetchTickersOptions,
-    useZScoreMatrix,
     useZScoreHistory,
+    useZScoreMatrix,
 };

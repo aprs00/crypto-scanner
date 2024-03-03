@@ -1,9 +1,8 @@
-import {memo} from 'react';
 import {Listbox, Transition} from '@headlessui/react';
-
-import type {SelectPropsType} from './types';
+import {memo} from 'react';
 
 import SelectIcon from './SelectIcon';
+import type {SelectPropsType} from './types';
 
 const CustomSelect = (props: SelectPropsType) => {
     const {options, value, onChange, classes = 'w-20'} = props;

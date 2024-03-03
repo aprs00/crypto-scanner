@@ -1,13 +1,13 @@
-import {useMemo, useCallback, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 
-import NumberInput from '@/components/NumberInput';
-import Spinner from '@/components/Spinner';
-import CustomSelect from '@/components/Select';
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
+import NumberInput from '@/components/NumberInput';
+import CustomSelect from '@/components/Select';
+import Spinner from '@/components/Spinner';
 
 import {useStreamTicker} from '../api';
-import {tableBackgroundStyle} from '../utils';
 import type {OrderBookTablePropsType} from '../types';
+import {tableBackgroundStyle} from '../utils';
 
 const tableAlignmentOptions = [
     {label: 'V', value: 'V'},
@@ -50,7 +50,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         (groupedGetter: [number, number, string][], type: string) => {
             const rows = [];
             for (let i = 0; i < groupedGetter?.length; i++) {
-                const [price, quantity, id] = groupedGetter?.[i];
+                const [price, quantity, id] = groupedGetter?.[i] ?? [];
                 const percentage = (Number(quantity) / maxQuantity) * 100;
                 const formattedQuantity = quantityFormatter.format(Number(quantity));
                 rows.push(

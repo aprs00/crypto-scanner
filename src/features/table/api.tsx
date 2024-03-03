@@ -1,8 +1,8 @@
-import {useEffect, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
-import {queryClient} from '@/lib/react-query';
+import {useEffect, useState} from 'react';
 
 import {API_WS_URL} from '@/config/env';
+import {queryClient} from '@/lib/react-query';
 
 const useStreamTable = (selectedAggregations: string[]) => {
     const [streamData, setStreamData] = useState();
