@@ -2,6 +2,7 @@ import ReactEcharts from 'echarts-for-react';
 import {memo, useState} from 'react';
 
 import CustomSelect from '@/components/Select';
+import {useMediaQuery} from '@/hooks/useMediaQuery';
 
 import {useBetaHeatmapData} from '../api';
 import type {BetaHeatmapPropsType} from '../types';
@@ -10,7 +11,7 @@ import ChartContainer from './ChartContainer';
 const BetaHeatmap = (props: BetaHeatmapPropsType) => {
     const {timeFrameOptions, tf} = props;
 
-    // const [counter, setCounter] = useState(0);
+    const matches = useMediaQuery('(min-width: 48em)');
 
     const [selectedTf, setSelectedTf] = useState(tf);
 
@@ -65,7 +66,7 @@ const BetaHeatmap = (props: BetaHeatmapPropsType) => {
                 type: 'heatmap',
                 data: betaHeatmap?.data?.data,
                 label: {
-                    show: true,
+                    show: matches,
                 },
                 emphasis: {
                     itemStyle: {
