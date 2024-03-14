@@ -16,6 +16,14 @@ const Navigation = () => {
                     Stats
                 </Link>
                 <Link
+                    to="/pearson"
+                    activeProps={{
+                        className: 'font-bold',
+                    }}
+                >
+                    Pearson
+                </Link>
+                <Link
                     to="/chart"
                     activeProps={{
                         className: 'font-bold',
@@ -23,14 +31,14 @@ const Navigation = () => {
                 >
                     Chart
                 </Link>
-                <Link
-                    to="/table"
-                    activeProps={{
-                        className: 'font-bold',
-                    }}
-                >
-                    Table
-                </Link>
+                {/*<Link*/}
+                {/*    to="/table"*/}
+                {/*    activeProps={{*/}
+                {/*        className: 'font-bold',*/}
+                {/*    }}*/}
+                {/*>*/}
+                {/*    Table*/}
+                {/*</Link>*/}
                 <Link
                     to="/heatmap"
                     activeProps={{

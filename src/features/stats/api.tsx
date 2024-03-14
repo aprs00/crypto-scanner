@@ -51,6 +51,23 @@ const useFetchTickersOptions = () => {
     });
 };
 
+const fetchPearsonCorrelation = async () => {
+    const url = new URL('test-redis-data', API_URL);
+
+    return (await api.get(url).json()) as BetaHeatmapResponseType;
+};
+
+const usePearsonCorrelation = () => {
+    return useQuery({
+        queryKey: ['pearson-correlation'],
+        queryFn: () => fetchPearsonCorrelation(),
+        cacheTime: 30_000,
+        refetchInterval: 30_000,
+        staleTime: 30_000,
+        refetchOnWindowFocus: false,
+    });
+};
+
 const fetchBetaHeatmapData = async (duration: string) => {
     const url = new URL('pearson-correlation', API_URL);
     url.searchParams.set('duration', duration);
@@ -132,6 +149,7 @@ const useStatsSelectOptions = () => {
 export {
     useBetaHeatmapData,
     useFetchTickersOptions,
+    usePearsonCorrelation,
     usePriceChangePercentage,
     useStatsSelectOptions,
     useZScoreHistory,
