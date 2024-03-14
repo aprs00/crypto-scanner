@@ -61,9 +61,9 @@ const usePearsonCorrelation = () => {
     return useQuery({
         queryKey: ['pearson-correlation'],
         queryFn: () => fetchPearsonCorrelation(),
-        cacheTime: 30_000,
-        refetchInterval: 30_000,
-        staleTime: 30_000,
+        cacheTime: 15_000,
+        refetchInterval: 15_000,
+        staleTime: 15_000,
         refetchOnWindowFocus: false,
     });
 };
