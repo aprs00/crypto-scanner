@@ -51,16 +51,17 @@ const useFetchTickersOptions = () => {
     });
 };
 
-const fetchPearsonCorrelation = async () => {
-    const url = new URL('test-redis-data', API_URL);
+const fetchPearsonCorrelation = async (tf: string) => {
+    const url = new URL('large-pearson-correlation', API_URL);
+    url.searchParams.set('duration', tf);
 
     return (await api.get(url).json()) as BetaHeatmapResponseType;
 };
 
-const usePearsonCorrelation = () => {
+const usePearsonCorrelation = (tf: string) => {
     return useQuery({
-        queryKey: ['pearson-correlation'],
-        queryFn: () => fetchPearsonCorrelation(),
+        queryKey: ['pearson-correlation', tf],
+        queryFn: () => fetchPearsonCorrelation(tf),
         cacheTime: 15_000,
         refetchInterval: 15_000,
         staleTime: 15_000,

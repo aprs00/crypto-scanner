@@ -1,25 +1,44 @@
-import {memo} from 'react';
+import {useState} from 'react';
+import type {Layouts} from 'react-grid-layout';
+import {Responsive, WidthProvider} from 'react-grid-layout';
 
-import Heatmap from '@/components/Heatmap';
+import PearsonHeatmap from '../components/PearsonHeatmap';
 
-import {usePearsonCorrelation} from '../api';
-import ChartContainer from '../components/ChartContainer';
+const gridLayoutRowHeight = 30;
 
-const BetaHeatmap = () => {
-    const betaHeatmap = usePearsonCorrelation();
+const ResponsiveGridLayout = WidthProvider(Responsive);
+
+const Stats = () => {
+    const [layouts, setLayouts] = useState<Layouts>();
+
+    const gridLayouts = [
+        {
+            gridLayout: {w: 12, h: 24, x: 0, y: 0},
+            component: <PearsonHeatmap tf="5m" />,
+            key: 'pearsonCorrelation1',
+        },
+        {
+            gridLayout: {w: 12, h: 24, x: 24, y: 0},
+            component: <PearsonHeatmap tf="15m" />,
+            key: 'pearsonCorrelation2',
+        },
+    ];
 
     return (
-        <>
-            <ChartContainer
-                header={
-                    <>
-                        <h3 className="text-gray-300">5m Pearson correlation</h3>
-                    </>
-                }
-                body={<Heatmap data={betaHeatmap} />}
-            />
-        </>
+        <ResponsiveGridLayout
+            cols={{lg: 12, md: 12, sm: 6, xs: 6, xxs: 6}}
+            rowHeight={gridLayoutRowHeight}
+            draggableHandle="#drag-handle"
+            onLayoutChange={(_, layouts) => setLayouts(layouts)}
+            layouts={layouts}
+        >
+            {gridLayouts.map((grid) => (
+                <div key={grid.key} data-grid={grid.gridLayout} className="bg-slate-900 overflow-hidden rounded">
+                    {grid.component}
+                </div>
+            ))}
+        </ResponsiveGridLayout>
     );
 };
 
-export default memo(BetaHeatmap);
+export default Stats;

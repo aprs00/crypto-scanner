@@ -5,7 +5,7 @@ import {memo} from 'react';
 
 const Navigation = () => {
     return (
-        <div className="flex items-center justify-between py-3 mx-3">
+        <div className="flex items-center justify-between p-3">
             <div className="flex gap-3 text-lg">
                 <Link
                     to="/"

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.full-height {
+    height: calc(100% - 52px);
+}
+
 /* set dark mode on body */
 body {
     @apply antialiased mx-auto text-white transition-colors bg-slate-950;
@@ -55,7 +59,7 @@ body,
     user-select: none;
 }
 
-.react-grid-item>.react-resizable-handle {
+.react-grid-item > .react-resizable-handle {
     position: absolute;
     width: 20px;
     height: 20px;

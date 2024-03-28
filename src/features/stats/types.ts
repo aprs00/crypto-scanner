@@ -1,12 +1,6 @@
-import type {Layout} from 'react-grid-layout';
-
 export type SelectOptionType = {
     value: string;
     label: string;
-};
-
-export type GridLayoutType = {
-    [key: string]: Layout[];
 };
 
 //
@@ -63,6 +57,10 @@ export type ChartContainerPropsType = {
 export type BetaHeatmapPropsType = {
     tf: string;
     timeFrameOptions: SelectOptionType[];
+};
+
+export type PearsonHeatmap = {
+    tf: string;
 };
 
 export type PriceChangePerDayOfWeekPropsType = {

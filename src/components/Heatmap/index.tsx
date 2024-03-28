@@ -66,7 +66,7 @@ const Heatmap = (props: any) => {
             },
         ],
     };
-    return <ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>;
+    return <ReactEcharts option={option} style={{width: '100%', height: '94%'}}></ReactEcharts>;
 };
 
 export default memo(Heatmap);

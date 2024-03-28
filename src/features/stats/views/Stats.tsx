@@ -1,4 +1,5 @@
 import {useMemo, useState} from 'react';
+import type {Layouts} from 'react-grid-layout';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import {useFetchTickersOptions, useStatsSelectOptions} from '../api';
@@ -6,7 +7,6 @@ import BetaHeatmap from '../components/BetaHeatmap';
 import PriceChangePerDayOfWeek from '../components/PriceChangePercentage';
 import ZScoreHistory from '../components/ZScoreHistory';
 import Scatter from '../components/ZScoreMatrix';
-import type {GridLayoutType} from '../types';
 
 const gridLayoutRowHeight = 30;
 
@@ -16,7 +16,7 @@ const Stats = () => {
     const timeFrameOptions = useStatsSelectOptions();
     const tickerOptions = useFetchTickersOptions();
 
-    const [layouts, setLayouts] = useState<GridLayoutType>();
+    const [layouts, setLayouts] = useState<Layouts>();
     // const [breakpoint, setBreakpoint] = useState('lg');
 
     const gridLayouts = useMemo(
