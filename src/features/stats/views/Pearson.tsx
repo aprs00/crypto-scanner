@@ -2,25 +2,31 @@ import {useState} from 'react';
 import type {Layouts} from 'react-grid-layout';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
+import {usePearsonTimeframeOptions, usePearsonTypeOptions} from '@/features/stats/api';
+
 import PearsonHeatmap from '../components/PearsonHeatmap';
 
 const gridLayoutRowHeight = 30;
-
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const Stats = () => {
     const [layouts, setLayouts] = useState<Layouts>();
 
+    const timeFrameOptions = usePearsonTimeframeOptions();
+    const typeOptions = usePearsonTypeOptions();
+
     const gridLayouts = [
         {
             gridLayout: {w: 12, h: 24, x: 0, y: 0},
-            component: <PearsonHeatmap tf="5m" />,
+            component: (
+                <PearsonHeatmap
+                    tf="5m"
+                    type="price"
+                    timeFrameOptions={timeFrameOptions?.data || []}
+                    typeOptions={typeOptions.data || []}
+                />
+            ),
             key: 'pearsonCorrelation1',
-        },
-        {
-            gridLayout: {w: 12, h: 24, x: 24, y: 0},
-            component: <PearsonHeatmap tf="15m" />,
-            key: 'pearsonCorrelation2',
         },
     ];
 

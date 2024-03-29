@@ -1,8 +1,6 @@
 import ReactEcharts from 'echarts-for-react';
 import {useState} from 'react';
 
-import CustomSelect from '@/components/Select';
-
 import {useZScoreHistory} from '../api';
 import type {ZScoreHistoryPropsType} from '../types';
 import ChartContainer from './ChartContainer';

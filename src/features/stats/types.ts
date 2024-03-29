@@ -59,8 +59,11 @@ export type BetaHeatmapPropsType = {
     timeFrameOptions: SelectOptionType[];
 };
 
-export type PearsonHeatmap = {
+export type PearsonHeatmapProps = {
     tf: string;
+    type: string;
+    timeFrameOptions: SelectOptionType[];
+    typeOptions: SelectOptionType[];
 };
 
 export type PriceChangePerDayOfWeekPropsType = {
