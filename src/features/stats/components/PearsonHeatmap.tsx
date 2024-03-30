@@ -20,9 +20,7 @@ const PearsonHeatmap = (props: PearsonHeatmapProps) => {
             <ChartContainer
                 header={
                     <>
-                        <h3 className="text-gray-300">
-                            Pearson correlation - {type} - {tf}
-                        </h3>
+                        <h3 className="text-gray-300">Pearson correlation</h3>
                         <div className="z-50 flex gap-2">
                             <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
                             <CustomSelect
