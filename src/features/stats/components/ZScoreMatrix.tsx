@@ -1,11 +1,11 @@
 import ReactEcharts from 'echarts-for-react';
 import {useState} from 'react';
 
+import ChartContainer from '@/components/ChartContainer';
 import CustomSelect from '@/components/Select';
 
 import {useZScoreMatrix} from '../api';
 import type {ScatterPropsType} from '../types';
-import ChartContainer from './ChartContainer';
 
 const ZScoreMatrix = (props: ScatterPropsType) => {
     const {timeFrameOptions, xAxis, yAxis, tf} = props;

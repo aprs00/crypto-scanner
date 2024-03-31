@@ -1,16 +1,14 @@
 import ReactEcharts from 'echarts-for-react';
-import {useState} from 'react';
+
+import ChartContainer from '@/components/ChartContainer';
 
 import {useZScoreHistory} from '../api';
 import type {ZScoreHistoryPropsType} from '../types';
-import ChartContainer from './ChartContainer';
 
 const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
-    const {timeFrameOptions, tf, type} = props;
+    const {tf, type} = props;
 
-    const [selectedTf, setSelectedTf] = useState(tf);
-
-    const zScoreHistory = useZScoreHistory(type, selectedTf);
+    const zScoreHistory = useZScoreHistory(type, tf);
 
     const option = {
         tooltip: {
@@ -70,9 +68,6 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
                     <h3 className="text-gray-300">
                         Z-Score - {`${type.slice(0, 1).toUpperCase()}${type.slice(1)}`} - {tf} (UTC)
                     </h3>
-                    {/* <div className="z-50 flex gap-2">
-                        <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
-                    </div> */}
                 </>
             }
             body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}

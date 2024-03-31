@@ -2,13 +2,13 @@ import {lazy, Route} from '@tanstack/react-router';
 
 import {indexRoute} from '@/lib/router';
 
-const Stats = lazy(() => import('./views/Stats'));
+const Pearson = lazy(() => import('./views/Pearson'));
 
-const statsRoute = new Route({
+const pearsonRoute = new Route({
     getParentRoute: () => indexRoute,
-    path: '/',
+    path: 'pearson',
     onLoad: async () => {},
-    component: () => <Stats />,
+    component: () => <Pearson />,
 });
 
-export {statsRoute};
+export {pearsonRoute};

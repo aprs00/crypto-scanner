@@ -1,11 +1,11 @@
 import {memo, useState} from 'react';
 
+import ChartContainer from '@/components/ChartContainer';
 import Heatmap from '@/components/Heatmap';
 import CustomSelect from '@/components/Select';
 
 import {useBetaHeatmapData} from '../api';
 import type {BetaHeatmapPropsType} from '../types';
-import ChartContainer from './ChartContainer';
 
 const BetaHeatmap = (props: BetaHeatmapPropsType) => {
     const {timeFrameOptions, tf} = props;

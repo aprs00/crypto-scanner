@@ -2,8 +2,7 @@ import {useState} from 'react';
 import type {Layouts} from 'react-grid-layout';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
-import {usePearsonTimeframeOptions, usePearsonTypeOptions} from '@/features/stats/api';
-
+import {usePearsonTimeframeOptions, usePearsonTypeOptions} from '../api';
 import PearsonHeatmap from '../components/PearsonHeatmap';
 
 const gridLayoutRowHeight = 30;

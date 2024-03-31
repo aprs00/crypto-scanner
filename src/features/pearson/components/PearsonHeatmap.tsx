@@ -1,10 +1,10 @@
 import {memo, useState} from 'react';
 
+import ChartContainer from '@/components/ChartContainer';
 import Heatmap from '@/components/Heatmap';
 import CustomSelect from '@/components/Select';
 
 import {usePearsonCorrelation} from '../api';
-import ChartContainer from '../components/ChartContainer';
 import {PearsonHeatmapProps} from '../types';
 
 const PearsonHeatmap = (props: PearsonHeatmapProps) => {

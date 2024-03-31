@@ -49,11 +49,6 @@ export type ZScoreMatrixResponseType = {
 //
 // PROP TYPES
 //
-export type ChartContainerPropsType = {
-    header: JSX.Element;
-    body: JSX.Element;
-};
-
 export type BetaHeatmapPropsType = {
     tf: string;
     timeFrameOptions: SelectOptionType[];
@@ -82,7 +77,6 @@ export type ScatterPropsType = {
 };
 
 export type ZScoreHistoryPropsType = {
-    timeFrameOptions: SelectOptionType[];
     tf: string;
     type: string;
 };
