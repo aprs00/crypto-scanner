@@ -2,15 +2,15 @@
 //
 // import {indexRoute} from '@/lib/router';
 //
-// const Table = lazy(() => import('./index'));
+// const OrderBook = lazy(() => import('.'));
 //
-// const tableRoute = new Route({
+// const orderBookRoute = new Route({
 //     getParentRoute: () => indexRoute,
-//     path: 'table',
+//     path: '/chart',
 //     onLoad: async () => {
 //         return {};
 //     },
-//     component: () => <Table />,
+//     component: () => <OrderBook />,
 // });
 //
-// export {tableRoute};
+// export {orderBookRoute};

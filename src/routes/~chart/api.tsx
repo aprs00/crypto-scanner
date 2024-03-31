@@ -10,8 +10,7 @@ import {groupOrders, isEventValid, updateOrderBook} from './utils';
 
 const fetchExchangeInfo = async () => {
     const url = new URL('api/v3/exchangeInfo', BINANCE_API_URL);
-    const data = (await api.get(url).json()) as ExchangeInfoResponseType;
-    return data;
+    return (await api.get(url).json()) as ExchangeInfoResponseType;
 };
 
 const useExchangeInfo = () => {
@@ -26,8 +25,7 @@ const fetchDepthSnapshot = async (symbol: string, limit = 5000) => {
     url.searchParams.set('symbol', symbol);
     url.searchParams.set('limit', limit.toString());
 
-    const data = (await api.get(url).json()) as OrderBookResponseType;
-    return data;
+    return (await api.get(url).json()) as OrderBookResponseType;
 };
 
 const useDepthSnapshot = (symbol: string, firstEventProcessed: boolean) => {

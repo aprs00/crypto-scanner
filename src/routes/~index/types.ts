@@ -77,6 +77,7 @@ export type ScatterPropsType = {
 };
 
 export type ZScoreHistoryPropsType = {
+    timeFrameOptions: SelectOptionType[];
     tf: string;
     type: string;
 };

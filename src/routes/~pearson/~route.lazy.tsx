@@ -1,14 +1,20 @@
+import {createLazyFileRoute} from '@tanstack/react-router';
 import {useState} from 'react';
 import type {Layouts} from 'react-grid-layout';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
-import {usePearsonTimeframeOptions, usePearsonTypeOptions} from '../api';
-import PearsonHeatmap from '../components/PearsonHeatmap';
+import PearsonHeatmap from '@/routes/~pearson/components/Heatmap';
+
+import {usePearsonTimeframeOptions, usePearsonTypeOptions} from './api';
 
 const gridLayoutRowHeight = 30;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const Stats = () => {
+export const Route = createLazyFileRoute('/pearson')({
+    component: Pearson,
+});
+
+function Pearson() {
     const [layouts, setLayouts] = useState<Layouts>();
 
     const timeFrameOptions = usePearsonTimeframeOptions();
@@ -44,6 +50,4 @@ const Stats = () => {
             ))}
         </ResponsiveGridLayout>
     );
-};
-
-export default Stats;
+}

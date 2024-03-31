@@ -1,3 +1,4 @@
+import {createLazyFileRoute} from '@tanstack/react-router';
 import {useState} from 'react';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
@@ -11,7 +12,11 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const gridLayoutRowHeight = 30;
 
-const OrderBook = () => {
+export const Route = createLazyFileRoute('/chart')({
+    component: Chart,
+});
+
+function Chart() {
     const exchangeInfo = useExchangeInfo();
 
     const [symbol, setSymbol] = useState('BTCUSDT');
@@ -51,6 +56,4 @@ const OrderBook = () => {
             </ResponsiveGridLayout>
         </>
     );
-};
-
-export default OrderBook;
+}

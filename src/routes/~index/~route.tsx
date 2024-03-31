@@ -1,18 +1,23 @@
+import {createFileRoute} from '@tanstack/react-router';
 import {useMemo, useState} from 'react';
 import type {Layouts} from 'react-grid-layout';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
-import {useFetchTickersOptions, useStatsSelectOptions} from '../api';
-import BetaHeatmap from '../components/BetaHeatmap';
-import PriceChangePerDayOfWeek from '../components/PriceChangePercentage';
-import ZScoreHistory from '../components/ZScoreHistory';
-import Scatter from '../components/ZScoreMatrix';
+import {useFetchTickersOptions, useStatsSelectOptions} from './api';
+import BetaHeatmap from './components/BetaHeatmap';
+import PriceChangePerDayOfWeek from './components/PriceChangePercentage';
+import ZScoreHistory from './components/ZScoreHistory';
+import Scatter from './components/ZScoreMatrix';
 
 const gridLayoutRowHeight = 30;
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const Stats = () => {
+export const Route = createFileRoute('/')({
+    component: Stats,
+});
+
+function Stats() {
     const timeFrameOptions = useStatsSelectOptions();
     const tickerOptions = useFetchTickersOptions();
 
@@ -133,6 +138,4 @@ const Stats = () => {
             ))}
         </ResponsiveGridLayout>
     );
-};
-
-export default Stats;
+}

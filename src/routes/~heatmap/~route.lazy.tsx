@@ -1,11 +1,13 @@
-import type {EChartsOption} from 'echarts';
-import * as echarts from 'echarts';
+import {createLazyFileRoute} from '@tanstack/react-router';
 import ReactEcharts from 'echarts-for-react';
-import {useEffect, useMemo, useRef} from 'react';
 
 import {useHeatmapData} from './api';
 
-const Heatmap = () => {
+export const Route = createLazyFileRoute('/heatmap')({
+    component: Heatmap,
+});
+
+function Heatmap() {
     const heatmap = useHeatmapData();
 
     // const percentageArray = heatmap?.data?.map((item) => item.colorValue) || [];
@@ -41,6 +43,4 @@ const Heatmap = () => {
     };
 
     return <ReactEcharts option={option} style={{height: '100%', width: '100%'}}></ReactEcharts>;
-};
-
-export default Heatmap;
+}
