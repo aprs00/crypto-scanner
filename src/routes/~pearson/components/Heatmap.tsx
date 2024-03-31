@@ -3,9 +3,9 @@ import {memo, useState} from 'react';
 import ChartContainer from '@/components/ChartContainer';
 import Heatmap from '@/components/Heatmap';
 import CustomSelect from '@/components/Select';
-import {PearsonHeatmapProps} from '@/features/pearson/types';
 
 import {usePearsonCorrelation} from '../api';
+import {PearsonHeatmapProps} from '../types';
 
 const PearsonHeatmap = (props: PearsonHeatmapProps) => {
     const {tf, type, timeFrameOptions, typeOptions} = props;
