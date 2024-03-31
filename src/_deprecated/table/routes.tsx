@@ -2,7 +2,7 @@ import {lazy, Route} from '@tanstack/react-router';
 
 import {indexRoute} from '@/lib/router';
 
-const Table = lazy(() => import('.'));
+const Table = lazy(() => import('./index'));
 
 const tableRoute = new Route({
     getParentRoute: () => indexRoute,
