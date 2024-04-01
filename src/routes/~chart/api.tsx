@@ -14,7 +14,9 @@ const fetchExchangeInfo = async () => {
 };
 
 const useExchangeInfo = () => {
-    return useQuery(['exchange-info'], () => fetchExchangeInfo(), {
+    return useQuery({
+        queryKey: ['exchange-info'],
+        queryFn: () => fetchExchangeInfo(),
         refetchOnWindowFocus: false,
         staleTime: Infinity,
     });
@@ -29,10 +31,13 @@ const fetchDepthSnapshot = async (symbol: string, limit = 5000) => {
 };
 
 const useDepthSnapshot = (symbol: string, firstEventProcessed: boolean) => {
-    return useQuery(['depth-snapshot', symbol], () => fetchDepthSnapshot(symbol), {
+    return useQuery({
+        queryKey: ['depth-snapshot', symbol],
+        queryFn: () => fetchDepthSnapshot(symbol),
         enabled: !!symbol,
         refetchOnWindowFocus: false,
         refetchInterval: firstEventProcessed ? 120_000 : 1_800,
+        staleTime: Infinity,
     });
 };
 
@@ -117,7 +122,9 @@ const useStreamAggTrade = (symbol: string) => {
         };
     }, [queryClient, symbol]);
 
-    return useQuery(['ticker-agg-trade-stream', symbol], () => streamData ?? null, {
+    return useQuery({
+        queryKey: ['ticker-agg-trade-stream', symbol],
+        queryFn: () => streamData ?? null,
         enabled: !!symbol,
         refetchOnWindowFocus: false,
         staleTime: Infinity,

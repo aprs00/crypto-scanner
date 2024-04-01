@@ -17,7 +17,7 @@ const usePearsonCorrelation = (tf: string, type: string) => {
     return useQuery({
         queryKey: ['pearson-correlation', tf, type],
         queryFn: () => fetchPearsonCorrelation(tf, type),
-        cacheTime: 15_000,
+        gcTime: 15_000,
         refetchInterval: 15_000,
         staleTime: 15_000,
         refetchOnWindowFocus: false,
@@ -34,7 +34,7 @@ const usePearsonTimeframeOptions = () => {
     return useQuery({
         queryKey: ['pearson-time-frame-options'],
         queryFn: () => fetchPearsonTimeframeOptions(),
-        cacheTime: 60 * 60 * 1000,
+        gcTime: 60 * 60 * 1000,
         refetchInterval: 60 * 60 * 1000,
         staleTime: 60 * 60 * 1000,
         refetchOnWindowFocus: false,
@@ -51,7 +51,7 @@ const usePearsonTypeOptions = () => {
     return useQuery({
         queryKey: ['pearson-type-options'],
         queryFn: () => fetchPearsonTypeOptions(),
-        cacheTime: 60 * 60 * 1000,
+        gcTime: 60 * 60 * 1000,
         refetchInterval: 60 * 60 * 1000,
         staleTime: 60 * 60 * 1000,
         refetchOnWindowFocus: false,

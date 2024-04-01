@@ -32,8 +32,9 @@ const useStreamTable = (selectedAggregations: string[]) => {
             console.log('Table WebSocket disconnected');
         };
     }, [selectedAggregations]);
-
-    return useQuery(['table-streams'], () => streamData ?? null, {
+    return useQuery({
+        queryKey: ['table-streams'],
+        queryFn: () => streamData ?? null,
         refetchOnWindowFocus: false,
         staleTime: Infinity,
     });

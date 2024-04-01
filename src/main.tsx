@@ -27,13 +27,7 @@ if (!rootElement?.innerHTML) {
         <StrictMode>
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router} />
-                <ReactQueryDevtools
-                    toggleButtonProps={{
-                        style: {
-                            marginBottom: '3rem',
-                        },
-                    }}
-                />
+                <ReactQueryDevtools />
             </QueryClientProvider>
         </StrictMode>,
     );

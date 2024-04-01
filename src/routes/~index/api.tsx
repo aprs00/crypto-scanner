@@ -25,7 +25,7 @@ const usePriceChangePercentage = (symbol: string, duration: string, type: string
     return useQuery({
         queryKey: ['price-change-percentage', symbol, duration, type],
         queryFn: () => fetchPriceChangePercentage(symbol, duration, type),
-        cacheTime: 120_000,
+        gcTime: 120_000,
         refetchInterval: 120_000,
         staleTime: 120_000,
         refetchOnWindowFocus: false,
@@ -42,7 +42,7 @@ const useFetchTickersOptions = () => {
     return useQuery({
         queryKey: ['ticker-options'],
         queryFn: () => fetchTickersOptions(),
-        cacheTime: 60 * 60 * 1000,
+        gcTime: 60 * 60 * 1000,
         refetchInterval: 60 * 60 * 1000,
         staleTime: 60 * 60 * 1000,
         refetchOnWindowFocus: false,
@@ -60,7 +60,7 @@ const useBetaHeatmapData = (duration: string) => {
     return useQuery({
         queryKey: ['beta-heatmap-data', duration],
         queryFn: () => fetchBetaHeatmapData(duration),
-        cacheTime: 120_000,
+        gcTime: 120_000,
         refetchInterval: 120_000,
         staleTime: 120_000,
         refetchOnWindowFocus: false,
@@ -80,7 +80,7 @@ const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
     return useQuery({
         queryKey: ['z-score-matrix', xAxis, yAxis, duration],
         queryFn: () => fetchZScoreMatrix(xAxis, yAxis, duration),
-        cacheTime: 120_000,
+        gcTime: 120_000,
         refetchInterval: 120_000,
         staleTime: 120_000,
         refetchOnWindowFocus: false,
@@ -99,7 +99,7 @@ const useZScoreHistory = (type: string, duration: string) => {
     return useQuery({
         queryKey: ['z-score-history', type, duration],
         queryFn: () => fetchZScoreHistory(type, duration),
-        cacheTime: 120_000,
+        gcTime: 120_000,
         refetchInterval: 120_000,
         staleTime: 120_000,
         refetchOnWindowFocus: false,
@@ -116,7 +116,7 @@ const useStatsSelectOptions = () => {
     return useQuery({
         queryKey: ['stats-select-options'],
         queryFn: () => fetchStatsSelectOptions(),
-        cacheTime: 60 * 60 * 1000,
+        gcTime: 60 * 60 * 1000,
         refetchInterval: 60 * 60 * 1000,
         staleTime: 60 * 60 * 1000,
         refetchOnWindowFocus: false,
