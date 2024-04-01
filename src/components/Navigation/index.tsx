@@ -1,52 +1,17 @@
 import {Link} from '@tanstack/react-router';
 import {memo} from 'react';
 
-// import {navigationLinks} from '@/config/links';
+import {headerLinks} from '@/config/links';
 
 const Navigation = () => {
     return (
         <div className="flex items-center justify-between p-3">
             <div className="flex gap-3 text-lg">
-                <Link
-                    to="/"
-                    activeProps={{
-                        className: 'font-bold',
-                    }}
-                >
-                    Stats
-                </Link>
-                <Link
-                    to="/pearson"
-                    activeProps={{
-                        className: 'font-bold',
-                    }}
-                >
-                    Pearson
-                </Link>
-                <Link
-                    to="/chart"
-                    activeProps={{
-                        className: 'font-bold',
-                    }}
-                >
-                    Chart
-                </Link>
-                {/*<Link*/}
-                {/*    to="/table"*/}
-                {/*    activeProps={{*/}
-                {/*        className: 'font-bold',*/}
-                {/*    }}*/}
-                {/*>*/}
-                {/*    Table*/}
-                {/*</Link>*/}
-                <Link
-                    to="/heatmap"
-                    activeProps={{
-                        className: 'font-bold',
-                    }}
-                >
-                    Heatmap
-                </Link>
+                {headerLinks.map((link) => (
+                    <Link key={link.path} to={link.path} className="[&.active]:font-bold">
+                        {link.label}
+                    </Link>
+                ))}
             </div>
         </div>
     );

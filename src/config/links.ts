@@ -1,16 +1,20 @@
-const navigationLinks = [
+const headerLinks = [
     {
-        name: 'Stats',
+        label: 'Stats',
         path: '/',
     },
     {
-        name: 'Chart',
+        label: 'Pearson',
+        path: '/pearson',
+    },
+    {
+        label: 'Chart',
         path: '/chart',
     },
     {
-        name: 'Heatmap',
+        label: 'Heatmap',
         path: '/heatmap',
     },
 ];
 
-export {navigationLinks};
+export {headerLinks};
