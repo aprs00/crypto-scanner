@@ -29,9 +29,11 @@ function Heatmap() {
                 data: [{children}],
                 height: '100%',
                 label: {
+                    fontSize: 20,
                     formatter: (params: any) => {
-                        return `${params.data.coinName}\n${params.data.colorValue?.toFixed(2)}%`;
+                        return `${params.data.name?.toUpperCase()}\n${params.data.colorValue?.toFixed(2)}%`;
                     },
+                    lineHeight: 26,
                     show: true,
                 },
                 levels: [
@@ -74,5 +76,5 @@ function Heatmap() {
         ],
     };
 
-    return <ReactEcharts option={option} style={{height: '95%', width: '100%'}}></ReactEcharts>;
+    return !heatmap.isLoading && <ReactEcharts option={option} style={{height: '95%', width: '100%'}}></ReactEcharts>;
 }
