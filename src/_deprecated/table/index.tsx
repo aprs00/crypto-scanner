@@ -30,11 +30,11 @@ const Table = () => {
     return (
         <div className="p-2 pb-32">
             <Filters
-                dataTypes={dataTypes}
-                timeFrameOptions={timeFrameOptions}
                 aggregationOptions={aggregationOptions}
+                dataTypes={dataTypes}
                 selectedAggregations={selectedAggregations}
                 setSelectedAggregations={setSelectedAggregations}
+                timeFrameOptions={timeFrameOptions}
             />
 
             <table className="border border-slate-700 w-full text-left text-slate-200 text-sm">
@@ -42,7 +42,7 @@ const Table = () => {
                     <tr>
                         <th>Symbol</th>
                         {selectedAggregations.map((key: string) => (
-                            <th key={key} className="p-1 border border-slate-800">
+                            <th className="p-1 border border-slate-800" key={key}>
                                 {key
                                     .split('_')
                                     .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
@@ -55,7 +55,7 @@ const Table = () => {
                     {data?.map((row: any, i: number) => (
                         <tr key={i}>
                             {Object.values(row).map((value: any, j) => (
-                                <td key={i + j} className="p-1 border border-slate-800">
+                                <td className="p-1 border border-slate-800" key={i + j}>
                                     {value}
                                 </td>
                             ))}
@@ -63,7 +63,7 @@ const Table = () => {
                     ))}
                     {!data?.length && (
                         <tr className="relative h-32 w-full">
-                            <td colSpan={12} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <td className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" colSpan={12}>
                                 <Spinner />
                             </td>
                         </tr>

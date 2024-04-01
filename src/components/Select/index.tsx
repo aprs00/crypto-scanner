@@ -31,21 +31,21 @@ const CustomSelect = (props: SelectPropsType) => {
                         </Listbox.Button>
                     </div>
                     <Transition
-                        show={open}
                         enter="transition ease-out duration-100"
                         enterFrom="transform opacity-0 scale-95"
                         enterTo="transform opacity-100 scale-100"
                         leave="transition ease-in duration-75"
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
+                        show={open}
                     >
                         <div className="relative">
                             <Listbox.Options className="bg-slate-800 rounded-sm absolute w-full px-1 py-1 mt-2 border border-slate-600 flex flex-col gap-0.5">
                                 {options.map((item) => (
                                     <Listbox.Option
+                                        className="cursor-pointer hover:bg-slate-900 rounded-sm gap-2"
                                         key={item.value.toString()}
                                         value={item.value}
-                                        className="cursor-pointer hover:bg-slate-900 rounded-sm gap-2"
                                     >
                                         {({selected}) => {
                                             return (

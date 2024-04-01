@@ -42,6 +42,7 @@ const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({
     return (
         <div id="tradingview_widget_wrapper">
             <Widget
+                containerId={container_id}
                 scriptHTML={{
                     ...(!autosize ? {width} : {width: '100%'}),
                     ...(!autosize ? {height} : {height: '100%'}),
@@ -76,7 +77,6 @@ const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({
                     ...props,
                 }}
                 scriptSRC="https://s3.tradingview.com/tv.js"
-                containerId={container_id}
                 type="Widget"
             ></Widget>
             <Copyright

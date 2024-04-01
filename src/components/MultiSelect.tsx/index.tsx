@@ -26,7 +26,7 @@ const MultiSelect = (props: MultiSelectPropsType) => {
     // } else setParsedOptions(options);
 
     return (
-        <Listbox value={values} onChange={onChange} multiple>
+        <Listbox value={values} multiple onChange={onChange}>
             {({open}) => (
                 <div>
                     <div>
@@ -52,36 +52,36 @@ const MultiSelect = (props: MultiSelectPropsType) => {
                             <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                 <svg
                                     className="h-5 w-5 text-gray-400"
-                                    viewBox="0 0 20 20"
                                     fill="none"
                                     stroke="currentColor"
+                                    viewBox="0 0 20 20"
                                 >
                                     <path
                                         d="M7 7l3-3 3 3m0 6l-3 3-3-3"
-                                        strokeWidth="1.5"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
+                                        strokeWidth="1.5"
                                     />
                                 </svg>
                             </span>
                         </Listbox.Button>
                     </div>
                     <Transition
-                        show={open}
                         enter="transition ease-out duration-100"
                         enterFrom="transform opacity-0 scale-95"
                         enterTo="transform opacity-100 scale-100"
                         leave="transition ease-in duration-75"
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
+                        show={open}
                     >
                         <div className="relative">
                             <Listbox.Options className="bg-slate-900 rounded-md absolute w-full px-1 py-1 mt-2">
                                 {options?.map((item) => (
                                     <Listbox.Option
+                                        className="cursor-pointer hover:bg-slate-800 px-4 py-1 rounded-sm"
                                         key={item.value}
                                         value={item.value}
-                                        className="cursor-pointer hover:bg-slate-800 px-4 py-1 rounded-sm"
                                     >
                                         {({selected}) => (
                                             <div className="flex items-center">
@@ -97,14 +97,14 @@ const MultiSelect = (props: MultiSelectPropsType) => {
                                                     <span className="text-slate-200 ml-3">
                                                         <svg
                                                             className="h-5 w-5"
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            viewBox="0 0 20 20"
                                                             fill="currentColor"
+                                                            viewBox="0 0 20 20"
+                                                            xmlns="http://www.w3.org/2000/svg"
                                                         >
                                                             <path
-                                                                fillRule="evenodd"
-                                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                                                                 clipRule="evenodd"
+                                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                                fillRule="evenodd"
                                                             />
                                                         </svg>
                                                     </span>

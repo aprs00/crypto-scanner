@@ -10,10 +10,10 @@ function MyToggle(props: MyTogglePropsType) {
         <div className="flex gap-2 items-center">
             <Switch
                 checked={enabled}
-                onChange={setEnabled}
                 className={`${
                     enabled ? 'bg-sky-600' : 'bg-gray-700'
                 } relative inline-flex h-5 w-10 items-center rounded-full`}
+                onChange={setEnabled}
             >
                 <span className="sr-only">Enable notifications</span>
                 <span

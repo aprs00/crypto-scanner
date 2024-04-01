@@ -48,5 +48,15 @@ module.exports = {
                 aspects: ['invalidHref', 'preferButton'],
             },
         ],
+        "react/jsx-sort-props": [
+            2,
+            {
+                "callbacksLast": true,
+                "shorthandFirst": false,
+                "shorthandLast": true,
+                "ignoreCase": true,
+                "noSortAlphabetically": false
+            }
+        ],
     },
 };

@@ -8,7 +8,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between p-3">
             <div className="flex gap-3 text-lg">
                 {headerLinks.map((link) => (
-                    <Link key={link.path} to={link.path} className="[&.active]:font-bold">
+                    <Link className="[&.active]:font-bold" key={link.path} to={link.path}>
                         {link.label}
                     </Link>
                 ))}

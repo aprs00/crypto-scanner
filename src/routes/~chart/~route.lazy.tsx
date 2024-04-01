@@ -30,10 +30,10 @@ function Chart() {
         <>
             <ResponsiveGridLayout
                 cols={{lg: 12, md: 12, sm: 6, xs: 4, xxs: 2}}
-                rowHeight={gridLayoutRowHeight}
                 draggableHandle="#drag-handle"
-                onLayoutChange={(_, layouts) => setLayouts(layouts)}
                 layouts={layouts}
+                rowHeight={gridLayoutRowHeight}
+                onLayoutChange={(_, layouts) => setLayouts(layouts)}
                 onResize={(grids) => {
                     grids.forEach((grid) => {
                         if (grid.i === 'table') setTableHeight(grid.h * gridLayoutRowHeight);
@@ -41,16 +41,16 @@ function Chart() {
                 }}
             >
                 <div
-                    key="tradingViewWidget"
-                    data-grid={{x: 0, y: 0, w: 12, h: 15}}
                     className="bg-slate-900 overflow-hidden"
+                    data-grid={{x: 0, y: 0, w: 12, h: 15}}
+                    key="tradingViewWidget"
                 >
-                    <TradingViewRealTimeChart theme="dark" autosize symbol="BINANCE:BTCUSDT" />
+                    <TradingViewRealTimeChart symbol="BINANCE:BTCUSDT" theme="dark" autosize />
                 </div>
-                <div key="table" data-grid={{x: 0, y: 16, w: 8, h: 14}} className="bg-slate-900 overflow-hidden">
-                    <Table tableHeight={tableHeight} symbol={symbol} symbolTickSize={symbolTickSize} />
+                <div className="bg-slate-900 overflow-hidden" data-grid={{x: 0, y: 16, w: 8, h: 14}} key="table">
+                    <Table symbol={symbol} symbolTickSize={symbolTickSize} tableHeight={tableHeight} />
                 </div>
-                <div key="tape" data-grid={{x: 8, y: 16, w: 4, h: 14}} className="bg-slate-900 overflow-hidden">
+                <div className="bg-slate-900 overflow-hidden" data-grid={{x: 8, y: 16, w: 4, h: 14}} key="tape">
                     <Tape />
                 </div>
             </ResponsiveGridLayout>

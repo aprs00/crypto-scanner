@@ -69,11 +69,11 @@ const Table = () => {
     return (
         <div className="p-2 pb-32">
             <Filters
-                dataTypes={dataTypes}
-                timeFrameOptions={timeFrameOptions}
                 aggregationOptions={aggregationOptions}
+                dataTypes={dataTypes}
                 selectedAggregations={selectedAggregations}
                 setSelectedAggregations={setSelectedAggregations}
+                timeFrameOptions={timeFrameOptions}
             />
 
             <table className="border border-slate-700 w-full text-left text-slate-200 text-sm">
@@ -82,9 +82,9 @@ const Table = () => {
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <th
-                                    key={header.id}
                                     className="capitalize p-1 border border-slate-800"
                                     colSpan={header.colSpan}
+                                    key={header.id}
                                 >
                                     {header.isPlaceholder ? null : (
                                         <div
@@ -113,6 +113,8 @@ const Table = () => {
                             <tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => (
                                     <td
+                                        className="p-1 border border-slate-800"
+                                        key={cell.id}
                                         style={{
                                             width:
                                                 cell.column.getSize() === Number.MAX_SAFE_INTEGER
@@ -120,8 +122,6 @@ const Table = () => {
                                                     : cell.column.getSize(),
                                             boxShadow: 'inset 5px 5px 10px rgba(0, 0, 0, 1)',
                                         }}
-                                        key={cell.id}
-                                        className="p-1 border border-slate-800"
                                     >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
@@ -130,7 +130,7 @@ const Table = () => {
                         ))
                     ) : (
                         <tr className="relative h-32 w-full">
-                            <td colSpan={12} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <td className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" colSpan={12}>
                                 <Spinner />
                             </td>
                         </tr>

@@ -26,8 +26,8 @@ function Pearson() {
             component: (
                 <PearsonHeatmap
                     tf="5m"
-                    type="price"
                     timeFrameOptions={timeFrameOptions?.data || []}
+                    type="price"
                     typeOptions={typeOptions.data || []}
                 />
             ),
@@ -38,13 +38,13 @@ function Pearson() {
     return (
         <ResponsiveGridLayout
             cols={{lg: 12, md: 12, sm: 6, xs: 6, xxs: 6}}
-            rowHeight={gridLayoutRowHeight}
             draggableHandle="#drag-handle"
-            onLayoutChange={(_, layouts) => setLayouts(layouts)}
             layouts={layouts}
+            rowHeight={gridLayoutRowHeight}
+            onLayoutChange={(_, layouts) => setLayouts(layouts)}
         >
             {gridLayouts.map((grid) => (
-                <div key={grid.key} data-grid={grid.gridLayout} className="bg-slate-900 overflow-hidden rounded">
+                <div className="bg-slate-900 overflow-hidden rounded" data-grid={grid.gridLayout} key={grid.key}>
                     {grid.component}
                 </div>
             ))}

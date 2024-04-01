@@ -55,21 +55,21 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
 
     return (
         <ChartContainer
+            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
             header={
                 <>
                     <h3 className="text-gray-300">{title}</h3>
                     <div className="z-50 flex gap-2">
                         <CustomSelect
+                            classes="w-32"
                             options={tickerOptions}
                             value={selectedTicker}
                             onChange={setSelectedTicker}
-                            classes="w-32"
                         />
                         <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
                     </div>
                 </>
             }
-            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
         />
     );
 };

@@ -63,6 +63,7 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
 
     return (
         <ChartContainer
+            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
             header={
                 <>
                     <h3 className="text-gray-300">
@@ -70,7 +71,6 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
                     </h3>
                 </>
             }
-            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
         />
     );
 };

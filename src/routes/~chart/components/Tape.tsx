@@ -38,7 +38,7 @@ const Tape = () => {
 
     return (
         <div className="border-4 border-slate-800 rounded h-full">
-            <div id="drag-handle" className="flex items-center justify-between px-1 pb-1 bg-slate-800">
+            <div className="flex items-center justify-between px-1 pb-1 bg-slate-800" id="drag-handle">
                 <div className="">PRICE</div>
                 <div className="">SIZE</div>
                 <div className="">Time</div>

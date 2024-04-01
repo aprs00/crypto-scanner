@@ -24,8 +24,8 @@ const Widget: React.FC<WidgetProps> = ({scriptHTML, scriptSRC, containerId, type
                             type === 'Widget'
                                 ? new TradingView.widget(scriptHTML)
                                 : type === 'MediumWidget'
-                                ? new TradingView.MediumWidget(scriptHTML)
-                                : undefined,
+                                  ? new TradingView.MediumWidget(scriptHTML)
+                                  : undefined,
                         );
                     }
                 };
@@ -44,7 +44,7 @@ const Widget: React.FC<WidgetProps> = ({scriptHTML, scriptSRC, containerId, type
         };
     }, [ref, scriptHTML, type, scriptSRC]);
 
-    return <div ref={ref} id={containerId} />;
+    return <div id={containerId} ref={ref} />;
 };
 
 export default Widget;

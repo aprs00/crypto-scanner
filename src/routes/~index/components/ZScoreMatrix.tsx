@@ -82,6 +82,7 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
 
     return (
         <ChartContainer
+            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
             header={
                 <>
                     <h3 className="text-gray-300">Z-Score</h3>
@@ -90,7 +91,6 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
                     </div>
                 </>
             }
-            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
         />
     );
 };

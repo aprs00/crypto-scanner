@@ -34,6 +34,7 @@ const BetaHeatmap = (props: BetaHeatmapPropsType) => {
     return (
         <>
             <ChartContainer
+                body={<Heatmap data={betaHeatmap} />}
                 header={
                     <>
                         <h3 className="text-gray-300">Pearson correlation</h3>
@@ -42,7 +43,6 @@ const BetaHeatmap = (props: BetaHeatmapPropsType) => {
                         </div>
                     </>
                 }
-                body={<Heatmap data={betaHeatmap} />}
             />
         </>
     );

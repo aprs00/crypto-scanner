@@ -41,9 +41,9 @@ function Stats() {
                 component: (
                     <Scatter
                         tf="4h"
+                        timeFrameOptions={timeFrameOptions?.data?.all || []}
                         xAxis="price"
                         yAxis="volume"
-                        timeFrameOptions={timeFrameOptions?.data?.all || []}
                     />
                 ),
                 key: 'scatter1',
@@ -53,29 +53,29 @@ function Stats() {
                 component: (
                     <Scatter
                         tf="1d"
+                        timeFrameOptions={timeFrameOptions?.data?.all || []}
                         xAxis="trades"
                         yAxis="volume"
-                        timeFrameOptions={timeFrameOptions?.data?.all || []}
                     />
                 ),
                 key: 'scatter2',
             },
             {
                 gridLayout: {w: 12, h: 14, x: 0, y: 28},
-                component: <ZScoreHistory tf="12h" type="price" timeFrameOptions={timeFrameOptions?.data?.all || []} />,
+                component: <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions?.data?.all || []} type="price" />,
                 key: 'zScoreHistory1',
             },
             {
                 gridLayout: {w: 12, h: 14, x: 0, y: 42},
                 component: (
-                    <ZScoreHistory tf="12h" type="volume" timeFrameOptions={timeFrameOptions?.data?.all || []} />
+                    <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions?.data?.all || []} type="volume" />
                 ),
                 key: 'zScoreHistory2',
             },
             {
                 gridLayout: {w: 12, h: 14, x: 0, y: 56},
                 component: (
-                    <ZScoreHistory tf="12h" type="trades" timeFrameOptions={timeFrameOptions?.data?.all || []} />
+                    <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions?.data?.all || []} type="trades" />
                 ),
                 key: 'zScoreHistory3',
             },
@@ -83,10 +83,10 @@ function Stats() {
                 gridLayout: {w: 6, h: 14, x: 0, y: 60},
                 component: (
                     <PriceChangePerDayOfWeek
-                        tf="1m"
                         symbol="BTCUSDT"
-                        timeFrameOptions={timeFrameOptions?.data?.htf || []}
+                        tf="1m"
                         tickerOptions={tickerOptions?.data || []}
+                        timeFrameOptions={timeFrameOptions?.data?.htf || []}
                         type="day"
                     />
                 ),
@@ -96,10 +96,10 @@ function Stats() {
                 gridLayout: {w: 6, h: 14, x: 6, y: 60},
                 component: (
                     <PriceChangePerDayOfWeek
-                        tf="1m"
                         symbol="ETHUSDT"
-                        timeFrameOptions={timeFrameOptions?.data?.htf || []}
+                        tf="1m"
                         tickerOptions={tickerOptions?.data || []}
+                        timeFrameOptions={timeFrameOptions?.data?.htf || []}
                         type="day"
                     />
                 ),
@@ -109,10 +109,10 @@ function Stats() {
                 gridLayout: {w: 12, h: 14, x: 0, y: 74},
                 component: (
                     <PriceChangePerDayOfWeek
-                        tf="1m"
                         symbol="BTCUSDT"
-                        timeFrameOptions={timeFrameOptions?.data?.htf || []}
+                        tf="1m"
                         tickerOptions={tickerOptions?.data || []}
+                        timeFrameOptions={timeFrameOptions?.data?.htf || []}
                         type="hour"
                     />
                 ),
@@ -125,14 +125,14 @@ function Stats() {
     return (
         <ResponsiveGridLayout
             cols={{lg: 12, md: 12, sm: 6, xs: 6, xxs: 6}}
-            rowHeight={gridLayoutRowHeight}
             draggableHandle="#drag-handle"
+            rowHeight={gridLayoutRowHeight}
             onLayoutChange={(_, layouts) => setLayouts(layouts)}
             layouts={layouts}
             // onBreakpointChange={(newBreakpoint) => setBreakpoint(newBreakpoint)}
         >
             {gridLayouts.map((grid) => (
-                <div key={grid.key} data-grid={grid.gridLayout} className="bg-slate-900 overflow-hidden rounded">
+                <div className="bg-slate-900 overflow-hidden rounded" data-grid={grid.gridLayout} key={grid.key}>
                     {grid.component}
                 </div>
             ))}

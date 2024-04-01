@@ -35,18 +35,21 @@ const Filters = (props: FiltersPropsType) => {
 
     const formattedAggregationOptions = useMemo(
         () =>
-            aggregationOptions.reduce((acc, curr) => {
-                const parsed = formatAggregationOption(curr);
-                acc[curr] = parsed;
-                return acc;
-            }, {} as Record<string, string>),
+            aggregationOptions.reduce(
+                (acc, curr) => {
+                    const parsed = formatAggregationOption(curr);
+                    acc[curr] = parsed;
+                    return acc;
+                },
+                {} as Record<string, string>,
+            ),
         [],
     );
 
     return (
         <div className="mb-8">
             {dataTypes.map((dataType) => (
-                <span key={dataType.label} className="mr-4">
+                <span className="mr-4" key={dataType.label}>
                     <Disclosure title={dataType.label}>
                         <section className="flex flex-col gap-5 mt-5 text-slate-200 max-w-4xl">
                             {timeFrameOptions.map((timeFrame) => (
@@ -56,11 +59,11 @@ const Filters = (props: FiltersPropsType) => {
                                         <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-7">
                                             {aggregationOptions.map((aggregation) => (
                                                 <Toggle
-                                                    key={`${aggregation}_${timeFrame}_${dataType.label}`}
-                                                    label={formattedAggregationOptions[aggregation]}
                                                     enabled={isAggregationSelected(
                                                         `${dataType.value}_${aggregation}_${timeFrame}`,
                                                     )}
+                                                    key={`${aggregation}_${timeFrame}_${dataType.label}`}
+                                                    label={formattedAggregationOptions[aggregation]}
                                                     setEnabled={() =>
                                                         toggleSwitch(`${dataType.value}_${aggregation}_${timeFrame}`)
                                                     }

@@ -32,10 +32,10 @@ const Copyright: React.FC<CopyrightProps> = ({href, spanText, text = 'By Trading
     return (
         <div style={Object.assign({}, defaultStyles.parent, copyrightStyles?.parent)}>
             <a
-                style={Object.assign({}, defaultStyles.link, copyrightStyles?.link)}
                 href={href}
-                target="_blank"
                 rel="noreferrer"
+                style={Object.assign({}, defaultStyles.link, copyrightStyles?.link)}
+                target="_blank"
             >
                 <span style={Object.assign({}, defaultStyles.span, copyrightStyles?.span)}>{spanText} </span>
             </a>

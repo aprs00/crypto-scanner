@@ -11,13 +11,13 @@ const NumberInput = (props: NumberInputPropsType) => {
         <div className="w-20 relative">
             <input
                 className="w-full border bg-slate-800 rounded-sm border-slate-500 px-2 h-7 text-left relative"
+                placeholder="Ticks"
                 value={value}
                 onChange={(e) => {
                     if (isNaN(Number(e.target.value))) return;
                     if (Number(e.target.value) > 1000 || Number(e.target.value) <= 0) return;
                     onChange(Number(e.target.value));
                 }}
-                placeholder="Ticks"
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-1">
                 <div className="flex flex-col pr-px">

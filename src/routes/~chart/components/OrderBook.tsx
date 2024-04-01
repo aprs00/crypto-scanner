@@ -58,8 +58,8 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                         className={`grid grid-cols-2 mb-0.5 rounded text-slate-200 text-sm p-0.5 ${
                             tableAlignment === 'H' && type === 'bids' ? 'text-right' : ''
                         }`}
-                        style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
                         key={price}
+                        style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
                     >
                         <div className={`${tableAlignment === 'H' && type === 'bids' ? 'order-1' : ''}`}>
                             {price.toFixed(tickSizeDecimalPlaces)}
