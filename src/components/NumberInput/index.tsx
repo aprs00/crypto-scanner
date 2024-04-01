@@ -5,7 +5,7 @@ import type {NumberInputPropsType} from './types';
 import UpIcon from './UpIcon';
 
 const NumberInput = (props: NumberInputPropsType) => {
-    const {value, onChange} = props;
+    const {onChange, value} = props;
 
     return (
         <div className="w-20 relative">

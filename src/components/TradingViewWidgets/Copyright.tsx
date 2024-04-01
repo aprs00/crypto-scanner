@@ -10,19 +10,19 @@ export type CopyrightProps = {
     children?: never;
 };
 
-const Copyright: React.FC<CopyrightProps> = ({href, spanText, text = 'By TradingView', copyrightStyles}) => {
+const Copyright: React.FC<CopyrightProps> = ({copyrightStyles, href, spanText, text = 'By TradingView'}) => {
     const defaultStyles: CopyrightStyles = {
+        link: {
+            color: '#9db2bd',
+            textDecoration: 'none',
+        },
         parent: {
+            color: '#9db2bd',
+            fontFamily: 'Trebuchet MS, Arial, sans-serif',
             fontSize: '13px',
             lineHeight: '32px',
             textAlign: 'center',
             verticalAlign: 'center',
-            fontFamily: 'Trebuchet MS, Arial, sans-serif',
-            color: '#9db2bd',
-        },
-        link: {
-            textDecoration: 'none',
-            color: '#9db2bd',
         },
         span: {
             color: '#2962FF',

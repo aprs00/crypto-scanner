@@ -8,7 +8,7 @@ import {useBetaHeatmapData} from '../api';
 import type {BetaHeatmapPropsType} from '../types';
 
 const BetaHeatmap = (props: BetaHeatmapPropsType) => {
-    const {timeFrameOptions, tf} = props;
+    const {tf, timeFrameOptions} = props;
 
     const [selectedTf, setSelectedTf] = useState(tf);
 

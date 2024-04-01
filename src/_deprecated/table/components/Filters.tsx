@@ -6,7 +6,7 @@ import Toggle from '@/components/Toggle';
 import type {FiltersPropsType} from '../types';
 
 const Filters = (props: FiltersPropsType) => {
-    const {dataTypes, timeFrameOptions, aggregationOptions, selectedAggregations, setSelectedAggregations} = props;
+    const {aggregationOptions, dataTypes, selectedAggregations, setSelectedAggregations, timeFrameOptions} = props;
 
     const isAggregationSelected = useCallback(
         (aggregation: string) => selectedAggregations.includes(aggregation),

@@ -4,7 +4,7 @@ import {memo} from 'react';
 import type {MyTogglePropsType} from './types';
 
 function MyToggle(props: MyTogglePropsType) {
-    const {enabled, setEnabled, label} = props;
+    const {enabled, label, setEnabled} = props;
 
     return (
         <div className="flex gap-2 items-center">

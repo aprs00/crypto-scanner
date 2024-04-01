@@ -42,15 +42,15 @@ function Chart() {
             >
                 <div
                     className="bg-slate-900 overflow-hidden"
-                    data-grid={{x: 0, y: 0, w: 12, h: 15}}
+                    data-grid={{h: 15, w: 12, x: 0, y: 0}}
                     key="tradingViewWidget"
                 >
                     <TradingViewRealTimeChart symbol="BINANCE:BTCUSDT" theme="dark" autosize />
                 </div>
-                <div className="bg-slate-900 overflow-hidden" data-grid={{x: 0, y: 16, w: 8, h: 14}} key="table">
+                <div className="bg-slate-900 overflow-hidden" data-grid={{h: 14, w: 8, x: 0, y: 16}} key="table">
                     <Table symbol={symbol} symbolTickSize={symbolTickSize} tableHeight={tableHeight} />
                 </div>
-                <div className="bg-slate-900 overflow-hidden" data-grid={{x: 8, y: 16, w: 4, h: 14}} key="tape">
+                <div className="bg-slate-900 overflow-hidden" data-grid={{h: 14, w: 4, x: 8, y: 16}} key="tape">
                     <Tape />
                 </div>
             </ResponsiveGridLayout>

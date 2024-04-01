@@ -23,12 +23,12 @@ const fetchPriceChangePercentage = async (symbol: string, duration: string, type
 
 const usePriceChangePercentage = (symbol: string, duration: string, type: string) => {
     return useQuery({
-        queryKey: ['price-change-percentage', symbol, duration, type],
-        queryFn: () => fetchPriceChangePercentage(symbol, duration, type),
         gcTime: 120_000,
+        queryFn: () => fetchPriceChangePercentage(symbol, duration, type),
+        queryKey: ['price-change-percentage', symbol, duration, type],
         refetchInterval: 120_000,
-        staleTime: 120_000,
         refetchOnWindowFocus: false,
+        staleTime: 120_000,
     });
 };
 
@@ -40,12 +40,12 @@ const fetchTickersOptions = async () => {
 
 const useFetchTickersOptions = () => {
     return useQuery({
-        queryKey: ['ticker-options'],
-        queryFn: () => fetchTickersOptions(),
         gcTime: 60 * 60 * 1000,
+        queryFn: () => fetchTickersOptions(),
+        queryKey: ['ticker-options'],
         refetchInterval: 60 * 60 * 1000,
-        staleTime: 60 * 60 * 1000,
         refetchOnWindowFocus: false,
+        staleTime: 60 * 60 * 1000,
     });
 };
 
@@ -58,12 +58,12 @@ const fetchBetaHeatmapData = async (duration: string) => {
 
 const useBetaHeatmapData = (duration: string) => {
     return useQuery({
-        queryKey: ['beta-heatmap-data', duration],
-        queryFn: () => fetchBetaHeatmapData(duration),
         gcTime: 120_000,
+        queryFn: () => fetchBetaHeatmapData(duration),
+        queryKey: ['beta-heatmap-data', duration],
         refetchInterval: 120_000,
-        staleTime: 120_000,
         refetchOnWindowFocus: false,
+        staleTime: 120_000,
     });
 };
 
@@ -78,12 +78,12 @@ const fetchZScoreMatrix = async (xAxis: string, yAxis: string, duration: string)
 
 const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
     return useQuery({
-        queryKey: ['z-score-matrix', xAxis, yAxis, duration],
-        queryFn: () => fetchZScoreMatrix(xAxis, yAxis, duration),
         gcTime: 120_000,
+        queryFn: () => fetchZScoreMatrix(xAxis, yAxis, duration),
+        queryKey: ['z-score-matrix', xAxis, yAxis, duration],
         refetchInterval: 120_000,
-        staleTime: 120_000,
         refetchOnWindowFocus: false,
+        staleTime: 120_000,
     });
 };
 
@@ -97,12 +97,12 @@ const fetchZScoreHistory = async (type: string, duration: string) => {
 
 const useZScoreHistory = (type: string, duration: string) => {
     return useQuery({
-        queryKey: ['z-score-history', type, duration],
-        queryFn: () => fetchZScoreHistory(type, duration),
         gcTime: 120_000,
+        queryFn: () => fetchZScoreHistory(type, duration),
+        queryKey: ['z-score-history', type, duration],
         refetchInterval: 120_000,
-        staleTime: 120_000,
         refetchOnWindowFocus: false,
+        staleTime: 120_000,
     });
 };
 
@@ -114,12 +114,12 @@ const fetchStatsSelectOptions = async () => {
 
 const useStatsSelectOptions = () => {
     return useQuery({
-        queryKey: ['stats-select-options'],
-        queryFn: () => fetchStatsSelectOptions(),
         gcTime: 60 * 60 * 1000,
+        queryFn: () => fetchStatsSelectOptions(),
+        queryKey: ['stats-select-options'],
         refetchInterval: 60 * 60 * 1000,
-        staleTime: 60 * 60 * 1000,
         refetchOnWindowFocus: false,
+        staleTime: 60 * 60 * 1000,
     });
 };
 

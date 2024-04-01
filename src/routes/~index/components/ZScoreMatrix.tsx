@@ -8,81 +8,81 @@ import {useZScoreMatrix} from '../api';
 import type {ScatterPropsType} from '../types';
 
 const ZScoreMatrix = (props: ScatterPropsType) => {
-    const {timeFrameOptions, xAxis, yAxis, tf} = props;
+    const {tf, timeFrameOptions, xAxis, yAxis} = props;
 
     const [selectedTf, setSelectedTf] = useState(tf);
 
     const zScoreMatrix = useZScoreMatrix(xAxis, yAxis, selectedTf);
 
     const option = {
+        graphic: [
+            {
+                left: '10',
+                rotation: Math.PI / 2,
+                style: {
+                    fill: '#cbd5e1',
+                    fontSize: 18,
+                    text: yAxis.slice(0, 1).toUpperCase() + yAxis.slice(1),
+                },
+                top: '44%',
+                type: 'text',
+            },
+            {
+                bottom: '1',
+                left: '50%',
+                style: {
+                    fill: '#cbd5e1',
+                    fontSize: 18,
+                    text: `${xAxis.slice(0, 1).toUpperCase()}${xAxis.slice(1)}`,
+                },
+                type: 'text',
+            },
+        ],
+        // dataZoom: {
+        //     type: 'inside',
+        grid: {
+            bottom: '50',
+            left: '70',
+            right: '20',
+            top: '60',
+        },
         legend: {
-            top: '10',
-            type: 'scroll',
             textStyle: {
                 color: '#d1d5db',
             },
+            top: '10',
+            type: 'scroll',
         },
-        // dataZoom: {
-        //     type: 'inside',
+        series: zScoreMatrix?.data || [],
         // },
         tooltip: {
             formatter: function (params: any) {
                 return `${params.marker}${params.seriesName}: <span>x: ${params.data[0]} y: ${params.data[1]}</span>`;
             },
         },
-        grid: {
-            left: '70',
-            right: '20',
-            bottom: '50',
-            top: '60',
-        },
         xAxis: {
-            type: 'value',
             scale: true,
             splitLine: {
                 lineStyle: {
                     color: '#1e293b',
                 },
             },
+            type: 'value',
         },
         yAxis: {
-            type: 'value',
             scale: true,
             splitLine: {
                 lineStyle: {
                     color: '#1e293b',
                 },
             },
+            type: 'value',
         },
-        series: zScoreMatrix?.data || [],
-        graphic: [
-            {
-                type: 'text',
-                left: '10',
-                top: '44%',
-                style: {
-                    text: yAxis.slice(0, 1).toUpperCase() + yAxis.slice(1),
-                    fontSize: 18,
-                    fill: '#cbd5e1',
-                },
-                rotation: Math.PI / 2,
-            },
-            {
-                type: 'text',
-                left: '50%',
-                bottom: '1',
-                style: {
-                    text: `${xAxis.slice(0, 1).toUpperCase()}${xAxis.slice(1)}`,
-                    fontSize: 18,
-                    fill: '#cbd5e1',
-                },
-            },
-        ],
     };
 
     return (
         <ChartContainer
-            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
+            body={<ReactEcharts option={option} style={{height: '92%', width: '100%'}}></ReactEcharts>}
             header={
                 <>
                     <h3 className="text-gray-300">Z-Score</h3>

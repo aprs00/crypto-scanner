@@ -24,21 +24,21 @@ function Heatmap() {
 
     const option = {
         series: {
-            type: 'treemap',
             data: heatmap?.data,
-            width: '100%',
             height: '100%',
             label: {
-                show: true,
                 formatter: (params: any) => {
                     return `${params.data.coinName}\n${params.data.colorValue?.toFixed(2)}%`;
                 },
+                show: true,
             },
             levels: [
                 {
                     // color: ['#14532d', '#7f1d1d'],
                 },
             ],
+            type: 'treemap',
+            width: '100%',
         },
     };
 

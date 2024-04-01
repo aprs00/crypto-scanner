@@ -11,9 +11,9 @@ const columnHelper = createColumnHelper<ColumnDefType>();
 const aggregationOptions = ['avg', 'sum', 'std_p', 'std_s', 'var_p', 'var_s', 'twa'];
 const timeFrameOptions = ['30s', '1m', '5m', '15m'];
 const dataTypes = [
-    {value: 'p', label: 'Price'},
-    {value: 'v', label: 'Volume'},
-    {value: 't', label: 'Trade'},
+    {label: 'Price', value: 'p'},
+    {label: 'Volume', value: 'v'},
+    {label: 'Trade', value: 't'},
 ];
 
 const Table = () => {
@@ -55,15 +55,15 @@ const Table = () => {
     const data = useMemo(() => streamTableData?.data || [], [streamTableData]);
 
     const table = useReactTable({
-        data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
+        data,
         defaultColumn: {
+            maxSize: Number.MAX_SAFE_INTEGER,
             minSize: 150,
             size: Number.MAX_SAFE_INTEGER,
-            maxSize: Number.MAX_SAFE_INTEGER,
         },
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
     });
 
     return (
@@ -116,11 +116,11 @@ const Table = () => {
                                         className="p-1 border border-slate-800"
                                         key={cell.id}
                                         style={{
+                                            boxShadow: 'inset 5px 5px 10px rgba(0, 0, 0, 1)',
                                             width:
                                                 cell.column.getSize() === Number.MAX_SAFE_INTEGER
                                                     ? 'auto'
                                                     : cell.column.getSize(),
-                                            boxShadow: 'inset 5px 5px 10px rgba(0, 0, 0, 1)',
                                         }}
                                     >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

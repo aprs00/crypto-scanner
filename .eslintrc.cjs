@@ -31,7 +31,7 @@ module.exports = {
         'plugin:jsx-a11y/recommended',
         'plugin:prettier/recommended', // Make sure this is always the last element in the array.
     ],
-    plugins: ['simple-import-sort', 'prettier'],
+    plugins: ['simple-import-sort', 'prettier', 'perfectionist'],
     rules: {
         'prettier/prettier': ['error', {}, {usePrettierrc: true}],
         'react/react-in-jsx-scope': 'off',
@@ -58,5 +58,13 @@ module.exports = {
                 "noSortAlphabetically": false
             }
         ],
+        "perfectionist/sort-objects": [
+            "error",
+            {
+                "type": "natural",
+                "order": "asc"
+            }
+        ]
+
     },
 };

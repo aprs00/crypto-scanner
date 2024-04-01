@@ -15,12 +15,12 @@ const fetchPearsonCorrelation = async (tf: string, type: string) => {
 
 const usePearsonCorrelation = (tf: string, type: string) => {
     return useQuery({
-        queryKey: ['pearson-correlation', tf, type],
-        queryFn: () => fetchPearsonCorrelation(tf, type),
         gcTime: 15_000,
+        queryFn: () => fetchPearsonCorrelation(tf, type),
+        queryKey: ['pearson-correlation', tf, type],
         refetchInterval: 15_000,
-        staleTime: 15_000,
         refetchOnWindowFocus: false,
+        staleTime: 15_000,
     });
 };
 
@@ -32,12 +32,12 @@ const fetchPearsonTimeframeOptions = async () => {
 
 const usePearsonTimeframeOptions = () => {
     return useQuery({
-        queryKey: ['pearson-time-frame-options'],
-        queryFn: () => fetchPearsonTimeframeOptions(),
         gcTime: 60 * 60 * 1000,
+        queryFn: () => fetchPearsonTimeframeOptions(),
+        queryKey: ['pearson-time-frame-options'],
         refetchInterval: 60 * 60 * 1000,
-        staleTime: 60 * 60 * 1000,
         refetchOnWindowFocus: false,
+        staleTime: 60 * 60 * 1000,
     });
 };
 
@@ -49,12 +49,12 @@ const fetchPearsonTypeOptions = async () => {
 
 const usePearsonTypeOptions = () => {
     return useQuery({
-        queryKey: ['pearson-type-options'],
-        queryFn: () => fetchPearsonTypeOptions(),
         gcTime: 60 * 60 * 1000,
+        queryFn: () => fetchPearsonTypeOptions(),
+        queryKey: ['pearson-type-options'],
         refetchInterval: 60 * 60 * 1000,
-        staleTime: 60 * 60 * 1000,
         refetchOnWindowFocus: false,
+        staleTime: 60 * 60 * 1000,
     });
 };
 

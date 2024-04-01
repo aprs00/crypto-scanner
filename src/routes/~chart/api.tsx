@@ -15,8 +15,8 @@ const fetchExchangeInfo = async () => {
 
 const useExchangeInfo = () => {
     return useQuery({
-        queryKey: ['exchange-info'],
         queryFn: () => fetchExchangeInfo(),
+        queryKey: ['exchange-info'],
         refetchOnWindowFocus: false,
         staleTime: Infinity,
     });
@@ -32,11 +32,11 @@ const fetchDepthSnapshot = async (symbol: string, limit = 5000) => {
 
 const useDepthSnapshot = (symbol: string, firstEventProcessed: boolean) => {
     return useQuery({
-        queryKey: ['depth-snapshot', symbol],
-        queryFn: () => fetchDepthSnapshot(symbol),
         enabled: !!symbol,
-        refetchOnWindowFocus: false,
+        queryFn: () => fetchDepthSnapshot(symbol),
+        queryKey: ['depth-snapshot', symbol],
         refetchInterval: firstEventProcessed ? 120_000 : 1_800,
+        refetchOnWindowFocus: false,
         staleTime: Infinity,
     });
 };
@@ -73,11 +73,11 @@ const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
             const groupedBids = groupOrders(updatedBids, groupByValRef.current, false, numOfRowsRef.current);
 
             const newDepthSnapshot = {
-                lastUpdateId: streamData.u,
                 asks: updatedAsks,
                 bids: updatedBids,
                 groupedAsks: groupedAsks,
                 groupedBids: groupedBids,
+                lastUpdateId: streamData.u,
             };
 
             queryClient.setQueryData(['depth-snapshot', symbol], newDepthSnapshot);
@@ -123,9 +123,9 @@ const useStreamAggTrade = (symbol: string) => {
     }, [queryClient, symbol]);
 
     return useQuery({
-        queryKey: ['ticker-agg-trade-stream', symbol],
-        queryFn: () => streamData ?? null,
         enabled: !!symbol,
+        queryFn: () => streamData ?? null,
+        queryKey: ['ticker-agg-trade-stream', symbol],
         refetchOnWindowFocus: false,
         staleTime: Infinity,
     });

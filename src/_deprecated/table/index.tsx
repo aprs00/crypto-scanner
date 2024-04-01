@@ -8,9 +8,9 @@ import Filters from './components/Filters';
 const aggregationOptions = ['avg', 'sum', 'std_p', 'std_s', 'var_p', 'var_s', 'twa'];
 const timeFrameOptions = ['30s', '1m', '5m', '15m'];
 const dataTypes = [
-    {value: 'p', label: 'Price'},
-    {value: 'v', label: 'Volume'},
-    {value: 't', label: 'Trade'},
+    {label: 'Price', value: 'p'},
+    {label: 'Volume', value: 'v'},
+    {label: 'Trade', value: 't'},
 ];
 
 const Table = () => {

@@ -1,7 +1,7 @@
 import type {XIconPropsType} from './types';
 
 const XIcon = (props: XIconPropsType) => {
-    const {width = 14, height = 14} = props;
+    const {height = 14, width = 14} = props;
     return (
         <span className="">
             <svg

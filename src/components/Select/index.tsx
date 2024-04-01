@@ -5,7 +5,7 @@ import SelectIcon from './SelectIcon';
 import type {SelectPropsType} from './types';
 
 const CustomSelect = (props: SelectPropsType) => {
-    const {options, value, onChange, classes = 'w-20'} = props;
+    const {classes = 'w-20', onChange, options, value} = props;
 
     return (
         <Listbox value={value} onChange={onChange}>

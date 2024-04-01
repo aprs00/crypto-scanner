@@ -4,7 +4,7 @@ import type {WidgetProps} from './types';
 
 declare const TradingView: any;
 
-const Widget: React.FC<WidgetProps> = ({scriptHTML, scriptSRC, containerId, type}) => {
+const Widget: React.FC<WidgetProps> = ({containerId, scriptHTML, scriptSRC, type}) => {
     const ref: {current: HTMLDivElement | null} = createRef();
 
     useEffect(() => {

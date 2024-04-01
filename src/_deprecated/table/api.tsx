@@ -33,8 +33,8 @@ const useStreamTable = (selectedAggregations: string[]) => {
         };
     }, [selectedAggregations]);
     return useQuery({
-        queryKey: ['table-streams'],
         queryFn: () => streamData ?? null,
+        queryKey: ['table-streams'],
         refetchOnWindowFocus: false,
         staleTime: Infinity,
     });

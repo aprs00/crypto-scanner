@@ -27,17 +27,16 @@ function Stats() {
     const gridLayouts = useMemo(
         () => [
             {
-                gridLayout: {w: 6, h: 14, x: 0, y: 0},
                 component: <BetaHeatmap tf="4h" timeFrameOptions={timeFrameOptions?.data?.all || []} />,
+                gridLayout: {h: 14, w: 6, x: 0, y: 0},
                 key: 'betaHeatmap1',
             },
             {
-                gridLayout: {w: 6, h: 14, x: 6, y: 0},
                 component: <BetaHeatmap tf="1d" timeFrameOptions={timeFrameOptions?.data?.all || []} />,
+                gridLayout: {h: 14, w: 6, x: 6, y: 0},
                 key: 'betaHeatmap2',
             },
             {
-                gridLayout: {w: 6, h: 14, x: 0, y: 14},
                 component: (
                     <Scatter
                         tf="4h"
@@ -46,10 +45,10 @@ function Stats() {
                         yAxis="volume"
                     />
                 ),
+                gridLayout: {h: 14, w: 6, x: 0, y: 14},
                 key: 'scatter1',
             },
             {
-                gridLayout: {w: 6, h: 14, x: 6, y: 14},
                 component: (
                     <Scatter
                         tf="1d"
@@ -58,29 +57,29 @@ function Stats() {
                         yAxis="volume"
                     />
                 ),
+                gridLayout: {h: 14, w: 6, x: 6, y: 14},
                 key: 'scatter2',
             },
             {
-                gridLayout: {w: 12, h: 14, x: 0, y: 28},
                 component: <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions?.data?.all || []} type="price" />,
+                gridLayout: {h: 14, w: 12, x: 0, y: 28},
                 key: 'zScoreHistory1',
             },
             {
-                gridLayout: {w: 12, h: 14, x: 0, y: 42},
                 component: (
                     <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions?.data?.all || []} type="volume" />
                 ),
+                gridLayout: {h: 14, w: 12, x: 0, y: 42},
                 key: 'zScoreHistory2',
             },
             {
-                gridLayout: {w: 12, h: 14, x: 0, y: 56},
                 component: (
                     <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions?.data?.all || []} type="trades" />
                 ),
+                gridLayout: {h: 14, w: 12, x: 0, y: 56},
                 key: 'zScoreHistory3',
             },
             {
-                gridLayout: {w: 6, h: 14, x: 0, y: 60},
                 component: (
                     <PriceChangePerDayOfWeek
                         symbol="BTCUSDT"
@@ -90,10 +89,10 @@ function Stats() {
                         type="day"
                     />
                 ),
+                gridLayout: {h: 14, w: 6, x: 0, y: 60},
                 key: 'priceChangePerDayOfWeek1',
             },
             {
-                gridLayout: {w: 6, h: 14, x: 6, y: 60},
                 component: (
                     <PriceChangePerDayOfWeek
                         symbol="ETHUSDT"
@@ -103,10 +102,10 @@ function Stats() {
                         type="day"
                     />
                 ),
+                gridLayout: {h: 14, w: 6, x: 6, y: 60},
                 key: 'priceChangePerDayOfWeek2',
             },
             {
-                gridLayout: {w: 12, h: 14, x: 0, y: 74},
                 component: (
                     <PriceChangePerDayOfWeek
                         symbol="BTCUSDT"
@@ -116,6 +115,7 @@ function Stats() {
                         type="hour"
                     />
                 ),
+                gridLayout: {h: 14, w: 12, x: 0, y: 74},
                 key: 'priceChangePerHourOfDay1',
             },
         ],

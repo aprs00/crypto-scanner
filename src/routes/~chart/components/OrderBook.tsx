@@ -19,7 +19,7 @@ const quantityFormatter = new Intl.NumberFormat(undefined, {
 });
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const {tableHeight, symbolTickSize} = props;
+    const {symbolTickSize, tableHeight} = props;
 
     const [numOfTicks, setNumOfTicks] = useState(100);
     const [tableAlignment, setTableAlignment] = useState('V');
@@ -39,7 +39,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         return Math.floor(numOfRows);
     }, [tableHeight, tableAlignment]);
 
-    const {groupedBids, groupedAsks} = useStreamTicker('BTCUSDT', groupByVal, calculatedNumOfRows) || {};
+    const {groupedAsks, groupedBids} = useStreamTicker('BTCUSDT', groupByVal, calculatedNumOfRows) || {};
 
     const maxQuantity = useMemo(() => {
         const bidsAndAsks = groupedAsks?.concat(groupedBids) || [];

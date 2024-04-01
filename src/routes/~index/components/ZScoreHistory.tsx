@@ -11,20 +11,24 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
     const zScoreHistory = useZScoreHistory(type, tf);
 
     const option = {
-        tooltip: {
-            trigger: 'axis',
+        // },
+        grid: {
+            bottom: '0',
+            containLabel: true,
+            left: '15',
+            right: '15',
         },
         legend: {
-            top: '10',
+            itemStyle: {
+                borderJoin: 'miter',
+                borderWidth: 100,
+            },
             left: '15',
-            type: 'scroll',
             textStyle: {
                 color: '#d1d5db',
             },
-            itemStyle: {
-                borderWidth: 100,
-                borderJoin: 'miter',
-            },
+            top: '10',
+            type: 'scroll',
         },
         // toolbox: {
         //     feature: {
@@ -33,23 +37,11 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
         // },
         // dataZoom: {
         //     type: 'inside',
-        // },
-        grid: {
-            left: '15',
-            right: '15',
-            bottom: '0',
-            containLabel: true,
-        },
-        yAxis: {
-            type: 'value',
-            splitLine: {
-                lineStyle: {
-                    color: '#334155',
-                },
-            },
+        series: zScoreHistory?.data?.data,
+        tooltip: {
+            trigger: 'axis',
         },
         xAxis: {
-            type: 'category',
             boundaryGap: false,
             data: zScoreHistory?.data?.xAxis,
             splitLine: {
@@ -57,13 +49,21 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
                     color: '#1e293b',
                 },
             },
+            type: 'category',
         },
-        series: zScoreHistory?.data?.data,
+        yAxis: {
+            splitLine: {
+                lineStyle: {
+                    color: '#334155',
+                },
+            },
+            type: 'value',
+        },
     };
 
     return (
         <ChartContainer
-            body={<ReactEcharts option={option} style={{width: '100%', height: '92%'}}></ReactEcharts>}
+            body={<ReactEcharts option={option} style={{height: '92%', width: '100%'}}></ReactEcharts>}
             header={
                 <>
                     <h3 className="text-gray-300">

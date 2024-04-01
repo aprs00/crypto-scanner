@@ -27,11 +27,11 @@ const Tape = () => {
         if (!streamAggTrade?.data?.p) return;
         if (!streamAggTrade || (Number(streamAggTrade?.data?.q) || 0) <= 0.05) return;
         const newTape = {
+            aggregateTradeId: streamAggTrade?.data?.a,
+            market: streamAggTrade?.data?.m,
             price: streamAggTrade?.data?.p.toString().replace(/\.?0+$/, ''),
             size: streamAggTrade?.data?.q.toString().replace(/\.?0+$/, ''),
             time: streamAggTrade?.data?.T as number,
-            aggregateTradeId: streamAggTrade?.data?.a,
-            market: streamAggTrade?.data?.m,
         };
         setTapeData((prev) => [newTape, ...prev.slice(0, 100)]);
     }, [streamAggTrade?.data?.T]);

@@ -89,13 +89,13 @@ const isEventValid = (
 const tableBackgroundStyle = (type: string, tableAlignment: string, percentage: number) => {
     const linearGradingDegVal = {
         asks: {
-            V: '90deg',
             H: '90deg',
+            V: '90deg',
             color: 'rgba(198, 6, 6, 0.55)',
         },
         bids: {
-            V: '90deg',
             H: '270deg',
+            V: '90deg',
             color: 'rgba(0, 185, 9, 0.55)',
         },
     };

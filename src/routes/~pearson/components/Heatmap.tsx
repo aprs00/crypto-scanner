@@ -8,7 +8,7 @@ import {usePearsonCorrelation} from '../api';
 import {PearsonHeatmapProps} from '../types';
 
 const PearsonHeatmap = (props: PearsonHeatmapProps) => {
-    const {tf, type, timeFrameOptions, typeOptions} = props;
+    const {tf, timeFrameOptions, type, typeOptions} = props;
 
     const [selectedTf, setSelectedTf] = useState(tf);
     const [selectedType, setSelectedType] = useState(type);
