@@ -12,7 +12,7 @@ const headerLinks = [
         path: '/chart',
     },
     {
-        label: 'Heatmap',
+        label: 'Treemap',
         path: '/heatmap',
     },
 ];
