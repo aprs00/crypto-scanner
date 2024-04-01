@@ -13,7 +13,7 @@ const headerLinks = [
     },
     {
         label: 'Treemap',
-        path: '/heatmap',
+        path: '/treemap',
     },
 ];
 

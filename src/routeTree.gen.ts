@@ -17,24 +17,24 @@ import { Route as IndexRouteImport } from './routes/~index/~route'
 
 // Create Virtual Routes
 
+const TreemapRouteLazyImport = createFileRoute('/treemap')()
 const PearsonRouteLazyImport = createFileRoute('/pearson')()
-const HeatmapRouteLazyImport = createFileRoute('/heatmap')()
 const ChartRouteLazyImport = createFileRoute('/chart')()
 
 // Create/Update Routes
+
+const TreemapRouteLazyRoute = TreemapRouteLazyImport.update({
+  path: '/treemap',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/~treemap/~route.lazy').then((d) => d.Route),
+)
 
 const PearsonRouteLazyRoute = PearsonRouteLazyImport.update({
   path: '/pearson',
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
   import('./routes/~pearson/~route.lazy').then((d) => d.Route),
-)
-
-const HeatmapRouteLazyRoute = HeatmapRouteLazyImport.update({
-  path: '/heatmap',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/~heatmap/~route.lazy').then((d) => d.Route),
 )
 
 const ChartRouteLazyRoute = ChartRouteLazyImport.update({
@@ -59,12 +59,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChartRouteLazyImport
       parentRoute: typeof rootRoute
     }
-    '/heatmap': {
-      preLoaderRoute: typeof HeatmapRouteLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/pearson': {
       preLoaderRoute: typeof PearsonRouteLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/treemap': {
+      preLoaderRoute: typeof TreemapRouteLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -75,8 +75,8 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   IndexRouteRoute,
   ChartRouteLazyRoute,
-  HeatmapRouteLazyRoute,
   PearsonRouteLazyRoute,
+  TreemapRouteLazyRoute,
 ])
 
 /* prettier-ignore-end */

@@ -4,7 +4,7 @@ import _ from 'lodash-es';
 
 import {useHeatmapData} from './api';
 
-export const Route = createLazyFileRoute('/heatmap')({
+export const Route = createLazyFileRoute('/treemap')({
     component: Heatmap,
 });
 
@@ -30,11 +30,10 @@ function Heatmap() {
                 data: [{children}],
                 height: '100%',
                 label: {
-                    fontSize: 20,
+                    fontSize: 18,
                     formatter: (params: any) => {
                         return `${params.data.name?.toUpperCase()}\n${params.data.colorValue?.toFixed(2)}%`;
                     },
-                    lineHeight: 26,
                     show: true,
                 },
                 levels: [
