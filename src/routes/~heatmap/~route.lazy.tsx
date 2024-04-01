@@ -26,7 +26,7 @@ function Heatmap() {
         series: {
             type: 'treemap',
             data: heatmap?.data,
-            width: '100%',
+            width: '950%',
             height: '100%',
             label: {
                 show: true,
