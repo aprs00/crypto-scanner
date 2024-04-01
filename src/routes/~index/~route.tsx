@@ -11,7 +11,7 @@ import Scatter from './components/ZScoreMatrix';
 
 const gridLayoutRowHeight = 30;
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
+const ResponsiveGridLayout = WidthProvider(Responsive) as any;
 
 export const Route = createFileRoute('/')({
     component: Stats,
@@ -126,9 +126,9 @@ function Stats() {
         <ResponsiveGridLayout
             cols={{lg: 12, md: 12, sm: 6, xs: 6, xxs: 6}}
             draggableHandle="#drag-handle"
-            rowHeight={gridLayoutRowHeight}
-            onLayoutChange={(_, layouts) => setLayouts(layouts)}
             layouts={layouts}
+            rowHeight={gridLayoutRowHeight}
+            onLayoutChange={(_: never, layouts: Layouts) => setLayouts(layouts)}
             // onBreakpointChange={(newBreakpoint) => setBreakpoint(newBreakpoint)}
         >
             {gridLayouts.map((grid) => (

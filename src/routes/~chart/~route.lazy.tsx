@@ -1,5 +1,6 @@
 import {createLazyFileRoute} from '@tanstack/react-router';
 import {useState} from 'react';
+import type {Layout, Layouts} from 'react-grid-layout';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
@@ -8,7 +9,7 @@ import {useExchangeInfo} from './api';
 import Table from './components/OrderBook';
 import Tape from './components/Tape';
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
+const ResponsiveGridLayout = WidthProvider(Responsive) as any;
 
 const gridLayoutRowHeight = 30;
 
@@ -19,9 +20,9 @@ export const Route = createLazyFileRoute('/chart')({
 function Chart() {
     const exchangeInfo = useExchangeInfo();
 
-    const [symbol, setSymbol] = useState('BTCUSDT');
+    const [symbol] = useState('BTCUSDT');
     const [tableHeight, setTableHeight] = useState(() => gridLayoutRowHeight * 13);
-    const [layouts, setLayouts] = useState<any>();
+    const [layouts, setLayouts] = useState<Layouts>();
 
     const symbolInfo = exchangeInfo?.data?.symbols.find((s) => s.symbol === symbol);
     const symbolTickSize = Number(symbolInfo?.filters[0].tickSize);
@@ -33,8 +34,8 @@ function Chart() {
                 draggableHandle="#drag-handle"
                 layouts={layouts}
                 rowHeight={gridLayoutRowHeight}
-                onLayoutChange={(_, layouts) => setLayouts(layouts)}
-                onResize={(grids) => {
+                onLayoutChange={(_: Layout[], layouts: Layouts) => setLayouts(layouts)}
+                onResize={(grids: Layout[]) => {
                     grids.forEach((grid) => {
                         if (grid.i === 'table') setTableHeight(grid.h * gridLayoutRowHeight);
                     });

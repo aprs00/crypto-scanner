@@ -1,6 +1,6 @@
 import {createLazyFileRoute} from '@tanstack/react-router';
 import {useState} from 'react';
-import type {Layouts} from 'react-grid-layout';
+import type {Layout, Layouts} from 'react-grid-layout';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import PearsonHeatmap from '@/routes/~pearson/components/Heatmap';
@@ -8,7 +8,7 @@ import PearsonHeatmap from '@/routes/~pearson/components/Heatmap';
 import {usePearsonTimeframeOptions, usePearsonTypeOptions} from './api';
 
 const gridLayoutRowHeight = 30;
-const ResponsiveGridLayout = WidthProvider(Responsive);
+const ResponsiveGridLayout = WidthProvider(Responsive) as any;
 
 export const Route = createLazyFileRoute('/pearson')({
     component: Pearson,
@@ -41,7 +41,7 @@ function Pearson() {
             draggableHandle="#drag-handle"
             layouts={layouts}
             rowHeight={gridLayoutRowHeight}
-            onLayoutChange={(_, layouts) => setLayouts(layouts)}
+            onLayoutChange={(_: Layout[], layouts: Layouts) => setLayouts(layouts)}
         >
             {gridLayouts.map((grid) => (
                 <div className="bg-slate-900 overflow-hidden rounded" data-grid={grid.gridLayout} key={grid.key}>
