@@ -26,7 +26,7 @@ function Heatmap() {
         series: {
             type: 'treemap',
             data: heatmap?.data,
-            width: '950%',
+            width: '100%',
             height: '100%',
             label: {
                 show: true,
@@ -42,5 +42,5 @@ function Heatmap() {
         },
     };
 
-    return <ReactEcharts option={option} style={{height: '100%', width: '100%'}}></ReactEcharts>;
+    return <ReactEcharts option={option} style={{height: '95%', width: '100%'}}></ReactEcharts>;
 }
