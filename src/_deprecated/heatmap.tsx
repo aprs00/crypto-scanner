@@ -1,12 +1,7 @@
-import {createLazyFileRoute} from '@tanstack/react-router';
 import * as echarts from 'echarts';
 import ReactEcharts from 'echarts-for-react';
 
-export const Route = createLazyFileRoute('/heatmap')({
-    component: Heatmap,
-});
-
-function Heatmap() {
+export function Heatmap() {
     const visualMin = -100;
     const visualMax = 100;
 
