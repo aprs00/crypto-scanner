@@ -1,6 +1,5 @@
 import {createFileRoute} from '@tanstack/react-router';
-import {useMemo, useState} from 'react';
-import type {Layouts} from 'react-grid-layout';
+import {useMemo} from 'react';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import {useFetchTickersOptions, useStatsSelectOptions} from './api';
@@ -20,9 +19,6 @@ export const Route = createFileRoute('/')({
 function Stats() {
     const timeFrameOptions = useStatsSelectOptions();
     const tickerOptions = useFetchTickersOptions();
-
-    const [layouts, setLayouts] = useState<Layouts>();
-    // const [breakpoint, setBreakpoint] = useState('lg');
 
     const gridLayouts = useMemo(
         () => [
@@ -126,10 +122,7 @@ function Stats() {
         <ResponsiveGridLayout
             cols={{lg: 12, md: 12, sm: 6, xs: 6, xxs: 6}}
             draggableHandle="#drag-handle"
-            layouts={layouts}
             rowHeight={gridLayoutRowHeight}
-            onLayoutChange={(_: never, layouts: Layouts) => setLayouts(layouts)}
-            // onBreakpointChange={(newBreakpoint) => setBreakpoint(newBreakpoint)}
         >
             {gridLayouts.map((grid) => (
                 <div className="bg-slate-900 overflow-hidden rounded" data-grid={grid.gridLayout} key={grid.key}>

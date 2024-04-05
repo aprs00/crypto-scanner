@@ -1,6 +1,6 @@
 import {createLazyFileRoute} from '@tanstack/react-router';
 import {useState} from 'react';
-import type {Layout, Layouts} from 'react-grid-layout';
+import type {Layout} from 'react-grid-layout';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
@@ -22,7 +22,6 @@ function Chart() {
 
     const [symbol] = useState('BTCUSDT');
     const [tableHeight, setTableHeight] = useState(() => gridLayoutRowHeight * 13);
-    const [layouts, setLayouts] = useState<Layouts>();
 
     const symbolInfo = exchangeInfo?.data?.symbols.find((s) => s.symbol === symbol);
     const symbolTickSize = Number(symbolInfo?.filters[0].tickSize);
@@ -32,9 +31,7 @@ function Chart() {
             <ResponsiveGridLayout
                 cols={{lg: 12, md: 12, sm: 6, xs: 4, xxs: 2}}
                 draggableHandle="#drag-handle"
-                layouts={layouts}
                 rowHeight={gridLayoutRowHeight}
-                onLayoutChange={(_: Layout[], layouts: Layouts) => setLayouts(layouts)}
                 onResize={(grids: Layout[]) => {
                     grids.forEach((grid) => {
                         if (grid.i === 'table') setTableHeight(grid.h * gridLayoutRowHeight);
