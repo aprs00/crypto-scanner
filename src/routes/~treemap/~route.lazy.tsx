@@ -1,6 +1,6 @@
 import {createLazyFileRoute} from '@tanstack/react-router';
 import ReactEcharts from 'echarts-for-react';
-import _ from 'lodash-es';
+import {maxBy, minBy} from 'lodash-es';
 
 import {useHeatmapData} from './api';
 
@@ -19,8 +19,8 @@ function Heatmap() {
             };
         }) || [];
 
-    const lowestPercentage = _.minBy(children, 'colorValue')?.colorValue ?? -100;
-    const highestPercentage = _.maxBy(children, 'colorValue')?.colorValue ?? 100;
+    const lowestPercentage = minBy(children, 'colorValue')?.colorValue ?? -100;
+    const highestPercentage = maxBy(children, 'colorValue')?.colorValue ?? 100;
 
     const absPercentage = Math.max(Math.abs(lowestPercentage), Math.abs(highestPercentage));
 
