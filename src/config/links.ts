@@ -8,6 +8,10 @@ const headerLinks = [
         path: '/pearson',
     },
     {
+        label: 'Z Score',
+        path: '/z-score',
+    },
+    {
         label: 'Chart',
         path: '/chart',
     },

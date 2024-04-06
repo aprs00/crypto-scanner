@@ -17,11 +17,19 @@ import { Route as IndexRouteImport } from './routes/~index/~route'
 
 // Create Virtual Routes
 
+const ZScoreRouteLazyImport = createFileRoute('/z-score')()
 const TreemapRouteLazyImport = createFileRoute('/treemap')()
 const PearsonRouteLazyImport = createFileRoute('/pearson')()
 const ChartRouteLazyImport = createFileRoute('/chart')()
 
 // Create/Update Routes
+
+const ZScoreRouteLazyRoute = ZScoreRouteLazyImport.update({
+  path: '/z-score',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/~z-score/~route.lazy').then((d) => d.Route),
+)
 
 const TreemapRouteLazyRoute = TreemapRouteLazyImport.update({
   path: '/treemap',
@@ -67,6 +75,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TreemapRouteLazyImport
       parentRoute: typeof rootRoute
     }
+    '/z-score': {
+      preLoaderRoute: typeof ZScoreRouteLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -77,6 +89,7 @@ export const routeTree = rootRoute.addChildren([
   ChartRouteLazyRoute,
   PearsonRouteLazyRoute,
   TreemapRouteLazyRoute,
+  ZScoreRouteLazyRoute,
 ])
 
 /* prettier-ignore-end */
