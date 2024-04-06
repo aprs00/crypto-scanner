@@ -26,7 +26,7 @@ function Pearson() {
                     typeOptions={typeOptions.data || []}
                 />
             ),
-            gridLayout: {h: 24, w: 12, x: 0, y: 0},
+            gridLayout: {h: 28, w: 12, x: 0, y: 0},
             key: 'pearsonCorrelation1',
         },
     ];
