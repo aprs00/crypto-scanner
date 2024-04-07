@@ -1,4 +1,5 @@
 import ReactEcharts from 'echarts-for-react';
+import {capitalize} from 'lodash-es';
 
 import ChartContainer from '@/components/ChartContainer';
 
@@ -11,7 +12,6 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
     const zScoreHistory = useZScoreHistory(type, tf);
 
     const option = {
-        // },
         grid: {
             bottom: '0',
             containLabel: true,
@@ -67,7 +67,7 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
             header={
                 <>
                     <h3 className="text-gray-300">
-                        Z-Score - {`${type.slice(0, 1).toUpperCase()}${type.slice(1)}`} - {tf} (UTC)
+                        Z Score - {capitalize(type)} - {tf} (UTC)
                     </h3>
                 </>
             }

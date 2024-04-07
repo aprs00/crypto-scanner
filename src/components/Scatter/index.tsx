@@ -1,4 +1,5 @@
 import ReactEcharts from 'echarts-for-react';
+import {capitalize} from 'lodash-es';
 
 import {ScatterPropsType} from './types';
 
@@ -16,7 +17,7 @@ const Scatter = (props: ScatterPropsType) => {
                 style: {
                     fill: '#cbd5e1',
                     fontSize: 18,
-                    text: yAxis.slice(0, 1).toUpperCase() + yAxis.slice(1),
+                    text: capitalize(yAxis),
                 },
                 top: '44%',
                 type: 'text',
@@ -27,7 +28,7 @@ const Scatter = (props: ScatterPropsType) => {
                 style: {
                     fill: '#cbd5e1',
                     fontSize: 18,
-                    text: `${xAxis.slice(0, 1).toUpperCase()}${xAxis.slice(1)}`,
+                    text: capitalize(xAxis),
                 },
                 type: 'text',
             },
@@ -48,7 +49,11 @@ const Scatter = (props: ScatterPropsType) => {
         series: data,
         tooltip: {
             formatter: function (params: any) {
-                return `${params.marker}${params.seriesName}: <span>x: ${params.data[0]} y: ${params.data[1]}</span>`;
+                return `
+                    ${params.marker}${params.seriesName}
+                    <br />
+                    <span>${capitalize(xAxis)}: ${params.data[0]} ${capitalize(yAxis)}: ${params.data[1]}</span>
+                `;
             },
         },
         xAxis: {
