@@ -4,11 +4,14 @@ import {createRootRoute, Outlet} from '@tanstack/react-router';
 import Navigation from '@/components/Navigation';
 
 export const Route = createRootRoute({
-    component: () => (
+    component: BaseLayout,
+});
+
+function BaseLayout() {
+    return (
         <>
             <Navigation />
             <Outlet />
-            {/*<TanStackRouterDevtools />*/}
         </>
-    ),
-});
+    );
+}
