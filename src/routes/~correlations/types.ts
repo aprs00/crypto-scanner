@@ -6,7 +6,7 @@ export type SelectOption = {
 //
 // RESPONSE TYPES
 //
-export type PearsonResponse = {
+export type CorrelationsResponse = {
     data: [[number, number, number]][];
     xAxis: string[];
     yAxis: string[];

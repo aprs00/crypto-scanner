@@ -1,27 +1,32 @@
 import {createLazyFileRoute} from '@tanstack/react-router';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
-import {useCorrelationsTimeframeOptions} from '@/routes/~correlations/api';
-
-import ZScoreMatrix from './components/ZScoreMatrix';
+import {useCorrelationsTimeframeOptions, useCorrelationTypeOptions} from './api';
+import CorrelationsHeatmap from './components/Heatmap';
 
 const gridLayoutRowHeight = 30;
 const ResponsiveGridLayout = WidthProvider(Responsive) as any;
 
-export const Route = createLazyFileRoute('/z-score')({
-    component: ZScore,
+export const Route = createLazyFileRoute('/correlations')({
+    component: Correlations,
 });
 
-function ZScore() {
+function Correlations() {
     const timeFrameOptions = useCorrelationsTimeframeOptions();
+    const typeOptions = useCorrelationTypeOptions();
 
     const gridLayouts = [
         {
             component: (
-                <ZScoreMatrix tf="5m" timeFrameOptions={timeFrameOptions?.data || []} xAxis="price" yAxis="volume" />
+                <CorrelationsHeatmap
+                    tf="5m"
+                    timeFrameOptions={timeFrameOptions?.data || []}
+                    type="price"
+                    typeOptions={typeOptions.data || []}
+                />
             ),
-            gridLayout: {h: 24, w: 12, x: 0, y: 0},
-            key: 'zScoreMatrix',
+            gridLayout: {h: 28, w: 12, x: 0, y: 0},
+            key: 'correlation1',
         },
     ];
 

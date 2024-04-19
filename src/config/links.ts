@@ -4,8 +4,8 @@ const headerLinks = [
         path: '/',
     },
     {
-        label: 'Pearson',
-        path: '/pearson',
+        label: 'Correlations',
+        path: '/correlations',
     },
     {
         label: 'Z Score',

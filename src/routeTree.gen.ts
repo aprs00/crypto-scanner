@@ -19,7 +19,7 @@ import { Route as IndexRouteImport } from './routes/~index/~route'
 
 const ZScoreRouteLazyImport = createFileRoute('/z-score')()
 const TreemapRouteLazyImport = createFileRoute('/treemap')()
-const PearsonRouteLazyImport = createFileRoute('/pearson')()
+const CorrelationsRouteLazyImport = createFileRoute('/correlations')()
 const ChartRouteLazyImport = createFileRoute('/chart')()
 
 // Create/Update Routes
@@ -38,11 +38,11 @@ const TreemapRouteLazyRoute = TreemapRouteLazyImport.update({
   import('./routes/~treemap/~route.lazy').then((d) => d.Route),
 )
 
-const PearsonRouteLazyRoute = PearsonRouteLazyImport.update({
-  path: '/pearson',
+const CorrelationsRouteLazyRoute = CorrelationsRouteLazyImport.update({
+  path: '/correlations',
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
-  import('./routes/~pearson/~route.lazy').then((d) => d.Route),
+  import('./routes/~correlations/~route.lazy').then((d) => d.Route),
 )
 
 const ChartRouteLazyRoute = ChartRouteLazyImport.update({
@@ -67,8 +67,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChartRouteLazyImport
       parentRoute: typeof rootRoute
     }
-    '/pearson': {
-      preLoaderRoute: typeof PearsonRouteLazyImport
+    '/correlations': {
+      preLoaderRoute: typeof CorrelationsRouteLazyImport
       parentRoute: typeof rootRoute
     }
     '/treemap': {
@@ -87,7 +87,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   IndexRouteRoute,
   ChartRouteLazyRoute,
-  PearsonRouteLazyRoute,
+  CorrelationsRouteLazyRoute,
   TreemapRouteLazyRoute,
   ZScoreRouteLazyRoute,
 ])

@@ -3,59 +3,58 @@ import {useQuery} from '@tanstack/react-query';
 import {API_URL} from '@/config/env';
 import {api} from '@/lib/ky';
 
-import type {PearsonResponse, SelectOption} from './types';
+import type {CorrelationsResponse, SelectOption} from './types';
 
-const fetchPearsonCorrelation = async (tf: string, type: string) => {
+const fetchCorrelations = async (tf: string, type: string) => {
     const url = new URL('large-pearson-correlation', API_URL);
     url.searchParams.set('duration', tf);
     url.searchParams.set('type', type);
 
-    return (await api.get(url).json()) as PearsonResponse;
+    return (await api.get(url).json()) as CorrelationsResponse;
 };
 
-const usePearsonCorrelation = (tf: string, type: string) => {
+const useCorrelations = (tf: string, type: string) => {
     return useQuery({
-        gcTime: 15_000,
-        queryFn: () => fetchPearsonCorrelation(tf, type),
-        queryKey: ['pearson-correlation', tf, type],
-        refetchInterval: 15_000,
+        gcTime: 10_000,
+        queryFn: () => fetchCorrelations(tf, type),
+        queryKey: ['correlation', tf, type],
+        refetchInterval: 10_000,
         refetchOnWindowFocus: false,
-        staleTime: 15_000,
     });
 };
 
-const fetchPearsonTimeframeOptions = async () => {
+const fetchCorrelationsTimeframeOptions = async () => {
     const url = new URL(`pearson-time-frame-options`, API_URL);
 
     return (await api.get(url).json()) as SelectOption[];
 };
 
-const usePearsonTimeframeOptions = () => {
+const useCorrelationsTimeframeOptions = () => {
     return useQuery({
         gcTime: 60 * 60 * 1000,
-        queryFn: () => fetchPearsonTimeframeOptions(),
-        queryKey: ['pearson-time-frame-options'],
+        queryFn: () => fetchCorrelationsTimeframeOptions(),
+        queryKey: ['correlations-time-frame-options'],
         refetchInterval: 60 * 60 * 1000,
         refetchOnWindowFocus: false,
         staleTime: 60 * 60 * 1000,
     });
 };
 
-const fetchPearsonTypeOptions = async () => {
+const fetchCorrelationsTypeOptions = async () => {
     const url = new URL(`pearson-type-options`, API_URL);
 
     return (await api.get(url).json()) as SelectOption[];
 };
 
-const usePearsonTypeOptions = () => {
+const useCorrelationTypeOptions = () => {
     return useQuery({
         gcTime: 60 * 60 * 1000,
-        queryFn: () => fetchPearsonTypeOptions(),
-        queryKey: ['pearson-type-options'],
+        queryFn: () => fetchCorrelationsTypeOptions(),
+        queryKey: ['correlation-type-options'],
         refetchInterval: 60 * 60 * 1000,
         refetchOnWindowFocus: false,
         staleTime: 60 * 60 * 1000,
     });
 };
 
-export {usePearsonCorrelation, usePearsonTimeframeOptions, usePearsonTypeOptions};
+export {useCorrelations, useCorrelationsTimeframeOptions, useCorrelationTypeOptions};
