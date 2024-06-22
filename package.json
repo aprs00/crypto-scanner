@@ -33,7 +33,6 @@
     },
     "devDependencies": {
         "@tanstack/router-vite-plugin": "^1.25.0",
-        "@testing-library/react-hooks": "^8.0.1",
         "@types/echarts": "^4.9.22",
         "@types/jest": "^29.5.12",
         "@types/lodash-es": "^4.17.12",
