@@ -60,22 +60,37 @@ const IndexRouteRoute = IndexRouteImport.update({
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRoute
     }
     '/chart': {
+      id: '/chart'
+      path: '/chart'
+      fullPath: '/chart'
       preLoaderRoute: typeof ChartRouteLazyImport
       parentRoute: typeof rootRoute
     }
     '/correlations': {
+      id: '/correlations'
+      path: '/correlations'
+      fullPath: '/correlations'
       preLoaderRoute: typeof CorrelationsRouteLazyImport
       parentRoute: typeof rootRoute
     }
     '/treemap': {
+      id: '/treemap'
+      path: '/treemap'
+      fullPath: '/treemap'
       preLoaderRoute: typeof TreemapRouteLazyImport
       parentRoute: typeof rootRoute
     }
     '/z-score': {
+      id: '/z-score'
+      path: '/z-score'
+      fullPath: '/z-score'
       preLoaderRoute: typeof ZScoreRouteLazyImport
       parentRoute: typeof rootRoute
     }
@@ -84,12 +99,44 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([
+export const routeTree = rootRoute.addChildren({
   IndexRouteRoute,
   ChartRouteLazyRoute,
   CorrelationsRouteLazyRoute,
   TreemapRouteLazyRoute,
   ZScoreRouteLazyRoute,
-])
+})
 
 /* prettier-ignore-end */
+
+/* ROUTE_MANIFEST_START
+{
+  "routes": {
+    "__root__": {
+      "filePath": "~__root.tsx",
+      "children": [
+        "/",
+        "/chart",
+        "/correlations",
+        "/treemap",
+        "/z-score"
+      ]
+    },
+    "/": {
+      "filePath": "~index/~route.tsx"
+    },
+    "/chart": {
+      "filePath": "~chart/~route.lazy.tsx"
+    },
+    "/correlations": {
+      "filePath": "~correlations/~route.lazy.tsx"
+    },
+    "/treemap": {
+      "filePath": "~treemap/~route.lazy.tsx"
+    },
+    "/z-score": {
+      "filePath": "~z-score/~route.lazy.tsx"
+    }
+  }
+}
+ROUTE_MANIFEST_END */

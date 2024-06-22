@@ -6,7 +6,7 @@ import {SelectOptionType} from '@/routes/~index/types';
 export type ZScoreMatrixResponseType = {
     type: string;
     name: string;
-    data: [string, string][];
+    data: [number, number][];
     color: string;
     symbolSize: number;
 };

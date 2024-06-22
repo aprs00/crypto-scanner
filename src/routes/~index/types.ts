@@ -41,7 +41,7 @@ export type ZScoreHistoryResponseType = {
 export type ZScoreMatrixResponseType = {
     type: string;
     name: string;
-    data: [string, string][];
+    data: number[][];
     color: string;
     symbolSize: number;
 };
