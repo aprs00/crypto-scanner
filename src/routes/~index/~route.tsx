@@ -23,23 +23,18 @@ function Stats() {
     const gridLayouts = useMemo(
         () => [
             {
-                component: <BetaHeatmap tf="4h" timeFrameOptions={timeFrameOptions?.data?.all || []} />,
+                component: <BetaHeatmap tf="4h" timeFrameOptions={timeFrameOptions.data?.all || []} />,
                 gridLayout: {h: 14, w: 6, x: 0, y: 0},
                 key: 'betaHeatmap1',
             },
             {
-                component: <BetaHeatmap tf="1d" timeFrameOptions={timeFrameOptions?.data?.all || []} />,
+                component: <BetaHeatmap tf="1d" timeFrameOptions={timeFrameOptions.data?.all || []} />,
                 gridLayout: {h: 14, w: 6, x: 6, y: 0},
                 key: 'betaHeatmap2',
             },
             {
                 component: (
-                    <Scatter
-                        tf="4h"
-                        timeFrameOptions={timeFrameOptions?.data?.all || []}
-                        xAxis="price"
-                        yAxis="volume"
-                    />
+                    <Scatter tf="4h" timeFrameOptions={timeFrameOptions.data?.all || []} xAxis="price" yAxis="volume" />
                 ),
                 gridLayout: {h: 14, w: 6, x: 0, y: 14},
                 key: 'scatter1',
@@ -48,7 +43,7 @@ function Stats() {
                 component: (
                     <Scatter
                         tf="1d"
-                        timeFrameOptions={timeFrameOptions?.data?.all || []}
+                        timeFrameOptions={timeFrameOptions.data?.all || []}
                         xAxis="trades"
                         yAxis="volume"
                     />
@@ -57,21 +52,17 @@ function Stats() {
                 key: 'scatter2',
             },
             {
-                component: <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions?.data?.all || []} type="price" />,
+                component: <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions.data?.all || []} type="price" />,
                 gridLayout: {h: 14, w: 12, x: 0, y: 28},
                 key: 'zScoreHistory1',
             },
             {
-                component: (
-                    <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions?.data?.all || []} type="volume" />
-                ),
+                component: <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions.data?.all || []} type="volume" />,
                 gridLayout: {h: 14, w: 12, x: 0, y: 42},
                 key: 'zScoreHistory2',
             },
             {
-                component: (
-                    <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions?.data?.all || []} type="trades" />
-                ),
+                component: <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions.data?.all || []} type="trades" />,
                 gridLayout: {h: 14, w: 12, x: 0, y: 56},
                 key: 'zScoreHistory3',
             },
@@ -80,8 +71,8 @@ function Stats() {
                     <PriceChangePerDayOfWeek
                         symbol="BTCUSDT"
                         tf="1m"
-                        tickerOptions={tickerOptions?.data || []}
-                        timeFrameOptions={timeFrameOptions?.data?.htf || []}
+                        tickerOptions={tickerOptions.data || []}
+                        timeFrameOptions={timeFrameOptions.data?.htf || []}
                         type="day"
                     />
                 ),
@@ -93,8 +84,8 @@ function Stats() {
                     <PriceChangePerDayOfWeek
                         symbol="ETHUSDT"
                         tf="1m"
-                        tickerOptions={tickerOptions?.data || []}
-                        timeFrameOptions={timeFrameOptions?.data?.htf || []}
+                        tickerOptions={tickerOptions.data || []}
+                        timeFrameOptions={timeFrameOptions.data?.htf || []}
                         type="day"
                     />
                 ),
@@ -106,8 +97,8 @@ function Stats() {
                     <PriceChangePerDayOfWeek
                         symbol="BTCUSDT"
                         tf="1m"
-                        tickerOptions={tickerOptions?.data || []}
-                        timeFrameOptions={timeFrameOptions?.data?.htf || []}
+                        tickerOptions={tickerOptions.data || []}
+                        timeFrameOptions={timeFrameOptions.data?.htf || []}
                         type="hour"
                     />
                 ),

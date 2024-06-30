@@ -17,7 +17,7 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
     return (
         <>
             <ChartContainer
-                body={<Scatter data={zScoreMatrix?.data || []} xAxis={xAxis} yAxis={yAxis} />}
+                body={<Scatter data={zScoreMatrix.data || []} xAxis={xAxis} yAxis={yAxis} />}
                 header={
                     <>
                         <h3 className="text-gray-300">Z Score</h3>

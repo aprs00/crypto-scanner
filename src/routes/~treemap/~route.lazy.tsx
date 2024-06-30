@@ -12,7 +12,7 @@ function Heatmap() {
     const heatmap = useHeatmapData();
 
     const children =
-        heatmap?.data?.map((coin) => {
+        heatmap.data?.map((coin) => {
             return {
                 ...coin,
                 value: [coin.value, coin.colorValue],

@@ -15,7 +15,7 @@ const Heatmap = (props: any) => {
         grid: {bottom: 30, left: 50, right: 82, top: 20},
         series: [
             {
-                data: data?.data?.data,
+                data: data.data?.data,
                 emphasis: {
                     itemStyle: {
                         shadowBlur: 10,
@@ -23,14 +23,14 @@ const Heatmap = (props: any) => {
                     },
                 },
                 label: {
-                    show: matches && data?.data?.data?.length < 150,
+                    show: matches && data.data?.data?.length < 150,
                 },
                 type: 'heatmap',
             },
         ],
         tooltip: {
             formatter: function (params: any) {
-                const yLabel = data?.data?.xAxis[params?.data?.[1]];
+                const yLabel = data.data?.xAxis[params.data?.[1]];
                 return `${params.marker}${yLabel} - ${params.name}: <strong>${params.value[2]}</strong>`;
             },
             position: 'top',
@@ -52,14 +52,14 @@ const Heatmap = (props: any) => {
             },
         },
         xAxis: {
-            data: data?.data?.xAxis,
+            data: data.data?.xAxis,
             splitArea: {
                 show: true,
             },
             type: 'category',
         },
         yAxis: {
-            data: data?.data?.yAxis,
+            data: data.data?.yAxis,
             splitArea: {
                 show: true,
             },

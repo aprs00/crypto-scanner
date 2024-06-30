@@ -23,7 +23,7 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
         grid: {bottom: 60, left: 45, right: 20, top: 20},
         series: [
             {
-                data: priceChangePercentageApi?.data?.data,
+                data: priceChangePercentageApi.data?.data,
                 type: 'bar',
             },
         ],
@@ -37,7 +37,7 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
             trigger: 'axis',
         },
         xAxis: {
-            data: priceChangePercentageApi?.data?.xAxis,
+            data: priceChangePercentageApi.data?.xAxis,
             type: 'category',
         },
         yAxis: {

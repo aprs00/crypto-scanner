@@ -42,7 +42,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     const {groupedAsks, groupedBids} = useStreamTicker('BTCUSDT', groupByVal, calculatedNumOfRows) || {};
 
     const maxQuantity = useMemo(() => {
-        const bidsAndAsks = groupedAsks?.concat(groupedBids) || [];
+        const bidsAndAsks = groupedAsks.concat(groupedBids) || [];
         return Math.max(...bidsAndAsks.map((limit: [number, number]) => limit[1]));
     }, [groupedAsks, groupedBids, calculatedNumOfRows]);
 

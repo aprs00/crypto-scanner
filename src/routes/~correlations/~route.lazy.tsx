@@ -20,7 +20,7 @@ function Correlations() {
             component: (
                 <CorrelationsHeatmap
                     tf="5m"
-                    timeFrameOptions={timeFrameOptions?.data || []}
+                    timeFrameOptions={timeFrameOptions.data || []}
                     type="price"
                     typeOptions={typeOptions.data || []}
                 />

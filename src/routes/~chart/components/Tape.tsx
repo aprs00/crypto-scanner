@@ -24,17 +24,16 @@ const Tape = () => {
     ));
 
     useEffect(() => {
-        if (!streamAggTrade?.data?.p) return;
-        if (!streamAggTrade || (Number(streamAggTrade?.data?.q) || 0) <= 0.05) return;
+        if (!streamAggTrade.data?.p || (Number(streamAggTrade.data?.q) || 0) <= 0.05) return;
         const newTape = {
-            aggregateTradeId: streamAggTrade?.data?.a,
-            market: streamAggTrade?.data?.m,
-            price: streamAggTrade?.data?.p.toString().replace(/\.?0+$/, ''),
-            size: streamAggTrade?.data?.q.toString().replace(/\.?0+$/, ''),
-            time: streamAggTrade?.data?.T as number,
+            aggregateTradeId: streamAggTrade.data?.a,
+            market: streamAggTrade.data?.m,
+            price: streamAggTrade.data?.p.toString().replace(/\.?0+$/, ''),
+            size: streamAggTrade.data?.q.toString().replace(/\.?0+$/, ''),
+            time: streamAggTrade.data?.T as number,
         };
         setTapeData((prev) => [newTape, ...prev.slice(0, 100)]);
-    }, [streamAggTrade?.data?.T]);
+    }, [streamAggTrade.data?.T]);
 
     return (
         <div className="border-4 border-slate-800 rounded h-full">

@@ -37,13 +37,13 @@ const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
         // },
         // dataZoom: {
         //     type: 'inside',
-        series: zScoreHistory?.data?.data,
+        series: zScoreHistory.data?.data,
         tooltip: {
             trigger: 'axis',
         },
         xAxis: {
             boundaryGap: false,
-            data: zScoreHistory?.data?.xAxis,
+            data: zScoreHistory.data?.xAxis,
             splitLine: {
                 lineStyle: {
                     color: '#1e293b',

@@ -18,7 +18,7 @@ function ZScore() {
     const gridLayouts = [
         {
             component: (
-                <ZScoreMatrix tf="5m" timeFrameOptions={timeFrameOptions?.data || []} xAxis="price" yAxis="volume" />
+                <ZScoreMatrix tf="5m" timeFrameOptions={timeFrameOptions.data || []} xAxis="price" yAxis="volume" />
             ),
             gridLayout: {h: 24, w: 12, x: 0, y: 0},
             key: 'zScoreMatrix',

@@ -23,7 +23,7 @@ function Chart() {
     const [symbol] = useState('BTCUSDT');
     const [tableHeight, setTableHeight] = useState(() => gridLayoutRowHeight * 13);
 
-    const symbolInfo = exchangeInfo?.data?.symbols.find((s) => s.symbol === symbol);
+    const symbolInfo = exchangeInfo.data?.symbols.find((s) => s.symbol === symbol);
     const symbolTickSize = Number(symbolInfo?.filters[0].tickSize);
 
     return (
