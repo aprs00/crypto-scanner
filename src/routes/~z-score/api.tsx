@@ -16,12 +16,11 @@ const fetchZScoreMatrixLarge = async (xAxis: string, yAxis: string, tf: string) 
 
 const useZScoreMatrixLarge = (xAxis: string, yAxis: string, tf: string) => {
     return useQuery({
-        gcTime: 120_000,
+        gcTime: 7_000,
         queryFn: () => fetchZScoreMatrixLarge(xAxis, yAxis, tf),
         queryKey: ['z-score-matrix-large', xAxis, yAxis, tf],
-        refetchInterval: 120_000,
+        refetchInterval: 7_000,
         refetchOnWindowFocus: false,
-        staleTime: 120_000,
     });
 };
 

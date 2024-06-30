@@ -15,10 +15,10 @@ const fetchCorrelations = async (tf: string, type: string) => {
 
 const useCorrelations = (tf: string, type: string) => {
     return useQuery({
-        gcTime: 10_000,
+        gcTime: 7_000,
         queryFn: () => fetchCorrelations(tf, type),
         queryKey: ['correlation', tf, type],
-        refetchInterval: 10_000,
+        refetchInterval: 7_000,
         refetchOnWindowFocus: false,
     });
 };
