@@ -53,11 +53,11 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 const [price, quantity] = groupedGetter?.[i] ?? [];
                 const percentage = (Number(quantity) / maxQuantity) * 100;
                 const formattedQuantity = quantityFormatter.format(Number(quantity));
+                const tableAlignmentClass = tableAlignment === 'H' && type === 'bids' ? 'text-right' : '';
+
                 rows.push(
                     <div
-                        className={`grid grid-cols-2 mb-0.5 rounded text-slate-200 text-sm p-0.5 ${
-                            tableAlignment === 'H' && type === 'bids' ? 'text-right' : ''
-                        }`}
+                        className={`grid grid-cols-2 mb-0.5 rounded text-slate-200 text-sm p-0.5 ${tableAlignmentClass}`}
                         key={price}
                         style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
                     >
