@@ -43,7 +43,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
     const maxQuantity = useMemo(() => {
         const bidsAndAsks = groupedAsks?.concat(groupedBids) || [];
-        return Math.max(...bidsAndAsks.map(([_, quantity]: [number, number]) => quantity));
+        return Math.max(...bidsAndAsks.map((limit: [number, number]) => limit[1]));
     }, [groupedAsks, groupedBids, calculatedNumOfRows]);
 
     const orderBookTable = useCallback(

@@ -35,7 +35,6 @@ module.exports = {
     rules: {
         "@typescript-eslint/no-explicit-any": 'off',
         'prettier/prettier': ['error', {}, {usePrettierrc: true}],
-        "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_" }],
         'react/react-in-jsx-scope': 'off',
         'jsx-a11y/accessible-emoji': 'off',
         'react/prop-types': 'off',
