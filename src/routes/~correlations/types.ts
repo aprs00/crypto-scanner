@@ -3,18 +3,12 @@ export type SelectOption = {
     label: string;
 };
 
-//
-// RESPONSE TYPES
-//
 export type CorrelationsResponse = {
     data: [[number, number, number]][];
     xAxis: string[];
     yAxis: string[];
 };
 
-//
-// PROP TYPES
-//
 export type PearsonHeatmapProps = {
     tf: string;
     type: string;

@@ -3,9 +3,6 @@ export type SelectOptionType = {
     label: string;
 };
 
-//
-// RESPONSE TYPES
-//
 export type BetaHeatmapResponseType = {
     data: [[number, number, number]][];
     xAxis: string[];
@@ -46,9 +43,6 @@ export type ZScoreMatrixResponseType = {
     symbolSize: number;
 };
 
-//
-// PROP TYPES
-//
 export type BetaHeatmapPropsType = {
     tf: string;
     timeFrameOptions: SelectOptionType[];

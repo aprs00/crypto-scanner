@@ -46,9 +46,6 @@ export type SymbolInfoType = {
     allowedSelfTradePreventionModes: string[];
 };
 
-//
-// RESPONSE TYPES
-//
 export type ExchangeInfoResponseType = {
     timezone: string;
     serverTime: number;
@@ -92,21 +89,6 @@ export type StreamAggTradeResponseType = {
     p: string;
     q: string;
     s: string;
-};
-
-//
-// PROP TYPES
-//
-export type UpdateOrderBookPropsType = {
-    asksGetter: [string, string][];
-    bidsGetter: [string, string][];
-    asksStream: [string, string][];
-    bidsStream: [string, string][];
-};
-
-export type OrderBookFiltersPropsType = {
-    groupByVal: number;
-    setGroupByVal: (num: number) => void;
 };
 
 export type OrderBookTablePropsType = {
