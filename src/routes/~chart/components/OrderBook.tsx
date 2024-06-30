@@ -43,14 +43,14 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
     const maxQuantity = useMemo(() => {
         const bidsAndAsks = groupedAsks?.concat(groupedBids) || [];
-        return Math.max(...bidsAndAsks.map(([_, quantity, __]: [number, number, string]) => quantity));
+        return Math.max(...bidsAndAsks.map(([_, quantity]: [number, number]) => quantity));
     }, [groupedAsks, groupedBids, calculatedNumOfRows]);
 
     const orderBookTable = useCallback(
-        (groupedGetter: [number, number, string][], type: string) => {
+        (groupedGetter: [number, number][], type: string) => {
             const rows = [];
             for (let i = 0; i < groupedGetter?.length; i++) {
-                const [price, quantity, id] = groupedGetter?.[i] ?? [];
+                const [price, quantity] = groupedGetter?.[i] ?? [];
                 const percentage = (Number(quantity) / maxQuantity) * 100;
                 const formattedQuantity = quantityFormatter.format(Number(quantity));
                 rows.push(
