@@ -49,21 +49,22 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     const orderBookTable = useCallback(
         (groupedGetter: [number, number][], type: string) => {
             const rows = [];
+            const isTableAlignmentHorizontal = tableAlignment === 'H' && type === 'bids';
+            const tableAlignmentClassContainer = isTableAlignmentHorizontal ? 'text-right' : '';
+            const tableAlignmentClassRow = isTableAlignmentHorizontal ? 'order-1' : '';
+
             for (let i = 0; i < groupedGetter?.length; i++) {
-                const [price, quantity] = groupedGetter?.[i] ?? [];
+                const [price, quantity] = groupedGetter[i];
                 const percentage = (Number(quantity) / maxQuantity) * 100;
                 const formattedQuantity = quantityFormatter.format(Number(quantity));
-                const tableAlignmentClass = tableAlignment === 'H' && type === 'bids' ? 'text-right' : '';
 
                 rows.push(
                     <div
-                        className={`grid grid-cols-2 mb-0.5 rounded text-slate-200 text-sm p-0.5 ${tableAlignmentClass}`}
+                        className={`grid grid-cols-2 mb-0.5 rounded text-slate-200 text-sm p-0.5 ${tableAlignmentClassContainer}`}
                         key={price}
                         style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
                     >
-                        <div className={`${tableAlignment === 'H' && type === 'bids' ? 'order-1' : ''}`}>
-                            {price.toFixed(tickSizeDecimalPlaces)}
-                        </div>
+                        <div className={tableAlignmentClassRow}>{price.toFixed(tickSizeDecimalPlaces)}</div>
                         <div>{formattedQuantity}</div>
                     </div>,
                 );
