@@ -55,8 +55,8 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
             for (let i = 0; i < groupedGetter?.length; i++) {
                 const [price, quantity] = groupedGetter[i];
-                const percentage = (Number(quantity) / maxQuantity) * 100;
-                const formattedQuantity = quantityFormatter.format(Number(quantity));
+                const percentage = (quantity / maxQuantity) * 100;
+                const formattedQuantity = quantityFormatter.format(quantity);
 
                 rows.push(
                     <div
