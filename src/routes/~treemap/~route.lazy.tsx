@@ -70,7 +70,7 @@ function Heatmap() {
                 type: 'treemap',
                 visualDimension: 1,
                 visualMax: absPercentage,
-                visualMin: absPercentage,
+                visualMin: -absPercentage,
                 width: '100%',
             },
         ],
