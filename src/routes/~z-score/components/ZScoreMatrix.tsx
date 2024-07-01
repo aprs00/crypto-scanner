@@ -14,10 +14,21 @@ const ZScoreMatrix = (props: ScatterPropsType) => {
 
     const zScoreMatrix = useZScoreMatrixLarge(xAxis, yAxis, selectedTf);
 
+    const zScoreMatrixData = zScoreMatrix?.data?.map((item) => {
+        if (typeof item.data[0][0] !== 'number' || typeof item.data[0][1] !== 'number') {
+            return {
+                ...item,
+                data: [[item.data[0][0] || 0, item.data[0][1] || 0]],
+            };
+        }
+
+        return item;
+    });
+
     return (
         <>
             <ChartContainer
-                body={<Scatter data={zScoreMatrix.data || []} xAxis={xAxis} yAxis={yAxis} />}
+                body={<Scatter data={zScoreMatrixData || []} xAxis={xAxis} yAxis={yAxis} />}
                 header={
                     <>
                         <h3 className="text-gray-300">Z Score</h3>
