@@ -5,7 +5,7 @@ import {useCorrelationsTimeframeOptions} from '@/routes/~correlations/api';
 import ZScoreMatrix from './components/ZScoreMatrix';
 
 const gridLayoutRowHeight = 30;
-const ResponsiveGridLayout = WidthProvider(Responsive) as any;
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const ZScore = () => {
     const timeFrameOptions = useCorrelationsTimeframeOptions();

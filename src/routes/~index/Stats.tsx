@@ -9,7 +9,7 @@ import Scatter from './components/ZScoreMatrix';
 
 const gridLayoutRowHeight = 30;
 
-const ResponsiveGridLayout = WidthProvider(Responsive) as any;
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const Stats = () => {
     const timeFrameOptions = useStatsSelectOptions();

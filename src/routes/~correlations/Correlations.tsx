@@ -4,7 +4,7 @@ import {useCorrelationsTimeframeOptions, useCorrelationTypeOptions} from './api'
 import CorrelationsHeatmap from './components/Heatmap';
 
 const gridLayoutRowHeight = 30;
-const ResponsiveGridLayout = WidthProvider(Responsive) as any;
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const Correlations = () => {
     const timeFrameOptions = useCorrelationsTimeframeOptions();

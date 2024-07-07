@@ -74,6 +74,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
             header={
                 <>
                     <h3 className="text-gray-300">{titleMapper[type]}</h3>
+
                     <div className="z-50 flex gap-2">
                         <CustomSelect
                             classes="w-32"
