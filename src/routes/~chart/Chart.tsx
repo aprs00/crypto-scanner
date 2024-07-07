@@ -8,7 +8,7 @@ import {useExchangeInfo} from './api';
 import Table from './components/OrderBook';
 import Tape from './components/Tape';
 
-const ResponsiveGridLayout = WidthProvider(Responsive) as any;
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const gridLayoutRowHeight = 30;
 
