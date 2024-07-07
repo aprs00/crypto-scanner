@@ -55,7 +55,7 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekProps) => {
         },
     };
 
-    setTimeout(() => chartInstance?.resize(), 100);
+    setTimeout(() => chartInstance?.resize());
 
     useEffect(() => {
         chartInstance?.resize();

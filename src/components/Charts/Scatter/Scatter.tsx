@@ -80,7 +80,7 @@ const Scatter = (props: ScatterProps) => {
         },
     };
 
-    setTimeout(() => chartInstance?.resize(), 100);
+    setTimeout(() => chartInstance?.resize());
 
     useEffect(() => {
         chartInstance?.resize();

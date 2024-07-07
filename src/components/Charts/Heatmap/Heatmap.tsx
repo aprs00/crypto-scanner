@@ -70,7 +70,7 @@ const Heatmap = (props: any) => {
         },
     };
 
-    setTimeout(() => chartInstance?.resize(), 100);
+    setTimeout(() => chartInstance?.resize());
 
     useEffect(() => {
         chartInstance?.resize();
