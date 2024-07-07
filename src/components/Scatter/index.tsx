@@ -1,10 +1,14 @@
 import ReactEcharts from 'echarts-for-react';
 import {capitalize} from 'lodash-es';
+import {useEffect, useRef} from 'react';
 
 import {ScatterPropsType} from './types';
 
 const Scatter = (props: ScatterPropsType) => {
     const {data, xAxis, yAxis} = props;
+
+    const chartRef = useRef<ReactEcharts | null>(null);
+    const chartInstance = chartRef.current?.getEchartsInstance();
 
     const option = {
         dataZoom: {
@@ -76,7 +80,11 @@ const Scatter = (props: ScatterPropsType) => {
         },
     };
 
-    return <ReactEcharts option={option} style={{height: '93%', width: '100%'}} />;
+    useEffect(() => {
+        chartInstance?.resize();
+    }, [data]);
+
+    return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '93%', width: '100%'}} />;
 };
 
 export default Scatter;

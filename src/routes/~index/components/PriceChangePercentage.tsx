@@ -1,5 +1,5 @@
 import ReactEcharts from 'echarts-for-react';
-import {useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 import ChartContainer from '@/components/ChartContainer';
 import CustomSelect from '@/components/Select';
@@ -12,6 +12,8 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
 
     const [selectedTicker, setSelectedTicker] = useState(symbol);
     const [selectedTf, setSelectedTf] = useState(tf);
+    const chartRef = useRef<ReactEcharts | null>(null);
+    const chartInstance = chartRef.current?.getEchartsInstance();
 
     const priceChangePercentageApi = usePriceChangePercentage(selectedTicker, selectedTf, type);
 
@@ -53,9 +55,19 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
         },
     };
 
+    useEffect(() => {
+        chartInstance?.resize();
+    }, [priceChangePercentageApi.data]);
+
     return (
         <ChartContainer
-            body={<ReactEcharts option={option} style={{height: '92%', width: '100%'}}></ReactEcharts>}
+            body={
+                <ReactEcharts
+                    option={option}
+                    ref={(e) => (chartRef.current = e)}
+                    style={{height: '92%', width: '100%'}}
+                />
+            }
             header={
                 <>
                     <h3 className="text-gray-300">{title}</h3>

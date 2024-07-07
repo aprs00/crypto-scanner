@@ -1,10 +1,13 @@
 import ReactEcharts from 'echarts-for-react';
-import {memo} from 'react';
+import {memo, useEffect, useRef} from 'react';
 
 import {useMediaQuery} from '@/hooks/useMediaQuery';
 
 const Heatmap = (props: any) => {
     const {data} = props;
+
+    const chartRef = useRef<ReactEcharts | null>(null);
+    const chartInstance = chartRef.current?.getEchartsInstance();
 
     const matches = useMediaQuery('(min-width: 48em)');
 
@@ -66,7 +69,12 @@ const Heatmap = (props: any) => {
             type: 'category',
         },
     };
-    return <ReactEcharts option={option} style={{height: '94%', width: '100%'}}></ReactEcharts>;
+
+    useEffect(() => {
+        chartInstance?.resize();
+    }, [data]);
+
+    return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '94%', width: '100%'}} />;
 };
 
 export default memo(Heatmap);
