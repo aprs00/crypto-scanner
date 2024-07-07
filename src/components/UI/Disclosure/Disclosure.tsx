@@ -1,5 +1,4 @@
 import {Disclosure, Transition} from '@headlessui/react';
-import {memo} from 'react';
 
 import type {CustomDisclosurePropsType} from './types';
 
@@ -23,4 +22,4 @@ function CustomDisclosure(props: CustomDisclosurePropsType) {
     );
 }
 
-export default memo(CustomDisclosure);
+export {Disclosure};

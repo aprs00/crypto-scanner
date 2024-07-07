@@ -1,9 +1,8 @@
 import {Switch} from '@headlessui/react';
-import {memo} from 'react';
 
 import type {MyTogglePropsType} from './types';
 
-function MyToggle(props: MyTogglePropsType) {
+const Toggle = (props: MyTogglePropsType) => {
     const {enabled, label, setEnabled} = props;
 
     return (
@@ -25,6 +24,6 @@ function MyToggle(props: MyTogglePropsType) {
             <p className="text-slate-200">{label}</p>
         </div>
     );
-}
+};
 
-export default memo(MyToggle);
+export {Toggle};

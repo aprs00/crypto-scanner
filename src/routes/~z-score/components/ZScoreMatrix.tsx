@@ -1,8 +1,7 @@
 import {memo, useState} from 'react';
 
-import ChartContainer from '@/components/ChartContainer';
-import Scatter from '@/components/Scatter';
-import CustomSelect from '@/components/Select';
+import {ChartContainer, Scatter} from '@/components/Charts';
+import {CustomSelect} from '@/components/UI/Select';
 
 import {useZScoreMatrixLarge} from '../api';
 import {ScatterProps} from '../types';

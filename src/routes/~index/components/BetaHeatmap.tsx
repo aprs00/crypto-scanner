@@ -1,8 +1,7 @@
 import {memo, useState} from 'react';
 
-import ChartContainer from '@/components/ChartContainer';
-import Heatmap from '@/components/Heatmap';
-import CustomSelect from '@/components/Select';
+import {ChartContainer, Heatmap} from '@/components/Charts';
+import {CustomSelect} from '@/components/UI';
 
 import {useBetaHeatmapData} from '../api';
 import type {BetaHeatmapProps} from '../types';

@@ -1,5 +1,4 @@
 import {Link} from '@tanstack/react-router';
-import {memo} from 'react';
 
 import {headerLinks} from '@/config/links';
 
@@ -17,4 +16,4 @@ const Navigation = () => {
     );
 };
 
-export default memo(Navigation);
+export {Navigation};

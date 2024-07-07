@@ -1,5 +1,4 @@
 import {Listbox, Transition} from '@headlessui/react';
-import {memo} from 'react';
 
 import SelectIcon from './SelectIcon';
 import type {SelectPropsType} from './types';
@@ -72,4 +71,4 @@ const CustomSelect = (props: SelectPropsType) => {
     );
 };
 
-export default memo(CustomSelect);
+export {CustomSelect};

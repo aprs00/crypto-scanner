@@ -1,29 +1,10 @@
 import {Listbox, Transition} from '@headlessui/react';
-import {memo, useState} from 'react';
 
 import type {MultiSelectPropsType} from './types';
 import XIcon from './XIcon';
 
 const MultiSelect = (props: MultiSelectPropsType) => {
     const {label, onChange = () => {}, options, values = []} = props;
-
-    console.log(options);
-
-    // const [parsedOptions, setParsedOptions] = useState<OptionsObjectType[]>();
-
-    // ["avg", "sum", "std_p", "std_s", "var_p", "var_s", "twa"]
-    // ["30s", "1m", "5m", "15m"]
-
-    // v_var_p_5m
-
-    // if (Array.isArray(options)) {
-    //     const parsedOptions = options.map((option) => ({
-    //         label: option,
-    //         value: option,
-    //     }));
-
-    //     setParsedOptions(parsedOptions as OptionsObjectType[]);
-    // } else setParsedOptions(options);
 
     return (
         <Listbox value={values} multiple onChange={onChange}>
@@ -122,4 +103,4 @@ const MultiSelect = (props: MultiSelectPropsType) => {
     );
 };
 
-export default memo(MultiSelect);
+export {MultiSelect};

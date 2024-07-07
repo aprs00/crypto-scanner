@@ -1,8 +1,8 @@
 import ReactEcharts from 'echarts-for-react';
 import {useEffect, useRef, useState} from 'react';
 
-import ChartContainer from '@/components/ChartContainer';
-import CustomSelect from '@/components/Select';
+import {ChartContainer} from '@/components/Charts';
+import {CustomSelect} from '@/components/UI';
 
 import {usePriceChangePercentage} from '../api';
 import type {PriceChangePerDayOfWeekProps} from '../types';

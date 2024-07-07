@@ -1,5 +1,3 @@
-import {memo} from 'react';
-
 import DownIcon from './DownIcon';
 import type {NumberInputPropsType} from './types';
 import UpIcon from './UpIcon';
@@ -44,4 +42,4 @@ const NumberInput = (props: NumberInputPropsType) => {
     );
 };
 
-export default memo(NumberInput);
+export {NumberInput};

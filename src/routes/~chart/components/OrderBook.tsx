@@ -1,9 +1,7 @@
 import {useCallback, useMemo, useState} from 'react';
 
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
-import NumberInput from '@/components/NumberInput';
-import CustomSelect from '@/components/Select';
-import Spinner from '@/components/Spinner';
+import {CustomSelect, NumberInput, Spinner} from '@/components/UI';
 
 import {useStreamTicker} from '../api';
 import type {OrderBookTablePropsType} from '../types';

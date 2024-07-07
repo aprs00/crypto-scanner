@@ -89,4 +89,4 @@ const Scatter = (props: ScatterProps) => {
     return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '93%', width: '100%'}} />;
 };
 
-export default Scatter;
+export {Scatter};
