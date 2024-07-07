@@ -114,7 +114,6 @@ function Stats() {
             cols={{lg: 12, md: 12, sm: 6, xs: 6, xxs: 6}}
             draggableHandle="#drag-handle"
             rowHeight={gridLayoutRowHeight}
-            onResize={() => console.log('ON RESIZE')}
         >
             {gridLayouts.map((grid) => (
                 <div className="bg-slate-900 overflow-hidden rounded" data-grid={grid.gridLayout} key={grid.key}>
