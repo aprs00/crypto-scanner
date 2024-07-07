@@ -5,9 +5,9 @@ import ChartContainer from '@/components/ChartContainer';
 import CustomSelect from '@/components/Select';
 
 import {usePriceChangePercentage} from '../api';
-import type {PriceChangePerDayOfWeekPropsType} from '../types';
+import type {PriceChangePerDayOfWeekProps} from '../types';
 
-const PriceChangePercentage = (props: PriceChangePerDayOfWeekPropsType) => {
+const PriceChangePercentage = (props: PriceChangePerDayOfWeekProps) => {
     const {symbol, tf, tickerOptions, timeFrameOptions, type} = props;
 
     const [selectedTicker, setSelectedTicker] = useState(symbol);

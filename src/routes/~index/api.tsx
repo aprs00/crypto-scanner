@@ -4,12 +4,12 @@ import {API_URL} from '@/config/env';
 import {api} from '@/lib/ky';
 
 import type {
-    AveragePriceChangeResponseType,
-    BetaHeatmapResponseType,
-    SelectOptionsResponseType,
-    SelectOptionType,
-    ZScoreHistoryResponseType,
-    ZScoreMatrixResponseType,
+    AveragePriceChangeResponse,
+    BetaHeatmapResponse,
+    SelectOption,
+    SelectOptionsResponse,
+    ZScoreHistoryResponse,
+    ZScoreMatrixResponse,
 } from './types';
 
 const fetchPriceChangePercentage = async (symbol: string, duration: string, type: string) => {
@@ -18,7 +18,7 @@ const fetchPriceChangePercentage = async (symbol: string, duration: string, type
     url.searchParams.set('symbol', symbol);
     url.searchParams.set('type', type);
 
-    return (await api.get(url).json()) as AveragePriceChangeResponseType;
+    return (await api.get(url).json()) as AveragePriceChangeResponse;
 };
 
 const usePriceChangePercentage = (symbol: string, duration: string, type: string) => {
@@ -35,7 +35,7 @@ const usePriceChangePercentage = (symbol: string, duration: string, type: string
 const fetchTickersOptions = async () => {
     const url = new URL('tickers-options', API_URL);
 
-    return (await api.get(url).json()) as SelectOptionType[];
+    return (await api.get(url).json()) as SelectOption[];
 };
 
 const useFetchTickersOptions = () => {
@@ -53,7 +53,7 @@ const fetchBetaHeatmapData = async (duration: string) => {
     const url = new URL('pearson-correlation', API_URL);
     url.searchParams.set('duration', duration);
 
-    return (await api.get(url).json()) as BetaHeatmapResponseType;
+    return (await api.get(url).json()) as BetaHeatmapResponse;
 };
 
 const useBetaHeatmapData = (duration: string) => {
@@ -73,7 +73,7 @@ const fetchZScoreMatrix = async (xAxis: string, yAxis: string, duration: string)
     url.searchParams.set('x_axis', xAxis);
     url.searchParams.set('y_axis', yAxis);
 
-    return (await api.get(url).json()) as ZScoreMatrixResponseType[];
+    return (await api.get(url).json()) as ZScoreMatrixResponse[];
 };
 
 const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
@@ -92,7 +92,7 @@ const fetchZScoreHistory = async (type: string, duration: string) => {
     url.searchParams.set('duration', duration);
     url.searchParams.set('type', type);
 
-    return (await api.get(url).json()) as ZScoreHistoryResponseType;
+    return (await api.get(url).json()) as ZScoreHistoryResponse;
 };
 
 const useZScoreHistory = (type: string, duration: string) => {
@@ -109,7 +109,7 @@ const useZScoreHistory = (type: string, duration: string) => {
 const fetchStatsSelectOptions = async () => {
     const url = new URL(`stats-select-options`, API_URL);
 
-    return (await api.get(url).json()) as SelectOptionsResponseType;
+    return (await api.get(url).json()) as SelectOptionsResponse;
 };
 
 const useStatsSelectOptions = () => {

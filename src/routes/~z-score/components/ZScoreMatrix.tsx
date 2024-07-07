@@ -5,9 +5,9 @@ import Scatter from '@/components/Scatter';
 import CustomSelect from '@/components/Select';
 
 import {useZScoreMatrixLarge} from '../api';
-import {ScatterPropsType} from '../types';
+import {ScatterProps} from '../types';
 
-const ZScoreMatrix = (props: ScatterPropsType) => {
+const ZScoreMatrix = (props: ScatterProps) => {
     const {tf, timeFrameOptions, xAxis, yAxis} = props;
 
     const [selectedTf, setSelectedTf] = useState(tf);

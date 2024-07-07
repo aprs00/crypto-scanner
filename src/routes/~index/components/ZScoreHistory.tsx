@@ -4,9 +4,9 @@ import {capitalize} from 'lodash-es';
 import ChartContainer from '@/components/ChartContainer';
 
 import {useZScoreHistory} from '../api';
-import type {ZScoreHistoryPropsType} from '../types';
+import type {ZScoreHistoryProps} from '../types';
 
-const ZScoreHistory = (props: ZScoreHistoryPropsType) => {
+const ZScoreHistory = (props: ZScoreHistoryProps) => {
     const {tf, type} = props;
 
     const zScoreHistory = useZScoreHistory(type, tf);

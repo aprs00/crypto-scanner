@@ -5,9 +5,9 @@ import Heatmap from '@/components/Heatmap';
 import CustomSelect from '@/components/Select';
 
 import {useBetaHeatmapData} from '../api';
-import type {BetaHeatmapPropsType} from '../types';
+import type {BetaHeatmapProps} from '../types';
 
-const BetaHeatmap = (props: BetaHeatmapPropsType) => {
+const BetaHeatmap = (props: BetaHeatmapProps) => {
     const {tf, timeFrameOptions} = props;
 
     const [selectedTf, setSelectedTf] = useState(tf);

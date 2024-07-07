@@ -3,7 +3,7 @@ import {useQuery} from '@tanstack/react-query';
 import {API_URL} from '@/config/env';
 import {api} from '@/lib/ky';
 
-import type {ZScoreMatrixResponseType} from './types';
+import type {ZScoreMatrixResponse} from './types';
 
 const fetchZScoreMatrixLarge = async (xAxis: string, yAxis: string, tf: string) => {
     const url = new URL('z-score-matrix-large', API_URL);
@@ -11,7 +11,7 @@ const fetchZScoreMatrixLarge = async (xAxis: string, yAxis: string, tf: string) 
     url.searchParams.set('x_axis', xAxis);
     url.searchParams.set('y_axis', yAxis);
 
-    return (await api.get(url).json()) as ZScoreMatrixResponseType[];
+    return (await api.get(url).json()) as ZScoreMatrixResponse[];
 };
 
 const useZScoreMatrixLarge = (xAxis: string, yAxis: string, tf: string) => {

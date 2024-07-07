@@ -1,7 +1,7 @@
-import type {ZScoreMatrixResponseType} from '@/routes/~index/types';
+import type {ZScoreMatrixResponse} from '@/routes/~index/types';
 
-export type ScatterPropsType = {
-    data: ZScoreMatrixResponseType[];
+export type ScatterProps = {
+    data: ZScoreMatrixResponse[];
     xAxis: string;
     yAxis: string;
 };

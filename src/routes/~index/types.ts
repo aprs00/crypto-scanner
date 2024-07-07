@@ -1,15 +1,15 @@
-export type SelectOptionType = {
+export type SelectOption = {
     value: string;
     label: string;
 };
 
-export type BetaHeatmapResponseType = {
+export type BetaHeatmapResponse = {
     data: [[number, number, number]][];
     xAxis: string[];
     yAxis: string[];
 };
 
-export type AveragePriceChangeResponseType = {
+export type AveragePriceChangeResponse = {
     data: {
         value: number;
         itemStyle: {
@@ -19,13 +19,13 @@ export type AveragePriceChangeResponseType = {
     xAxis: string[];
 };
 
-export type SelectOptionsResponseType = {
-    all: SelectOptionType[];
-    ltf: SelectOptionType[];
-    htf: SelectOptionType[];
+export type SelectOptionsResponse = {
+    all: SelectOption[];
+    ltf: SelectOption[];
+    htf: SelectOption[];
 };
 
-export type ZScoreHistoryResponseType = {
+export type ZScoreHistoryResponse = {
     legend: string[];
     data: {
         name: string;
@@ -35,7 +35,7 @@ export type ZScoreHistoryResponseType = {
     xAxis: string[];
 };
 
-export type ZScoreMatrixResponseType = {
+export type ZScoreMatrixResponse = {
     type: string;
     name: string;
     data: number[][];
@@ -43,35 +43,28 @@ export type ZScoreMatrixResponseType = {
     symbolSize: number;
 };
 
-export type BetaHeatmapPropsType = {
+export type BetaHeatmapProps = {
     tf: string;
-    timeFrameOptions: SelectOptionType[];
+    timeFrameOptions: SelectOption[];
 };
 
-export type PearsonHeatmapProps = {
-    tf: string;
-    type: string;
-    timeFrameOptions: SelectOptionType[];
-    typeOptions: SelectOptionType[];
-};
-
-export type PriceChangePerDayOfWeekPropsType = {
+export type PriceChangePerDayOfWeekProps = {
     tf: string;
     symbol: string;
-    timeFrameOptions: SelectOptionType[];
-    tickerOptions: SelectOptionType[];
+    timeFrameOptions: SelectOption[];
+    tickerOptions: SelectOption[];
     type: string;
 };
 
-export type ScatterPropsType = {
-    timeFrameOptions: SelectOptionType[];
+export type ScatterProps = {
+    timeFrameOptions: SelectOption[];
     xAxis: string;
     yAxis: string;
     tf: string;
 };
 
-export type ZScoreHistoryPropsType = {
-    timeFrameOptions: SelectOptionType[];
+export type ZScoreHistoryProps = {
+    timeFrameOptions: SelectOption[];
     tf: string;
     type: string;
 };

@@ -2,9 +2,9 @@ import ReactEcharts from 'echarts-for-react';
 import {capitalize} from 'lodash-es';
 import {useEffect, useRef} from 'react';
 
-import {ScatterPropsType} from './types';
+import {ScatterProps} from './types';
 
-const Scatter = (props: ScatterPropsType) => {
+const Scatter = (props: ScatterProps) => {
     const {data, xAxis, yAxis} = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);

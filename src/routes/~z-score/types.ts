@@ -1,6 +1,6 @@
-import {SelectOptionType} from '@/routes/~index/types';
+import {SelectOption} from '@/routes/~index/types';
 
-export type ZScoreMatrixResponseType = {
+export type ZScoreMatrixResponse = {
     type: string;
     name: string;
     data: [number, number][];
@@ -8,8 +8,8 @@ export type ZScoreMatrixResponseType = {
     symbolSize: number;
 };
 
-export type ScatterPropsType = {
-    timeFrameOptions: SelectOptionType[];
+export type ScatterProps = {
+    timeFrameOptions: SelectOption[];
     xAxis: string;
     yAxis: string;
     tf: string;
