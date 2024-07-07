@@ -15,7 +15,7 @@ const Heatmap = (props: any) => {
         dataZoom: {
             type: 'inside',
         },
-        grid: {bottom: 30, left: 50, right: 82, top: 20},
+        grid: {bottom: 110, left: 50, right: 15, top: 20},
         series: [
             {
                 data: data.data?.data,
@@ -39,14 +39,15 @@ const Heatmap = (props: any) => {
             position: 'top',
         },
         visualMap: {
-            bottom: '25%',
+            align: 'top',
+            bottom: 32,
             calculable: true,
             inRange: {
                 color: ['#67001f', '#a50f15', '#d6604d', '#f4a582', '#ffffff', '#92c5de', '#4393c3', '#2166ac'],
             },
             max: 1,
             min: -1,
-            orient: 'vertical',
+            orient: 'horizontal',
             precision: 2,
             right: '3',
             splitNumber: 10,
@@ -76,7 +77,7 @@ const Heatmap = (props: any) => {
         chartInstance?.resize();
     }, [data]);
 
-    return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '94%', width: '100%'}} />;
+    return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '100%', width: '100%'}} />;
 };
 
 export {Heatmap};

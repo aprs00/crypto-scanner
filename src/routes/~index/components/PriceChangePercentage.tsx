@@ -67,7 +67,7 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekProps) => {
                 <ReactEcharts
                     option={option}
                     ref={(e) => (chartRef.current = e)}
-                    style={{height: '92%', width: '100%'}}
+                    style={{height: '100%', width: '100%'}}
                 />
             }
             header={

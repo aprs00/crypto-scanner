@@ -16,7 +16,7 @@ const Scatter = (props: ScatterProps) => {
         },
         graphic: [
             {
-                left: '10',
+                left: 10,
                 rotation: Math.PI / 2,
                 style: {
                     fill: '#cbd5e1',
@@ -27,9 +27,10 @@ const Scatter = (props: ScatterProps) => {
                 type: 'text',
             },
             {
-                bottom: '1',
+                bottom: 42,
                 left: '50%',
                 style: {
+                    bottom: 100,
                     fill: '#cbd5e1',
                     fontSize: 18,
                     text: capitalize(xAxis),
@@ -38,16 +39,16 @@ const Scatter = (props: ScatterProps) => {
             },
         ],
         grid: {
-            bottom: '50',
-            left: '70',
-            right: '20',
-            top: '60',
+            bottom: 95,
+            left: 65,
+            right: 20,
+            top: 60,
         },
         legend: {
             textStyle: {
                 color: '#d1d5db',
             },
-            top: '10',
+            top: 10,
             type: 'scroll',
         },
         series: data,
@@ -86,7 +87,7 @@ const Scatter = (props: ScatterProps) => {
         chartInstance?.resize();
     }, [data]);
 
-    return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '93%', width: '100%'}} />;
+    return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '100%', width: '100%'}} />;
 };
 
 export {Scatter};
