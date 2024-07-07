@@ -4,7 +4,7 @@ import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import {useFetchTickersOptions, useStatsSelectOptions} from './api';
 import BetaHeatmap from './components/BetaHeatmap';
-import PriceChangePerDayOfWeek from './components/PriceChangePercentage';
+import PriceChangePercentage from './components/PriceChangePercentage';
 import ZScoreHistory from './components/ZScoreHistory';
 import Scatter from './components/ZScoreMatrix';
 
@@ -68,7 +68,7 @@ function Stats() {
             },
             {
                 component: (
-                    <PriceChangePerDayOfWeek
+                    <PriceChangePercentage
                         symbol="BTCUSDT"
                         tf="1m"
                         tickerOptions={tickerOptions.data || []}
@@ -81,7 +81,7 @@ function Stats() {
             },
             {
                 component: (
-                    <PriceChangePerDayOfWeek
+                    <PriceChangePercentage
                         symbol="ETHUSDT"
                         tf="1m"
                         tickerOptions={tickerOptions.data || []}
@@ -94,7 +94,7 @@ function Stats() {
             },
             {
                 component: (
-                    <PriceChangePerDayOfWeek
+                    <PriceChangePercentage
                         symbol="BTCUSDT"
                         tf="1m"
                         tickerOptions={tickerOptions.data || []}
