@@ -1,5 +1,5 @@
 import ReactEcharts from 'echarts-for-react';
-import {memo, useEffect, useRef} from 'react';
+import {useEffect, useRef} from 'react';
 
 import {useMediaQuery} from '@/hooks/useMediaQuery';
 

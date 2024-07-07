@@ -22,4 +22,4 @@ function CustomDisclosure(props: CustomDisclosurePropsType) {
     );
 }
 
-export {Disclosure};
+export {CustomDisclosure};
