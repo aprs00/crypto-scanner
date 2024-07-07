@@ -5,9 +5,9 @@ import {ChartContainer} from '@/components/Charts';
 import {CustomSelect} from '@/components/UI';
 
 import {usePriceChangePercentage} from '../api';
-import type {PriceChangePerDayOfWeekProps} from '../types';
+import type {PriceChangePercentageProps} from '../types';
 
-const PriceChangePercentage = (props: PriceChangePerDayOfWeekProps) => {
+const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const {symbol, tf, tickerOptions, timeFrameOptions, type} = props;
 
     const [selectedTicker, setSelectedTicker] = useState(symbol);
@@ -17,9 +17,10 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekProps) => {
 
     const priceChangePercentageApi = usePriceChangePercentage(selectedTicker, selectedTf, type);
 
-    let title;
-    if (type === 'day') title = 'Average price change per day of week';
-    else if (type === 'hour') title = 'Average price change per hour of day (UTC)';
+    const titleMapper = {
+        day: 'Average price change per day of week',
+        hour: 'Average price change per hour of day (UTC)',
+    };
 
     const option = {
         grid: {bottom: 60, left: 45, right: 20, top: 20},
@@ -72,7 +73,7 @@ const PriceChangePercentage = (props: PriceChangePerDayOfWeekProps) => {
             }
             header={
                 <>
-                    <h3 className="text-gray-300">{title}</h3>
+                    <h3 className="text-gray-300">{titleMapper[type]}</h3>
                     <div className="z-50 flex gap-2">
                         <CustomSelect
                             classes="w-32"

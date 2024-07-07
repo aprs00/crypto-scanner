@@ -48,12 +48,14 @@ export type BetaHeatmapProps = {
     timeFrameOptions: SelectOption[];
 };
 
-export type PriceChangePerDayOfWeekProps = {
+export type PriceChangeTypes = 'day' | 'hour';
+
+export type PriceChangePercentageProps = {
     tf: string;
     symbol: string;
     timeFrameOptions: SelectOption[];
     tickerOptions: SelectOption[];
-    type: string;
+    type: PriceChangeTypes;
 };
 
 export type ScatterProps = {
