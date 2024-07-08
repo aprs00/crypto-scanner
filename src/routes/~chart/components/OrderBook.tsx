@@ -80,6 +80,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                     <Spinner />
                 </div>
             )}
+
             <div className="border-4 border-slate-800 rounded h-full z-50">
                 <div className="flex items-center bg-slate-800 pb-1 justify-between">
                     <DraggableIcon id="drag-handle" />

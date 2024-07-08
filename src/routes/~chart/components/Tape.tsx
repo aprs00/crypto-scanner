@@ -25,6 +25,7 @@ const Tape = () => {
 
     useEffect(() => {
         if (!streamAggTrade.data?.p || (Number(streamAggTrade.data?.q) || 0) <= 0.05) return;
+
         const newTape = {
             aggregateTradeId: streamAggTrade.data?.a,
             market: streamAggTrade.data?.m,
@@ -32,15 +33,16 @@ const Tape = () => {
             size: streamAggTrade.data?.q.toString().replace(/\.?0+$/, ''),
             time: streamAggTrade.data?.T as number,
         };
+
         setTapeData((prev) => [newTape, ...prev.slice(0, 100)]);
     }, [streamAggTrade.data?.T]);
 
     return (
         <div className="border-4 border-slate-800 rounded h-full">
             <div className="flex items-center justify-between px-1 pb-1 bg-slate-800" id="drag-handle">
-                <div className="">PRICE</div>
-                <div className="">SIZE</div>
-                <div className="">Time</div>
+                <div>PRICE</div>
+                <div>SIZE</div>
+                <div>Time</div>
             </div>
             <div className="h-full overflow-none">{tapeTable}</div>
         </div>
