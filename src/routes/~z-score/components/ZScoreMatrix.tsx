@@ -14,19 +14,17 @@ const ZScoreMatrix = (props: ScatterProps) => {
     const zScoreMatrix = useZScoreMatrixLarge(xAxis, yAxis, selectedTf);
 
     return (
-        <>
-            <ChartContainer
-                body={<Scatter data={zScoreMatrix.data || []} xAxis={xAxis} yAxis={yAxis} />}
-                header={
-                    <>
-                        <h3 className="text-gray-300">Z Score</h3>
-                        <div className="z-50 flex gap-2">
-                            <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
-                        </div>
-                    </>
-                }
-            />
-        </>
+        <ChartContainer
+            body={<Scatter data={zScoreMatrix.data || []} xAxis={xAxis} yAxis={yAxis} />}
+            header={
+                <>
+                    <h3 className="text-gray-300">Z Score</h3>
+                    <div className="z-50 flex gap-2">
+                        <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
+                    </div>
+                </>
+            }
+        />
     );
 };
 

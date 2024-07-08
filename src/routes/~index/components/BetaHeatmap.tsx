@@ -14,19 +14,17 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
     const betaHeatmap = useBetaHeatmapData(selectedTf);
 
     return (
-        <>
-            <ChartContainer
-                body={<Heatmap data={betaHeatmap} />}
-                header={
-                    <>
-                        <h3 className="text-gray-300">Pearson correlation</h3>
-                        <div className="z-50">
-                            <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
-                        </div>
-                    </>
-                }
-            />
-        </>
+        <ChartContainer
+            body={<Heatmap data={betaHeatmap} />}
+            header={
+                <>
+                    <h3 className="text-gray-300">Pearson correlation</h3>
+                    <div className="z-50">
+                        <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
+                    </div>
+                </>
+            }
+        />
     );
 };
 
