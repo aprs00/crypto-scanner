@@ -1,7 +1,6 @@
 import {memo, useState} from 'react';
 
 import {ChartContainer, Heatmap} from '@/components/Charts';
-import {CustomSelect} from '@/components/UI';
 
 import {useBetaHeatmapData} from '../api';
 import type {BetaHeatmapProps} from '../types';
@@ -13,19 +12,17 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
 
     const betaHeatmap = useBetaHeatmapData(selectedTf);
 
-    return (
-        <ChartContainer
-            body={<Heatmap data={betaHeatmap} />}
-            header={
-                <>
-                    <h3 className="text-gray-300">Pearson correlation</h3>
-                    <div className="z-50">
-                        <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
-                    </div>
-                </>
-            }
-        />
-    );
+    const selects = [
+        {
+            componentName: 'select',
+            id: '1',
+            onChange: setSelectedTf,
+            options: timeFrameOptions,
+            value: selectedTf,
+        },
+    ];
+
+    return <ChartContainer body={<Heatmap data={betaHeatmap} />} selects={selects} title="Pearson correlation" />;
 };
 
 export default memo(BetaHeatmap);

@@ -64,11 +64,7 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
     return (
         <ChartContainer
             body={<ReactEcharts option={option} style={{height: '92%', width: '100%'}}></ReactEcharts>}
-            header={
-                <h3 className="text-gray-300">
-                    Z Score - {capitalize(type)} - {tf} (UTC)
-                </h3>
-            }
+            title={`Z Score - ${capitalize(type)} - ${tf} (UTC)`}
         />
     );
 };

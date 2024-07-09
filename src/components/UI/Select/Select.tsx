@@ -1,9 +1,9 @@
 import {Listbox, Transition} from '@headlessui/react';
 
 import SelectIcon from './SelectIcon';
-import type {SelectPropsType} from './types';
+import type {SelectProps} from './types';
 
-const CustomSelect = (props: SelectPropsType) => {
+const CustomSelect = (props: SelectProps) => {
     const {classes = 'w-20', onChange, options, value} = props;
 
     return (

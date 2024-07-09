@@ -2,7 +2,6 @@ import ReactEcharts from 'echarts-for-react';
 import {useEffect, useRef, useState} from 'react';
 
 import {ChartContainer} from '@/components/Charts';
-import {CustomSelect} from '@/components/UI';
 
 import {usePriceChangePercentage} from '../api';
 import type {PriceChangePercentageProps} from '../types';
@@ -21,6 +20,24 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         day: 'Average price change per day of week',
         hour: 'Average price change per hour of day (UTC)',
     };
+
+    const selects = [
+        {
+            class: 'w-28',
+            componentName: 'select',
+            id: '1',
+            onChange: setSelectedTicker,
+            options: tickerOptions,
+            value: selectedTicker,
+        },
+        {
+            componentName: 'select',
+            id: '2',
+            onChange: setSelectedTf,
+            options: timeFrameOptions,
+            value: selectedTf,
+        },
+    ];
 
     const option = {
         grid: {bottom: 60, left: 45, right: 20, top: 20},
@@ -71,20 +88,8 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
                     style={{height: '100%', width: '100%'}}
                 />
             }
-            header={
-                <>
-                    <h3 className="text-gray-300">{titleMapper[type]}</h3>
-                    <div className="z-50 flex gap-2">
-                        <CustomSelect
-                            classes="w-32"
-                            options={tickerOptions}
-                            value={selectedTicker}
-                            onChange={setSelectedTicker}
-                        />
-                        <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
-                    </div>
-                </>
-            }
+            selects={selects}
+            title={titleMapper[type]}
         />
     );
 };

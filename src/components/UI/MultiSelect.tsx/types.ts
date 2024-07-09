@@ -1,6 +1,6 @@
 import {Dispatch, SetStateAction} from 'react';
 
-export type MultiSelectPropsType = {
+export type MultiSelectProps = {
     options: OptionsObjectType[];
     values: string[];
     onChange: Dispatch<SetStateAction<string[]>>;

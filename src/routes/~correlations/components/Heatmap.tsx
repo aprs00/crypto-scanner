@@ -1,7 +1,6 @@
 import {memo, useState} from 'react';
 
 import {ChartContainer, Heatmap} from '@/components/Charts';
-import {CustomSelect} from '@/components/UI';
 
 import {useCorrelations} from '../api';
 import {PearsonHeatmapProps} from '../types';
@@ -14,25 +13,25 @@ const PearsonHeatmap = (props: PearsonHeatmapProps) => {
 
     const pearsonCorrelation = useCorrelations(selectedTf, selectedType);
 
-    return (
-        <ChartContainer
-            body={<Heatmap data={pearsonCorrelation} />}
-            header={
-                <>
-                    <h3 className="text-gray-300">Pearson / Spearman</h3>
-                    <div className="z-50 flex gap-2">
-                        <CustomSelect options={timeFrameOptions} value={selectedTf} onChange={setSelectedTf} />
-                        <CustomSelect
-                            classes="w-24"
-                            options={typeOptions}
-                            value={selectedType}
-                            onChange={setSelectedType}
-                        />
-                    </div>
-                </>
-            }
-        />
-    );
+    const selects = [
+        {
+            componentName: 'select',
+            id: '1',
+            onChange: setSelectedTf,
+            options: timeFrameOptions,
+            value: selectedTf,
+        },
+        {
+            class: 'w-24',
+            componentName: 'select',
+            id: '2',
+            onChange: setSelectedType,
+            options: typeOptions,
+            value: selectedType,
+        },
+    ];
+
+    return <ChartContainer body={<Heatmap data={pearsonCorrelation} />} selects={selects} title="Pearson / Spearman" />;
 };
 
 export default memo(PearsonHeatmap);
