@@ -1,7 +1,6 @@
+import {useMediaQuery} from '@mantine/hooks';
 import ReactEcharts from 'echarts-for-react';
 import {useEffect, useRef} from 'react';
-
-import {useMediaQuery} from '@/hooks/useMediaQuery';
 
 const Heatmap = (props: any) => {
     const {data} = props;
