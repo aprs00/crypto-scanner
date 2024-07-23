@@ -15,14 +15,14 @@ const ZScore = () => {
     const gridLayouts = [
         {
             component: <ZScoreHeatmap type="price" typeOptions={typeOptions.data || []} />,
-            gridLayout: {h: 24, w: 12, x: 0, y: 0},
+            gridLayout: {h: 26, w: 12, x: 0, y: 0},
             key: 'zScoreHeatmap',
         },
         {
             component: (
                 <ZScoreMatrix tf="5m" timeFrameOptions={timeFrameOptions.data || []} xAxis="price" yAxis="volume" />
             ),
-            gridLayout: {h: 24, w: 12, x: 24, y: 0},
+            gridLayout: {h: 24, w: 12, x: 26, y: 0},
             key: 'zScoreMatrix',
         },
     ];
