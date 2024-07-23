@@ -14,3 +14,8 @@ export type ScatterProps = {
     yAxis: string;
     tf: string;
 };
+
+export type ZScoreHeatmapProps = {
+    type: string;
+    typeOptions: SelectOption[];
+};
