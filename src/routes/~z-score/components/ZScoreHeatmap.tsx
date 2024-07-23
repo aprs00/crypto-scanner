@@ -23,7 +23,13 @@ const PearsonHeatmap = (props: ZScoreHeatmapProps) => {
         },
     ];
 
-    return <ChartContainer body={<Heatmap data={heatmap} />} selects={selects} title="Z Score Heatmap 1h" />;
+    return (
+        <ChartContainer
+            body={<Heatmap data={heatmap} tooltipType="duration" />}
+            selects={selects}
+            title="Z Score Heatmap"
+        />
+    );
 };
 
 export default memo(PearsonHeatmap);

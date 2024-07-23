@@ -3,7 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 import {useEffect, useRef} from 'react';
 
 const Heatmap = (props: any) => {
-    const {data} = props;
+    const {data, tooltipType} = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
     const chartInstance = chartRef.current?.getEchartsInstance();
@@ -32,6 +32,11 @@ const Heatmap = (props: any) => {
         ],
         tooltip: {
             formatter: function (params: any) {
+                if (tooltipType === 'duration') {
+                    const xLabel = data.data?.yAxis[params.data?.[1]];
+                    return `${params.marker} ${xLabel}: <strong>${params.value[2]}</strong><br><span class="ml-4">${params.name}h</span>`;
+                }
+
                 const yLabel = data.data?.xAxis[params.data?.[1]];
                 return `${params.marker}${yLabel} - ${params.name}: <strong>${params.value[2]}</strong>`;
             },
