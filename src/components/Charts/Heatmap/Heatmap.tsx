@@ -75,11 +75,11 @@ const Heatmap = (props: any) => {
         },
     };
 
-    setTimeout(() => chartInstance?.resize());
-
-    useEffect(() => {
-        chartInstance?.resize();
-    }, [data]);
+    // setTimeout(() => chartInstance?.resize());
+    //
+    // useEffect(() => {
+    //     chartInstance?.resize();
+    // }, [data]);
 
     return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '100%', width: '100%'}} />;
 };

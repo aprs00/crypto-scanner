@@ -73,11 +73,11 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         },
     };
 
-    setTimeout(() => chartInstance?.resize());
-
-    useEffect(() => {
-        chartInstance?.resize();
-    }, [priceChangePercentageApi.data]);
+    // setTimeout(() => chartInstance?.resize());
+    //
+    // useEffect(() => {
+    //     chartInstance?.resize();
+    // }, [priceChangePercentageApi.data]);
 
     return (
         <ChartContainer
