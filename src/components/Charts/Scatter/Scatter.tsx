@@ -1,6 +1,6 @@
 import ReactEcharts from 'echarts-for-react';
 import {capitalize} from 'lodash-es';
-import {useEffect, useRef} from 'react';
+import {useRef} from 'react';
 
 import {ScatterProps} from './types';
 
@@ -8,7 +8,7 @@ const Scatter = (props: ScatterProps) => {
     const {data, xAxis, yAxis} = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
-    const chartInstance = chartRef.current?.getEchartsInstance();
+    // const chartInstance = chartRef.current?.getEchartsInstance();
 
     const option = {
         dataZoom: {

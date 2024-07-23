@@ -1,5 +1,5 @@
 import ReactEcharts from 'echarts-for-react';
-import {useEffect, useRef, useState} from 'react';
+import {useRef, useState} from 'react';
 
 import {ChartContainer} from '@/components/Charts';
 
@@ -12,7 +12,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const [selectedTicker, setSelectedTicker] = useState(symbol);
     const [selectedTf, setSelectedTf] = useState(tf);
     const chartRef = useRef<ReactEcharts | null>(null);
-    const chartInstance = chartRef.current?.getEchartsInstance();
+    // const chartInstance = chartRef.current?.getEchartsInstance();
 
     const priceChangePercentageApi = usePriceChangePercentage(selectedTicker, selectedTf, type);
 

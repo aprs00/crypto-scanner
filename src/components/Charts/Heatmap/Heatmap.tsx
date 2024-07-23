@@ -1,12 +1,12 @@
 import {useMediaQuery} from '@mantine/hooks';
 import ReactEcharts from 'echarts-for-react';
-import {useEffect, useRef} from 'react';
+import {useRef} from 'react';
 
 const Heatmap = (props: any) => {
     const {data, tooltipType} = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
-    const chartInstance = chartRef.current?.getEchartsInstance();
+    // const chartInstance = chartRef.current?.getEchartsInstance();
 
     const matches = useMediaQuery('(min-width: 48em)');
 
