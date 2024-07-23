@@ -24,4 +24,21 @@ const useZScoreMatrixLarge = (xAxis: string, yAxis: string, tf: string) => {
     });
 };
 
-export {useZScoreMatrixLarge};
+const fetchZScoreHeatmap = async () => {
+    console.log('FETCH Z SCORE HEATMAP');
+    const url = new URL('z-score-heatmap', API_URL);
+
+    return (await api.get(url).json()) as any;
+};
+
+const useZScoreHeatmap = () => {
+    return useQuery({
+        gcTime: 60_000,
+        queryFn: () => fetchZScoreHeatmap(),
+        queryKey: ['z-score-heatmap'],
+        refetchInterval: 60_000,
+        refetchOnWindowFocus: false,
+    });
+};
+
+export {useZScoreHeatmap, useZScoreMatrixLarge};

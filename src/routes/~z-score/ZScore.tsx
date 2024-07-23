@@ -2,6 +2,7 @@ import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import {useCorrelationsTimeframeOptions} from '@/routes/~correlations/api';
 
+import ZScoreHeatmap from './components/ZScoreHeatmap';
 import ZScoreMatrix from './components/ZScoreMatrix';
 
 const gridLayoutRowHeight = 30;
@@ -12,10 +13,15 @@ const ZScore = () => {
 
     const gridLayouts = [
         {
+            component: <ZScoreHeatmap />,
+            gridLayout: {h: 24, w: 12, x: 0, y: 0},
+            key: 'zScoreHeatmap',
+        },
+        {
             component: (
                 <ZScoreMatrix tf="5m" timeFrameOptions={timeFrameOptions.data || []} xAxis="price" yAxis="volume" />
             ),
-            gridLayout: {h: 24, w: 12, x: 0, y: 0},
+            gridLayout: {h: 24, w: 12, x: 24, y: 0},
             key: 'zScoreMatrix',
         },
     ];
