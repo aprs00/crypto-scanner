@@ -1,6 +1,6 @@
-import {CorrelationsResponse} from '@/routes/~correlations/types';
+import {HeatmapResponse} from '@/types';
 
 export type HeatmapProps = {
-    data?: CorrelationsResponse;
+    data?: HeatmapResponse;
     tooltipType?: 'duration';
 };

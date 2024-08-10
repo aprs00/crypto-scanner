@@ -1,9 +1,9 @@
 import {memo, useState} from 'react';
 
 import {ChartContainer, Scatter} from '@/components/Charts';
+import {ScatterProps} from '@/types';
 
 import {useZScoreMatrixLarge} from '../api';
-import {ScatterProps} from '../types';
 
 const ZScoreMatrix = (props: ScatterProps) => {
     const {tf, timeFrameOptions, xAxis, yAxis} = props;

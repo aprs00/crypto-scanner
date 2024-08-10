@@ -2,15 +2,9 @@ import {useQuery} from '@tanstack/react-query';
 
 import {API_URL} from '@/config/env';
 import {api} from '@/lib/ky';
+import type {HeatmapResponse, SelectOption, ZScoreMatrixResponse} from '@/types';
 
-import type {
-    AveragePriceChangeResponse,
-    BetaHeatmapResponse,
-    SelectOption,
-    SelectOptionsResponse,
-    ZScoreHistoryResponse,
-    ZScoreMatrixResponse,
-} from './types';
+import type {AveragePriceChangeResponse, SelectOptionsResponse, ZScoreHistoryResponse} from './types';
 
 const fetchPriceChangePercentage = async (symbol: string, duration: string, type: string) => {
     const url = new URL('average-prices', API_URL);
@@ -53,7 +47,7 @@ const fetchBetaHeatmapData = async (duration: string) => {
     const url = new URL('pearson-correlation', API_URL);
     url.searchParams.set('duration', duration);
 
-    return (await api.get(url).json()) as BetaHeatmapResponse;
+    return (await api.get(url).json()) as HeatmapResponse;
 };
 
 const useBetaHeatmapData = (duration: string) => {

@@ -1,4 +1,4 @@
-import type {ZScoreMatrixResponse} from '@/routes/~index/types';
+import type {ZScoreMatrixResponse} from '@/types';
 
 export type ScatterProps = {
     data: ZScoreMatrixResponse[];

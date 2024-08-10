@@ -1,9 +1,9 @@
 import {useState} from 'react';
 
 import {ChartContainer, Scatter} from '@/components/Charts';
+import type {ScatterProps} from '@/types';
 
 import {useZScoreMatrix} from '../api';
-import type {ScatterProps} from '../types';
 
 const ZScoreMatrix = (props: ScatterProps) => {
     const {tf, timeFrameOptions, xAxis, yAxis} = props;

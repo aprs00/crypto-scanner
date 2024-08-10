@@ -1,6 +1,6 @@
 import {Dispatch, ReactNode, SetStateAction} from 'react';
 
-import {SelectOption} from '@/routes/~index/types';
+import {SelectOption} from '@/types';
 
 export type ChartContainerPropsType = {
     body: ReactNode;

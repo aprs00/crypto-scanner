@@ -1,13 +1,4 @@
-export type SelectOption = {
-    value: string;
-    label: string;
-};
-
-export type CorrelationsResponse = {
-    data: [[number, number, number]][];
-    xAxis: string[];
-    yAxis: string[];
-};
+import type {SelectOption} from '@/types';
 
 export type PearsonHeatmapProps = {
     tf: string;

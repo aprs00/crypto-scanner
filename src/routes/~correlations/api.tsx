@@ -2,15 +2,14 @@ import {useQuery} from '@tanstack/react-query';
 
 import {API_URL} from '@/config/env';
 import {api} from '@/lib/ky';
-
-import type {CorrelationsResponse, SelectOption} from './types';
+import type {HeatmapResponse, SelectOption} from '@/types';
 
 const fetchCorrelations = async (tf: string, type: string) => {
     const url = new URL('large-pearson-correlation', API_URL);
     url.searchParams.set('duration', tf);
     url.searchParams.set('type', type);
 
-    return (await api.get(url).json()) as CorrelationsResponse;
+    return (await api.get(url).json()) as HeatmapResponse;
 };
 
 const useCorrelations = (tf: string, type: string) => {

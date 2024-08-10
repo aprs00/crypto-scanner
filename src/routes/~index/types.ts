@@ -1,13 +1,4 @@
-export type SelectOption = {
-    value: string;
-    label: string;
-};
-
-export type BetaHeatmapResponse = {
-    data: [[number, number, number]][];
-    xAxis: string[];
-    yAxis: string[];
-};
+import type {SelectOption} from '@/types';
 
 export type AveragePriceChangeResponse = {
     data: {
@@ -35,14 +26,6 @@ export type ZScoreHistoryResponse = {
     xAxis: string[];
 };
 
-export type ZScoreMatrixResponse = {
-    type: string;
-    name: string;
-    data: number[][];
-    color: string;
-    symbolSize: number;
-};
-
 export type BetaHeatmapProps = {
     tf: string;
     timeFrameOptions: SelectOption[];
@@ -56,13 +39,6 @@ export type PriceChangePercentageProps = {
     timeFrameOptions: SelectOption[];
     tickerOptions: SelectOption[];
     type: PriceChangeTypes;
-};
-
-export type ScatterProps = {
-    timeFrameOptions: SelectOption[];
-    xAxis: string;
-    yAxis: string;
-    tf: string;
 };
 
 export type ZScoreHistoryProps = {
