@@ -22,7 +22,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
         },
     ];
 
-    return <ChartContainer body={<Heatmap data={betaHeatmap} />} selects={selects} title="Pearson correlation" />;
+    return <ChartContainer body={<Heatmap data={betaHeatmap.data} />} selects={selects} title="Pearson correlation" />;
 };
 
 export default memo(BetaHeatmap);

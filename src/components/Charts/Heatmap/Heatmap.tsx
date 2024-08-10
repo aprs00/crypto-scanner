@@ -2,7 +2,9 @@ import {useMediaQuery} from '@mantine/hooks';
 import ReactEcharts from 'echarts-for-react';
 import {useRef} from 'react';
 
-const Heatmap = (props: any) => {
+import type {HeatmapProps} from './types';
+
+const Heatmap = (props: HeatmapProps) => {
     const {data, tooltipType} = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
@@ -17,7 +19,7 @@ const Heatmap = (props: any) => {
         grid: {bottom: 110, left: 50, right: 15, top: 20},
         series: [
             {
-                data: data.data?.data,
+                data: data?.data,
                 emphasis: {
                     itemStyle: {
                         shadowBlur: 10,
@@ -25,7 +27,7 @@ const Heatmap = (props: any) => {
                     },
                 },
                 label: {
-                    show: matches && data.data?.data?.length < 150,
+                    show: matches && (data?.data?.length ?? 0) < 150,
                 },
                 type: 'heatmap',
             },
@@ -33,11 +35,11 @@ const Heatmap = (props: any) => {
         tooltip: {
             formatter: function (params: any) {
                 if (tooltipType === 'duration') {
-                    const xLabel = data.data?.yAxis[params.data?.[1]];
+                    const xLabel = data?.yAxis[params.data?.[1]];
                     return `${params.marker} ${xLabel}: <strong>${params.value[2]}</strong><br><span class="ml-4">${params.name}h</span>`;
                 }
 
-                const yLabel = data.data?.xAxis[params.data?.[1]];
+                const yLabel = data?.xAxis[params.data?.[1]];
                 return `${params.marker}${yLabel} - ${params.name}: <strong>${params.value[2]}</strong>`;
             },
             position: 'top',
@@ -60,14 +62,14 @@ const Heatmap = (props: any) => {
             },
         },
         xAxis: {
-            data: data.data?.xAxis,
+            data: data?.xAxis,
             splitArea: {
                 show: true,
             },
             type: 'category',
         },
         yAxis: {
-            data: data.data?.yAxis,
+            data: data?.yAxis,
             splitArea: {
                 show: true,
             },

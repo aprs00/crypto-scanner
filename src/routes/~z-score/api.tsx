@@ -2,6 +2,7 @@ import {useQuery} from '@tanstack/react-query';
 
 import {API_URL} from '@/config/env';
 import {api} from '@/lib/ky';
+import type {CorrelationsResponse} from '@/routes/~correlations/types';
 
 import type {ZScoreMatrixResponse} from './types';
 
@@ -28,7 +29,7 @@ const fetchZScoreHeatmap = async (type: string) => {
     const url = new URL('z-score-heatmap', API_URL);
     url.searchParams.set('type', type);
 
-    return (await api.get(url).json()) as any;
+    return (await api.get(url).json()) as CorrelationsResponse;
 };
 
 const useZScoreHeatmap = (type: string) => {

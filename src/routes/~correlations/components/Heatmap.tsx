@@ -31,7 +31,13 @@ const PearsonHeatmap = (props: PearsonHeatmapProps) => {
         },
     ];
 
-    return <ChartContainer body={<Heatmap data={pearsonCorrelation} />} selects={selects} title="Pearson / Spearman" />;
+    return (
+        <ChartContainer
+            body={<Heatmap data={pearsonCorrelation.data} />}
+            selects={selects}
+            title="Pearson / Spearman"
+        />
+    );
 };
 
 export default memo(PearsonHeatmap);

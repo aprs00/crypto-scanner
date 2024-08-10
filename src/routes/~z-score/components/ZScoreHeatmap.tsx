@@ -25,7 +25,7 @@ const PearsonHeatmap = (props: ZScoreHeatmapProps) => {
 
     return (
         <ChartContainer
-            body={<Heatmap data={heatmap} tooltipType="duration" />}
+            body={<Heatmap data={heatmap.data} tooltipType="duration" />}
             selects={selects}
             title="Z Score Heatmap"
         />
