@@ -1,5 +1,5 @@
 export type HeatmapResponse = {
-    data: [[number, number, number]][];
+    data: [number, number, number][];
     xAxis: string;
     yAxis: string;
 };
