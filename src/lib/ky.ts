@@ -4,4 +4,4 @@ const api = ky.create({
     retry: 2,
 });
 
-export {api};
+export default api;

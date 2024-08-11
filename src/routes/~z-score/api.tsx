@@ -1,11 +1,11 @@
 import {useQuery} from '@tanstack/react-query';
 
-import {API_URL} from '@/config/env';
-import {api} from '@/lib/ky';
+import env from '@/config/env';
+import api from '@/lib/ky';
 import type {HeatmapResponse, ZScoreMatrixResponse} from '@/types';
 
 const fetchZScoreMatrixLarge = async (xAxis: string, yAxis: string, tf: string) => {
-    const url = new URL('z-score-matrix-large', API_URL);
+    const url = new URL('z-score-matrix-large', env.baseAPI);
     url.searchParams.set('tf', tf);
     url.searchParams.set('x_axis', xAxis);
     url.searchParams.set('y_axis', yAxis);
@@ -24,7 +24,7 @@ const useZScoreMatrixLarge = (xAxis: string, yAxis: string, tf: string) => {
 };
 
 const fetchZScoreHeatmap = async (type: string) => {
-    const url = new URL('z-score-heatmap', API_URL);
+    const url = new URL('z-score-heatmap', env.baseAPI);
     url.searchParams.set('type', type);
 
     return (await api.get(url).json()) as HeatmapResponse;

@@ -1,11 +1,11 @@
 import {useQuery} from '@tanstack/react-query';
 
-import {API_URL} from '@/config/env';
-import {api} from '@/lib/ky';
+import env from '@/config/env';
+import api from '@/lib/ky';
 import type {HeatmapResponse, SelectOption} from '@/types';
 
 const fetchCorrelations = async (tf: string, type: string) => {
-    const url = new URL('large-pearson-correlation', API_URL);
+    const url = new URL('large-pearson-correlation', env.baseAPI);
     url.searchParams.set('duration', tf);
     url.searchParams.set('type', type);
 
@@ -23,7 +23,7 @@ const useCorrelations = (tf: string, type: string) => {
 };
 
 const fetchCorrelationsTimeframeOptions = async () => {
-    const url = new URL(`pearson-time-frame-options`, API_URL);
+    const url = new URL(`pearson-time-frame-options`, env.baseAPI);
 
     return (await api.get(url).json()) as SelectOption[];
 };
@@ -40,7 +40,7 @@ const useCorrelationsTimeframeOptions = () => {
 };
 
 const fetchCorrelationsTypeOptions = async () => {
-    const url = new URL(`pearson-type-options`, API_URL);
+    const url = new URL(`pearson-type-options`, env.baseAPI);
 
     return (await api.get(url).json()) as SelectOption[];
 };

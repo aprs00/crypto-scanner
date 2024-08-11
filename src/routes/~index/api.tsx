@@ -1,13 +1,13 @@
 import {useQuery} from '@tanstack/react-query';
 
-import {API_URL} from '@/config/env';
-import {api} from '@/lib/ky';
+import env from '@/config/env';
+import api from '@/lib/ky';
 import type {HeatmapResponse, SelectOption, ZScoreMatrixResponse} from '@/types';
 
 import type {AveragePriceChangeResponse, SelectOptionsResponse, ZScoreHistoryResponse} from './types';
 
 const fetchPriceChangePercentage = async (symbol: string, duration: string, type: string) => {
-    const url = new URL('average-prices', API_URL);
+    const url = new URL('average-prices', env.baseAPI);
     url.searchParams.set('duration', duration);
     url.searchParams.set('symbol', symbol);
     url.searchParams.set('type', type);
@@ -27,7 +27,7 @@ const usePriceChangePercentage = (symbol: string, duration: string, type: string
 };
 
 const fetchTickersOptions = async () => {
-    const url = new URL('tickers-options', API_URL);
+    const url = new URL('tickers-options', env.baseAPI);
 
     return (await api.get(url).json()) as SelectOption[];
 };
@@ -44,7 +44,7 @@ const useFetchTickersOptions = () => {
 };
 
 const fetchBetaHeatmapData = async (duration: string) => {
-    const url = new URL('pearson-correlation', API_URL);
+    const url = new URL('pearson-correlation', env.baseAPI);
     url.searchParams.set('duration', duration);
 
     return (await api.get(url).json()) as HeatmapResponse;
@@ -62,7 +62,7 @@ const useBetaHeatmapData = (duration: string) => {
 };
 
 const fetchZScoreMatrix = async (xAxis: string, yAxis: string, duration: string) => {
-    const url = new URL('z-score-matrix', API_URL);
+    const url = new URL('z-score-matrix', env.baseAPI);
     url.searchParams.set('duration', duration);
     url.searchParams.set('x_axis', xAxis);
     url.searchParams.set('y_axis', yAxis);
@@ -82,7 +82,7 @@ const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
 };
 
 const fetchZScoreHistory = async (type: string, duration: string) => {
-    const url = new URL('z-score-history', API_URL);
+    const url = new URL('z-score-history', env.baseAPI);
     url.searchParams.set('duration', duration);
     url.searchParams.set('type', type);
 
@@ -101,7 +101,7 @@ const useZScoreHistory = (type: string, duration: string) => {
 };
 
 const fetchStatsSelectOptions = async () => {
-    const url = new URL(`stats-select-options`, API_URL);
+    const url = new URL(`stats-select-options`, env.baseAPI);
 
     return (await api.get(url).json()) as SelectOptionsResponse;
 };
