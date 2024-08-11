@@ -1,6 +1,7 @@
 import {memo, useState} from 'react';
 
-import {ChartContainer, Heatmap} from '@/components/Charts';
+import ChartContainer from '@/components/Charts/ChartContainer';
+import Heatmap from '@/components/Charts/Heatmap';
 
 import {useCorrelations} from '../api';
 import {PearsonHeatmapProps} from '../types';

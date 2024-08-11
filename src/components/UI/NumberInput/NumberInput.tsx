@@ -42,4 +42,4 @@ const NumberInput = (props: NumberInputPropsType) => {
     );
 };
 
-export {NumberInput};
+export default NumberInput;

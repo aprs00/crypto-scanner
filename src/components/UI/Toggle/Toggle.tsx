@@ -26,4 +26,4 @@ const Toggle = (props: MyTogglePropsType) => {
     );
 };
 
-export {Toggle};
+export default Toggle;

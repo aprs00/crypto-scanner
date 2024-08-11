@@ -1,7 +1,7 @@
 import ReactEcharts from 'echarts-for-react';
 import {capitalize} from 'lodash-es';
 
-import {ChartContainer} from '@/components/Charts';
+import ChartContainer from '@/components/Charts/ChartContainer';
 
 import {useZScoreHistory} from '../api';
 import type {ZScoreHistoryProps} from '../types';

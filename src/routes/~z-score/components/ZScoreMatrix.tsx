@@ -1,7 +1,8 @@
 import {memo, useState} from 'react';
 
-import {ChartContainer, Scatter} from '@/components/Charts';
-import {ScatterProps} from '@/types';
+import ChartContainer from '@/components/Charts/ChartContainer';
+import Scatter from '@/components/Charts/Scatter';
+import type {ScatterProps} from '@/types';
 
 import {useZScoreMatrixLarge} from '../api';
 

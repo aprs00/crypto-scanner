@@ -103,4 +103,4 @@ const MultiSelect = (props: MultiSelectProps) => {
     );
 };
 
-export {MultiSelect};
+export default MultiSelect;

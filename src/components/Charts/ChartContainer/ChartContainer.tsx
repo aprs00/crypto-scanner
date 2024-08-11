@@ -1,8 +1,7 @@
 import {ReactNode} from 'react';
 
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
-import {CustomSelect} from '@/components/UI';
-import {SelectProps} from '@/components/UI/Select/types';
+import CustomSelect, {type SelectProps} from '@/components/UI/Select';
 
 import type {ChartContainerPropsType} from './types';
 
@@ -41,4 +40,4 @@ const ChartContainer = (props: ChartContainerPropsType) => {
     );
 };
 
-export {ChartContainer};
+export default ChartContainer;

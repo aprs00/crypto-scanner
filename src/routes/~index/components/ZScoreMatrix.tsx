@@ -1,6 +1,7 @@
 import {useState} from 'react';
 
-import {ChartContainer, Scatter} from '@/components/Charts';
+import ChartContainer from '@/components/Charts/ChartContainer';
+import Scatter from '@/components/Charts/Scatter';
 import type {ScatterProps} from '@/types';
 
 import {useZScoreMatrix} from '../api';

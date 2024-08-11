@@ -1,7 +1,7 @@
 import ReactEcharts from 'echarts-for-react';
 import {useRef, useState} from 'react';
 
-import {ChartContainer} from '@/components/Charts';
+import ChartContainer from '@/components/Charts/ChartContainer';
 
 import {usePriceChangePercentage} from '../api';
 import type {PriceChangePercentageProps} from '../types';

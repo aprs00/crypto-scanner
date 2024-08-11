@@ -86,4 +86,4 @@ const Heatmap = (props: HeatmapProps) => {
     return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '100%', width: '100%'}} />;
 };
 
-export {Heatmap};
+export default Heatmap;

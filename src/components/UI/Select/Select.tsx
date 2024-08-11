@@ -71,4 +71,4 @@ const CustomSelect = (props: SelectProps) => {
     );
 };
 
-export {CustomSelect};
+export default CustomSelect;
