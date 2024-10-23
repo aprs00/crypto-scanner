@@ -1,23 +1,45 @@
+import {useState} from 'react';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
-import {useCorrelationsTimeframeOptions, useCorrelationTypeOptions} from './api';
-import CorrelationsHeatmap from './components/CorrelationHeatmap';
+import ChartContainer from '@/components/Charts/ChartContainer';
+import CSHeatmap from '@/components/Charts/CSHeatmap';
+
+import {useCorrelations, useCorrelationsTimeframeOptions, useCorrelationTypeOptions} from './api';
 
 const gridLayoutRowHeight = 30;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const CSCorrelations = () => {
+    const [selectedTf, setSelectedTf] = useState('5m');
+    const [selectedType, setSelectedType] = useState('price');
     const timeFrameOptions = useCorrelationsTimeframeOptions();
     const typeOptions = useCorrelationTypeOptions();
+
+    const pearsonCorrelation = useCorrelations(selectedTf, selectedType);
 
     const gridLayouts = [
         {
             component: (
-                <CorrelationsHeatmap
-                    tf="5m"
-                    timeFrameOptions={timeFrameOptions.data || []}
-                    type="price"
-                    typeOptions={typeOptions.data || []}
+                <ChartContainer
+                    body={<CSHeatmap data={pearsonCorrelation.data} />}
+                    selects={[
+                        {
+                            componentName: 'select',
+                            id: '1',
+                            onChange: setSelectedTf,
+                            options: timeFrameOptions.data || [],
+                            value: selectedTf,
+                        },
+                        {
+                            class: 'w-24',
+                            componentName: 'select',
+                            id: '2',
+                            onChange: setSelectedType,
+                            options: typeOptions.data || [],
+                            value: selectedType,
+                        },
+                    ]}
+                    title="Pearson / Spearman"
                 />
             ),
             gridLayout: {h: 28, w: 12, x: 0, y: 0},
