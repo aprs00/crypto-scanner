@@ -13,10 +13,10 @@ const fetchHeatmapData = async () => {
 
 const useHeatmapData = () => {
     return useQuery({
-        gcTime: 30 * 1000,
+        gcTime: 30_000,
         queryFn: () => fetchHeatmapData(),
         queryKey: ['heatmap-data'],
-        staleTime: 30 * 1000,
+        staleTime: 30_000,
     });
 };
 

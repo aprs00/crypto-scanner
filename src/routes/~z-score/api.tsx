@@ -15,10 +15,11 @@ const fetchZScoreMatrixLarge = async (xAxis: string, yAxis: string, tf: string) 
 
 const useZScoreMatrixLarge = (xAxis: string, yAxis: string, tf: string) => {
     return useQuery({
-        gcTime: 7_000,
+        gcTime: 20_000,
         queryFn: () => fetchZScoreMatrixLarge(xAxis, yAxis, tf),
         queryKey: ['z-score-matrix-large', xAxis, yAxis, tf],
-        refetchInterval: 7_000,
+        refetchInterval: 20_000,
+        staleTime: 20_000,
     });
 };
 
@@ -35,6 +36,7 @@ const useZScoreHeatmap = (type: string) => {
         queryFn: () => fetchZScoreHeatmap(type),
         queryKey: ['z-score-heatmap', type],
         refetchInterval: 60_000,
+        staleTime: 60_000,
     });
 };
 

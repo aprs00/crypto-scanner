@@ -14,10 +14,11 @@ const fetchCorrelations = async (tf: string, type: string) => {
 
 const useCorrelations = (tf: string, type: string) => {
     return useQuery({
-        gcTime: 7_000,
+        gcTime: 20_000,
         queryFn: () => fetchCorrelations(tf, type),
         queryKey: ['correlation', tf, type],
-        refetchInterval: 7_000,
+        refetchInterval: 20_000,
+        staleTime: 20_000,
     });
 };
 
@@ -29,11 +30,9 @@ const fetchCorrelationsTimeframeOptions = async () => {
 
 const useCorrelationsTimeframeOptions = () => {
     return useQuery({
-        gcTime: 60 * 60 * 1000,
         queryFn: () => fetchCorrelationsTimeframeOptions(),
         queryKey: ['correlations-time-frame-options'],
-        refetchInterval: 60 * 60 * 1000,
-        staleTime: 60 * 60 * 1000,
+        staleTime: Infinity,
     });
 };
 
@@ -45,11 +44,9 @@ const fetchCorrelationsTypeOptions = async () => {
 
 const useCorrelationTypeOptions = () => {
     return useQuery({
-        gcTime: 60 * 60 * 1000,
         queryFn: () => fetchCorrelationsTypeOptions(),
         queryKey: ['correlation-type-options'],
-        refetchInterval: 60 * 60 * 1000,
-        staleTime: 60 * 60 * 1000,
+        staleTime: Infinity,
     });
 };
 

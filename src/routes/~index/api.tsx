@@ -33,11 +33,9 @@ const fetchTickersOptions = async () => {
 
 const useFetchTickersOptions = () => {
     return useQuery({
-        gcTime: 60 * 60 * 1000,
         queryFn: () => fetchTickersOptions(),
         queryKey: ['ticker-options'],
-        refetchInterval: 60 * 60 * 1000,
-        staleTime: 60 * 60 * 1000,
+        staleTime: Infinity,
     });
 };
 
@@ -50,11 +48,11 @@ const fetchBetaHeatmapData = async (duration: string) => {
 
 const useBetaHeatmapData = (duration: string) => {
     return useQuery({
-        gcTime: 120_000,
+        gcTime: 30_000,
         queryFn: () => fetchBetaHeatmapData(duration),
         queryKey: ['beta-heatmap-data', duration],
-        refetchInterval: 120_000,
-        staleTime: 120_000,
+        refetchInterval: 30_000,
+        staleTime: 30_000,
     });
 };
 
@@ -69,11 +67,11 @@ const fetchZScoreMatrix = async (xAxis: string, yAxis: string, duration: string)
 
 const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
     return useQuery({
-        gcTime: 120_000,
+        gcTime: 30_000,
         queryFn: () => fetchZScoreMatrix(xAxis, yAxis, duration),
         queryKey: ['z-score-matrix', xAxis, yAxis, duration],
-        refetchInterval: 120_000,
-        staleTime: 120_000,
+        refetchInterval: 30_000,
+        staleTime: 30_000,
     });
 };
 
@@ -87,11 +85,11 @@ const fetchZScoreHistory = async (type: string, duration: string) => {
 
 const useZScoreHistory = (type: string, duration: string) => {
     return useQuery({
-        gcTime: 120_000,
+        gcTime: 30_000,
         queryFn: () => fetchZScoreHistory(type, duration),
         queryKey: ['z-score-history', type, duration],
-        refetchInterval: 120_000,
-        staleTime: 120_000,
+        refetchInterval: 30_000,
+        staleTime: 30_000,
     });
 };
 
@@ -103,11 +101,9 @@ const fetchStatsSelectOptions = async () => {
 
 const useStatsSelectOptions = () => {
     return useQuery({
-        gcTime: 60 * 60 * 1000,
         queryFn: () => fetchStatsSelectOptions(),
         queryKey: ['stats-select-options'],
-        refetchInterval: 60 * 60 * 1000,
-        staleTime: 60 * 60 * 1000,
+        staleTime: Infinity,
     });
 };
 
