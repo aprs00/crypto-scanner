@@ -1,4 +1,4 @@
-import type {SelectOption} from '@/types';
+import type {SelectOption} from '@/types/api';
 
 export type AveragePriceChangeResponse = {
     data: {

@@ -2,7 +2,7 @@ import {useQuery} from '@tanstack/react-query';
 
 import env from '@/config/env';
 import api from '@/lib/ky';
-import type {HeatmapResponse, ZScoreMatrixResponse} from '@/types';
+import type {HeatmapResponse, ZScoreMatrixResponse} from '@/types/api';
 
 const fetchZScoreMatrixLarge = async (xAxis: string, yAxis: string, tf: string) => {
     const url = new URL('z-score-matrix-large', env.baseAPI);

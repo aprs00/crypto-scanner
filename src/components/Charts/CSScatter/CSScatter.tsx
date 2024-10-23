@@ -2,7 +2,7 @@ import ReactEcharts from 'echarts-for-react';
 import {capitalize} from 'lodash-es';
 import {useRef} from 'react';
 
-import type {ZScoreMatrixResponse} from '@/types';
+import type {ZScoreMatrixResponse} from '@/types/api';
 
 export type ScatterProps = {
     data: ZScoreMatrixResponse[];

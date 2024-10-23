@@ -2,7 +2,7 @@ import {useMediaQuery} from '@mantine/hooks';
 import ReactEcharts from 'echarts-for-react';
 import {useRef} from 'react';
 
-import {HeatmapResponse} from '@/types';
+import {HeatmapResponse} from '@/types/api';
 
 export type HeatmapProps = {
     data?: HeatmapResponse;

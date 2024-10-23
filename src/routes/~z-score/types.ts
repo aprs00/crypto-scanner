@@ -1,4 +1,4 @@
-import {SelectOption} from '@/types';
+import {SelectOption} from '@/types/api';
 
 export type ZScoreHeatmapProps = {
     type: string;

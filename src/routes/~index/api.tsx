@@ -2,7 +2,7 @@ import {useQuery} from '@tanstack/react-query';
 
 import env from '@/config/env';
 import api from '@/lib/ky';
-import type {HeatmapResponse, SelectOption, ZScoreMatrixResponse} from '@/types';
+import type {HeatmapResponse, SelectOption, ZScoreMatrixResponse} from '@/types/api';
 
 import type {AveragePriceChangeResponse, SelectOptionsResponse, ZScoreHistoryResponse} from './types';
 

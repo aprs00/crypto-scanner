@@ -8,7 +8,7 @@ const selectsMapper: {[key: string]: (props: ComponentProps<typeof CSSelect>) =>
     select: CSSelect,
 };
 
-import {SelectOption} from '@/types';
+import {SelectOption} from '@/types/api';
 
 export type ChartContainerPropsType = {
     body: ReactNode;

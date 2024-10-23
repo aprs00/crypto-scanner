@@ -2,7 +2,7 @@ import {useQuery} from '@tanstack/react-query';
 
 import env from '@/config/env';
 import api from '@/lib/ky';
-import type {HeatmapResponse, SelectOption} from '@/types';
+import type {HeatmapResponse, SelectOption} from '@/types/api';
 
 const fetchCorrelations = async (tf: string, type: string) => {
     const url = new URL('large-pearson-correlation', env.baseAPI);
