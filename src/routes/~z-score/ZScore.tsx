@@ -2,25 +2,41 @@ import {useState} from 'react';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
+import CSHeatmap from '@/components/Charts/CSHeatmap';
 import CSScatter from '@/components/Charts/CSScatter';
 import {useCorrelationsTimeframeOptions, useCorrelationTypeOptions} from '@/routes/~correlations/api';
-import {useZScoreMatrixLarge} from '@/routes/~z-score/api';
-
-import ZScoreHeatmap from './components/ZScoreHeatmap';
+import {useZScoreHeatmap, useZScoreMatrixLarge} from '@/routes/~z-score/api';
 
 const gridLayoutRowHeight = 30;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const ZScore = () => {
+    const [selectedTypeZScoreHeatmap, setSelectedTypeZScoreHeatmap] = useState('price');
     const [selectedTfZScoreMatrixLarge, setSelectedTfZScoreMatrixLarge] = useState('5m');
 
     const timeFrameOptions = useCorrelationsTimeframeOptions();
     const typeOptions = useCorrelationTypeOptions();
     const zScoreMatrixLarge = useZScoreMatrixLarge('price', 'volume', selectedTfZScoreMatrixLarge);
+    const zScoreHeatmap = useZScoreHeatmap(selectedTypeZScoreHeatmap);
 
     const gridLayouts = [
         {
-            component: <ZScoreHeatmap type="price" typeOptions={typeOptions.data || []} />,
+            component: (
+                <ChartContainer
+                    body={<CSHeatmap data={zScoreHeatmap.data} tooltipType="duration" />}
+                    selects={[
+                        {
+                            class: 'w-24',
+                            componentName: 'select',
+                            id: '2',
+                            onChange: setSelectedTypeZScoreHeatmap,
+                            options: typeOptions.data || [],
+                            value: selectedTypeZScoreHeatmap,
+                        },
+                    ]}
+                    title="Z Score Heatmap"
+                />
+            ),
             gridLayout: {h: 26, w: 12, x: 0, y: 0},
             key: 'zScoreHeatmap',
         },
