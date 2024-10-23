@@ -1,4 +1,4 @@
-import {Listbox, Transition} from '@headlessui/react';
+import {Listbox, ListboxButton, Transition} from '@headlessui/react';
 import {Dispatch, SetStateAction} from 'react';
 
 import XIcon from './XIcon';
@@ -19,10 +19,10 @@ const MultiSelect = (props: MultiSelectProps) => {
     return (
         <Listbox value={values} multiple onChange={onChange}>
             {({open}) => (
-                <div>
+                <>
                     <div>
                         {!!label?.length && <p className="text-lg">{label}</p>}
-                        <Listbox.Button className="w-full rounded-sm border border-slate-500 px-2 min-h-[28px] h-auto text-left relative">
+                        <ListboxButton className="w-full rounded-sm border border-slate-500 px-2 min-h-[28px] h-auto text-left relative">
                             <div className="flex items-center flex-wrap mr-5">
                                 {options
                                     ?.filter((option) => values.includes(option.value))
@@ -55,7 +55,7 @@ const MultiSelect = (props: MultiSelectProps) => {
                                     />
                                 </svg>
                             </span>
-                        </Listbox.Button>
+                        </ListboxButton>
                     </div>
                     <Transition
                         enter="transition ease-out duration-100"
@@ -107,7 +107,7 @@ const MultiSelect = (props: MultiSelectProps) => {
                             </Listbox.Options>
                         </div>
                     </Transition>
-                </div>
+                </>
             )}
         </Listbox>
     );

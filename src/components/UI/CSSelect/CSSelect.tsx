@@ -1,4 +1,4 @@
-import {Listbox, Transition} from '@headlessui/react';
+import {Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition} from '@headlessui/react';
 import {Dispatch, SetStateAction} from 'react';
 
 import SelectIcon from './SelectIcon';
@@ -18,7 +18,7 @@ const CSSelect = (props: SelectProps) => {
             {({open}) => (
                 <div className={`${classes}`}>
                     <div>
-                        <Listbox.Button
+                        <ListboxButton
                             className="w-full rounded-sm border border-slate-500 px-2 h-7 text-left relative"
                             // style={{boxShadow: 'inset 1px 1px 10px rgba(2, 6, 23, 0.7)'}}
                         >
@@ -34,7 +34,7 @@ const CSSelect = (props: SelectProps) => {
                             <span className="absolute inset-y-0 right-0 flex items-center pr-1 pointer-events-none">
                                 <SelectIcon />
                             </span>
-                        </Listbox.Button>
+                        </ListboxButton>
                     </div>
                     <Transition
                         enter="transition ease-out duration-100"
@@ -46,9 +46,9 @@ const CSSelect = (props: SelectProps) => {
                         show={open}
                     >
                         <div className="relative">
-                            <Listbox.Options className="bg-slate-800 rounded-sm absolute w-full px-1 py-1 mt-2 border border-slate-600 flex flex-col gap-0.5">
+                            <ListboxOptions className="bg-slate-800 rounded-sm absolute w-full px-1 py-1 mt-2 border border-slate-600 flex flex-col gap-0.5">
                                 {options.map((item) => (
-                                    <Listbox.Option
+                                    <ListboxOption
                                         className="cursor-pointer hover:bg-slate-900 rounded-sm gap-2"
                                         key={item.value.toString()}
                                         value={item.value}
@@ -67,9 +67,9 @@ const CSSelect = (props: SelectProps) => {
                                                 </div>
                                             );
                                         }}
-                                    </Listbox.Option>
+                                    </ListboxOption>
                                 ))}
-                            </Listbox.Options>
+                            </ListboxOptions>
                         </div>
                     </Transition>
                 </div>
