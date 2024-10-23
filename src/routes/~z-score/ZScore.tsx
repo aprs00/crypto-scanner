@@ -1,16 +1,22 @@
+import {useState} from 'react';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
+import ChartContainer from '@/components/Charts/ChartContainer';
+import CSScatter from '@/components/Charts/CSScatter';
 import {useCorrelationsTimeframeOptions, useCorrelationTypeOptions} from '@/routes/~correlations/api';
+import {useZScoreMatrixLarge} from '@/routes/~z-score/api';
 
 import ZScoreHeatmap from './components/ZScoreHeatmap';
-import ZScoreMatrix from './components/ZScoreMatrix';
 
 const gridLayoutRowHeight = 30;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const ZScore = () => {
+    const [selectedTfZScoreMatrixLarge, setSelectedTfZScoreMatrixLarge] = useState('5m');
+
     const timeFrameOptions = useCorrelationsTimeframeOptions();
     const typeOptions = useCorrelationTypeOptions();
+    const zScoreMatrixLarge = useZScoreMatrixLarge('price', 'volume', selectedTfZScoreMatrixLarge);
 
     const gridLayouts = [
         {
@@ -20,7 +26,19 @@ const ZScore = () => {
         },
         {
             component: (
-                <ZScoreMatrix tf="5m" timeFrameOptions={timeFrameOptions.data || []} xAxis="price" yAxis="volume" />
+                <ChartContainer
+                    body={<CSScatter data={zScoreMatrixLarge.data || []} xAxis="trades" yAxis="volume" />}
+                    selects={[
+                        {
+                            componentName: 'select',
+                            id: '1',
+                            onChange: setSelectedTfZScoreMatrixLarge,
+                            options: timeFrameOptions.data || [],
+                            value: selectedTfZScoreMatrixLarge,
+                        },
+                    ]}
+                    title="Z Score"
+                />
             ),
             gridLayout: {h: 24, w: 12, x: 26, y: 0},
             key: 'zScoreMatrix',
