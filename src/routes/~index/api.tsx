@@ -21,7 +21,6 @@ const usePriceChangePercentage = (symbol: string, duration: string, type: string
         queryFn: () => fetchPriceChangePercentage(symbol, duration, type),
         queryKey: ['price-change-percentage', symbol, duration, type],
         refetchInterval: 120_000,
-        refetchOnWindowFocus: false,
         staleTime: 120_000,
     });
 };
@@ -38,7 +37,6 @@ const useFetchTickersOptions = () => {
         queryFn: () => fetchTickersOptions(),
         queryKey: ['ticker-options'],
         refetchInterval: 60 * 60 * 1000,
-        refetchOnWindowFocus: false,
         staleTime: 60 * 60 * 1000,
     });
 };
@@ -56,7 +54,6 @@ const useBetaHeatmapData = (duration: string) => {
         queryFn: () => fetchBetaHeatmapData(duration),
         queryKey: ['beta-heatmap-data', duration],
         refetchInterval: 120_000,
-        refetchOnWindowFocus: false,
         staleTime: 120_000,
     });
 };
@@ -76,7 +73,6 @@ const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
         queryFn: () => fetchZScoreMatrix(xAxis, yAxis, duration),
         queryKey: ['z-score-matrix', xAxis, yAxis, duration],
         refetchInterval: 120_000,
-        refetchOnWindowFocus: false,
         staleTime: 120_000,
     });
 };
@@ -95,7 +91,6 @@ const useZScoreHistory = (type: string, duration: string) => {
         queryFn: () => fetchZScoreHistory(type, duration),
         queryKey: ['z-score-history', type, duration],
         refetchInterval: 120_000,
-        refetchOnWindowFocus: false,
         staleTime: 120_000,
     });
 };
@@ -112,7 +107,6 @@ const useStatsSelectOptions = () => {
         queryFn: () => fetchStatsSelectOptions(),
         queryKey: ['stats-select-options'],
         refetchInterval: 60 * 60 * 1000,
-        refetchOnWindowFocus: false,
         staleTime: 60 * 60 * 1000,
     });
 };

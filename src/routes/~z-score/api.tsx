@@ -19,7 +19,6 @@ const useZScoreMatrixLarge = (xAxis: string, yAxis: string, tf: string) => {
         queryFn: () => fetchZScoreMatrixLarge(xAxis, yAxis, tf),
         queryKey: ['z-score-matrix-large', xAxis, yAxis, tf],
         refetchInterval: 7_000,
-        refetchOnWindowFocus: false,
     });
 };
 
@@ -36,7 +35,6 @@ const useZScoreHeatmap = (type: string) => {
         queryFn: () => fetchZScoreHeatmap(type),
         queryKey: ['z-score-heatmap', type],
         refetchInterval: 60_000,
-        refetchOnWindowFocus: false,
     });
 };
 

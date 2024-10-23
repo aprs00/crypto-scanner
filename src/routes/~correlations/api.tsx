@@ -18,7 +18,6 @@ const useCorrelations = (tf: string, type: string) => {
         queryFn: () => fetchCorrelations(tf, type),
         queryKey: ['correlation', tf, type],
         refetchInterval: 7_000,
-        refetchOnWindowFocus: false,
     });
 };
 
@@ -34,7 +33,6 @@ const useCorrelationsTimeframeOptions = () => {
         queryFn: () => fetchCorrelationsTimeframeOptions(),
         queryKey: ['correlations-time-frame-options'],
         refetchInterval: 60 * 60 * 1000,
-        refetchOnWindowFocus: false,
         staleTime: 60 * 60 * 1000,
     });
 };
@@ -51,7 +49,6 @@ const useCorrelationTypeOptions = () => {
         queryFn: () => fetchCorrelationsTypeOptions(),
         queryKey: ['correlation-type-options'],
         refetchInterval: 60 * 60 * 1000,
-        refetchOnWindowFocus: false,
         staleTime: 60 * 60 * 1000,
     });
 };
