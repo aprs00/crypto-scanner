@@ -9,13 +9,6 @@ export type SelectOption = {
     label: string;
 };
 
-export type ScatterProps = {
-    timeFrameOptions: SelectOption[];
-    xAxis: string;
-    yAxis: string;
-    tf: string;
-};
-
 export type ZScoreMatrixResponse = {
     type: string;
     name: string;
