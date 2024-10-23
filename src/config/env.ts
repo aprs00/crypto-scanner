@@ -5,6 +5,6 @@ const env = {
     baseWS: VITE_API_WS_URL,
     binanceAPI: VITE_BINANCE_API_URL,
     coingeckoAPI: VITE_COINGECKO_API_URL,
-} as const;
+};
 
 export default env;
