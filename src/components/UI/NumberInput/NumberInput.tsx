@@ -1,6 +1,12 @@
+import {Dispatch, SetStateAction} from 'react';
+
 import DownIcon from './DownIcon';
-import type {NumberInputPropsType} from './types';
 import UpIcon from './UpIcon';
+
+export type NumberInputPropsType = {
+    value: number;
+    onChange: Dispatch<SetStateAction<number>>;
+};
 
 const NumberInput = (props: NumberInputPropsType) => {
     const {onChange, value} = props;

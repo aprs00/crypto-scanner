@@ -1,8 +1,12 @@
 import {Switch} from '@headlessui/react';
 
-import type {MyTogglePropsType} from './types';
+export type ToggleProps = {
+    enabled: boolean;
+    setEnabled: (enabled: boolean) => void;
+    label: string;
+};
 
-const Toggle = (props: MyTogglePropsType) => {
+const Toggle = (props: ToggleProps) => {
     const {enabled, label, setEnabled} = props;
 
     return (

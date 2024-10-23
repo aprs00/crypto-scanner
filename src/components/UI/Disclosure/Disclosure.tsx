@@ -1,6 +1,10 @@
 import {Disclosure, Transition} from '@headlessui/react';
+import {ReactNode} from 'react';
 
-import type {CustomDisclosurePropsType} from './types';
+export type CustomDisclosurePropsType = {
+    title: string;
+    children: ReactNode;
+};
 
 function CustomDisclosure(props: CustomDisclosurePropsType) {
     const {children, title} = props;

@@ -2,7 +2,13 @@ import ReactEcharts from 'echarts-for-react';
 import {capitalize} from 'lodash-es';
 import {useRef} from 'react';
 
-import {ScatterProps} from './types';
+import type {ZScoreMatrixResponse} from '@/types';
+
+export type ScatterProps = {
+    data: ZScoreMatrixResponse[];
+    xAxis: string;
+    yAxis: string;
+};
 
 const Scatter = (props: ScatterProps) => {
     const {data, xAxis, yAxis} = props;

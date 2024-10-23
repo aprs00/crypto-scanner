@@ -1,12 +1,25 @@
-import {ReactNode} from 'react';
+import {ComponentProps, Dispatch, ReactNode, SetStateAction} from 'react';
 
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
-import CustomSelect, {type SelectProps} from '@/components/UI/Select';
+import CustomSelect from '@/components/UI/Select';
 
-import type {ChartContainerPropsType} from './types';
-
-const selectsMapper: {[key: string]: (props: SelectProps) => ReactNode} = {
+const selectsMapper: {[key: string]: (props: ComponentProps<typeof CustomSelect>) => ReactNode} = {
     select: CustomSelect,
+};
+
+import {SelectOption} from '@/types';
+
+export type ChartContainerPropsType = {
+    body: ReactNode;
+    title: string;
+    selects?: {
+        componentName: string;
+        id: string;
+        onChange: Dispatch<SetStateAction<string>>;
+        options: SelectOption[];
+        value: string;
+        class?: string;
+    }[];
 };
 
 const ChartContainer = (props: ChartContainerPropsType) => {

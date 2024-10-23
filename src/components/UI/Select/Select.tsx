@@ -1,7 +1,14 @@
 import {Listbox, Transition} from '@headlessui/react';
+import {Dispatch, SetStateAction} from 'react';
 
 import SelectIcon from './SelectIcon';
-import type {SelectProps} from './types';
+
+export type SelectProps = {
+    options: {value: string; label: string}[];
+    value: string;
+    classes?: string;
+    onChange: Dispatch<SetStateAction<string>>;
+};
 
 const CustomSelect = (props: SelectProps) => {
     const {classes = 'w-20', onChange, options, value} = props;

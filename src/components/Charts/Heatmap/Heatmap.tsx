@@ -2,8 +2,12 @@ import {useMediaQuery} from '@mantine/hooks';
 import ReactEcharts from 'echarts-for-react';
 import {useRef} from 'react';
 
-import type {HeatmapProps} from './types';
+import {HeatmapResponse} from '@/types';
 
+export type HeatmapProps = {
+    data?: HeatmapResponse;
+    tooltipType?: 'duration';
+};
 const Heatmap = (props: HeatmapProps) => {
     const {data, tooltipType} = props;
 

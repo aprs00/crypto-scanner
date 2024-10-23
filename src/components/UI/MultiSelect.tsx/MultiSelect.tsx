@@ -1,7 +1,17 @@
 import {Listbox, Transition} from '@headlessui/react';
+import {Dispatch, SetStateAction} from 'react';
 
-import type {MultiSelectProps} from './types';
 import XIcon from './XIcon';
+
+export type MultiSelectProps = {
+    options: {
+        value: string;
+        label: string;
+    }[];
+    values: string[];
+    onChange: Dispatch<SetStateAction<string[]>>;
+    label?: string;
+};
 
 const MultiSelect = (props: MultiSelectProps) => {
     const {label, onChange = () => {}, options, values = []} = props;
