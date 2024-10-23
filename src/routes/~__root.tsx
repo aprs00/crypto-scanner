@@ -1,6 +1,6 @@
 import {createRootRoute, Outlet} from '@tanstack/react-router';
 
-import Navigation from '@/components/Layouts/Navigation';
+import CSNavigation from '../components/Layouts/CSNavigation';
 
 export const Route = createRootRoute({
     component: BaseLayout,
@@ -9,7 +9,7 @@ export const Route = createRootRoute({
 function BaseLayout() {
     return (
         <>
-            <Navigation />
+            <CSNavigation />
             <Outlet />
         </>
     );

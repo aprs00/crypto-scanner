@@ -10,7 +10,7 @@ export type SelectProps = {
     onChange: Dispatch<SetStateAction<string>>;
 };
 
-const CustomSelect = (props: SelectProps) => {
+const CSSelect = (props: SelectProps) => {
     const {classes = 'w-20', onChange, options, value} = props;
 
     return (
@@ -78,4 +78,4 @@ const CustomSelect = (props: SelectProps) => {
     );
 };
 
-export default CustomSelect;
+export default CSSelect;

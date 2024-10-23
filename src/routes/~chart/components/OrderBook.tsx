@@ -1,10 +1,10 @@
 import {useCallback, useMemo, useState} from 'react';
 
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
+import CSSelect from '@/components/UI/CSSelect';
+import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
-import Spinner from '@/components/UI/Spinner';
 
-import CustomSelect from '../../../components/UI/Select';
 import {useStreamTicker} from '../api';
 import type {OrderBookTablePropsType} from '../types';
 import {tableBackgroundStyle} from '../utils';
@@ -79,7 +79,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         <>
             {!groupedAsks && (
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <Spinner />
+                    <CSSpinner />
                 </div>
             )}
 
@@ -87,11 +87,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 <div className="flex items-center bg-slate-800 pb-1 justify-between">
                     <DraggableIcon id="drag-handle" />
                     <div className="flex items-center gap-2">
-                        <CustomSelect
-                            options={tableAlignmentOptions}
-                            value={tableAlignment}
-                            onChange={setTableAlignment}
-                        />
+                        <CSSelect options={tableAlignmentOptions} value={tableAlignment} onChange={setTableAlignment} />
                         <NumberInput value={numOfTicks} onChange={(e) => setNumOfTicks(e)} />
                     </div>
                 </div>

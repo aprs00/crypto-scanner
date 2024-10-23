@@ -1,12 +1,12 @@
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import {useCorrelationsTimeframeOptions, useCorrelationTypeOptions} from './api';
-import CorrelationsHeatmap from './components/Heatmap';
+import CorrelationsHeatmap from './components/CorrelationHeatmap';
 
 const gridLayoutRowHeight = 30;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const Correlations = () => {
+const CSCorrelations = () => {
     const timeFrameOptions = useCorrelationsTimeframeOptions();
     const typeOptions = useCorrelationTypeOptions();
 
@@ -40,4 +40,4 @@ const Correlations = () => {
     );
 };
 
-export default Correlations;
+export default CSCorrelations;

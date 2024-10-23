@@ -1,9 +1,9 @@
 import {useState} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
-import Scatter from '@/components/Charts/Scatter';
 import type {ScatterProps} from '@/types';
 
+import CSScatter from '../../../components/Charts/CSScatter';
 import {useZScoreMatrix} from '../api';
 
 const ZScoreMatrix = (props: ScatterProps) => {
@@ -25,7 +25,7 @@ const ZScoreMatrix = (props: ScatterProps) => {
 
     return (
         <ChartContainer
-            body={<Scatter data={zScoreMatrix.data || []} xAxis={xAxis} yAxis={yAxis} />}
+            body={<CSScatter data={zScoreMatrix.data || []} xAxis={xAxis} yAxis={yAxis} />}
             selects={selects}
             title="Z Score"
         />

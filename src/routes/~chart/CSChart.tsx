@@ -5,14 +5,14 @@ import {Responsive, WidthProvider} from 'react-grid-layout';
 import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
 
 import {useExchangeInfo} from './api';
+import ChartTape from './components/ChartTape';
 import Table from './components/OrderBook';
-import Tape from './components/Tape';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const gridLayoutRowHeight = 30;
 
-const Chart = () => {
+const CSChart = () => {
     const exchangeInfo = useExchangeInfo();
 
     const [symbol] = useState('BTCUSDT');
@@ -43,10 +43,10 @@ const Chart = () => {
                 <Table symbol={symbol} symbolTickSize={symbolTickSize} tableHeight={tableHeight} />
             </div>
             <div className="bg-slate-900 overflow-hidden" data-grid={{h: 14, w: 4, x: 8, y: 16}} key="tape">
-                <Tape />
+                <ChartTape />
             </div>
         </ResponsiveGridLayout>
     );
 };
 
-export default Chart;
+export default CSChart;

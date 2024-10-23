@@ -4,7 +4,7 @@ import {useStreamAggTrade} from '../api';
 import type {TapeStateType} from '../types';
 import TimeDisplay from './TimeDisplay';
 
-const Tape = () => {
+const ChartTape = () => {
     const streamAggTrade = useStreamAggTrade('BTCUSDT');
 
     const [tapeData, setTapeData] = useState<TapeStateType[]>([]);
@@ -49,4 +49,4 @@ const Tape = () => {
     );
 };
 
-export default Tape;
+export default ChartTape;

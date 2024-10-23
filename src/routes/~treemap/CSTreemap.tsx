@@ -3,7 +3,7 @@ import {maxBy, minBy} from 'lodash-es';
 
 import {useHeatmapData} from './api';
 
-const Treemap = () => {
+const CSTreemap = () => {
     const treemap = useHeatmapData();
 
     const children =
@@ -74,4 +74,4 @@ const Treemap = () => {
     return !treemap.isLoading && <ReactEcharts option={option} style={{height: '95%', width: '100%'}} />;
 };
 
-export default Treemap;
+export default CSTreemap;

@@ -1,7 +1,7 @@
 import {createLazyFileRoute} from '@tanstack/react-router';
 
-import Correlations from './Correlations';
+import CSCorrelations from './CSCorrelations';
 
 export const Route = createLazyFileRoute('/correlations')({
-    component: Correlations,
+    component: CSCorrelations,
 });

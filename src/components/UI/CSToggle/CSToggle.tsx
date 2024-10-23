@@ -6,7 +6,7 @@ export type ToggleProps = {
     label: string;
 };
 
-const Toggle = (props: ToggleProps) => {
+const CSToggle = (props: ToggleProps) => {
     const {enabled, label, setEnabled} = props;
 
     return (
@@ -30,4 +30,4 @@ const Toggle = (props: ToggleProps) => {
     );
 };
 
-export default Toggle;
+export default CSToggle;

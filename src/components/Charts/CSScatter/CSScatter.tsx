@@ -10,7 +10,7 @@ export type ScatterProps = {
     yAxis: string;
 };
 
-const Scatter = (props: ScatterProps) => {
+const CSScatter = (props: ScatterProps) => {
     const {data, xAxis, yAxis} = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
@@ -96,4 +96,4 @@ const Scatter = (props: ScatterProps) => {
     return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '100%', width: '100%'}} />;
 };
 
-export default Scatter;
+export default CSScatter;

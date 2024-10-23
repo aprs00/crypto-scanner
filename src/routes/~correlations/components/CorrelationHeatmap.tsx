@@ -1,8 +1,8 @@
 import {memo, useState} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
-import Heatmap from '@/components/Charts/Heatmap';
 
+import CSHeatmap from '../../../components/Charts/CSHeatmap';
 import {useCorrelations} from '../api';
 import {PearsonHeatmapProps} from '../types';
 
@@ -34,7 +34,7 @@ const PearsonHeatmap = (props: PearsonHeatmapProps) => {
 
     return (
         <ChartContainer
-            body={<Heatmap data={pearsonCorrelation.data} />}
+            body={<CSHeatmap data={pearsonCorrelation.data} />}
             selects={selects}
             title="Pearson / Spearman"
         />

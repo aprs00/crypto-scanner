@@ -1,8 +1,8 @@
 import {memo, useState} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
-import Heatmap from '@/components/Charts/Heatmap';
 
+import CSHeatmap from '../../../components/Charts/CSHeatmap';
 import {useBetaHeatmapData} from '../api';
 import type {BetaHeatmapProps} from '../types';
 
@@ -23,7 +23,9 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
         },
     ];
 
-    return <ChartContainer body={<Heatmap data={betaHeatmap.data} />} selects={selects} title="Pearson correlation" />;
+    return (
+        <ChartContainer body={<CSHeatmap data={betaHeatmap.data} />} selects={selects} title="Pearson correlation" />
+    );
 };
 
 export default memo(BetaHeatmap);

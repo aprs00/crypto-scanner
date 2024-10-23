@@ -1,10 +1,11 @@
 import {ComponentProps, Dispatch, ReactNode, SetStateAction} from 'react';
 
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
-import CustomSelect from '@/components/UI/Select';
 
-const selectsMapper: {[key: string]: (props: ComponentProps<typeof CustomSelect>) => ReactNode} = {
-    select: CustomSelect,
+import CSSelect from '../../UI/CSSelect';
+
+const selectsMapper: {[key: string]: (props: ComponentProps<typeof CSSelect>) => ReactNode} = {
+    select: CSSelect,
 };
 
 import {SelectOption} from '@/types';

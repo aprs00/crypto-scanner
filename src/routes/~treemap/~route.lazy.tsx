@@ -1,7 +1,7 @@
 import {createLazyFileRoute} from '@tanstack/react-router';
 
-import Treemap from './Treemap';
+import CSTreemap from './CSTreemap';
 
 export const Route = createLazyFileRoute('/treemap')({
-    component: Treemap,
+    component: CSTreemap,
 });

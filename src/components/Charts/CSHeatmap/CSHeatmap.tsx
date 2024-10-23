@@ -8,7 +8,7 @@ export type HeatmapProps = {
     data?: HeatmapResponse;
     tooltipType?: 'duration';
 };
-const Heatmap = (props: HeatmapProps) => {
+const CSHeatmap = (props: HeatmapProps) => {
     const {data, tooltipType} = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
@@ -90,4 +90,4 @@ const Heatmap = (props: HeatmapProps) => {
     return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '100%', width: '100%'}} />;
 };
 
-export default Heatmap;
+export default CSHeatmap;

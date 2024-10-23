@@ -2,7 +2,7 @@ import {Link} from '@tanstack/react-router';
 
 import {headerLinks} from '@/config/links';
 
-const Navigation = () => {
+const CSNavigation = () => {
     return (
         <div className="flex items-center justify-between p-3">
             <div className="flex gap-3 text-lg">
@@ -16,4 +16,4 @@ const Navigation = () => {
     );
 };
 
-export default Navigation;
+export default CSNavigation;

@@ -1,7 +1,7 @@
 import {createLazyFileRoute} from '@tanstack/react-router';
 
-import Chart from './Chart';
+import CSChart from './CSChart';
 
 export const Route = createLazyFileRoute('/chart')({
-    component: Chart,
+    component: CSChart,
 });
