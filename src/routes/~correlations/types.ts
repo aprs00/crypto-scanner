@@ -1,4 +1,4 @@
 export type CorrelationsParams = {
-    tf: string;
+    duration: string;
     type: string;
 };

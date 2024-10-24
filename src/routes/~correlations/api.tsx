@@ -7,7 +7,7 @@ import type {HeatmapResponse, SelectOption} from '@/types/api';
 const fetchCorrelations = async (params: CorrelationsParams) => {
     const url = 'large-pearson-correlation';
 
-    const {data} = await api.get<HeatmapResponse>(url);
+    const {data} = await api.get<HeatmapResponse>(url, {params});
     return data;
 };
 

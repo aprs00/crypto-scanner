@@ -15,7 +15,7 @@ const CSCorrelations = () => {
     const timeFrameOptions = useCorrelationsTimeframeOptions();
     const typeOptions = useCorrelationTypeOptions();
 
-    const pearsonCorrelation = useCorrelations({tf: selectedTf, type: selectedType});
+    const pearsonCorrelation = useCorrelations({duration: selectedTf, type: selectedType});
 
     const gridLayouts = [
         {
