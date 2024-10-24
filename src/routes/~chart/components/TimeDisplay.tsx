@@ -1,6 +1,12 @@
 import {memo, useEffect, useState} from 'react';
 
-const TimeDisplay = ({timestamp}: {timestamp: number}) => {
+type TimeDisplayProps = {
+    timestamp: number;
+};
+
+const TimeDisplay = (props: TimeDisplayProps) => {
+    const {timestamp} = props;
+
     const [timeDiff, setTimeDiff] = useState(0);
 
     useEffect(() => {

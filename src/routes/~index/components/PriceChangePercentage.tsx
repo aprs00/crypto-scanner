@@ -2,9 +2,17 @@ import ReactEcharts from 'echarts-for-react';
 import {useRef, useState} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
+import type {SelectOption} from '@/types/api';
 
 import {usePriceChangePercentage} from '../api';
-import type {PriceChangePercentageProps} from '../types';
+
+export type PriceChangePercentageProps = {
+    tf: string;
+    symbol: string;
+    timeFrameOptions: SelectOption[];
+    tickerOptions: SelectOption[];
+    type: 'day' | 'hour';
+};
 
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const {symbol, tf, tickerOptions, timeFrameOptions, type} = props;

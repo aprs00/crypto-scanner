@@ -90,9 +90,3 @@ export type StreamAggTradeResponseType = {
     q: string;
     s: string;
 };
-
-export type OrderBookTablePropsType = {
-    tableHeight: number;
-    symbol: string;
-    symbolTickSize: number;
-};

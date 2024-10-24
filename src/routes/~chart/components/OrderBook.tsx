@@ -6,8 +6,13 @@ import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
 
 import {useStreamTicker} from '../api';
-import type {OrderBookTablePropsType} from '../types';
 import {tableBackgroundStyle} from '../utils';
+
+export type OrderBookTablePropsType = {
+    tableHeight: number;
+    symbol: string;
+    symbolTickSize: number;
+};
 
 const tableAlignmentOptions = [
     {label: 'V', value: 'V'},

@@ -47,19 +47,9 @@ const Stats = () => {
                 key: 'scatter2',
             },
             {
-                component: <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions.data?.all || []} type="price" />,
+                component: <ZScoreHistory tf="12h" />,
                 gridLayout: {h: 14, w: 12, x: 0, y: 28},
                 key: 'zScoreHistory1',
-            },
-            {
-                component: <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions.data?.all || []} type="volume" />,
-                gridLayout: {h: 14, w: 12, x: 0, y: 42},
-                key: 'zScoreHistory2',
-            },
-            {
-                component: <ZScoreHistory tf="12h" timeFrameOptions={timeFrameOptions.data?.all || []} type="trades" />,
-                gridLayout: {h: 14, w: 12, x: 0, y: 56},
-                key: 'zScoreHistory3',
             },
             {
                 component: (
@@ -71,7 +61,7 @@ const Stats = () => {
                         type="day"
                     />
                 ),
-                gridLayout: {h: 14, w: 6, x: 0, y: 60},
+                gridLayout: {h: 14, w: 6, x: 0, y: 42},
                 key: 'priceChangePerDayOfWeek1',
             },
             {
@@ -84,7 +74,7 @@ const Stats = () => {
                         type="day"
                     />
                 ),
-                gridLayout: {h: 14, w: 6, x: 6, y: 60},
+                gridLayout: {h: 14, w: 6, x: 6, y: 42},
                 key: 'priceChangePerDayOfWeek2',
             },
             {
@@ -97,7 +87,7 @@ const Stats = () => {
                         type="hour"
                     />
                 ),
-                gridLayout: {h: 14, w: 12, x: 0, y: 74},
+                gridLayout: {h: 14, w: 12, x: 0, y: 66},
                 key: 'priceChangePerHourOfDay1',
             },
         ],

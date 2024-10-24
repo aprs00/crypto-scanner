@@ -2,9 +2,15 @@ import {memo, useState} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
+import {SelectOption} from '@/types/api';
 
 import {useZScoreHeatmap} from '../api';
-import {ZScoreHeatmapProps} from '../types';
+
+export type ZScoreHeatmapProps = {
+    type: string;
+    typeOptions: SelectOption[];
+};
+
 const PearsonHeatmap = (props: ZScoreHeatmapProps) => {
     const {type, typeOptions} = props;
     const [selectedType, setSelectedType] = useState(type);

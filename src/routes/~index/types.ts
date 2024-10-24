@@ -25,24 +25,3 @@ export type ZScoreHistoryResponse = {
     }[];
     xAxis: string[];
 };
-
-export type BetaHeatmapProps = {
-    tf: string;
-    timeFrameOptions: SelectOption[];
-};
-
-export type PriceChangeTypes = 'day' | 'hour';
-
-export type PriceChangePercentageProps = {
-    tf: string;
-    symbol: string;
-    timeFrameOptions: SelectOption[];
-    tickerOptions: SelectOption[];
-    type: PriceChangeTypes;
-};
-
-export type ZScoreHistoryProps = {
-    timeFrameOptions: SelectOption[];
-    tf: string;
-    type: string;
-};

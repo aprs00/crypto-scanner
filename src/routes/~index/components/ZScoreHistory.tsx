@@ -1,15 +1,23 @@
 import ReactEcharts from 'echarts-for-react';
 import {capitalize} from 'lodash-es';
+import {useState} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
+import {useCorrelationTypeOptions} from '@/routes/~correlations/api';
 
 import {useZScoreHistory} from '../api';
-import type {ZScoreHistoryProps} from '../types';
+
+export type ZScoreHistoryProps = {
+    tf: string;
+};
 
 const ZScoreHistory = (props: ZScoreHistoryProps) => {
-    const {tf, type} = props;
+    const {tf} = props;
 
-    const zScoreHistory = useZScoreHistory(type, tf);
+    const [selectedType, setSelectedType] = useState('price');
+
+    const zScoreHistory = useZScoreHistory(selectedType, tf);
+    const typeOptions = useCorrelationTypeOptions();
 
     const option = {
         grid: {
@@ -64,7 +72,17 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
     return (
         <ChartContainer
             body={<ReactEcharts option={option} style={{height: '92%', width: '100%'}}></ReactEcharts>}
-            title={`Z Score - ${capitalize(type)} - ${tf} (UTC)`}
+            selects={[
+                {
+                    class: 'w-28',
+                    componentName: 'select',
+                    id: '1',
+                    onChange: setSelectedType,
+                    options: typeOptions.data || [],
+                    value: selectedType,
+                },
+            ]}
+            title={`Z Score - ${capitalize(selectedType)} - ${tf} (UTC)`}
         />
     );
 };
