@@ -99,7 +99,7 @@ const useZScoreHistory = (params: ZScoreHistoryParams) => {
 const fetchStatsSelectOptions = async () => {
     const url = 'stats-select-options';
 
-    const {data} = await api.get<SelectOptionsResponse[]>(url);
+    const {data} = await api.get<SelectOptionsResponse>(url);
     return data;
 };
 
