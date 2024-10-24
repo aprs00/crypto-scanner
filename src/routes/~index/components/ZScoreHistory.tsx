@@ -1,5 +1,4 @@
 import ReactEcharts from 'echarts-for-react';
-import {capitalize} from 'lodash-es';
 import {useState} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
