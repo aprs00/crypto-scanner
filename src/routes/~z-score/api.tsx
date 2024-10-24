@@ -1,40 +1,38 @@
 import {useQuery} from '@tanstack/react-query';
 
-import env from '@/config/env';
-import api from '@/lib/ky';
+import api from '@/lib/api';
+import {ZScoreHeatmapParams, ZScoreMatrixLargeParams} from '@/routes/~z-score/types';
 import type {HeatmapResponse, ZScoreMatrixResponse} from '@/types/api';
 
-const fetchZScoreMatrixLarge = async (xAxis: string, yAxis: string, tf: string) => {
-    const url = new URL('z-score-matrix-large', env.baseAPI);
-    url.searchParams.set('tf', tf);
-    url.searchParams.set('x_axis', xAxis);
-    url.searchParams.set('y_axis', yAxis);
+const fetchZScoreMatrixLarge = async (params: ZScoreMatrixLargeParams) => {
+    const url = 'z-score-matrix-large';
 
-    return (await api.get(url).json()) as ZScoreMatrixResponse[];
+    const {data} = await api.get<ZScoreMatrixResponse[]>(url, {params});
+    return data;
 };
 
-const useZScoreMatrixLarge = (xAxis: string, yAxis: string, tf: string) => {
+const useZScoreMatrixLarge = (params: ZScoreMatrixLargeParams) => {
     return useQuery({
         gcTime: 20_000,
-        queryFn: () => fetchZScoreMatrixLarge(xAxis, yAxis, tf),
-        queryKey: ['z-score-matrix-large', xAxis, yAxis, tf],
+        queryFn: () => fetchZScoreMatrixLarge(params),
+        queryKey: ['z-score-matrix-large', params],
         refetchInterval: 20_000,
         staleTime: 20_000,
     });
 };
 
-const fetchZScoreHeatmap = async (type: string) => {
-    const url = new URL('z-score-heatmap', env.baseAPI);
-    url.searchParams.set('type', type);
+const fetchZScoreHeatmap = async (params: ZScoreHeatmapParams) => {
+    const url = 'z-score-heatmap';
 
-    return (await api.get(url).json()) as HeatmapResponse;
+    const {data} = await api.get<HeatmapResponse>(url, {params});
+    return data;
 };
 
-const useZScoreHeatmap = (type: string) => {
+const useZScoreHeatmap = (params: ZScoreHeatmapParams) => {
     return useQuery({
         gcTime: 60_000,
-        queryFn: () => fetchZScoreHeatmap(type),
-        queryKey: ['z-score-heatmap', type],
+        queryFn: () => fetchZScoreHeatmap(params),
+        queryKey: ['z-score-heatmap', params],
         refetchInterval: 60_000,
         staleTime: 60_000,
     });

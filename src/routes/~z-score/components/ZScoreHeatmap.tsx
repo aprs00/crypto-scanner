@@ -14,7 +14,7 @@ export type ZScoreHeatmapProps = {
 const PearsonHeatmap = (props: ZScoreHeatmapProps) => {
     const {type, typeOptions} = props;
     const [selectedType, setSelectedType] = useState(type);
-    const heatmap = useZScoreHeatmap(selectedType);
+    const heatmap = useZScoreHeatmap({type: selectedType});
     const selects = [
         {
             class: 'w-24',
