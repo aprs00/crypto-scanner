@@ -1,34 +1,40 @@
 import {useQuery} from '@tanstack/react-query';
 
-import env from '@/config/env';
-import api from '@/lib/ky';
+import api from '@/lib/api';
 import type {HeatmapResponse, SelectOption, ZScoreMatrixResponse} from '@/types/api';
 
-import type {AveragePriceChangeResponse, SelectOptionsResponse, ZScoreHistoryResponse} from './types';
+import {
+    AveragePriceChangeParams,
+    AveragePriceChangeResponse,
+    HeatmapParams,
+    SelectOptionsResponse,
+    ZScoreHistoryParams,
+    ZScoreHistoryResponse,
+    ZScoreMatrixParams,
+} from './types';
 
-const fetchPriceChangePercentage = async (symbol: string, duration: string, type: string) => {
-    const url = new URL('average-prices', env.baseAPI);
-    url.searchParams.set('duration', duration);
-    url.searchParams.set('symbol', symbol);
-    url.searchParams.set('type', type);
+const fetchPriceChangePercentage = async (params: AveragePriceChangeParams) => {
+    const url = 'average-prices';
 
-    return (await api.get(url).json()) as AveragePriceChangeResponse;
+    const {data} = await api.get<AveragePriceChangeResponse>(url, {params});
+    return data;
 };
 
-const usePriceChangePercentage = (symbol: string, duration: string, type: string) => {
+const usePriceChangePercentage = (params: AveragePriceChangeParams) => {
     return useQuery({
         gcTime: 120_000,
-        queryFn: () => fetchPriceChangePercentage(symbol, duration, type),
-        queryKey: ['price-change-percentage', symbol, duration, type],
+        queryFn: () => fetchPriceChangePercentage(params),
+        queryKey: ['price-change-percentage', params],
         refetchInterval: 120_000,
         staleTime: 120_000,
     });
 };
 
 const fetchTickersOptions = async () => {
-    const url = new URL('tickers-options', env.baseAPI);
+    const url = 'tickers-options';
 
-    return (await api.get(url).json()) as SelectOption[];
+    const {data} = await api.get<SelectOption[]>(url);
+    return data;
 };
 
 const useFetchTickersOptions = () => {
@@ -39,64 +45,62 @@ const useFetchTickersOptions = () => {
     });
 };
 
-const fetchBetaHeatmapData = async (duration: string) => {
-    const url = new URL('pearson-correlation', env.baseAPI);
-    url.searchParams.set('duration', duration);
+const fetchBetaHeatmapData = async (params: HeatmapParams) => {
+    const url = 'pearson-correlation';
 
-    return (await api.get(url).json()) as HeatmapResponse;
+    const {data} = await api.get<HeatmapResponse>(url, {params});
+    return data;
 };
 
-const useBetaHeatmapData = (duration: string) => {
+const useBetaHeatmapData = (params: HeatmapParams) => {
     return useQuery({
         gcTime: 30_000,
-        queryFn: () => fetchBetaHeatmapData(duration),
-        queryKey: ['beta-heatmap-data', duration],
+        queryFn: () => fetchBetaHeatmapData(params),
+        queryKey: ['beta-heatmap-data', params],
         refetchInterval: 30_000,
         staleTime: 30_000,
     });
 };
 
-const fetchZScoreMatrix = async (xAxis: string, yAxis: string, duration: string) => {
-    const url = new URL('z-score-matrix', env.baseAPI);
-    url.searchParams.set('duration', duration);
-    url.searchParams.set('x_axis', xAxis);
-    url.searchParams.set('y_axis', yAxis);
+const fetchZScoreMatrix = async (params: ZScoreMatrixParams) => {
+    const url = 'z-score-matrix';
 
-    return (await api.get(url).json()) as ZScoreMatrixResponse[];
+    const {data} = await api.get<ZScoreMatrixResponse[]>(url, {params});
+    return data;
 };
 
-const useZScoreMatrix = (xAxis: string, yAxis: string, duration: string) => {
+const useZScoreMatrix = (params: ZScoreMatrixParams) => {
     return useQuery({
         gcTime: 30_000,
-        queryFn: () => fetchZScoreMatrix(xAxis, yAxis, duration),
-        queryKey: ['z-score-matrix', xAxis, yAxis, duration],
+        queryFn: () => fetchZScoreMatrix(params),
+        queryKey: ['z-score-matrix', params],
         refetchInterval: 30_000,
         staleTime: 30_000,
     });
 };
 
-const fetchZScoreHistory = async (type: string, duration: string) => {
-    const url = new URL('z-score-history', env.baseAPI);
-    url.searchParams.set('duration', duration);
-    url.searchParams.set('type', type);
+const fetchZScoreHistory = async (params: ZScoreHistoryParams) => {
+    const url = 'z-score-history';
 
-    return (await api.get(url).json()) as ZScoreHistoryResponse;
+    const {data} = await api.get<ZScoreHistoryResponse>(url, {params});
+    return data;
 };
 
-const useZScoreHistory = (type: string, duration: string) => {
+const useZScoreHistory = (params: ZScoreHistoryParams) => {
     return useQuery({
         gcTime: 30_000,
-        queryFn: () => fetchZScoreHistory(type, duration),
-        queryKey: ['z-score-history', type, duration],
+        queryFn: () => fetchZScoreHistory(params),
+        queryKey: ['z-score-history', params],
         refetchInterval: 30_000,
         staleTime: 30_000,
     });
 };
 
 const fetchStatsSelectOptions = async () => {
-    const url = new URL(`stats-select-options`, env.baseAPI);
+    const url = 'stats-select-options';
 
-    return (await api.get(url).json()) as SelectOptionsResponse;
+    const {data} = await api.get<SelectOptionsResponse[]>(url);
+    return data;
 };
 
 const useStatsSelectOptions = () => {

@@ -16,7 +16,10 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
 
     const [selectedType, setSelectedType] = useState('price');
 
-    const zScoreHistory = useZScoreHistory(selectedType, tf);
+    const zScoreHistory = useZScoreHistory({
+        duration: tf,
+        type: selectedType,
+    });
     const typeOptions = useCorrelationTypeOptions();
 
     const option = {

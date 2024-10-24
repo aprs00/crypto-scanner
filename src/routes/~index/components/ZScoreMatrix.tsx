@@ -16,7 +16,11 @@ export type ScatterProps = {
 const ZScoreMatrix = (props: ScatterProps) => {
     const {tf, timeFrameOptions, xAxis, yAxis} = props;
     const [selectedTf, setSelectedTf] = useState(tf);
-    const zScoreMatrix = useZScoreMatrix(xAxis, yAxis, selectedTf);
+    const zScoreMatrix = useZScoreMatrix({
+        duration: selectedTf,
+        xAxis,
+        yAxis,
+    });
     const selects = [
         {
             componentName: 'select',

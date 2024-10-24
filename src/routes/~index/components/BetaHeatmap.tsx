@@ -16,7 +16,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
 
     const [selectedTf, setSelectedTf] = useState(tf);
 
-    const betaHeatmap = useBetaHeatmapData(selectedTf);
+    const betaHeatmap = useBetaHeatmapData({duration: selectedTf});
 
     const selects = [
         {

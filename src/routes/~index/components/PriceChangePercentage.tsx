@@ -22,7 +22,11 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const chartRef = useRef<ReactEcharts | null>(null);
     // const chartInstance = chartRef.current?.getEchartsInstance();
 
-    const priceChangePercentageApi = usePriceChangePercentage(selectedTicker, selectedTf, type);
+    const priceChangePercentageApi = usePriceChangePercentage({
+        duration: selectedTf,
+        symbol: selectedTicker,
+        type,
+    });
 
     const titleMapper = {
         day: 'Average price change per day of week',
