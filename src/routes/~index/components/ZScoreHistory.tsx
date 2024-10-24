@@ -85,7 +85,7 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
                     value: selectedType,
                 },
             ]}
-            title={`Z Score - ${capitalize(selectedType)} - ${tf} (UTC)`}
+            title={`Z Score - ${tf} (UTC)`}
         />
     );
 };
