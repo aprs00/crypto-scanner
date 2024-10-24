@@ -20,5 +20,14 @@ const coingeckoInstance = axios.create({
     timeout: 5000,
 });
 
-export {coingeckoInstance};
+const binanceInstance = axios.create({
+    baseURL: env.binanceAPI,
+    headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+    },
+    timeout: 5000,
+});
+
+export {binanceInstance, coingeckoInstance};
 export default baseInstance;

@@ -1,16 +1,22 @@
 import {useQuery} from '@tanstack/react-query';
 import {useEffect, useRef, useState} from 'react';
 
-import env from '@/config/env';
-import api from '@/lib/ky';
+import {binanceInstance} from '@/lib/api';
 import queryClient from '@/lib/react-query';
 
-import type {ExchangeInfoResponseType, OrderBookResponseType, StreamAggTradeResponseType} from './types';
+import {
+    DepthSnapshotParams,
+    ExchangeInfoResponseType,
+    OrderBookResponseType,
+    StreamAggTradeResponseType,
+} from './types';
 import {groupOrders, isEventValid, updateOrderBook} from './utils';
 
 const fetchExchangeInfo = async () => {
-    const url = new URL('api/v3/exchangeInfo', env.binanceAPI);
-    return (await api.get(url).json()) as ExchangeInfoResponseType;
+    const url = 'api/v3/exchangeInfo';
+
+    const {data} = await binanceInstance.get<ExchangeInfoResponseType>(url);
+    return data;
 };
 
 const useExchangeInfo = () => {
@@ -21,19 +27,18 @@ const useExchangeInfo = () => {
     });
 };
 
-const fetchDepthSnapshot = async (symbol: string, limit = 5000) => {
-    const url = new URL('api/v3/depth', env.binanceAPI);
-    url.searchParams.set('symbol', symbol);
-    url.searchParams.set('limit', limit.toString());
+const fetchDepthSnapshot = async (params: DepthSnapshotParams) => {
+    const url = 'api/v3/depth';
 
-    return (await api.get(url).json()) as OrderBookResponseType;
+    const {data} = await binanceInstance.get<OrderBookResponseType>(url, {params});
+    return data;
 };
 
-const useDepthSnapshot = (symbol: string, firstEventProcessed: boolean) => {
+const useDepthSnapshot = (params: DepthSnapshotParams, firstEventProcessed: boolean) => {
     return useQuery({
-        enabled: !!symbol,
-        queryFn: () => fetchDepthSnapshot(symbol),
-        queryKey: ['depth-snapshot', symbol],
+        enabled: !!params.symbol,
+        queryFn: () => fetchDepthSnapshot(params),
+        queryKey: ['depth-snapshot', params],
         refetchInterval: firstEventProcessed ? 120_000 : 1_800,
         staleTime: Infinity,
     });
@@ -41,7 +46,7 @@ const useDepthSnapshot = (symbol: string, firstEventProcessed: boolean) => {
 
 const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
     const [firstEventProcessed, setFirstEventProcessed] = useState(() => false);
-    useDepthSnapshot(symbol, firstEventProcessed);
+    useDepthSnapshot({limit: '5000', symbol}, firstEventProcessed);
 
     const groupByValRef = useRef(groupByVal);
     const numOfRowsRef = useRef(numOfRows);

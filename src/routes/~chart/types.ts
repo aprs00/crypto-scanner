@@ -1,3 +1,8 @@
+export type DepthSnapshotParams = {
+    symbol: string;
+    limit: string;
+};
+
 export type TapeStateType = {
     price: string;
     size: string;
