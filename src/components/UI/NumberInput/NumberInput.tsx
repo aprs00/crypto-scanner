@@ -12,9 +12,11 @@ const NumberInput = (props: NumberInputPropsType) => {
     const {onChange, value} = props;
 
     const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
-        if (isNaN(Number(e.target.value))) return;
-        if (Number(e.target.value) > 1000 || Number(e.target.value) <= 0) return;
-        onChange(Number(e.target.value));
+        const val = Number(e.target.value);
+
+        if (isNaN(val)) return;
+        if (val > 1000 || val <= 0) return;
+        onChange(val);
     };
 
     return (
