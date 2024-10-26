@@ -1,10 +1,12 @@
 import {Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition} from '@headlessui/react';
 import {Dispatch, SetStateAction} from 'react';
 
+import {SelectOption} from '@/types/api';
+
 import SelectIcon from './SelectIcon';
 
 export type SelectProps = {
-    options: {value: string; label: string}[];
+    options: SelectOption[];
     value: string;
     classes?: string;
     onChange: Dispatch<SetStateAction<string>>;
