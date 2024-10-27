@@ -20,19 +20,19 @@ const Stats = () => {
             {
                 component: <BetaHeatmap tf="4h" timeFrameOptions={timeFrameOptions.data?.all || []} />,
                 gridLayout: {h: 14, w: 6, x: 0, y: 0},
-                key: 'betaHeatmap1',
+                key: crypto.randomUUID(),
             },
             {
                 component: <BetaHeatmap tf="1d" timeFrameOptions={timeFrameOptions.data?.all || []} />,
                 gridLayout: {h: 14, w: 6, x: 6, y: 0},
-                key: 'betaHeatmap2',
+                key: crypto.randomUUID(),
             },
             {
                 component: (
                     <Scatter tf="4h" timeFrameOptions={timeFrameOptions.data?.all || []} xAxis="price" yAxis="volume" />
                 ),
                 gridLayout: {h: 14, w: 6, x: 0, y: 14},
-                key: 'scatter1',
+                key: crypto.randomUUID(),
             },
             {
                 component: (
@@ -44,12 +44,12 @@ const Stats = () => {
                     />
                 ),
                 gridLayout: {h: 14, w: 6, x: 6, y: 14},
-                key: 'scatter2',
+                key: crypto.randomUUID(),
             },
             {
                 component: <ZScoreHistory tf="12h" />,
                 gridLayout: {h: 14, w: 12, x: 0, y: 28},
-                key: 'zScoreHistory1',
+                key: crypto.randomUUID(),
             },
             {
                 component: (
@@ -62,7 +62,7 @@ const Stats = () => {
                     />
                 ),
                 gridLayout: {h: 14, w: 6, x: 0, y: 42},
-                key: 'priceChangePerDayOfWeek1',
+                key: crypto.randomUUID(),
             },
             {
                 component: (
@@ -75,7 +75,7 @@ const Stats = () => {
                     />
                 ),
                 gridLayout: {h: 14, w: 6, x: 6, y: 42},
-                key: 'priceChangePerDayOfWeek2',
+                key: crypto.randomUUID(),
             },
             {
                 component: (
@@ -88,10 +88,10 @@ const Stats = () => {
                     />
                 ),
                 gridLayout: {h: 14, w: 12, x: 0, y: 66},
-                key: 'priceChangePerHourOfDay1',
+                key: crypto.randomUUID(),
             },
         ],
-        [timeFrameOptions, tickerOptions],
+        [timeFrameOptions.data, tickerOptions.data],
     );
 
     return (
