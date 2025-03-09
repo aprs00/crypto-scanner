@@ -1,3 +1,4 @@
+import {binanceInstance} from '@/lib/api';
 import {OrderBookResponseType, StreamTickerResponseType} from '@/routes/~chart/types';
 
 export default class BinanceOrderBookService {
@@ -58,10 +59,9 @@ export default class BinanceOrderBookService {
 
     private async fetchSnapshot(): Promise<void> {
         try {
-            const response = await fetch(
-                `https://api.binance.com/api/v3/depth?symbol=${this.symbol.toUpperCase()}&limit=5000`,
+            const {data} = await binanceInstance.get<OrderBookResponseType>(
+                `api/v3/depth?symbol=${this.symbol.toUpperCase()}&limit=5000`,
             );
-            const data = await response.json();
 
             if (data.lastUpdateId < (this.firstEventU ?? 0)) {
                 this.fetchSnapshot();
