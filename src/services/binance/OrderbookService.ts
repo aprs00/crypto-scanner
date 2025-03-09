@@ -85,7 +85,8 @@ export default class BinanceOrderBookService {
 
         if (validEvents.length > 0) {
             const firstEvent: StreamTickerResponseType = validEvents[0];
-            if (firstEvent.U <= snapshot.lastUpdateId + 1 && firstEvent.u >= snapshot.lastUpdateId + 1) {
+
+            if (firstEvent.U <= snapshot.lastUpdateId && firstEvent.u >= snapshot.lastUpdateId) {
                 let currentBook = {...newOrderBook};
 
                 validEvents.forEach((event) => {
@@ -96,7 +97,7 @@ export default class BinanceOrderBookService {
                 this.onOrderBookUpdate(currentBook);
                 this.eventBuffer = [];
             } else {
-                setTimeout(() => this.initialize(), 1000);
+                setTimeout(() => this.initialize(), 500);
                 this.orderBook = newOrderBook;
                 this.onOrderBookUpdate(newOrderBook);
             }
@@ -116,12 +117,12 @@ export default class BinanceOrderBookService {
     }
 
     private applyEvent(book: OrderBookResponseType, event: StreamTickerResponseType): OrderBookResponseType {
-        if (event.u <= book.lastUpdateId) {
+        if (event.u < book.lastUpdateId) {
             return book;
         }
 
         if (event.U > book.lastUpdateId + 1) {
-            setTimeout(() => this.initialize(), 1000);
+            setTimeout(() => this.initialize(), 500);
         }
 
         const updatedAsks = this.updateOrderBook(book.asks, event.a, true);
