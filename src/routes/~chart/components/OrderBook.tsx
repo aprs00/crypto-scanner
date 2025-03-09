@@ -4,11 +4,11 @@ import DraggableIcon from '@/assets/svg/draggable.svg?react';
 import CSSelect from '@/components/UI/CSSelect';
 import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
+import BinanceOrderBookService from '@/services/binance/OrderbookService';
 import {formatNumber} from '@/utils/number';
 
-import {OrderBookResponseType, StreamTickerResponseType} from '../types';
+import {OrderBookResponseType} from '../types';
 import {tableBackgroundStyle} from '../utils';
-import {groupOrders, updateOrderBook} from '../utils';
 
 export type OrderBookTablePropsType = {
     tableHeight: number;
@@ -31,115 +31,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     }>({bids: [], asks: []});
     const [numOfTicks, setNumOfTicks] = useState(100);
     const [tableAlignment, setTableAlignment] = useState('V');
-
-    const ws = useRef(new WebSocket(''));
-    const eventBuffer = useRef<StreamTickerResponseType[]>([]);
-    const firstEventU = useRef<number | null>(null);
-    const orderBookRef = useRef<OrderBookResponseType>({bids: [], asks: [], lastUpdateId: 0});
-    const symbol = 'btcusdt';
-
-    const initialize = () => {
-        eventBuffer.current = [];
-        firstEventU.current = null;
-
-        setOrderBook({bids: [], asks: [], lastUpdateId: 0});
-
-        if (ws.current) {
-            ws.current.close();
-        }
-
-        ws.current = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@depth@100ms`);
-
-        ws.current.onopen = () => {};
-        ws.current.onclose = () => {};
-        ws.current.onerror = () => {};
-
-        ws.current.onmessage = (event) => {
-            const data: StreamTickerResponseType = JSON.parse(event.data);
-
-            if (firstEventU.current === null && data.U) {
-                firstEventU.current = data.U;
-                fetchSnapshot();
-            } else if (orderBookRef.current.lastUpdateId === 0) {
-                eventBuffer.current.push(data);
-            } else {
-                processEvent(data);
-            }
-        };
-    };
-
-    const fetchSnapshot = async () => {
-        try {
-            const response = await fetch(`https://api.binance.com/api/v3/depth?symbol=BTCUSDT&limit=5000`);
-            const data = await response.json();
-
-            if (data.lastUpdateId < (firstEventU.current ?? 0)) {
-                fetchSnapshot();
-                return;
-            }
-
-            processSnapshot(data);
-        } catch (error) {
-            /* empty */
-        }
-    };
-
-    const processSnapshot = (snapshot: OrderBookResponseType) => {
-        const newOrderBook = {
-            bids: snapshot.bids,
-            asks: snapshot.asks,
-            lastUpdateId: snapshot.lastUpdateId,
-        };
-
-        const validEvents = eventBuffer.current.filter((event) => event.u > snapshot.lastUpdateId);
-
-        if (validEvents.length > 0) {
-            const firstEvent: StreamTickerResponseType = validEvents[0];
-            if (firstEvent.U <= snapshot.lastUpdateId + 1 && firstEvent.u >= snapshot.lastUpdateId + 1) {
-                let currentBook = {...newOrderBook};
-
-                validEvents.forEach((event) => {
-                    currentBook = applyEvent(currentBook, event);
-                });
-
-                setOrderBook(currentBook);
-                eventBuffer.current = [];
-            } else {
-                setTimeout(initialize, 1000);
-                setOrderBook(newOrderBook);
-            }
-        } else {
-            // No valid events to process
-            setOrderBook(newOrderBook);
-        }
-    };
-
-    const processEvent = (event: StreamTickerResponseType) => {
-        const updatedBook = applyEvent(orderBookRef.current, event);
-
-        if (updatedBook.lastUpdateId !== orderBookRef.current.lastUpdateId) {
-            setOrderBook(updatedBook);
-        }
-    };
-
-    const applyEvent = (book: OrderBookResponseType, event: StreamTickerResponseType) => {
-        if (event.u <= book.lastUpdateId) {
-            return book;
-        }
-
-        if (event.U > book.lastUpdateId + 1) {
-            setTimeout(initialize, 1000);
-        }
-
-        const {getter: updatedAsks} = updateOrderBook(book.asks, event.a, true);
-        const {getter: updatedBids} = updateOrderBook(book.bids, event.b, false);
-
-        return {
-            asks: updatedAsks,
-            bids: updatedBids,
-            lastUpdateId: event.u,
-        };
-    };
+    const binanceServiceRef = useRef<BinanceOrderBookService | null>(null);
 
     const groupByVal = useMemo(() => symbolTickSize * numOfTicks, [symbolTickSize, numOfTicks]);
 
@@ -156,29 +48,6 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         return Math.floor(numOfRows);
     }, [tableHeight, tableAlignment]);
 
-    useEffect(() => {
-        orderBookRef.current = orderBook;
-    }, [orderBook]);
-
-    useEffect(() => {
-        if (!symbolTickSize || !orderBookRef.current.asks) return;
-
-        setGroupedOrderBook({
-            bids: groupOrders(orderBookRef.current.bids, groupByVal, false, calculatedNumOfRows),
-            asks: groupOrders(orderBookRef.current.asks, groupByVal, true, calculatedNumOfRows),
-        });
-    }, [numOfTicks, calculatedNumOfRows, orderBook]);
-
-    useEffect(() => {
-        initialize();
-
-        return () => {
-            if (ws.current) {
-                ws.current.close();
-            }
-        };
-    }, []);
-
     const maxQuantity = useMemo(() => {
         const bidsAndAsks = groupedOrderBook.asks?.concat(groupedOrderBook.bids) || [];
         return Math.max(...bidsAndAsks.map((limit: [number, number]) => limit?.[1]));
@@ -192,6 +61,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
             const tableAlignmentClassRow = isTableAlignmentHorizontal ? 'order-1' : '';
 
             for (let i = 0; i < groupedGetter?.length; i++) {
+                if (!groupedGetter[i]) continue;
                 const [price, quantity] = groupedGetter[i];
                 const percentage = (quantity / maxQuantity) * 100;
                 const formattedPrice = formatNumber(price, {maximumFractionDigits: tickSizeDecimalPlaces});
@@ -214,9 +84,27 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         [groupedOrderBook, maxQuantity, calculatedNumOfRows],
     );
 
+    useEffect(() => {
+        if (!symbolTickSize || !orderBook.asks || !binanceServiceRef.current) return;
+
+        setGroupedOrderBook(binanceServiceRef.current.groupOrders(orderBook, groupByVal, calculatedNumOfRows));
+    }, [numOfTicks, calculatedNumOfRows, orderBook, groupByVal, symbolTickSize]);
+
+    useEffect(() => {
+        // Create the Binance service and initialize it
+        binanceServiceRef.current = new BinanceOrderBookService('btcusdt', setOrderBook);
+        binanceServiceRef.current.initialize();
+
+        return () => {
+            if (binanceServiceRef.current) {
+                binanceServiceRef.current.close();
+            }
+        };
+    }, []);
+
     return (
         <>
-            {!groupedOrderBook.asks.length && !symbolTickSize && (
+            {!groupedOrderBook.asks.length && (
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <CSSpinner />
                 </div>
