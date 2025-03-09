@@ -33,7 +33,7 @@ module.exports = {
     ],
     plugins: ['simple-import-sort', 'prettier', 'perfectionist'],
     rules: {
-        "@typescript-eslint/no-explicit-any": 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
         'prettier/prettier': ['error', {}, {usePrettierrc: true}],
         'react/react-in-jsx-scope': 'off',
         'jsx-a11y/accessible-emoji': 'off',
@@ -49,23 +49,15 @@ module.exports = {
                 aspects: ['invalidHref', 'preferButton'],
             },
         ],
-        "react/jsx-sort-props": [
+        'react/jsx-sort-props': [
             2,
             {
-                "callbacksLast": true,
-                "shorthandFirst": false,
-                "shorthandLast": true,
-                "ignoreCase": true,
-                "noSortAlphabetically": false
-            }
+                callbacksLast: true,
+                shorthandFirst: false,
+                shorthandLast: true,
+                ignoreCase: true,
+                noSortAlphabetically: false,
+            },
         ],
-        "perfectionist/sort-objects": [
-            "error",
-            {
-                "type": "natural",
-                "order": "asc"
-            }
-        ]
-
     },
 };
