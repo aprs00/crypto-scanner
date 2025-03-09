@@ -38,20 +38,6 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     const orderBookRef = useRef<OrderBookResponseType>({bids: [], asks: [], lastUpdateId: 0});
     const symbol = 'btcusdt';
 
-    useEffect(() => {
-        orderBookRef.current = orderBook;
-    }, [orderBook]);
-
-    useEffect(() => {
-        initialize();
-
-        return () => {
-            if (ws.current) {
-                ws.current.close();
-            }
-        };
-    }, []);
-
     const initialize = () => {
         eventBuffer.current = [];
         firstEventU.current = null;
@@ -128,18 +114,11 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         }
     };
 
-    // fix
-    // const groupByVal = useMemo(() => symbolTickSize * numOfTicks, [symbolTickSize, numOfTicks]);
-
     const processEvent = (event: StreamTickerResponseType) => {
         const updatedBook = applyEvent(orderBookRef.current, event);
 
         if (updatedBook.lastUpdateId !== orderBookRef.current.lastUpdateId) {
             setOrderBook(updatedBook);
-            setGroupedOrderBook({
-                bids: groupOrders(updatedBook.bids, 0.1, false, calculatedNumOfRows),
-                asks: groupOrders(updatedBook.asks, 0.1, true, calculatedNumOfRows),
-            });
         }
     };
 
@@ -162,6 +141,8 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         };
     };
 
+    const groupByVal = useMemo(() => symbolTickSize * numOfTicks, [symbolTickSize, numOfTicks]);
+
     const tickSizeDecimalPlaces = useMemo(() => {
         const tickSizeStr = symbolTickSize.toString();
         const decimalIndex = tickSizeStr.indexOf('.');
@@ -174,6 +155,29 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         const numOfRows = (calc % 2 === 0 ? calc : calc - 1) / 2 + calc / divideBy;
         return Math.floor(numOfRows);
     }, [tableHeight, tableAlignment]);
+
+    useEffect(() => {
+        orderBookRef.current = orderBook;
+    }, [orderBook]);
+
+    useEffect(() => {
+        if (!symbolTickSize || !orderBookRef.current.asks) return;
+
+        setGroupedOrderBook({
+            bids: groupOrders(orderBookRef.current.bids, groupByVal, false, calculatedNumOfRows),
+            asks: groupOrders(orderBookRef.current.asks, groupByVal, true, calculatedNumOfRows),
+        });
+    }, [numOfTicks, calculatedNumOfRows, orderBook]);
+
+    useEffect(() => {
+        initialize();
+
+        return () => {
+            if (ws.current) {
+                ws.current.close();
+            }
+        };
+    }, []);
 
     const maxQuantity = useMemo(() => {
         const bidsAndAsks = groupedOrderBook.asks?.concat(groupedOrderBook.bids) || [];
