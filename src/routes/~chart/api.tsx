@@ -9,6 +9,7 @@ import {
     ExchangeInfoResponseType,
     OrderBookResponseType,
     StreamAggTradeResponseType,
+    StreamTickerResponseType,
 } from './types';
 import {groupOrders, isEventValid, updateOrderBook} from './utils';
 
@@ -36,7 +37,7 @@ const fetchDepthSnapshot = async (params: DepthSnapshotParams) => {
 
 const useDepthSnapshot = (params: DepthSnapshotParams) => {
     return useQuery({
-        enabled: !!params.symbol,
+        enabled: false,
         queryFn: () => fetchDepthSnapshot(params),
         queryKey: ['depth-snapshot', params.symbol],
         staleTime: Infinity,
@@ -46,6 +47,8 @@ const useDepthSnapshot = (params: DepthSnapshotParams) => {
 const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
     const [firstEventProcessed, setFirstEventProcessed] = useState(() => false);
     const {refetch} = useDepthSnapshot({limit: '5000', symbol});
+    const isFetched = useRef(false);
+    const buffer = useRef<MessageEvent[] | null>(null);
 
     const groupByValRef = useRef(groupByVal);
     const numOfRowsRef = useRef(numOfRows);
@@ -58,33 +61,25 @@ const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
     useEffect(() => {
         const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@100ms`);
 
-        ws.onopen = () => {
+        ws.onopen = async () => {
             console.log('Orderbook WebSocket connected');
-            refetch();
+            await refetch();
+            isFetched.current = true;
         };
 
         ws.onmessage = (event) => {
-            const streamData = JSON.parse(event.data);
-            const depthSnapshotCache = queryClient.getQueryData(['depth-snapshot', symbol]) as OrderBookResponseType;
+            if (isFetched.current) {
+                if (buffer) {
+                    buffer.current?.forEach((event) => {
+                        processMessage(event);
+                    });
+                    buffer.current = null;
+                }
 
-            if (!isEventValid(depthSnapshotCache, streamData, firstEventProcessed, setFirstEventProcessed, refetch))
-                return;
-
-            const {getter: updatedAsks} = updateOrderBook(depthSnapshotCache.asks, streamData.a, true);
-            const {getter: updatedBids} = updateOrderBook(depthSnapshotCache.bids, streamData.b, false);
-
-            const groupedAsks = groupOrders(updatedAsks, groupByValRef.current, true, numOfRowsRef.current);
-            const groupedBids = groupOrders(updatedBids, groupByValRef.current, false, numOfRowsRef.current);
-
-            const newDepthSnapshot = {
-                asks: updatedAsks,
-                bids: updatedBids,
-                groupedAsks: groupedAsks,
-                groupedBids: groupedBids,
-                lastUpdateId: streamData.u,
-            };
-
-            queryClient.setQueryData(['depth-snapshot', symbol], newDepthSnapshot);
+                processMessage(event);
+            } else {
+                buffer.current = [...(buffer.current ?? []), event];
+            }
         };
 
         ws.onerror = (error) => {
@@ -96,6 +91,27 @@ const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
             console.log('Orderbook WebSocket disconnected');
         };
     }, [symbol]);
+
+    const processMessage = (event: MessageEvent) => {
+        const streamData: StreamTickerResponseType = JSON.parse(event.data);
+        const depthSnapshotCache = queryClient.getQueryData(['depth-snapshot', symbol]) as OrderBookResponseType;
+
+        if (!isEventValid(depthSnapshotCache, streamData, firstEventProcessed, setFirstEventProcessed, refetch)) return;
+
+        const {getter: updatedAsks} = updateOrderBook(depthSnapshotCache.asks, streamData.a, true);
+        const {getter: updatedBids} = updateOrderBook(depthSnapshotCache.bids, streamData.b, false);
+
+        const groupedAsks = groupOrders(updatedAsks, groupByValRef.current, true, numOfRowsRef.current);
+        const groupedBids = groupOrders(updatedBids, groupByValRef.current, false, numOfRowsRef.current);
+
+        queryClient.setQueryData(['depth-snapshot', symbol], {
+            asks: updatedAsks,
+            bids: updatedBids,
+            groupedAsks: groupedAsks,
+            groupedBids: groupedBids,
+            lastUpdateId: streamData.u,
+        });
+    };
 
     return queryClient.getQueryData(['depth-snapshot', symbol]) as OrderBookResponseType;
 };
