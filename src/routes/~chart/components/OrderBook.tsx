@@ -32,7 +32,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     const [numOfTicks, setNumOfTicks] = useState(100);
     const [tableAlignment, setTableAlignment] = useState('V');
 
-    const ws = useRef(new WebSocket(''));
+    const ws = useRef<WebSocket | null>(null);
     const eventBuffer = useRef<StreamTickerResponseType[]>([]);
     const firstEventU = useRef<number | null>(null);
     const orderBookRef = useRef<OrderBookResponseType>({bids: [], asks: [], lastUpdateId: 0});
@@ -49,6 +49,8 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         }
 
         ws.current = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@depth@100ms`);
+
+        if (!ws.current) return;
 
         ws.current.onopen = () => {};
         ws.current.onclose = () => {};
@@ -109,7 +111,6 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 setOrderBook(newOrderBook);
             }
         } else {
-            // No valid events to process
             setOrderBook(newOrderBook);
         }
     };
@@ -156,6 +157,42 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         return Math.floor(numOfRows);
     }, [tableHeight, tableAlignment]);
 
+    const maxQuantity = useMemo(() => {
+        const bidsAndAsks = groupedOrderBook.asks?.concat(groupedOrderBook.bids) || [];
+        return Math.max(...bidsAndAsks.map((limit: [number, number]) => limit?.[1]));
+    }, [groupedOrderBook, calculatedNumOfRows]);
+
+    const orderBookTable = useCallback(
+        (groupedGetter: [number, number][], type: string) => {
+            const rows = [];
+            const isTableAlignmentHorizontal = tableAlignment === 'H' && type === 'bids';
+            const tableAlignmentClassContainer = isTableAlignmentHorizontal ? 'text-right' : '';
+            const tableAlignmentClassRow = isTableAlignmentHorizontal ? 'order-1' : '';
+
+            for (let i = 0; i < groupedGetter?.length; i++) {
+                if (!groupedGetter[i]) continue;
+                const [price, quantity] = groupedGetter[i];
+                const percentage = (quantity / maxQuantity) * 100;
+                const formattedPrice = formatNumber(price, {maximumFractionDigits: tickSizeDecimalPlaces});
+                const formattedQuantity = formatNumber(quantity, {maximumFractionDigits: 6});
+
+                rows.push(
+                    <div
+                        className={`grid grid-cols-2 mb-0.5 rounded text-slate-200 text-sm p-0.5 ${tableAlignmentClassContainer}`}
+                        key={price}
+                        style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
+                    >
+                        <div className={tableAlignmentClassRow}>{formattedPrice}</div>
+                        <div>{formattedQuantity}</div>
+                    </div>,
+                );
+            }
+
+            return rows;
+        },
+        [groupedOrderBook, maxQuantity, calculatedNumOfRows],
+    );
+
     useEffect(() => {
         orderBookRef.current = orderBook;
     }, [orderBook]);
@@ -179,44 +216,9 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         };
     }, []);
 
-    const maxQuantity = useMemo(() => {
-        const bidsAndAsks = groupedOrderBook.asks?.concat(groupedOrderBook.bids) || [];
-        return Math.max(...bidsAndAsks.map((limit: [number, number]) => limit?.[1]));
-    }, [groupedOrderBook, calculatedNumOfRows]);
-
-    const orderBookTable = useCallback(
-        (groupedGetter: [number, number][], type: string) => {
-            const rows = [];
-            const isTableAlignmentHorizontal = tableAlignment === 'H' && type === 'bids';
-            const tableAlignmentClassContainer = isTableAlignmentHorizontal ? 'text-right' : '';
-            const tableAlignmentClassRow = isTableAlignmentHorizontal ? 'order-1' : '';
-
-            for (let i = 0; i < groupedGetter?.length; i++) {
-                const [price, quantity] = groupedGetter[i];
-                const percentage = (quantity / maxQuantity) * 100;
-                const formattedPrice = formatNumber(price, {maximumFractionDigits: tickSizeDecimalPlaces});
-                const formattedQuantity = formatNumber(quantity, {maximumFractionDigits: 6});
-
-                rows.push(
-                    <div
-                        className={`grid grid-cols-2 mb-0.5 rounded text-slate-200 text-sm p-0.5 ${tableAlignmentClassContainer}`}
-                        key={price}
-                        style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
-                    >
-                        <div className={tableAlignmentClassRow}>{formattedPrice}</div>
-                        <div>{formattedQuantity}</div>
-                    </div>,
-                );
-            }
-
-            return rows;
-        },
-        [groupedOrderBook, maxQuantity, calculatedNumOfRows],
-    );
-
     return (
         <>
-            {!groupedOrderBook.asks.length && !symbolTickSize && (
+            {!groupedOrderBook.asks.length && (
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <CSSpinner />
                 </div>
