@@ -4,6 +4,7 @@ import DraggableIcon from '@/assets/svg/draggable.svg?react';
 import CSSelect from '@/components/UI/CSSelect';
 import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
+import {formatNumber} from '@/utils/number';
 
 import {useStreamTicker} from '../api';
 import {tableBackgroundStyle} from '../utils';
@@ -18,10 +19,6 @@ const tableAlignmentOptions = [
     {label: 'V', value: 'V'},
     {label: 'H', value: 'H'},
 ];
-
-const quantityFormatter = new Intl.NumberFormat(undefined, {
-    maximumFractionDigits: 6,
-});
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
     const {symbolTickSize, tableHeight} = props;
@@ -61,7 +58,8 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
             for (let i = 0; i < groupedGetter?.length; i++) {
                 const [price, quantity] = groupedGetter[i];
                 const percentage = (quantity / maxQuantity) * 100;
-                const formattedQuantity = quantityFormatter.format(quantity);
+                const formattedPrice = formatNumber(price, {maximumFractionDigits: tickSizeDecimalPlaces});
+                const formattedQuantity = formatNumber(quantity, {maximumFractionDigits: 6});
 
                 rows.push(
                     <div
@@ -69,7 +67,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                         key={price}
                         style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
                     >
-                        <div className={tableAlignmentClassRow}>{price.toFixed(tickSizeDecimalPlaces)}</div>
+                        <div className={tableAlignmentClassRow}>{formattedPrice}</div>
                         <div>{formattedQuantity}</div>
                     </div>,
                 );

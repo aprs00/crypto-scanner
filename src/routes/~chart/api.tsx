@@ -34,19 +34,18 @@ const fetchDepthSnapshot = async (params: DepthSnapshotParams) => {
     return data;
 };
 
-const useDepthSnapshot = (params: DepthSnapshotParams, firstEventProcessed: boolean) => {
+const useDepthSnapshot = (params: DepthSnapshotParams) => {
     return useQuery({
         enabled: !!params.symbol,
         queryFn: () => fetchDepthSnapshot(params),
-        queryKey: ['depth-snapshot', params],
-        refetchInterval: firstEventProcessed ? 120_000 : 1_800,
+        queryKey: ['depth-snapshot', params.symbol],
         staleTime: Infinity,
     });
 };
 
 const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
     const [firstEventProcessed, setFirstEventProcessed] = useState(() => false);
-    useDepthSnapshot({limit: '5000', symbol}, firstEventProcessed);
+    const {refetch} = useDepthSnapshot({limit: '5000', symbol});
 
     const groupByValRef = useRef(groupByVal);
     const numOfRowsRef = useRef(numOfRows);
@@ -61,13 +60,15 @@ const useStreamTicker = (symbol: string, groupByVal = 1, numOfRows: number) => {
 
         ws.onopen = () => {
             console.log('Orderbook WebSocket connected');
+            refetch();
         };
 
         ws.onmessage = (event) => {
             const streamData = JSON.parse(event.data);
             const depthSnapshotCache = queryClient.getQueryData(['depth-snapshot', symbol]) as OrderBookResponseType;
 
-            if (!isEventValid(depthSnapshotCache, streamData, firstEventProcessed, setFirstEventProcessed)) return;
+            if (!isEventValid(depthSnapshotCache, streamData, firstEventProcessed, setFirstEventProcessed, refetch))
+                return;
 
             const {getter: updatedAsks} = updateOrderBook(depthSnapshotCache.asks, streamData.a, true);
             const {getter: updatedBids} = updateOrderBook(depthSnapshotCache.bids, streamData.b, false);

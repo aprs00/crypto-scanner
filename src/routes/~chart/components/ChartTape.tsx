@@ -1,5 +1,7 @@
 import {useEffect, useState} from 'react';
 
+import {formatNumber} from '@/utils/number';
+
 import {useStreamAggTrade} from '../api';
 import type {TapeStateType} from '../types';
 import TimeDisplay from './TimeDisplay';
@@ -17,21 +19,21 @@ const ChartTape = () => {
                 color: data.market ? 'rgba(0, 215, 9, 1)' : 'rgba(215, 6, 6, 1)',
             }}
         >
-            <div>{data.price}</div>
-            <div>{data.size}</div>
+            <div>{formatNumber(parseFloat(data.price), {})}</div>
+            <div>{formatNumber(parseFloat(data.size), {maximumFractionDigits: 8})}</div>
             <TimeDisplay timestamp={data.time} />
         </div>
     ));
 
     useEffect(() => {
-        if (!streamAggTrade.data?.p || (Number(streamAggTrade.data?.q) || 0) <= 0.05) return;
+        if (!streamAggTrade.data?.p || (Number(streamAggTrade.data?.q) || 0) <= 0.01) return;
 
         const newTape = {
-            aggregateTradeId: streamAggTrade.data?.a,
-            market: streamAggTrade.data?.m,
-            price: streamAggTrade.data?.p.toString().replace(/\.?0+$/, ''),
-            size: streamAggTrade.data?.q.toString().replace(/\.?0+$/, ''),
-            time: streamAggTrade.data?.T as number,
+            aggregateTradeId: streamAggTrade.data.a,
+            market: streamAggTrade.data.m,
+            price: streamAggTrade.data.p.toString(),
+            size: streamAggTrade.data.q.toString(),
+            time: streamAggTrade.data.T as number,
         };
 
         setTapeData((prev) => [newTape, ...prev.slice(0, 100)]);

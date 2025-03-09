@@ -7,7 +7,10 @@ type TimeDisplayProps = {
 const TimeDisplay = (props: TimeDisplayProps) => {
     const {timestamp} = props;
 
-    const [timeDiff, setTimeDiff] = useState(0);
+    const [timeDiff, setTimeDiff] = useState(() => {
+        const now = new Date();
+        return Math.floor((now.getTime() - new Date(timestamp).getTime()) / 1000);
+    });
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -19,7 +22,7 @@ const TimeDisplay = (props: TimeDisplayProps) => {
         return () => clearInterval(intervalId);
     }, [timestamp]);
 
-    const formatTimeDiff = (diff: number) => `${diff < 10 ? diff : diff} s ago`;
+    const formatTimeDiff = (diff: number) => `${diff} s ago`;
 
     return <div className="text-xs">{formatTimeDiff(timeDiff)}</div>;
 };

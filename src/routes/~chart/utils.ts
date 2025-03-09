@@ -68,17 +68,22 @@ const isEventValid = (
     streamData: StreamTickerResponseType,
     firstEventProcessed: boolean,
     setFirstEventProcessed: (value: SetStateAction<boolean>) => void,
+    refetch: () => void,
 ) => {
-    if (!depthSnapshot) return false;
-    if (streamData.u <= depthSnapshot.lastUpdateId) return false;
+    if (!depthSnapshot || streamData.u <= depthSnapshot.lastUpdateId) return false;
 
     if (!firstEventProcessed) {
-        if (!(streamData.U <= depthSnapshot.lastUpdateId + 1)) return false;
-        if (!(streamData.u >= depthSnapshot.lastUpdateId + 1)) return false;
+        if (streamData.U > depthSnapshot.lastUpdateId + 1 || streamData.u < depthSnapshot.lastUpdateId + 1)
+            return false;
         setFirstEventProcessed(true);
     }
 
-    return streamData.U <= depthSnapshot.lastUpdateId + 1;
+    if (streamData.U > depthSnapshot.lastUpdateId + 1) {
+        refetch();
+        return false;
+    }
+
+    return true;
 };
 
 const tableBackgroundStyle = (type: string, tableAlignment: string, percentage: number) => {
