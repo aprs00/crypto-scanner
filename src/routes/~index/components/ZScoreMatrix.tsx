@@ -11,10 +11,13 @@ export type ScatterProps = {
     xAxis: string;
     yAxis: string;
     tf: string;
+    onAddClick?: () => void;
+    onRemoveClick?: () => void;
 };
 
 const ZScoreMatrix = (props: ScatterProps) => {
-    const {tf, timeFrameOptions, xAxis, yAxis} = props;
+    const {tf, timeFrameOptions, xAxis, yAxis, onAddClick, onRemoveClick} = props;
+
     const [selectedTf, setSelectedTf] = useState(tf);
     const zScoreMatrix = useZScoreMatrix({
         duration: selectedTf,
@@ -30,11 +33,14 @@ const ZScoreMatrix = (props: ScatterProps) => {
             value: selectedTf,
         },
     ];
+
     return (
         <ChartContainer
             body={<CSScatter data={zScoreMatrix.data || []} xAxis={xAxis} yAxis={yAxis} />}
             selects={selects}
             title="Z Score"
+            onAddClick={onAddClick}
+            onRemoveClick={onRemoveClick}
         />
     );
 };
