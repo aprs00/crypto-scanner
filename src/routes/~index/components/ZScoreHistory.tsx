@@ -8,10 +8,12 @@ import {useZScoreHistory} from '../api';
 
 export type ZScoreHistoryProps = {
     tf: string;
+    onAddClick?: () => void;
+    onRemoveClick?: () => void;
 };
 
 const ZScoreHistory = (props: ZScoreHistoryProps) => {
-    const {tf} = props;
+    const {tf, onAddClick, onRemoveClick} = props;
 
     const [selectedType, setSelectedType] = useState('price');
 
@@ -85,6 +87,8 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
                 },
             ]}
             title={`Z Score - ${tf} (UTC)`}
+            onAddClick={onAddClick}
+            onRemoveClick={onRemoveClick}
         />
     );
 };

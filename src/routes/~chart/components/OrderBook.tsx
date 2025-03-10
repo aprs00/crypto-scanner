@@ -91,7 +91,6 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     }, [numOfTicks, calculatedNumOfRows, orderBook, groupByVal, symbolTickSize]);
 
     useEffect(() => {
-        // Create the Binance service and initialize it
         binanceServiceRef.current = new BinanceOrderBookService('btcusdt', setOrderBook);
         binanceServiceRef.current.initialize();
 

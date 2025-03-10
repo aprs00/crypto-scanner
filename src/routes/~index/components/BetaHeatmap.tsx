@@ -9,10 +9,12 @@ import {useBetaHeatmapData} from '../api';
 export type BetaHeatmapProps = {
     tf: string;
     timeFrameOptions: SelectOption[];
+    onAddClick?: () => void;
+    onRemoveClick?: () => void;
 };
 
 const BetaHeatmap = (props: BetaHeatmapProps) => {
-    const {tf, timeFrameOptions} = props;
+    const {tf, timeFrameOptions, onAddClick, onRemoveClick} = props;
 
     const [selectedTf, setSelectedTf] = useState(tf);
 
@@ -29,7 +31,13 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
     ];
 
     return (
-        <ChartContainer body={<CSHeatmap data={betaHeatmap.data} />} selects={selects} title="Pearson correlation" />
+        <ChartContainer
+            body={<CSHeatmap data={betaHeatmap.data} />}
+            selects={selects}
+            title="Pearson correlation"
+            onAddClick={onAddClick}
+            onRemoveClick={onRemoveClick}
+        />
     );
 };
 

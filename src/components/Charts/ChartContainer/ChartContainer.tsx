@@ -20,10 +20,25 @@ export type ChartContainerPropsType = {
         value: string;
         class?: string;
     }[];
+    onAddClick?: () => void;
+    onRemoveClick?: () => void;
+};
+
+const IconButton = (props: {onClick: () => void; label: string}) => {
+    return (
+        <button
+            className="text-white border border-slate-500 rounded px-2 font-bold hover:bg-slate-700"
+            onClick={() => {
+                props.onClick();
+            }}
+        >
+            {props.label}
+        </button>
+    );
 };
 
 const ChartContainer = (props: ChartContainerPropsType) => {
-    const {body, selects, title} = props;
+    const {body, selects, title, onAddClick, onRemoveClick} = props;
 
     return (
         <div className="border-4 border-slate-800 rounded h-full">
@@ -32,6 +47,22 @@ const ChartContainer = (props: ChartContainerPropsType) => {
                 <div className="flex justify-between items-center flex-grow">
                     {title}
                     <div className="z-50 flex gap-2">
+                        {onAddClick && (
+                            <IconButton
+                                label="+"
+                                onClick={() => {
+                                    onAddClick();
+                                }}
+                            />
+                        )}
+                        {onRemoveClick && (
+                            <IconButton
+                                label="-"
+                                onClick={() => {
+                                    onRemoveClick();
+                                }}
+                            />
+                        )}
                         {selects?.map((select) => {
                             const Component = selectsMapper[select.componentName];
 

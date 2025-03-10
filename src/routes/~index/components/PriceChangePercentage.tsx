@@ -12,10 +12,12 @@ export type PriceChangePercentageProps = {
     timeFrameOptions: SelectOption[];
     tickerOptions: SelectOption[];
     type: 'day' | 'hour';
+    onAddClick?: () => void;
+    onRemoveClick?: () => void;
 };
 
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
-    const {symbol, tf, tickerOptions, timeFrameOptions, type} = props;
+    const {symbol, tf, tickerOptions, timeFrameOptions, type, onAddClick, onRemoveClick} = props;
 
     const [selectedTicker, setSelectedTicker] = useState(symbol);
     const [selectedTf, setSelectedTf] = useState(tf);
@@ -102,6 +104,8 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
             }
             selects={selects}
             title={titleMapper[type]}
+            onAddClick={onAddClick}
+            onRemoveClick={onRemoveClick}
         />
     );
 };
