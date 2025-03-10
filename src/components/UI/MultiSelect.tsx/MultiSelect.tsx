@@ -22,7 +22,7 @@ const MultiSelect = (props: MultiSelectProps) => {
                 <>
                     <div>
                         {!!label?.length && <p className="text-lg">{label}</p>}
-                        <ListboxButton className="w-full rounded-sm border border-slate-500 px-2 min-h-[28px] h-auto text-left relative">
+                        <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 min-h-[28px] h-auto text-left relative">
                             <div className="flex items-center flex-wrap mr-5">
                                 {options
                                     ?.filter((option) => values.includes(option.value))
@@ -70,7 +70,7 @@ const MultiSelect = (props: MultiSelectProps) => {
                             <Listbox.Options className="bg-slate-900 rounded-md absolute w-full px-1 py-1 mt-2">
                                 {options?.map((item) => (
                                     <Listbox.Option
-                                        className="cursor-pointer hover:bg-slate-800 px-4 py-1 rounded-sm"
+                                        className="cursor-pointer hover:bg-slate-800 px-4 py-1 rounded-xs"
                                         key={item.value}
                                         value={item.value}
                                     >

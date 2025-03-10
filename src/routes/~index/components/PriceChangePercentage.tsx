@@ -63,7 +63,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         ],
         tooltip: {
             axisPointer: {
-                type: 'shadow',
+                type: 'shadow-sm',
             },
             formatter: function (params: any) {
                 return `${params[0].marker}${params[0].name}: ${params[0].value}%`;

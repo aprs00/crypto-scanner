@@ -22,7 +22,7 @@ const NumberInput = (props: NumberInputPropsType) => {
     return (
         <div className="w-20 relative">
             <input
-                className="w-full border bg-slate-800 rounded-sm border-slate-500 px-2 h-7 text-left relative"
+                className="w-full border bg-slate-800 rounded-xs border-slate-500 px-2 h-7 text-left relative"
                 placeholder="Ticks"
                 value={value}
                 onChange={handleInput}

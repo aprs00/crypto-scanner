@@ -34,7 +34,7 @@ const ZScore = () => {
             rowHeight={gridLayoutRowHeight}
         >
             {gridLayouts.map((grid) => (
-                <div className="bg-slate-900 overflow-hidden rounded" data-grid={grid.gridLayout} key={grid.key}>
+                <div className="bg-slate-900 overflow-hidden rounded-sm" data-grid={grid.gridLayout} key={grid.key}>
                     {grid.component}
                 </div>
             ))}

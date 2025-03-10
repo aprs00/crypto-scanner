@@ -69,7 +69,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
                 rows.push(
                     <div
-                        className={`grid grid-cols-2 mb-0.5 rounded text-slate-200 text-sm p-0.5 ${tableAlignmentClassContainer}`}
+                        className={`grid grid-cols-2 mb-0.5 rounded-sm text-slate-200 text-sm p-0.5 ${tableAlignmentClassContainer}`}
                         key={price}
                         style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
                     >
@@ -109,7 +109,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 </div>
             )}
 
-            <div className="border-4 border-slate-800 rounded h-full z-50">
+            <div className="border-4 border-slate-800 rounded-sm h-full z-50">
                 <div className="flex items-center bg-slate-800 pb-1 justify-between">
                     <DraggableIcon id="drag-handle" />
                     <div className="flex items-center gap-2">

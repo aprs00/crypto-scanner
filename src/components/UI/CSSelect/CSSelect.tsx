@@ -21,7 +21,7 @@ const CSSelect = (props: SelectProps) => {
                 <div className={`${classes}`}>
                     <div>
                         <ListboxButton
-                            className="w-full rounded-sm border border-slate-500 px-2 h-7 text-left relative"
+                            className="w-full rounded-xs border border-slate-500 px-2 h-7 text-left relative cursor-pointer"
                             // style={{boxShadow: 'inset 1px 1px 10px rgba(2, 6, 23, 0.7)'}}
                         >
                             <div className="flex items-center">
@@ -48,10 +48,10 @@ const CSSelect = (props: SelectProps) => {
                         show={open}
                     >
                         <div className="relative">
-                            <ListboxOptions className="bg-slate-800 rounded-sm absolute w-full px-1 py-1 mt-2 border border-slate-600 flex flex-col gap-0.5">
+                            <ListboxOptions className="bg-slate-800 rounded-xs absolute w-full px-1 py-1 mt-2 border border-slate-600 flex flex-col gap-0.5">
                                 {options.map((item) => (
                                     <ListboxOption
-                                        className="cursor-pointer hover:bg-slate-900 rounded-sm gap-2"
+                                        className="cursor-pointer hover:bg-slate-900 rounded-xs gap-2"
                                         key={item.value.toString()}
                                         value={item.value}
                                     >

@@ -40,7 +40,7 @@ const ChartTape = () => {
     }, [streamAggTrade.data?.T]);
 
     return (
-        <div className="border-4 border-slate-800 rounded h-full">
+        <div className="border-4 border-slate-800 rounded-sm h-full">
             <div className="flex items-center justify-between px-1 pb-1 bg-slate-800" id="drag-handle">
                 <div>PRICE</div>
                 <div>SIZE</div>
