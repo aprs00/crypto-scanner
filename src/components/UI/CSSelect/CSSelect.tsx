@@ -9,7 +9,7 @@ export type SelectProps = {
     options: SelectOption[];
     value: string;
     classes?: string;
-    onChange: Dispatch<SetStateAction<string>>;
+    onChange: Dispatch<SetStateAction<string>> | ((value: string) => void);
 };
 
 const CSSelect = (props: SelectProps) => {

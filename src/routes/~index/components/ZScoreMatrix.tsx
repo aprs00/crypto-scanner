@@ -1,10 +1,9 @@
-import {useState} from 'react';
-
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
 import {SelectOption} from '@/types/api';
 
 import {useZScoreMatrix} from '../api';
+import {ChartConfig} from '../types';
 
 export type ScatterProps = {
     timeFrameOptions: SelectOption[];
@@ -13,24 +12,27 @@ export type ScatterProps = {
     tf: string;
     onAddClick?: () => void;
     onRemoveClick?: () => void;
+    onConfigChange?: (config: ChartConfig) => void;
 };
 
 const ZScoreMatrix = (props: ScatterProps) => {
-    const {tf, timeFrameOptions, xAxis, yAxis, onAddClick, onRemoveClick} = props;
+    const {tf, timeFrameOptions, xAxis, yAxis, onAddClick, onRemoveClick, onConfigChange} = props;
 
-    const [selectedTf, setSelectedTf] = useState(tf);
     const zScoreMatrix = useZScoreMatrix({
-        duration: selectedTf,
+        duration: tf,
         xAxis,
         yAxis,
     });
+
     const selects = [
         {
             componentName: 'select',
             id: '1',
-            onChange: setSelectedTf,
+            onChange: (val: string) => {
+                onConfigChange?.({tf: val});
+            },
             options: timeFrameOptions,
-            value: selectedTf,
+            value: tf,
         },
     ];
 

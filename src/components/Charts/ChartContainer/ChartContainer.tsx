@@ -15,7 +15,7 @@ export type ChartContainerPropsType = {
     selects?: {
         componentName: string;
         id: string;
-        onChange: Dispatch<SetStateAction<string>>;
+        onChange: Dispatch<SetStateAction<string>> | ((value: string) => void);
         options: SelectOption[];
         value: string;
         class?: string;

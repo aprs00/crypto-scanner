@@ -1,32 +1,34 @@
-import {memo, useState} from 'react';
+import {memo} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
 import type {SelectOption} from '@/types/api';
 
 import {useBetaHeatmapData} from '../api';
+import type {ChartConfig} from '../types';
 
 export type BetaHeatmapProps = {
     tf: string;
     timeFrameOptions: SelectOption[];
     onAddClick?: () => void;
     onRemoveClick?: () => void;
+    onConfigChange?: (config: ChartConfig) => void;
 };
 
 const BetaHeatmap = (props: BetaHeatmapProps) => {
-    const {tf, timeFrameOptions, onAddClick, onRemoveClick} = props;
+    const {tf, timeFrameOptions, onAddClick, onRemoveClick, onConfigChange} = props;
 
-    const [selectedTf, setSelectedTf] = useState(tf);
-
-    const betaHeatmap = useBetaHeatmapData({duration: selectedTf});
+    const betaHeatmap = useBetaHeatmapData({duration: tf});
 
     const selects = [
         {
             componentName: 'select',
             id: '1',
-            onChange: setSelectedTf,
+            onChange: (val: string) => {
+                onConfigChange?.({tf: val});
+            },
             options: timeFrameOptions,
-            value: selectedTf,
+            value: tf,
         },
     ];
 

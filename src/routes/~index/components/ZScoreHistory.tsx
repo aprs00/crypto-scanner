@@ -1,25 +1,26 @@
 import ReactEcharts from 'echarts-for-react';
-import {useState} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import {useCorrelationTypeOptions} from '@/routes/~correlations/api';
 
 import {useZScoreHistory} from '../api';
+import {ChartConfig} from '../types';
 
 export type ZScoreHistoryProps = {
-    tf: string;
+    type: string;
     onAddClick?: () => void;
     onRemoveClick?: () => void;
+    onConfigChange?: (config: ChartConfig) => void;
 };
 
-const ZScoreHistory = (props: ZScoreHistoryProps) => {
-    const {tf, onAddClick, onRemoveClick} = props;
+const tf = '12h';
 
-    const [selectedType, setSelectedType] = useState('price');
+const ZScoreHistory = (props: ZScoreHistoryProps) => {
+    const {type, onAddClick, onRemoveClick, onConfigChange} = props;
 
     const zScoreHistory = useZScoreHistory({
         duration: tf,
-        type: selectedType,
+        type: type,
     });
     const typeOptions = useCorrelationTypeOptions();
 
@@ -42,13 +43,6 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
             top: '10',
             type: 'scroll',
         },
-        // toolbox: {
-        //     feature: {
-        //         saveAsImage: {},
-        //     },
-        // },
-        // dataZoom: {
-        //     type: 'inside',
         series: zScoreHistory.data?.data,
         tooltip: {
             trigger: 'axis',
@@ -81,9 +75,11 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
                     class: 'w-28',
                     componentName: 'select',
                     id: '1',
-                    onChange: setSelectedType,
+                    onChange: (val: string) => {
+                        onConfigChange?.({type: val});
+                    },
                     options: typeOptions.data || [],
-                    value: selectedType,
+                    value: type,
                 },
             ]}
             title={`Z Score - ${tf} (UTC)`}

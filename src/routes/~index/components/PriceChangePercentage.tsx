@@ -1,10 +1,11 @@
 import ReactEcharts from 'echarts-for-react';
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import type {SelectOption} from '@/types/api';
 
 import {usePriceChangePercentage} from '../api';
+import {ChartConfig} from '../types';
 
 export type PriceChangePercentageProps = {
     tf: string;
@@ -14,15 +15,15 @@ export type PriceChangePercentageProps = {
     type: 'day' | 'hour';
     onAddClick?: () => void;
     onRemoveClick?: () => void;
+    onConfigChange?: (config: ChartConfig) => void;
 };
 
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
-    const {symbol, tf, tickerOptions, timeFrameOptions, type, onAddClick, onRemoveClick} = props;
+    const {symbol, tf, tickerOptions, timeFrameOptions, type, onAddClick, onRemoveClick, onConfigChange} = props;
 
     const [selectedTicker, setSelectedTicker] = useState(symbol);
     const [selectedTf, setSelectedTf] = useState(tf);
     const chartRef = useRef<ReactEcharts | null>(null);
-    // const chartInstance = chartRef.current?.getEchartsInstance();
 
     const priceChangePercentageApi = usePriceChangePercentage({
         duration: selectedTf,
@@ -87,11 +88,17 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         },
     };
 
-    // setTimeout(() => chartInstance?.resize());
-    //
-    // useEffect(() => {
-    //     chartInstance?.resize();
-    // }, [priceChangePercentageApi.data]);
+    useEffect(() => {
+        if (onConfigChange) {
+            onConfigChange({tf: selectedTf});
+        }
+    }, [selectedTf]);
+
+    useEffect(() => {
+        if (onConfigChange) {
+            onConfigChange({symbol: selectedTicker});
+        }
+    }, [selectedTicker]);
 
     return (
         <ChartContainer

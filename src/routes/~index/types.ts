@@ -46,3 +46,39 @@ export type ZScoreHistoryResponse = {
     }[];
     xAxis: string[];
 };
+
+export interface ChartConfig {
+    tf?: string;
+    xAxis?: string;
+    yAxis?: string;
+    symbol?: string;
+    type?: string;
+}
+
+export type ChartType =
+    | 'betaHeatmap'
+    | 'scatter'
+    | 'zScoreHistory'
+    | 'priceChangePercentageDay'
+    | 'priceChangePercentageHour';
+
+export interface ChartItem {
+    type: ChartType;
+    id: string;
+}
+
+export interface Layout {
+    h: number;
+    w: number;
+    x: number;
+    y: number;
+}
+
+export interface LayoutItem extends Layout {
+    i: string;
+}
+
+export interface ChartTemplate {
+    gridLayout: Layout;
+    type: ChartType;
+}

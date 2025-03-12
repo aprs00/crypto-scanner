@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import {useFetchTickersOptions, useStatsSelectOptions} from './api';
@@ -6,26 +5,20 @@ import BetaHeatmap from './components/BetaHeatmap';
 import PriceChangePercentage from './components/PriceChangePercentage';
 import ZScoreHistory from './components/ZScoreHistory';
 import Scatter from './components/ZScoreMatrix';
+import type {ChartTemplate, ChartType} from './types';
+import useChartStore from './useChartStore';
 
 const CHART_HEIGHT = 14;
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-type ChartType = 'betaHeatmap' | 'scatter' | 'zScoreHistory' | 'priceChangePercentageDay' | 'priceChangePercentageHour';
-
-interface ChartItem {
-    type: ChartType;
-    id: string;
-}
-
-interface ChartTemplate {
-    gridLayout: {h: number; w: number; x: number; y: number};
-    type: ChartType;
-}
-
 const Stats = () => {
     const timeFrameOptions = useStatsSelectOptions();
     const tickerOptions = useFetchTickersOptions();
+
+    const chartIds = useChartStore((state) => state.chartIds);
+    const savedGridLayouts = useChartStore((state) => state.savedGridLayouts);
+    const {addChart, removeChart, handleLayoutChange, updateChartConfig} = useChartStore();
 
     const chartTemplates: Record<ChartType, ChartTemplate> = {
         betaHeatmap: {
@@ -50,33 +43,14 @@ const Stats = () => {
         },
     };
 
-    const [chartIds, setChartIds] = useState<ChartItem[]>([
-        {type: 'betaHeatmap', id: crypto.randomUUID()},
-        {type: 'scatter', id: crypto.randomUUID()},
-        {type: 'zScoreHistory', id: crypto.randomUUID()},
-        {type: 'priceChangePercentageDay', id: crypto.randomUUID()},
-        {type: 'priceChangePercentageHour', id: crypto.randomUUID()},
-    ]);
-
-    const addChart = (type: ChartType) => {
-        const clickedChartIndex = chartIds.findIndex((chart) => chart.type === type);
-
-        setChartIds((prev) => [
-            ...prev.slice(0, clickedChartIndex + 1),
-            {type, id: crypto.randomUUID()},
-            ...prev.slice(clickedChartIndex + 1),
-        ]);
-    };
-
-    const removeChart = (id: string, type: ChartType) => {
-        if (chartIds.filter((chart) => chart.type === type).length === 1) return;
-        setChartIds((prev) => prev.filter((chart) => chart.id !== id));
-    };
-
     const gridLayouts = chartIds.map((chart, index) => {
         const template = chartTemplates[chart.type];
+        const chartKey = `${chart.type} ${chart.id}`;
+        const savedLayout = savedGridLayouts[chartKey] || {};
+
         const gridLayout = {
             ...template.gridLayout,
+            ...savedLayout?.layout,
             y: index * CHART_HEIGHT,
         };
 
@@ -85,9 +59,10 @@ const Stats = () => {
             case 'betaHeatmap':
                 component = (
                     <BetaHeatmap
-                        tf="4h"
+                        tf={savedLayout.tf || '4h'}
                         timeFrameOptions={timeFrameOptions.data?.all || []}
                         onAddClick={() => addChart('betaHeatmap')}
+                        onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'betaHeatmap')}
                     />
                 );
@@ -95,11 +70,12 @@ const Stats = () => {
             case 'scatter':
                 component = (
                     <Scatter
-                        tf="4h"
+                        tf={savedLayout.tf || '4h'}
                         timeFrameOptions={timeFrameOptions.data?.all || []}
-                        xAxis="price"
-                        yAxis="volume"
+                        xAxis={savedLayout.xAxis || 'price'}
+                        yAxis={savedLayout.yAxis || 'volume'}
                         onAddClick={() => addChart('scatter')}
+                        onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'scatter')}
                     />
                 );
@@ -107,8 +83,9 @@ const Stats = () => {
             case 'zScoreHistory':
                 component = (
                     <ZScoreHistory
-                        tf="12h"
+                        type={savedLayout.type || 'price'}
                         onAddClick={() => addChart('zScoreHistory')}
+                        onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'zScoreHistory')}
                     />
                 );
@@ -116,12 +93,13 @@ const Stats = () => {
             case 'priceChangePercentageDay':
                 component = (
                     <PriceChangePercentage
-                        symbol="BTCUSDT"
-                        tf="1m"
+                        symbol={savedLayout.symbol || 'BTCUSDT'}
+                        tf={savedLayout.tf || '1m'}
                         tickerOptions={tickerOptions.data || []}
                         timeFrameOptions={timeFrameOptions.data?.htf || []}
                         type="day"
                         onAddClick={() => addChart('priceChangePercentageDay')}
+                        onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'priceChangePercentageDay')}
                     />
                 );
@@ -129,12 +107,13 @@ const Stats = () => {
             case 'priceChangePercentageHour':
                 component = (
                     <PriceChangePercentage
-                        symbol="BTCUSDT"
-                        tf="1m"
+                        symbol={savedLayout.symbol || 'BTCUSDT'}
+                        tf={savedLayout.tf || '1m'}
                         tickerOptions={tickerOptions.data || []}
                         timeFrameOptions={timeFrameOptions.data?.htf || []}
                         type="hour"
                         onAddClick={() => addChart('priceChangePercentageHour')}
+                        onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'priceChangePercentageHour')}
                     />
                 );
@@ -144,7 +123,7 @@ const Stats = () => {
         return {
             component,
             gridLayout,
-            key: `${chart.type} ${chart.id}`,
+            key: chartKey,
         };
     });
 
@@ -153,6 +132,7 @@ const Stats = () => {
             cols={{lg: 12, md: 12, sm: 6, xs: 6, xxs: 6}}
             draggableHandle="#drag-handle"
             rowHeight={30}
+            onLayoutChange={handleLayoutChange}
         >
             {gridLayouts.map((grid) => (
                 <div className="bg-slate-900 overflow-hidden rounded-sm" data-grid={grid.gridLayout} key={grid.key}>
