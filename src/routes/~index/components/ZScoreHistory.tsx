@@ -1,4 +1,4 @@
-import ReactEcharts from 'echarts-for-react';
+import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import {useCorrelationTypeOptions} from '@/routes/~correlations/api';
@@ -24,7 +24,7 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
     });
     const typeOptions = useCorrelationTypeOptions();
 
-    const option = {
+    const option: EChartsOption = {
         grid: {
             bottom: '0',
             containLabel: true,

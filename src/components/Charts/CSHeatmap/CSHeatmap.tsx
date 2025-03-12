@@ -1,5 +1,5 @@
 import {useMediaQuery} from '@mantine/hooks';
-import ReactEcharts from 'echarts-for-react';
+import ReactEcharts, {EChartsOption} from 'echarts-for-react';
 import {useRef} from 'react';
 
 import {HeatmapResponse} from '@/types/api';
@@ -12,11 +12,10 @@ const CSHeatmap = (props: HeatmapProps) => {
     const {data, tooltipType} = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
-    // const chartInstance = chartRef.current?.getEchartsInstance();
 
     const matches = useMediaQuery('(min-width: 48em)');
 
-    const option = {
+    const option: EChartsOption = {
         dataZoom: {
             type: 'inside',
         },
@@ -60,7 +59,6 @@ const CSHeatmap = (props: HeatmapProps) => {
             orient: 'horizontal',
             precision: 2,
             right: '3',
-            splitNumber: 10,
             textStyle: {
                 color: '#B8A3A5',
             },
@@ -81,13 +79,7 @@ const CSHeatmap = (props: HeatmapProps) => {
         },
     };
 
-    // setTimeout(() => chartInstance?.resize());
-    //
-    // useEffect(() => {
-    //     chartInstance?.resize();
-    // }, [data]);
-
-    return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '100%', width: '100%'}} />;
+    return <ReactEcharts option={option} ref={chartRef} style={{height: '100%', width: '100%'}} />;
 };
 
 export default CSHeatmap;

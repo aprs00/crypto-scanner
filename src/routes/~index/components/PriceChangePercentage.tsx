@@ -1,5 +1,5 @@
-import ReactEcharts from 'echarts-for-react';
-import {useEffect, useRef, useState} from 'react';
+import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
+import {useRef} from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import type {SelectOption} from '@/types/api';
@@ -21,13 +21,11 @@ export type PriceChangePercentageProps = {
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const {symbol, tf, tickerOptions, timeFrameOptions, type, onAddClick, onRemoveClick, onConfigChange} = props;
 
-    const [selectedTicker, setSelectedTicker] = useState(symbol);
-    const [selectedTf, setSelectedTf] = useState(tf);
     const chartRef = useRef<ReactEcharts | null>(null);
 
     const priceChangePercentageApi = usePriceChangePercentage({
-        duration: selectedTf,
-        symbol: selectedTicker,
+        duration: tf,
+        symbol: symbol,
         type,
     });
 
@@ -41,20 +39,24 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
             class: 'w-28',
             componentName: 'select',
             id: '1',
-            onChange: setSelectedTicker,
+            onChange: (symbol: string) => {
+                onConfigChange?.({symbol});
+            },
             options: tickerOptions,
-            value: selectedTicker,
+            value: symbol,
         },
         {
             componentName: 'select',
             id: '2',
-            onChange: setSelectedTf,
+            onChange: (tf: string) => {
+                onConfigChange?.({tf});
+            },
             options: timeFrameOptions,
-            value: selectedTf,
+            value: tf,
         },
     ];
 
-    const option = {
+    const option: EChartsOption = {
         grid: {bottom: 60, left: 45, right: 20, top: 20},
         series: [
             {
@@ -64,7 +66,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         ],
         tooltip: {
             axisPointer: {
-                type: 'shadow-sm',
+                type: 'shadow',
             },
             formatter: function (params: any) {
                 return `${params[0].marker}${params[0].name}: ${params[0].value}%`;
@@ -88,27 +90,9 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         },
     };
 
-    useEffect(() => {
-        if (onConfigChange) {
-            onConfigChange({tf: selectedTf});
-        }
-    }, [selectedTf]);
-
-    useEffect(() => {
-        if (onConfigChange) {
-            onConfigChange({symbol: selectedTicker});
-        }
-    }, [selectedTicker]);
-
     return (
         <ChartContainer
-            body={
-                <ReactEcharts
-                    option={option}
-                    ref={(e) => (chartRef.current = e)}
-                    style={{height: '100%', width: '100%'}}
-                />
-            }
+            body={<ReactEcharts option={option} ref={chartRef} style={{height: '100%', width: '100%'}} />}
             selects={selects}
             title={titleMapper[type]}
             onAddClick={onAddClick}

@@ -1,7 +1,7 @@
 export type HeatmapResponse = {
     data: [number, number, number][];
-    xAxis: string;
-    yAxis: string;
+    xAxis: string[];
+    yAxis: string[];
 };
 
 export type SelectOption = {

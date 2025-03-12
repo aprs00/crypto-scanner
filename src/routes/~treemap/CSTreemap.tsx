@@ -1,4 +1,4 @@
-import ReactEcharts from 'echarts-for-react';
+import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
 import {maxBy, minBy} from 'lodash-es';
 
 import {useHeatmapData} from './api';
@@ -19,7 +19,7 @@ const CSTreemap = () => {
 
     const absPercentage = Math.max(Math.abs(lowestPercentage), Math.abs(highestPercentage));
 
-    const option = {
+    const option: EChartsOption = {
         series: [
             {
                 data: [{children}],

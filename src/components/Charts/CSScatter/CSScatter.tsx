@@ -1,4 +1,4 @@
-import ReactEcharts from 'echarts-for-react';
+import ReactEcharts, {EChartsOption} from 'echarts-for-react';
 import {capitalize} from 'lodash-es';
 import {useRef} from 'react';
 
@@ -14,9 +14,8 @@ const CSScatter = (props: ScatterProps) => {
     const {data, xAxis, yAxis} = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
-    // const chartInstance = chartRef.current?.getEchartsInstance();
 
-    const option = {
+    const option: EChartsOption = {
         dataZoom: {
             type: 'inside',
         },
@@ -36,7 +35,6 @@ const CSScatter = (props: ScatterProps) => {
                 bottom: 42,
                 left: '50%',
                 style: {
-                    bottom: 100,
                     fill: '#cbd5e1',
                     fontSize: 18,
                     text: capitalize(xAxis),
@@ -57,7 +55,7 @@ const CSScatter = (props: ScatterProps) => {
             top: 10,
             type: 'scroll',
         },
-        series: data,
+        series: data as echarts.SeriesOption[],
         tooltip: {
             formatter: function (params: any) {
                 return `
@@ -87,13 +85,7 @@ const CSScatter = (props: ScatterProps) => {
         },
     };
 
-    // setTimeout(() => chartInstance?.resize());
-    //
-    // useEffect(() => {
-    //     chartInstance?.resize();
-    // }, [data]);
-
-    return <ReactEcharts option={option} ref={(e) => (chartRef.current = e)} style={{height: '100%', width: '100%'}} />;
+    return <ReactEcharts option={option} ref={chartRef} style={{height: '100%', width: '100%'}} />;
 };
 
 export default CSScatter;
