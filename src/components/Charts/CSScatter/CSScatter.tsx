@@ -3,6 +3,7 @@ import {capitalize} from 'lodash-es';
 import {useRef} from 'react';
 
 import type {ZScoreMatrixResponse} from '@/types/api';
+import {resizeEChart} from '@/utils/chart';
 
 export type ScatterProps = {
     data: ZScoreMatrixResponse[];
@@ -85,7 +86,14 @@ const CSScatter = (props: ScatterProps) => {
         },
     };
 
-    return <ReactEcharts option={option} ref={chartRef} style={{height: '100%', width: '100%'}} />;
+    return (
+        <ReactEcharts
+            option={option}
+            ref={chartRef}
+            style={{height: '100%', width: '100%'}}
+            onChartReady={() => resizeEChart(chartRef)}
+        />
+    );
 };
 
 export default CSScatter;

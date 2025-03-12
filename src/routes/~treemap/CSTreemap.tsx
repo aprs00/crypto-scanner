@@ -1,9 +1,13 @@
+import {useRef} from 'react';
 import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
 import {maxBy, minBy} from 'lodash-es';
 
 import {useHeatmapData} from './api';
+import {resizeEChart} from '@/utils/chart';
 
 const CSTreemap = () => {
+    const chartRef = useRef<ReactEcharts | null>(null);
+
     const treemap = useHeatmapData();
 
     const children =
@@ -71,7 +75,16 @@ const CSTreemap = () => {
         ],
     };
 
-    return !treemap.isLoading && <ReactEcharts option={option} style={{height: '95%', width: '100%'}} />;
+    return (
+        !treemap.isLoading && (
+            <ReactEcharts
+                option={option}
+                ref={chartRef}
+                style={{height: '95%', width: '100%'}}
+                onChartReady={() => resizeEChart(chartRef)}
+            />
+        )
+    );
 };
 
 export default CSTreemap;

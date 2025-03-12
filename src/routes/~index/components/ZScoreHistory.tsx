@@ -1,3 +1,4 @@
+import {useRef} from 'react';
 import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
@@ -5,6 +6,7 @@ import {useCorrelationTypeOptions} from '@/routes/~correlations/api';
 
 import {useZScoreHistory} from '../api';
 import {ChartConfig} from '../types';
+import {resizeEChart} from '@/utils/chart';
 
 export type ZScoreHistoryProps = {
     type: string;
@@ -17,6 +19,8 @@ const tf = '12h';
 
 const ZScoreHistory = (props: ZScoreHistoryProps) => {
     const {type, onAddClick, onRemoveClick, onConfigChange} = props;
+
+    const chartRef = useRef<ReactEcharts | null>(null);
 
     const zScoreHistory = useZScoreHistory({
         duration: tf,
@@ -69,7 +73,14 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
 
     return (
         <ChartContainer
-            body={<ReactEcharts option={option} style={{height: '92%', width: '100%'}}></ReactEcharts>}
+            body={
+                <ReactEcharts
+                    option={option}
+                    ref={chartRef}
+                    style={{height: '92%', width: '100%'}}
+                    onChartReady={() => resizeEChart(chartRef)}
+                />
+            }
             selects={[
                 {
                     class: 'w-28',

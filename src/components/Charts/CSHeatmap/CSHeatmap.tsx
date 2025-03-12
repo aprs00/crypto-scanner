@@ -2,6 +2,7 @@ import {useMediaQuery} from '@mantine/hooks';
 import ReactEcharts, {EChartsOption} from 'echarts-for-react';
 import {useRef} from 'react';
 
+import {resizeEChart} from '@/utils/chart';
 import {HeatmapResponse} from '@/types/api';
 
 export type HeatmapProps = {
@@ -79,7 +80,15 @@ const CSHeatmap = (props: HeatmapProps) => {
         },
     };
 
-    return <ReactEcharts option={option} ref={chartRef} style={{height: '100%', width: '100%'}} />;
+    return (
+        <ReactEcharts
+            option={option}
+            opts={{renderer: 'canvas'}}
+            ref={chartRef}
+            style={{height: '100%', width: '100%'}}
+            onChartReady={() => resizeEChart(chartRef)}
+        />
+    );
 };
 
 export default CSHeatmap;
