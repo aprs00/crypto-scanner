@@ -34,7 +34,7 @@ const ChartContainer = (props: ChartContainerProps) => {
                 <div className="flex justify-between items-center w-full">
                     <div className="flex items-center min-w-0 flex-shrink">
                         <DraggableIcon className="size-6 flex-shrink-0" id="drag-handle" />
-                        <span className="text-lg ml-2">{title}</span>
+                        <span className="ml-0.5">{title}</span>
                     </div>
 
                     <div className="z-50 flex gap-2 flex-shrink-0 max-w-[200px] md:max-w-[300px] flex-wrap justify-end">
