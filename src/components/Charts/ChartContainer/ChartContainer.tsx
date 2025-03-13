@@ -30,31 +30,29 @@ const ChartContainer = (props: ChartContainerProps) => {
 
     return (
         <div className="border-4 border-slate-800 rounded-sm h-full">
-            <div className="flex items-center pb-1 bg-slate-800 gap-1">
-                <div className="flex justify-between items-center w-full">
-                    <div className="flex items-center min-w-0 flex-shrink">
-                        <DraggableIcon className="size-6 flex-shrink-0" id="drag-handle" />
-                        <span className="ml-0.5">{title}</span>
-                    </div>
+            <div className="flex justify-between items-center w-full pb-1 bg-slate-800 gap-1">
+                <div className="flex items-center flex-shrink">
+                    <DraggableIcon className="size-6 flex-shrink-0" id="drag-handle" />
+                    <span className="ml-0.5">{title}</span>
+                </div>
 
-                    <div className="z-50 flex gap-2 flex-shrink-0 max-w-[200px] md:max-w-[300px] flex-wrap justify-end">
-                        {onAddClick && <IconButton label="+" onClick={onAddClick} />}
-                        {onRemoveClick && <IconButton label="-" onClick={onRemoveClick} />}
+                <div className="z-50 flex gap-2 flex-wrap justify-end flex-shrink-0 max-w-[200px] md:max-w-[300px]">
+                    {onAddClick && <IconButton label="+" onClick={onAddClick} />}
+                    {onRemoveClick && <IconButton label="-" onClick={onRemoveClick} />}
 
-                        {selects?.map((select) => {
-                            const Component = selectsMapper[select.componentName];
+                    {selects?.map((select) => {
+                        const Component = selectsMapper[select.componentName];
 
-                            return (
-                                <Component
-                                    classes={select.class}
-                                    key={select.id}
-                                    options={select.options}
-                                    value={select.value}
-                                    onChange={select.onChange}
-                                />
-                            );
-                        })}
-                    </div>
+                        return (
+                            <Component
+                                classes={select.class}
+                                key={select.id}
+                                options={select.options}
+                                value={select.value}
+                                onChange={select.onChange}
+                            />
+                        );
+                    })}
                 </div>
             </div>
             {body}
