@@ -6,7 +6,7 @@ const resizeEChart = (chartRef: RefObject<ReactEcharts | null>): void => {
         if (chartRef.current) {
             chartRef.current.getEchartsInstance().resize({height: 'auto', width: 'auto'});
         }
-    }, 50);
+    }, 1);
 };
 
 export {resizeEChart};
