@@ -1,6 +1,7 @@
 import {ComponentProps, Dispatch, ReactNode, SetStateAction} from 'react';
 
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
+import IconButton from '@/components/UI/CSIconButton';
 import CSSelect from '@/components/UI/CSSelect';
 
 const selectsMapper: {[key: string]: (props: ComponentProps<typeof CSSelect>) => ReactNode} = {
@@ -22,19 +23,6 @@ export type ChartContainerPropsType = {
     }[];
     onAddClick?: () => void;
     onRemoveClick?: () => void;
-};
-
-const IconButton = (props: {onClick: () => void; label: string}) => {
-    return (
-        <button
-            className="text-white border border-slate-500 rounded-sm px-2 font-bold hover:bg-slate-700 cursor-pointer w-8"
-            onClick={() => {
-                props.onClick();
-            }}
-        >
-            {props.label}
-        </button>
-    );
 };
 
 const ChartContainer = (props: ChartContainerPropsType) => {
