@@ -18,26 +18,22 @@ const CSSelect = (props: SelectProps) => {
     return (
         <Listbox value={value} onChange={onChange}>
             {({open}) => (
-                <div className={`${classes}`}>
-                    <div>
-                        <ListboxButton
-                            className="w-full rounded-xs border border-slate-500 px-2 h-7 text-left relative cursor-pointer"
-                            // style={{boxShadow: 'inset 1px 1px 10px rgba(2, 6, 23, 0.7)'}}
-                        >
-                            <div className="flex items-center">
-                                {options
-                                    ?.filter((option) => value === option.value)
-                                    .map((option) => (
-                                        <div className="flex items-center" key={option.value.toString()}>
-                                            <span className="text-slate-200">{option.label}</span>
-                                        </div>
-                                    ))}
-                            </div>
-                            <span className="absolute inset-y-0 right-0 flex items-center pr-1 pointer-events-none">
-                                <SelectIcon />
-                            </span>
-                        </ListboxButton>
-                    </div>
+                <div className={classes}>
+                    <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 h-8 text-left relative cursor-pointer">
+                        <div className="flex items-center">
+                            {options
+                                ?.filter((option) => value === option.value)
+                                .map((option) => (
+                                    <div className="flex items-center" key={option.value.toString()}>
+                                        <span className="text-slate-200">{option.label}</span>
+                                    </div>
+                                ))}
+                        </div>
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-1 pointer-events-none">
+                            <SelectIcon />
+                        </span>
+                    </ListboxButton>
+
                     <Transition
                         enter="transition ease-out duration-100"
                         enterFrom="transform opacity-0 scale-95"
