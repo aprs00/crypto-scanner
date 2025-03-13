@@ -43,7 +43,7 @@ const CSSelect = (props: SelectProps) => {
                         leaveTo="transform opacity-0 scale-95"
                         show={open}
                     >
-                        <div className="relative">
+                        <div className="relative z-99">
                             <ListboxOptions className="bg-slate-800 rounded-xs absolute w-full px-1 py-1 mt-2 border border-slate-600 flex flex-col gap-0.5">
                                 {options.map((item) => (
                                     <ListboxOption

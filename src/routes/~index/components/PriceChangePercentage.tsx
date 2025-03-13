@@ -31,29 +31,29 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     });
 
     const titleMapper = {
-        day: 'Average price change per day of week',
-        hour: 'Average price change per hour of day (UTC)',
+        day: 'Price change per day of week',
+        hour: 'Price change per hour of day (UTC)',
     };
 
     const selects = [
         {
-            class: 'w-28',
             componentName: 'select',
             id: '1',
-            onChange: (symbol: string) => {
-                onConfigChange?.({symbol});
-            },
-            options: tickerOptions,
-            value: symbol,
-        },
-        {
-            componentName: 'select',
-            id: '2',
             onChange: (tf: string) => {
                 onConfigChange?.({tf});
             },
             options: timeFrameOptions,
             value: tf,
+        },
+        {
+            class: 'w-28',
+            componentName: 'select',
+            id: '2',
+            onChange: (symbol: string) => {
+                onConfigChange?.({symbol});
+            },
+            options: tickerOptions,
+            value: symbol,
         },
     ];
 

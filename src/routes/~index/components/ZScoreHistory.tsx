@@ -83,7 +83,7 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
             }
             selects={[
                 {
-                    class: 'w-28',
+                    class: 'w-24',
                     componentName: 'select',
                     id: '1',
                     onChange: (val: string) => {
