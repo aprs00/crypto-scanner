@@ -1,8 +1,8 @@
-import {useState} from 'react';
 import type {Layout} from 'react-grid-layout';
-import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
+import {useState} from 'react';
+import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import {useExchangeInfo} from './api';
 import ChartTape from './components/ChartTape';
@@ -25,19 +25,19 @@ const CSChart = () => {
         <ResponsiveGridLayout
             cols={{lg: 12, md: 12, sm: 6, xs: 4, xxs: 2}}
             draggableHandle="#drag-handle"
-            rowHeight={gridLayoutRowHeight}
             onResize={(grids: Layout[]) => {
                 grids.forEach((grid) => {
                     if (grid.i === 'table') setTableHeight(grid.h * gridLayoutRowHeight);
                 });
             }}
+            rowHeight={gridLayoutRowHeight}
         >
             <div
                 className="bg-slate-900 overflow-hidden"
                 data-grid={{h: 15, w: 12, x: 0, y: 0}}
                 key="tradingViewWidget"
             >
-                <TradingViewRealTimeChart symbol="BINANCE:BTCUSDT" theme="dark" autosize />
+                <TradingViewRealTimeChart autosize symbol="BINANCE:BTCUSDT" theme="dark" />
             </div>
             <div className="bg-slate-900 overflow-hidden" data-grid={{h: 14, w: 8, x: 0, y: 16}} key="table">
                 <Table symbol={symbol} symbolTickSize={symbolTickSize} tableHeight={tableHeight} />

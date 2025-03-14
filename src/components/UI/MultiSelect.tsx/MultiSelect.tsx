@@ -17,7 +17,7 @@ const MultiSelect = (props: MultiSelectProps) => {
     const {label, onChange = () => {}, options, values = []} = props;
 
     return (
-        <Listbox value={values} multiple onChange={onChange}>
+        <Listbox multiple onChange={onChange} value={values}>
             {({open}) => (
                 <>
                     <div>
@@ -29,14 +29,14 @@ const MultiSelect = (props: MultiSelectProps) => {
                                     .map((option) => (
                                         <div className="flex items-center gap-1" key={option.value}>
                                             <span className="text-slate-200">{option.label}</span>
-                                            <span
+                                            <button
                                                 className="mr-2 hover:scale-125 self-center"
                                                 onClick={() => {
                                                     onChange((prev) => prev.filter((id) => id !== option.value));
                                                 }}
                                             >
                                                 <XIcon />
-                                            </span>
+                                            </button>
                                         </div>
                                     ))}
                             </div>

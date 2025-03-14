@@ -1,12 +1,12 @@
+import type {SelectOption} from '@/types/api';
+
+import ChartContainer from '@/components/Charts/ChartContainer';
+import {resizeEChart} from '@/utils/chart';
 import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
 import {useRef} from 'react';
 
-import ChartContainer from '@/components/Charts/ChartContainer';
-import type {SelectOption} from '@/types/api';
-
 import {usePriceChangePercentage} from '../api';
 import {ChartConfig} from '../types';
-import {resizeEChart} from '@/utils/chart';
 
 export type PriceChangePercentageProps = {
     tf: string;
@@ -95,16 +95,16 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         <ChartContainer
             body={
                 <ReactEcharts
+                    onChartReady={() => resizeEChart(chartRef)}
                     option={option}
                     ref={chartRef}
                     style={{height: '100%', width: '100%'}}
-                    onChartReady={() => resizeEChart(chartRef)}
                 />
             }
-            selects={selects}
-            title={titleMapper[type]}
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
+            selects={selects}
+            title={titleMapper[type]}
         />
     );
 };

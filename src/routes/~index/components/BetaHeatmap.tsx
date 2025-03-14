@@ -1,11 +1,12 @@
-import {memo} from 'react';
+import type {SelectOption} from '@/types/api';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
-import type {SelectOption} from '@/types/api';
+import {memo} from 'react';
+
+import type {ChartConfig} from '../types';
 
 import {useBetaHeatmapData} from '../api';
-import type {ChartConfig} from '../types';
 
 export type BetaHeatmapProps = {
     tf: string;
@@ -35,10 +36,10 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
     return (
         <ChartContainer
             body={<CSHeatmap data={betaHeatmap.data} />}
-            selects={selects}
-            title="Pearson correlation"
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
+            selects={selects}
+            title="Pearson correlation"
         />
     );
 };

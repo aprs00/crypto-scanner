@@ -1,7 +1,8 @@
 import React, {memo} from 'react';
 
-import Copyright from './Copyright';
 import type {AdvancedRealTimeChartProps} from './types';
+
+import Copyright from './Copyright';
 import Widget from './Widget';
 
 const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({

@@ -58,20 +58,16 @@ export default class BinanceOrderBookService {
     }
 
     private async fetchSnapshot(): Promise<void> {
-        try {
-            const {data} = await binanceInstance.get<OrderBookResponseType>(
-                `api/v3/depth?symbol=${this.symbol.toUpperCase()}&limit=5000`,
-            );
+        const {data} = await binanceInstance.get<OrderBookResponseType>(
+            `api/v3/depth?symbol=${this.symbol.toUpperCase()}&limit=5000`,
+        );
 
-            if (data.lastUpdateId < (this.firstEventU ?? 0)) {
-                this.fetchSnapshot();
-                return;
-            }
-
-            this.processSnapshot(data);
-        } catch (error) {
-            /* empty */
+        if (data.lastUpdateId < (this.firstEventU ?? 0)) {
+            this.fetchSnapshot();
+            return;
         }
+
+        this.processSnapshot(data);
     }
 
     private processSnapshot(snapshot: OrderBookResponseType): void {

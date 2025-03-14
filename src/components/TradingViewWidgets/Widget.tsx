@@ -19,7 +19,7 @@ const Widget: React.FC<WidgetProps> = ({containerId, scriptHTML, scriptSRC, type
 
             if (type === 'Widget' || type === 'MediumWidget') {
                 script.onload = () => {
-                    if (typeof TradingView !== undefined) {
+                    if (TradingView !== undefined) {
                         script.innerHTML = JSON.stringify(
                             type === 'Widget'
                                 ? new TradingView.widget(scriptHTML)

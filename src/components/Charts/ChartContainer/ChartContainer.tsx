@@ -1,8 +1,7 @@
-import {ComponentProps, Dispatch, ReactNode, SetStateAction} from 'react';
-
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
 import IconButton from '@/components/UI/CSIconButton';
 import CSSelect from '@/components/UI/CSSelect';
+import {ComponentProps, Dispatch, ReactNode, SetStateAction} from 'react';
 
 const selectsMapper: {[key: string]: (props: ComponentProps<typeof CSSelect>) => ReactNode} = {
     select: CSSelect,
@@ -47,9 +46,9 @@ const ChartContainer = (props: ChartContainerProps) => {
                             <Component
                                 classes={select.class}
                                 key={select.id}
+                                onChange={select.onChange}
                                 options={select.options}
                                 value={select.value}
-                                onChange={select.onChange}
                             />
                         );
                     })}

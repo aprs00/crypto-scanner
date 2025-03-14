@@ -1,6 +1,5 @@
-import {Responsive, WidthProvider} from 'react-grid-layout';
-
 import {useCorrelationsTimeframeOptions, useCorrelationTypeOptions} from '@/routes/~correlations/api';
+import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import ZScoreHeatmap from './components/ZScoreHeatmap';
 import ZScoreMatrix from './components/ZScoreMatrix';

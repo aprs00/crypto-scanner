@@ -8,155 +8,147 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
+import {createFileRoute} from '@tanstack/react-router';
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/~__root'
-import { Route as IndexRouteImport } from './routes/~index/~route'
+import {Route as rootRoute} from './routes/~__root';
+import {Route as IndexRouteImport} from './routes/~index/~route';
 
 // Create Virtual Routes
 
-const ZScoreRouteLazyImport = createFileRoute('/z-score')()
-const TreemapRouteLazyImport = createFileRoute('/treemap')()
-const CorrelationsRouteLazyImport = createFileRoute('/correlations')()
-const ChartRouteLazyImport = createFileRoute('/chart')()
+const ZScoreRouteLazyImport = createFileRoute('/z-score')();
+const TreemapRouteLazyImport = createFileRoute('/treemap')();
+const CorrelationsRouteLazyImport = createFileRoute('/correlations')();
+const ChartRouteLazyImport = createFileRoute('/chart')();
 
 // Create/Update Routes
 
 const ZScoreRouteLazyRoute = ZScoreRouteLazyImport.update({
-  id: '/z-score',
-  path: '/z-score',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/~z-score/~route.lazy').then((d) => d.Route),
-)
+    id: '/z-score',
+    path: '/z-score',
+    getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/~z-score/~route.lazy').then((d) => d.Route));
 
 const TreemapRouteLazyRoute = TreemapRouteLazyImport.update({
-  id: '/treemap',
-  path: '/treemap',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/~treemap/~route.lazy').then((d) => d.Route),
-)
+    id: '/treemap',
+    path: '/treemap',
+    getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/~treemap/~route.lazy').then((d) => d.Route));
 
 const CorrelationsRouteLazyRoute = CorrelationsRouteLazyImport.update({
-  id: '/correlations',
-  path: '/correlations',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/~correlations/~route.lazy').then((d) => d.Route),
-)
+    id: '/correlations',
+    path: '/correlations',
+    getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/~correlations/~route.lazy').then((d) => d.Route));
 
 const ChartRouteLazyRoute = ChartRouteLazyImport.update({
-  id: '/chart',
-  path: '/chart',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/~chart/~route.lazy').then((d) => d.Route))
+    id: '/chart',
+    path: '/chart',
+    getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/~chart/~route.lazy').then((d) => d.Route));
 
 const IndexRouteRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
+    id: '/',
+    path: '/',
+    getParentRoute: () => rootRoute,
+} as any);
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRoute
+    interface FileRoutesByPath {
+        '/': {
+            id: '/';
+            path: '/';
+            fullPath: '/';
+            preLoaderRoute: typeof IndexRouteImport;
+            parentRoute: typeof rootRoute;
+        };
+        '/chart': {
+            id: '/chart';
+            path: '/chart';
+            fullPath: '/chart';
+            preLoaderRoute: typeof ChartRouteLazyImport;
+            parentRoute: typeof rootRoute;
+        };
+        '/correlations': {
+            id: '/correlations';
+            path: '/correlations';
+            fullPath: '/correlations';
+            preLoaderRoute: typeof CorrelationsRouteLazyImport;
+            parentRoute: typeof rootRoute;
+        };
+        '/treemap': {
+            id: '/treemap';
+            path: '/treemap';
+            fullPath: '/treemap';
+            preLoaderRoute: typeof TreemapRouteLazyImport;
+            parentRoute: typeof rootRoute;
+        };
+        '/z-score': {
+            id: '/z-score';
+            path: '/z-score';
+            fullPath: '/z-score';
+            preLoaderRoute: typeof ZScoreRouteLazyImport;
+            parentRoute: typeof rootRoute;
+        };
     }
-    '/chart': {
-      id: '/chart'
-      path: '/chart'
-      fullPath: '/chart'
-      preLoaderRoute: typeof ChartRouteLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/correlations': {
-      id: '/correlations'
-      path: '/correlations'
-      fullPath: '/correlations'
-      preLoaderRoute: typeof CorrelationsRouteLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/treemap': {
-      id: '/treemap'
-      path: '/treemap'
-      fullPath: '/treemap'
-      preLoaderRoute: typeof TreemapRouteLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/z-score': {
-      id: '/z-score'
-      path: '/z-score'
-      fullPath: '/z-score'
-      preLoaderRoute: typeof ZScoreRouteLazyImport
-      parentRoute: typeof rootRoute
-    }
-  }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRouteRoute
-  '/chart': typeof ChartRouteLazyRoute
-  '/correlations': typeof CorrelationsRouteLazyRoute
-  '/treemap': typeof TreemapRouteLazyRoute
-  '/z-score': typeof ZScoreRouteLazyRoute
+    '/': typeof IndexRouteRoute;
+    '/chart': typeof ChartRouteLazyRoute;
+    '/correlations': typeof CorrelationsRouteLazyRoute;
+    '/treemap': typeof TreemapRouteLazyRoute;
+    '/z-score': typeof ZScoreRouteLazyRoute;
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRouteRoute
-  '/chart': typeof ChartRouteLazyRoute
-  '/correlations': typeof CorrelationsRouteLazyRoute
-  '/treemap': typeof TreemapRouteLazyRoute
-  '/z-score': typeof ZScoreRouteLazyRoute
+    '/': typeof IndexRouteRoute;
+    '/chart': typeof ChartRouteLazyRoute;
+    '/correlations': typeof CorrelationsRouteLazyRoute;
+    '/treemap': typeof TreemapRouteLazyRoute;
+    '/z-score': typeof ZScoreRouteLazyRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRouteRoute
-  '/chart': typeof ChartRouteLazyRoute
-  '/correlations': typeof CorrelationsRouteLazyRoute
-  '/treemap': typeof TreemapRouteLazyRoute
-  '/z-score': typeof ZScoreRouteLazyRoute
+    __root__: typeof rootRoute;
+    '/': typeof IndexRouteRoute;
+    '/chart': typeof ChartRouteLazyRoute;
+    '/correlations': typeof CorrelationsRouteLazyRoute;
+    '/treemap': typeof TreemapRouteLazyRoute;
+    '/z-score': typeof ZScoreRouteLazyRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/chart' | '/correlations' | '/treemap' | '/z-score'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chart' | '/correlations' | '/treemap' | '/z-score'
-  id: '__root__' | '/' | '/chart' | '/correlations' | '/treemap' | '/z-score'
-  fileRoutesById: FileRoutesById
+    fileRoutesByFullPath: FileRoutesByFullPath;
+    fullPaths: '/' | '/chart' | '/correlations' | '/treemap' | '/z-score';
+    fileRoutesByTo: FileRoutesByTo;
+    to: '/' | '/chart' | '/correlations' | '/treemap' | '/z-score';
+    id: '__root__' | '/' | '/chart' | '/correlations' | '/treemap' | '/z-score';
+    fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  IndexRouteRoute: typeof IndexRouteRoute
-  ChartRouteLazyRoute: typeof ChartRouteLazyRoute
-  CorrelationsRouteLazyRoute: typeof CorrelationsRouteLazyRoute
-  TreemapRouteLazyRoute: typeof TreemapRouteLazyRoute
-  ZScoreRouteLazyRoute: typeof ZScoreRouteLazyRoute
+    IndexRouteRoute: typeof IndexRouteRoute;
+    ChartRouteLazyRoute: typeof ChartRouteLazyRoute;
+    CorrelationsRouteLazyRoute: typeof CorrelationsRouteLazyRoute;
+    TreemapRouteLazyRoute: typeof TreemapRouteLazyRoute;
+    ZScoreRouteLazyRoute: typeof ZScoreRouteLazyRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRouteRoute: IndexRouteRoute,
-  ChartRouteLazyRoute: ChartRouteLazyRoute,
-  CorrelationsRouteLazyRoute: CorrelationsRouteLazyRoute,
-  TreemapRouteLazyRoute: TreemapRouteLazyRoute,
-  ZScoreRouteLazyRoute: ZScoreRouteLazyRoute,
-}
+    IndexRouteRoute: IndexRouteRoute,
+    ChartRouteLazyRoute: ChartRouteLazyRoute,
+    CorrelationsRouteLazyRoute: CorrelationsRouteLazyRoute,
+    TreemapRouteLazyRoute: TreemapRouteLazyRoute,
+    ZScoreRouteLazyRoute: ZScoreRouteLazyRoute,
+};
 
-export const routeTree = rootRoute
-  ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {

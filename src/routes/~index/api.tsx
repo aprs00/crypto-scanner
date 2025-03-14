@@ -1,7 +1,7 @@
-import {useQuery} from '@tanstack/react-query';
+import type {HeatmapResponse, SelectOption, ZScoreMatrixResponse} from '@/types/api';
 
 import api from '@/lib/api';
-import type {HeatmapResponse, SelectOption, ZScoreMatrixResponse} from '@/types/api';
+import {useQuery} from '@tanstack/react-query';
 
 import {
     AveragePriceChangeParams,

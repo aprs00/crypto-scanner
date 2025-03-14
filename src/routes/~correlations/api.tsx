@@ -1,8 +1,8 @@
-import {useQuery} from '@tanstack/react-query';
+import type {HeatmapResponse, SelectOption} from '@/types/api';
 
 import api from '@/lib/api';
 import {CorrelationsParams} from '@/routes/~correlations/types';
-import type {HeatmapResponse, SelectOption} from '@/types/api';
+import {useQuery} from '@tanstack/react-query';
 
 const fetchCorrelations = async (params: CorrelationsParams) => {
     const url = 'large-pearson-correlation';

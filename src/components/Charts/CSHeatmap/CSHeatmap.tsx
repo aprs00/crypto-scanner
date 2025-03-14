@@ -1,9 +1,8 @@
+import {HeatmapResponse} from '@/types/api';
+import {resizeEChart} from '@/utils/chart';
 import {useMediaQuery} from '@mantine/hooks';
 import ReactEcharts, {EChartsOption} from 'echarts-for-react';
 import {useRef} from 'react';
-
-import {resizeEChart} from '@/utils/chart';
-import {HeatmapResponse} from '@/types/api';
 
 export type HeatmapProps = {
     data?: HeatmapResponse;
@@ -82,11 +81,11 @@ const CSHeatmap = (props: HeatmapProps) => {
 
     return (
         <ReactEcharts
+            onChartReady={() => resizeEChart(chartRef)}
             option={option}
             opts={{renderer: 'canvas'}}
             ref={chartRef}
             style={{height: '100%', width: '100%'}}
-            onChartReady={() => resizeEChart(chartRef)}
         />
     );
 };

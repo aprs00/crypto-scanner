@@ -39,10 +39,10 @@ const ZScoreMatrix = (props: ScatterProps) => {
     return (
         <ChartContainer
             body={<CSScatter data={zScoreMatrix.data || []} xAxis={xAxis} yAxis={yAxis} />}
-            selects={selects}
-            title="Z Score"
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
+            selects={selects}
+            title="Z Score"
         />
     );
 };

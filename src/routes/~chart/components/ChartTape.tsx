@@ -1,9 +1,9 @@
+import {formatNumber} from '@/utils/number';
 import {useEffect, useState} from 'react';
 
-import {formatNumber} from '@/utils/number';
+import type {TapeStateType} from '../types';
 
 import {useStreamAggTrade} from '../api';
-import type {TapeStateType} from '../types';
 import TimeDisplay from './TimeDisplay';
 
 const ChartTape = () => {

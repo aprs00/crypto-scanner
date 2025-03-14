@@ -1,5 +1,5 @@
-import {RefObject} from 'react';
 import ReactEcharts from 'echarts-for-react';
+import {RefObject} from 'react';
 
 const resizeEChart = (chartRef: RefObject<ReactEcharts | null>): void => {
     setTimeout(() => {

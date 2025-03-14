@@ -23,9 +23,9 @@ const NumberInput = (props: NumberInputPropsType) => {
         <div className="w-20 relative">
             <input
                 className="w-full border bg-slate-800 rounded-xs border-slate-500 px-2 h-7 text-left relative"
+                onChange={handleInput}
                 placeholder="Ticks"
                 value={value}
-                onChange={handleInput}
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-1">
                 <div className="flex flex-col pr-px">

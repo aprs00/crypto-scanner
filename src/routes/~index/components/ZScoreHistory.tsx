@@ -1,12 +1,11 @@
-import {useRef} from 'react';
-import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
-
 import ChartContainer from '@/components/Charts/ChartContainer';
 import {useCorrelationTypeOptions} from '@/routes/~correlations/api';
+import {resizeEChart} from '@/utils/chart';
+import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
+import {useRef} from 'react';
 
 import {useZScoreHistory} from '../api';
 import {ChartConfig} from '../types';
-import {resizeEChart} from '@/utils/chart';
 
 export type ZScoreHistoryProps = {
     type: string;
@@ -75,12 +74,14 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
         <ChartContainer
             body={
                 <ReactEcharts
+                    onChartReady={() => resizeEChart(chartRef)}
                     option={option}
                     ref={chartRef}
                     style={{height: '92%', width: '100%'}}
-                    onChartReady={() => resizeEChart(chartRef)}
                 />
             }
+            onAddClick={onAddClick}
+            onRemoveClick={onRemoveClick}
             selects={[
                 {
                     class: 'w-24',
@@ -94,8 +95,6 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
                 },
             ]}
             title={`Z Score - ${tf} (UTC)`}
-            onAddClick={onAddClick}
-            onRemoveClick={onRemoveClick}
         />
     );
 };

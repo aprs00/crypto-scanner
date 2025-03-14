@@ -1,11 +1,10 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
 import CSSelect from '@/components/UI/CSSelect';
 import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
 import BinanceOrderBookService from '@/services/binance/OrderbookService';
 import {formatNumber} from '@/utils/number';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {OrderBookResponseType} from '../types';
 import {tableBackgroundStyle} from '../utils';
@@ -113,8 +112,8 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 <div className="flex items-center bg-slate-800 pb-1 justify-between">
                     <DraggableIcon id="drag-handle" />
                     <div className="flex items-center gap-2">
-                        <CSSelect options={tableAlignmentOptions} value={tableAlignment} onChange={setTableAlignment} />
-                        <NumberInput value={numOfTicks} onChange={(e) => setNumOfTicks(e)} />
+                        <CSSelect onChange={setTableAlignment} options={tableAlignmentOptions} value={tableAlignment} />
+                        <NumberInput onChange={(e) => setNumOfTicks(e)} value={numOfTicks} />
                     </div>
                 </div>
                 <div className={`m-1 ${tableAlignment === 'H' ? 'flex flex-row-reverse' : ''}`}>

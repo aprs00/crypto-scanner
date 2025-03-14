@@ -1,8 +1,7 @@
-import {useQuery} from '@tanstack/react-query';
-import {useEffect, useState} from 'react';
-
 import {binanceInstance} from '@/lib/api';
 import queryClient from '@/lib/react-query';
+import {useQuery} from '@tanstack/react-query';
+import {useEffect, useState} from 'react';
 
 import {ExchangeInfoResponseType, StreamAggTradeResponseType} from './types';
 

@@ -1,8 +1,7 @@
-import {useState} from 'react';
-import {Responsive, WidthProvider} from 'react-grid-layout';
-
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
+import {useState} from 'react';
+import {Responsive, WidthProvider} from 'react-grid-layout';
 
 import {useCorrelations, useCorrelationsTimeframeOptions, useCorrelationTypeOptions} from './api';
 

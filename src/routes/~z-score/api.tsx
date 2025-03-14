@@ -1,8 +1,8 @@
-import {useQuery} from '@tanstack/react-query';
+import type {HeatmapResponse, ZScoreMatrixResponse} from '@/types/api';
 
 import api from '@/lib/api';
 import {ZScoreHeatmapParams, ZScoreMatrixLargeParams} from '@/routes/~z-score/types';
-import type {HeatmapResponse, ZScoreMatrixResponse} from '@/types/api';
+import {useQuery} from '@tanstack/react-query';
 
 const fetchZScoreMatrixLarge = async (params: ZScoreMatrixLargeParams) => {
     const url = 'z-score-matrix-large';
