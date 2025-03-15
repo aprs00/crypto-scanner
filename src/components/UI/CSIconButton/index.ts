@@ -1,1 +1,1 @@
-export {default} from './CSIconButton';
+export { default } from './CSIconButton';

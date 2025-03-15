@@ -1,6 +1,6 @@
-import {SelectOption} from '@/types/api';
-import {Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition} from '@headlessui/react';
-import {Dispatch, SetStateAction} from 'react';
+import { SelectOption } from '@/types/api';
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from '@headlessui/react';
+import { Dispatch, SetStateAction } from 'react';
 
 import SelectIcon from './SelectIcon';
 
@@ -12,11 +12,11 @@ export type SelectProps = {
 };
 
 const CSSelect = (props: SelectProps) => {
-    const {classes = 'w-20', onChange, options, value} = props;
+    const { classes = 'w-20', onChange, options, value } = props;
 
     return (
         <Listbox onChange={onChange} value={value}>
-            {({open}) => (
+            {({ open }) => (
                 <div className={classes}>
                     <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 h-8 text-left relative cursor-pointer">
                         <div className="flex items-center">
@@ -50,7 +50,7 @@ const CSSelect = (props: SelectProps) => {
                                         key={item.value.toString()}
                                         value={item.value}
                                     >
-                                        {({selected}) => {
+                                        {({ selected }) => {
                                             return (
                                                 <div
                                                     className={`${

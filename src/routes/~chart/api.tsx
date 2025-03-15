@@ -1,14 +1,14 @@
-import {binanceInstance} from '@/lib/api';
+import { binanceInstance } from '@/lib/api';
 import queryClient from '@/lib/react-query';
-import {useQuery} from '@tanstack/react-query';
-import {useEffect, useState} from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 
-import {ExchangeInfoResponseType, StreamAggTradeResponseType} from './types';
+import { ExchangeInfoResponseType, StreamAggTradeResponseType } from './types';
 
 const fetchExchangeInfo = async () => {
     const url = 'api/v3/exchangeInfo';
 
-    const {data} = await binanceInstance.get<ExchangeInfoResponseType>(url);
+    const { data } = await binanceInstance.get<ExchangeInfoResponseType>(url);
     return data;
 };
 
@@ -54,4 +54,4 @@ const useStreamAggTrade = (symbol: string) => {
     });
 };
 
-export {useExchangeInfo, useStreamAggTrade};
+export { useExchangeInfo, useStreamAggTrade };

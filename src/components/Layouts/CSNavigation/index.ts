@@ -1,1 +1,1 @@
-export {default} from './CSNavigation';
+export { default } from './CSNavigation';

@@ -1,1 +1,1 @@
-export {default} from './CSHeatmap';
+export { default } from './CSHeatmap';

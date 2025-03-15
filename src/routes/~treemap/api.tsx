@@ -1,12 +1,12 @@
-import {coingeckoInstance} from '@/lib/api';
-import {useQuery} from '@tanstack/react-query';
+import { coingeckoInstance } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
 
-import type {HeatmapResponseType} from './types';
+import type { HeatmapResponseType } from './types';
 
 const fetchHeatmapData = async () => {
     const url = 'api/v3/global/tree_map_chart_data';
 
-    const {data} = await coingeckoInstance.get<HeatmapResponseType[]>(url);
+    const { data } = await coingeckoInstance.get<HeatmapResponseType[]>(url);
     return data;
 };
 
@@ -19,4 +19,4 @@ const useHeatmapData = () => {
     });
 };
 
-export {useHeatmapData};
+export { useHeatmapData };

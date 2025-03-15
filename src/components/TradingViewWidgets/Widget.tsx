@@ -1,11 +1,11 @@
-import React, {createRef, useEffect} from 'react';
+import React, { createRef, useEffect } from 'react';
 
-import type {WidgetProps} from './types';
+import type { WidgetProps } from './types';
 
 declare const TradingView: any;
 
-const Widget: React.FC<WidgetProps> = ({containerId, scriptHTML, scriptSRC, type}) => {
-    const ref: {current: HTMLDivElement | null} = createRef();
+const Widget: React.FC<WidgetProps> = ({ containerId, scriptHTML, scriptSRC, type }) => {
+    const ref: { current: HTMLDivElement | null } = createRef();
 
     useEffect(() => {
         let refValue: any;

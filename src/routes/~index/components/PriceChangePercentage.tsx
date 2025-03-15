@@ -1,12 +1,12 @@
-import type {SelectOption} from '@/types/api';
+import type { SelectOption } from '@/types/api';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
-import {resizeEChart} from '@/utils/chart';
-import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
-import {useRef} from 'react';
+import { resizeEChart } from '@/utils/chart';
+import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
+import { useRef } from 'react';
 
-import {usePriceChangePercentage} from '../api';
-import {ChartConfig} from '../types';
+import { usePriceChangePercentage } from '../api';
+import { ChartConfig } from '../types';
 
 export type PriceChangePercentageProps = {
     tf: string;
@@ -20,7 +20,7 @@ export type PriceChangePercentageProps = {
 };
 
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
-    const {symbol, tf, tickerOptions, timeFrameOptions, type, onAddClick, onRemoveClick, onConfigChange} = props;
+    const { symbol, tf, tickerOptions, timeFrameOptions, type, onAddClick, onRemoveClick, onConfigChange } = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
@@ -40,7 +40,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
             componentName: 'select',
             id: '1',
             onChange: (tf: string) => {
-                onConfigChange?.({tf});
+                onConfigChange?.({ tf });
             },
             options: timeFrameOptions,
             value: tf,
@@ -50,7 +50,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
             componentName: 'select',
             id: '2',
             onChange: (symbol: string) => {
-                onConfigChange?.({symbol});
+                onConfigChange?.({ symbol });
             },
             options: tickerOptions,
             value: symbol,
@@ -58,7 +58,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     ];
 
     const option: EChartsOption = {
-        grid: {bottom: 60, left: 45, right: 20, top: 20},
+        grid: { bottom: 60, left: 45, right: 20, top: 20 },
         series: [
             {
                 data: priceChangePercentageApi.data?.data,
@@ -98,7 +98,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
                     onChartReady={() => resizeEChart(chartRef)}
                     option={option}
                     ref={chartRef}
-                    style={{height: '100%', width: '100%'}}
+                    style={{ height: '100%', width: '100%' }}
                 />
             }
             onAddClick={onAddClick}

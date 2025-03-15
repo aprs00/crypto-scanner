@@ -1,1 +1,1 @@
-export {default} from './CSScatter';
+export { default } from './CSScatter';

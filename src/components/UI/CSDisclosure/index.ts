@@ -1,1 +1,1 @@
-export {default} from './CSDisclosure';
+export { default } from './CSDisclosure';

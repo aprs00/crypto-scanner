@@ -1,13 +1,13 @@
-import type {HeatmapResponse, SelectOption} from '@/types/api';
+import type { HeatmapResponse, SelectOption } from '@/types/api';
 
 import api from '@/lib/api';
-import {CorrelationsParams} from '@/routes/~correlations/types';
-import {useQuery} from '@tanstack/react-query';
+import { CorrelationsParams } from '@/routes/~correlations/types';
+import { useQuery } from '@tanstack/react-query';
 
 const fetchCorrelations = async (params: CorrelationsParams) => {
     const url = 'large-pearson-correlation';
 
-    const {data} = await api.get<HeatmapResponse>(url, {params});
+    const { data } = await api.get<HeatmapResponse>(url, { params });
     return data;
 };
 
@@ -24,7 +24,7 @@ const useCorrelations = (params: CorrelationsParams) => {
 const fetchCorrelationsTimeframeOptions = async () => {
     const url = 'pearson-time-frame-options';
 
-    const {data} = await api.get<SelectOption[]>(url);
+    const { data } = await api.get<SelectOption[]>(url);
     return data;
 };
 
@@ -39,7 +39,7 @@ const useCorrelationsTimeframeOptions = () => {
 const fetchCorrelationsTypeOptions = async () => {
     const url = 'pearson-type-options';
 
-    const {data} = await api.get<SelectOption[]>(url);
+    const { data } = await api.get<SelectOption[]>(url);
     return data;
 };
 
@@ -51,4 +51,4 @@ const useCorrelationTypeOptions = () => {
     });
 };
 
-export {useCorrelations, useCorrelationsTimeframeOptions, useCorrelationTypeOptions};
+export { useCorrelations, useCorrelationsTimeframeOptions, useCorrelationTypeOptions };

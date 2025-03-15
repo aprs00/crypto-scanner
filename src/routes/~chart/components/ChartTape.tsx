@@ -1,9 +1,9 @@
-import {formatNumber} from '@/utils/number';
-import {useEffect, useState} from 'react';
+import { formatNumber } from '@/utils/number';
+import { useEffect, useState } from 'react';
 
-import type {TapeStateType} from '../types';
+import type { TapeStateType } from '../types';
 
-import {useStreamAggTrade} from '../api';
+import { useStreamAggTrade } from '../api';
 import TimeDisplay from './TimeDisplay';
 
 const ChartTape = () => {
@@ -20,7 +20,7 @@ const ChartTape = () => {
             }}
         >
             <div>{formatNumber(parseFloat(data.price), {})}</div>
-            <div>{formatNumber(parseFloat(data.size), {maximumFractionDigits: 8})}</div>
+            <div>{formatNumber(parseFloat(data.size), { maximumFractionDigits: 8 })}</div>
             <TimeDisplay timestamp={data.time} />
         </div>
     ));

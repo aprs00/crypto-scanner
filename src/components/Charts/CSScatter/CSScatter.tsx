@@ -1,9 +1,9 @@
-import type {ZScoreMatrixResponse} from '@/types/api';
+import type { ZScoreMatrixResponse } from '@/types/api';
 
-import {resizeEChart} from '@/utils/chart';
-import ReactEcharts, {EChartsOption} from 'echarts-for-react';
-import {capitalize} from 'lodash-es';
-import {useRef} from 'react';
+import { resizeEChart } from '@/utils/chart';
+import ReactEcharts, { EChartsOption } from 'echarts-for-react';
+import { capitalize } from 'lodash-es';
+import { useRef } from 'react';
 
 export type ScatterProps = {
     data: ZScoreMatrixResponse[];
@@ -12,7 +12,7 @@ export type ScatterProps = {
 };
 
 const CSScatter = (props: ScatterProps) => {
-    const {data, xAxis, yAxis} = props;
+    const { data, xAxis, yAxis } = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
@@ -91,7 +91,7 @@ const CSScatter = (props: ScatterProps) => {
             onChartReady={() => resizeEChart(chartRef)}
             option={option}
             ref={chartRef}
-            style={{height: '100%', width: '100%'}}
+            style={{ height: '100%', width: '100%' }}
         />
     );
 };

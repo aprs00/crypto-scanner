@@ -1,7 +1,7 @@
-import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-import type {ChartConfig, ChartItem, ChartType, Layout, LayoutItem} from './types';
+import type { ChartConfig, ChartItem, ChartType, Layout, LayoutItem } from './types';
 
 interface ChartStore {
     chartIds: ChartItem[];
@@ -22,11 +22,11 @@ const useChartStore = create<ChartStore>()(
     persist(
         (set, get) => ({
             chartIds: [
-                {type: 'betaHeatmap', id: crypto.randomUUID()},
-                {type: 'scatter', id: crypto.randomUUID()},
-                {type: 'zScoreHistory', id: crypto.randomUUID()},
-                {type: 'priceChangePercentageDay', id: crypto.randomUUID()},
-                {type: 'priceChangePercentageHour', id: crypto.randomUUID()},
+                { type: 'betaHeatmap', id: crypto.randomUUID() },
+                { type: 'scatter', id: crypto.randomUUID() },
+                { type: 'zScoreHistory', id: crypto.randomUUID() },
+                { type: 'priceChangePercentageDay', id: crypto.randomUUID() },
+                { type: 'priceChangePercentageHour', id: crypto.randomUUID() },
             ],
             savedGridLayouts: {},
             addChart: (type) => {
@@ -36,7 +36,7 @@ const useChartStore = create<ChartStore>()(
                 set((state) => ({
                     chartIds: [
                         ...state.chartIds.slice(0, clickedChartIndex),
-                        {type, id: crypto.randomUUID()},
+                        { type, id: crypto.randomUUID() },
                         ...state.chartIds.slice(clickedChartIndex),
                     ],
                 }));
@@ -65,8 +65,8 @@ const useChartStore = create<ChartStore>()(
                 const state = get();
 
                 layouts.forEach((item) => {
-                    const {i, x, y, w, h} = item;
-                    state.saveGridLayout(i, {x, y, w, h});
+                    const { i, x, y, w, h } = item;
+                    state.saveGridLayout(i, { x, y, w, h });
                 });
             },
             updateChartConfig: (chartId: string, config: ChartConfig) => {
@@ -83,7 +83,7 @@ const useChartStore = create<ChartStore>()(
                 });
             },
         }),
-        {name: 'chart-layout'},
+        { name: 'chart-layout' },
     ),
 );
 

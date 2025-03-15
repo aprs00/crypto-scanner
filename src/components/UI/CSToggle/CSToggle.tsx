@@ -1,4 +1,4 @@
-import {Switch} from '@headlessui/react';
+import { Switch } from '@headlessui/react';
 
 export type ToggleProps = {
     enabled: boolean;
@@ -7,7 +7,7 @@ export type ToggleProps = {
 };
 
 const CSToggle = (props: ToggleProps) => {
-    const {enabled, label, setEnabled} = props;
+    const { enabled, label, setEnabled } = props;
 
     return (
         <div className="flex gap-2 items-center">

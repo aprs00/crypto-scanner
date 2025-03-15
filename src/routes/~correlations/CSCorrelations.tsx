@@ -1,9 +1,9 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
-import {useState} from 'react';
-import {Responsive, WidthProvider} from 'react-grid-layout';
+import { useState } from 'react';
+import { Responsive, WidthProvider } from 'react-grid-layout';
 
-import {useCorrelations, useCorrelationsTimeframeOptions, useCorrelationTypeOptions} from './api';
+import { useCorrelations, useCorrelationsTimeframeOptions, useCorrelationTypeOptions } from './api';
 
 const gridLayoutRowHeight = 30;
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -14,7 +14,7 @@ const CSCorrelations = () => {
     const timeFrameOptions = useCorrelationsTimeframeOptions();
     const typeOptions = useCorrelationTypeOptions();
 
-    const pearsonCorrelation = useCorrelations({duration: selectedTf, type: selectedType});
+    const pearsonCorrelation = useCorrelations({ duration: selectedTf, type: selectedType });
 
     const gridLayouts = [
         {
@@ -41,14 +41,14 @@ const CSCorrelations = () => {
                     title="Pearson / Spearman"
                 />
             ),
-            gridLayout: {h: 28, w: 12, x: 0, y: 0},
+            gridLayout: { h: 28, w: 12, x: 0, y: 0 },
             key: 'correlation1',
         },
     ];
 
     return (
         <ResponsiveGridLayout
-            cols={{lg: 12, md: 12, sm: 6, xs: 6, xxs: 6}}
+            cols={{ lg: 12, md: 12, sm: 6, xs: 6, xxs: 6 }}
             draggableHandle="#drag-handle"
             rowHeight={gridLayoutRowHeight}
         >

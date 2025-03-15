@@ -1,11 +1,11 @@
-import {memo, useEffect, useState} from 'react';
+import { memo, useEffect, useState } from 'react';
 
 type TimeDisplayProps = {
     timestamp: number;
 };
 
 const TimeDisplay = (props: TimeDisplayProps) => {
-    const {timestamp} = props;
+    const { timestamp } = props;
 
     const [timeDiff, setTimeDiff] = useState(() => {
         const now = new Date();

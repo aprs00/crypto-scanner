@@ -1,11 +1,11 @@
-import {binanceInstance} from '@/lib/api';
-import {OrderBookResponseType, StreamTickerResponseType} from '@/routes/~chart/types';
+import { binanceInstance } from '@/lib/api';
+import { OrderBookResponseType, StreamTickerResponseType } from '@/routes/~chart/types';
 
 export default class BinanceOrderBookService {
     private ws: WebSocket | null = null;
     private eventBuffer: StreamTickerResponseType[] = [];
     private firstEventU: number | null = null;
-    private orderBook: OrderBookResponseType = {bids: [], asks: [], lastUpdateId: 0};
+    private orderBook: OrderBookResponseType = { bids: [], asks: [], lastUpdateId: 0 };
     private symbol: string;
     private onOrderBookUpdate: (orderBook: OrderBookResponseType) => void;
 
@@ -17,7 +17,7 @@ export default class BinanceOrderBookService {
     public initialize(): void {
         this.eventBuffer = [];
         this.firstEventU = null;
-        this.orderBook = {bids: [], asks: [], lastUpdateId: 0};
+        this.orderBook = { bids: [], asks: [], lastUpdateId: 0 };
 
         if (this.ws) {
             this.ws.close();
@@ -58,7 +58,7 @@ export default class BinanceOrderBookService {
     }
 
     private async fetchSnapshot(): Promise<void> {
-        const {data} = await binanceInstance.get<OrderBookResponseType>(
+        const { data } = await binanceInstance.get<OrderBookResponseType>(
             `api/v3/depth?symbol=${this.symbol.toUpperCase()}&limit=5000`,
         );
 
@@ -83,7 +83,7 @@ export default class BinanceOrderBookService {
             const firstEvent: StreamTickerResponseType = validEvents[0];
 
             if (firstEvent.U <= snapshot.lastUpdateId && firstEvent.u >= snapshot.lastUpdateId) {
-                let currentBook = {...newOrderBook};
+                let currentBook = { ...newOrderBook };
 
                 validEvents.forEach((event) => {
                     currentBook = this.applyEvent(currentBook, event);
@@ -133,7 +133,7 @@ export default class BinanceOrderBookService {
 
     private updateOrderBook = (getter: [string, string][], stream: [string, string][], ascending: boolean) => {
         for (const [price, quantity] of stream) {
-            const {exactMatch, index} = this.findTargetPriceIndex(getter, price, ascending);
+            const { exactMatch, index } = this.findTargetPriceIndex(getter, price, ascending);
             if (quantity === '0.00000000') {
                 if (exactMatch) getter.splice(index, 1);
             } else {
@@ -189,11 +189,11 @@ export default class BinanceOrderBookService {
             const mid = Math.floor((low + high) / 2);
             const midPrice = parseFloat(bids[mid][0]);
 
-            if (midPrice === parsedPrice) return {exactMatch: true, index: mid};
+            if (midPrice === parsedPrice) return { exactMatch: true, index: mid };
             else if ((ascending && midPrice < parsedPrice) || (!ascending && midPrice > parsedPrice)) low = mid + 1;
             else high = mid - 1;
         }
 
-        return {exactMatch: false, index: low};
+        return { exactMatch: false, index: low };
     };
 }

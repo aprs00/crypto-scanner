@@ -4,7 +4,7 @@ export type XIconPropsType = {
 };
 
 const XIcon = (props: XIconPropsType) => {
-    const {height = 14, width = 14} = props;
+    const { height = 14, width = 14 } = props;
 
     return (
         <span>

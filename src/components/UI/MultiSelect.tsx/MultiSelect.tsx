@@ -1,5 +1,5 @@
-import {Listbox, ListboxButton, Transition} from '@headlessui/react';
-import {Dispatch, SetStateAction} from 'react';
+import { Listbox, ListboxButton, Transition } from '@headlessui/react';
+import { Dispatch, SetStateAction } from 'react';
 
 import XIcon from './XIcon';
 
@@ -14,11 +14,11 @@ export type MultiSelectProps = {
 };
 
 const MultiSelect = (props: MultiSelectProps) => {
-    const {label, onChange = () => {}, options, values = []} = props;
+    const { label, onChange = () => {}, options, values = [] } = props;
 
     return (
         <Listbox multiple onChange={onChange} value={values}>
-            {({open}) => (
+            {({ open }) => (
                 <>
                     <div>
                         {!!label?.length && <p className="text-lg">{label}</p>}
@@ -74,7 +74,7 @@ const MultiSelect = (props: MultiSelectProps) => {
                                         key={item.value}
                                         value={item.value}
                                     >
-                                        {({selected}) => (
+                                        {({ selected }) => (
                                             <div className="flex items-center">
                                                 {selected}
                                                 <span

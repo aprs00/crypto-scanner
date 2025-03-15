@@ -57,7 +57,7 @@ export default [
 
             'no-undef': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
-            'prettier/prettier': ['error', {}, {usePrettierrc: true}],
+            'prettier/prettier': ['error', {}, { usePrettierrc: true }],
             'react/react-in-jsx-scope': 'off',
             'jsx-a11y/accessible-emoji': 'off',
             '@typescript-eslint/explicit-function-return-type': 'off',

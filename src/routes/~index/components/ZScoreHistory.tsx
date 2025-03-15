@@ -1,11 +1,11 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
-import {useCorrelationTypeOptions} from '@/routes/~correlations/api';
-import {resizeEChart} from '@/utils/chart';
-import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
-import {useRef} from 'react';
+import { useCorrelationTypeOptions } from '@/routes/~correlations/api';
+import { resizeEChart } from '@/utils/chart';
+import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
+import { useRef } from 'react';
 
-import {useZScoreHistory} from '../api';
-import {ChartConfig} from '../types';
+import { useZScoreHistory } from '../api';
+import { ChartConfig } from '../types';
 
 export type ZScoreHistoryProps = {
     type: string;
@@ -17,7 +17,7 @@ export type ZScoreHistoryProps = {
 const tf = '12h';
 
 const ZScoreHistory = (props: ZScoreHistoryProps) => {
-    const {type, onAddClick, onRemoveClick, onConfigChange} = props;
+    const { type, onAddClick, onRemoveClick, onConfigChange } = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
@@ -77,7 +77,7 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
                     onChartReady={() => resizeEChart(chartRef)}
                     option={option}
                     ref={chartRef}
-                    style={{height: '92%', width: '100%'}}
+                    style={{ height: '92%', width: '100%' }}
                 />
             }
             onAddClick={onAddClick}
@@ -88,7 +88,7 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
                     componentName: 'select',
                     id: '1',
                     onChange: (val: string) => {
-                        onConfigChange?.({type: val});
+                        onConfigChange?.({ type: val });
                     },
                     options: typeOptions.data || [],
                     value: type,

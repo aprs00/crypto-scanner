@@ -1,9 +1,9 @@
-import {resizeEChart} from '@/utils/chart';
-import ReactEcharts, {type EChartsOption} from 'echarts-for-react';
-import {maxBy, minBy} from 'lodash-es';
-import {useRef} from 'react';
+import { resizeEChart } from '@/utils/chart';
+import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
+import { maxBy, minBy } from 'lodash-es';
+import { useRef } from 'react';
 
-import {useHeatmapData} from './api';
+import { useHeatmapData } from './api';
 
 const CSTreemap = () => {
     const chartRef = useRef<ReactEcharts | null>(null);
@@ -26,7 +26,7 @@ const CSTreemap = () => {
     const option: EChartsOption = {
         series: [
             {
-                data: [{children}],
+                data: [{ children }],
                 height: '100%',
                 label: {
                     fontSize: 18,
@@ -81,7 +81,7 @@ const CSTreemap = () => {
                 onChartReady={() => resizeEChart(chartRef)}
                 option={option}
                 ref={chartRef}
-                style={{height: '95%', width: '100%'}}
+                style={{ height: '95%', width: '100%' }}
             />
         )
     );

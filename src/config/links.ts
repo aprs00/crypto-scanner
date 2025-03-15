@@ -21,4 +21,4 @@ const headerLinks = [
     },
 ];
 
-export {headerLinks};
+export { headerLinks };

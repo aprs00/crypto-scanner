@@ -1,13 +1,13 @@
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
 import IconButton from '@/components/UI/CSIconButton';
 import CSSelect from '@/components/UI/CSSelect';
-import {ComponentProps, Dispatch, ReactNode, SetStateAction} from 'react';
+import { ComponentProps, Dispatch, ReactNode, SetStateAction } from 'react';
 
-const selectsMapper: {[key: string]: (props: ComponentProps<typeof CSSelect>) => ReactNode} = {
+const selectsMapper: { [key: string]: (props: ComponentProps<typeof CSSelect>) => ReactNode } = {
     select: CSSelect,
 };
 
-import {SelectOption} from '@/types/api';
+import { SelectOption } from '@/types/api';
 
 export type ChartContainerProps = {
     body: ReactNode;
@@ -25,7 +25,7 @@ export type ChartContainerProps = {
 };
 
 const ChartContainer = (props: ChartContainerProps) => {
-    const {body, selects, title, onAddClick, onRemoveClick} = props;
+    const { body, selects, title, onAddClick, onRemoveClick } = props;
 
     return (
         <div className="border-4 border-slate-800 rounded-sm h-full">

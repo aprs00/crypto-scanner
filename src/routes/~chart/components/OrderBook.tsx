@@ -3,11 +3,11 @@ import CSSelect from '@/components/UI/CSSelect';
 import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
 import BinanceOrderBookService from '@/services/binance/OrderbookService';
-import {formatNumber} from '@/utils/number';
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import { formatNumber } from '@/utils/number';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import {OrderBookResponseType} from '../types';
-import {tableBackgroundStyle} from '../utils';
+import { OrderBookResponseType } from '../types';
+import { tableBackgroundStyle } from '../utils';
 
 export type OrderBookTablePropsType = {
     tableHeight: number;
@@ -16,18 +16,18 @@ export type OrderBookTablePropsType = {
 };
 
 const tableAlignmentOptions = [
-    {label: 'V', value: 'V'},
-    {label: 'H', value: 'H'},
+    { label: 'V', value: 'V' },
+    { label: 'H', value: 'H' },
 ];
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const {symbolTickSize, tableHeight} = props;
+    const { symbolTickSize, tableHeight } = props;
 
-    const [orderBook, setOrderBook] = useState<OrderBookResponseType>({bids: [], asks: [], lastUpdateId: 0});
+    const [orderBook, setOrderBook] = useState<OrderBookResponseType>({ bids: [], asks: [], lastUpdateId: 0 });
     const [groupedOrderBook, setGroupedOrderBook] = useState<{
         bids: [number, number][];
         asks: [number, number][];
-    }>({bids: [], asks: []});
+    }>({ bids: [], asks: [] });
     const [numOfTicks, setNumOfTicks] = useState(100);
     const [tableAlignment, setTableAlignment] = useState('V');
     const binanceServiceRef = useRef<BinanceOrderBookService | null>(null);
@@ -63,14 +63,14 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 if (!groupedGetter[i]) continue;
                 const [price, quantity] = groupedGetter[i];
                 const percentage = (quantity / maxQuantity) * 100;
-                const formattedPrice = formatNumber(price, {maximumFractionDigits: tickSizeDecimalPlaces});
-                const formattedQuantity = formatNumber(quantity, {maximumFractionDigits: 6});
+                const formattedPrice = formatNumber(price, { maximumFractionDigits: tickSizeDecimalPlaces });
+                const formattedQuantity = formatNumber(quantity, { maximumFractionDigits: 6 });
 
                 rows.push(
                     <div
                         className={`grid grid-cols-2 mb-0.5 rounded-sm text-slate-200 text-sm p-0.5 ${tableAlignmentClassContainer}`}
                         key={price}
-                        style={{background: tableBackgroundStyle(type, tableAlignment, percentage)}}
+                        style={{ background: tableBackgroundStyle(type, tableAlignment, percentage) }}
                     >
                         <div className={tableAlignmentClassRow}>{formattedPrice}</div>
                         <div>{formattedQuantity}</div>

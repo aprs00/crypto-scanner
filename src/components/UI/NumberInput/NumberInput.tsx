@@ -1,4 +1,4 @@
-import {ChangeEvent, Dispatch, SetStateAction} from 'react';
+import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
 import DownIcon from './DownIcon';
 import UpIcon from './UpIcon';
@@ -9,7 +9,7 @@ export type NumberInputPropsType = {
 };
 
 const NumberInput = (props: NumberInputPropsType) => {
-    const {onChange, value} = props;
+    const { onChange, value } = props;
 
     const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
         const val = Number(e.target.value);

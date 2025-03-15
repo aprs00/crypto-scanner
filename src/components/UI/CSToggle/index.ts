@@ -1,1 +1,1 @@
-export {default} from './CSToggle';
+export { default } from './CSToggle';

@@ -1,1 +1,1 @@
-export {default} from './CSSelect';
+export { default } from './CSSelect';

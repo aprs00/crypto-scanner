@@ -1,15 +1,15 @@
-import {HeatmapResponse} from '@/types/api';
-import {resizeEChart} from '@/utils/chart';
-import {useMediaQuery} from '@mantine/hooks';
-import ReactEcharts, {EChartsOption} from 'echarts-for-react';
-import {useRef} from 'react';
+import { HeatmapResponse } from '@/types/api';
+import { resizeEChart } from '@/utils/chart';
+import { useMediaQuery } from '@mantine/hooks';
+import ReactEcharts, { EChartsOption } from 'echarts-for-react';
+import { useRef } from 'react';
 
 export type HeatmapProps = {
     data?: HeatmapResponse;
     tooltipType?: 'duration';
 };
 const CSHeatmap = (props: HeatmapProps) => {
-    const {data, tooltipType} = props;
+    const { data, tooltipType } = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
@@ -19,7 +19,7 @@ const CSHeatmap = (props: HeatmapProps) => {
         dataZoom: {
             type: 'inside',
         },
-        grid: {bottom: 110, left: 50, right: 15, top: 20},
+        grid: { bottom: 110, left: 50, right: 15, top: 20 },
         series: [
             {
                 data: data?.data,
@@ -83,9 +83,9 @@ const CSHeatmap = (props: HeatmapProps) => {
         <ReactEcharts
             onChartReady={() => resizeEChart(chartRef)}
             option={option}
-            opts={{renderer: 'canvas'}}
+            opts={{ renderer: 'canvas' }}
             ref={chartRef}
-            style={{height: '100%', width: '100%'}}
+            style={{ height: '100%', width: '100%' }}
         />
     );
 };

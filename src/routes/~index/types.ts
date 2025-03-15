@@ -1,4 +1,4 @@
-import type {SelectOption} from '@/types/api';
+import type { SelectOption } from '@/types/api';
 
 export type AveragePriceChangeParams = {
     duration: string;

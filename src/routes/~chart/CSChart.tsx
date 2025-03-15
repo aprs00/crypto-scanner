@@ -1,10 +1,10 @@
-import type {Layout} from 'react-grid-layout';
+import type { Layout } from 'react-grid-layout';
 
 import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
-import {useState} from 'react';
-import {Responsive, WidthProvider} from 'react-grid-layout';
+import { useState } from 'react';
+import { Responsive, WidthProvider } from 'react-grid-layout';
 
-import {useExchangeInfo} from './api';
+import { useExchangeInfo } from './api';
 import ChartTape from './components/ChartTape';
 import Table from './components/OrderBook';
 
@@ -23,7 +23,7 @@ const CSChart = () => {
 
     return (
         <ResponsiveGridLayout
-            cols={{lg: 12, md: 12, sm: 6, xs: 4, xxs: 2}}
+            cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
             draggableHandle="#drag-handle"
             onResize={(grids: Layout[]) => {
                 grids.forEach((grid) => {
@@ -34,15 +34,15 @@ const CSChart = () => {
         >
             <div
                 className="bg-slate-900 overflow-hidden"
-                data-grid={{h: 15, w: 12, x: 0, y: 0}}
+                data-grid={{ h: 15, w: 12, x: 0, y: 0 }}
                 key="tradingViewWidget"
             >
                 <TradingViewRealTimeChart autosize symbol="BINANCE:BTCUSDT" theme="dark" />
             </div>
-            <div className="bg-slate-900 overflow-hidden" data-grid={{h: 14, w: 8, x: 0, y: 16}} key="table">
+            <div className="bg-slate-900 overflow-hidden" data-grid={{ h: 14, w: 8, x: 0, y: 16 }} key="table">
                 <Table symbol={symbol} symbolTickSize={symbolTickSize} tableHeight={tableHeight} />
             </div>
-            <div className="bg-slate-900 overflow-hidden" data-grid={{h: 14, w: 4, x: 8, y: 16}} key="tape">
+            <div className="bg-slate-900 overflow-hidden" data-grid={{ h: 14, w: 4, x: 8, y: 16 }} key="tape">
                 <ChartTape />
             </div>
         </ResponsiveGridLayout>

@@ -1,8 +1,8 @@
-import {Responsive, WidthProvider} from 'react-grid-layout';
+import { Responsive, WidthProvider } from 'react-grid-layout';
 
-import type {ChartTemplate, ChartType} from './types';
+import type { ChartTemplate, ChartType } from './types';
 
-import {useFetchTickersOptions, useStatsSelectOptions} from './api';
+import { useFetchTickersOptions, useStatsSelectOptions } from './api';
 import BetaHeatmap from './components/BetaHeatmap';
 import PriceChangePercentage from './components/PriceChangePercentage';
 import ZScoreHistory from './components/ZScoreHistory';
@@ -19,27 +19,27 @@ const Stats = () => {
 
     const chartIds = useChartStore((state) => state.chartIds);
     const savedGridLayouts = useChartStore((state) => state.savedGridLayouts);
-    const {addChart, removeChart, handleLayoutChange, updateChartConfig} = useChartStore();
+    const { addChart, removeChart, handleLayoutChange, updateChartConfig } = useChartStore();
 
     const chartTemplates: Record<ChartType, ChartTemplate> = {
         betaHeatmap: {
-            gridLayout: {h: CHART_HEIGHT, w: 12, x: 0, y: 0},
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: 0 },
             type: 'betaHeatmap',
         },
         scatter: {
-            gridLayout: {h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT},
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT },
             type: 'scatter',
         },
         zScoreHistory: {
-            gridLayout: {h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2},
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2 },
             type: 'zScoreHistory',
         },
         priceChangePercentageDay: {
-            gridLayout: {h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 3},
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 3 },
             type: 'priceChangePercentageDay',
         },
         priceChangePercentageHour: {
-            gridLayout: {h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4},
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4 },
             type: 'priceChangePercentageHour',
         },
     };
@@ -130,7 +130,7 @@ const Stats = () => {
 
     return (
         <ResponsiveGridLayout
-            cols={{lg: 12, md: 12, sm: 6, xs: 6, xxs: 6}}
+            cols={{ lg: 12, md: 12, sm: 6, xs: 6, xxs: 6 }}
             draggableHandle="#drag-handle"
             onLayoutChange={handleLayoutChange}
             rowHeight={30}

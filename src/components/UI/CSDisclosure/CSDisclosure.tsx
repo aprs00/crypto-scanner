@@ -1,5 +1,5 @@
-import {Disclosure, DisclosureButton, DisclosurePanel, Transition} from '@headlessui/react';
-import {ReactNode} from 'react';
+import { Disclosure, DisclosureButton, DisclosurePanel, Transition } from '@headlessui/react';
+import { ReactNode } from 'react';
 
 export type CustomDisclosurePropsType = {
     title: string;
@@ -7,7 +7,7 @@ export type CustomDisclosurePropsType = {
 };
 
 function CustomDisclosure(props: CustomDisclosurePropsType) {
-    const {children, title} = props;
+    const { children, title } = props;
 
     return (
         <Disclosure>

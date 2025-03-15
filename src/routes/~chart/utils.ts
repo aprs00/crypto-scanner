@@ -16,4 +16,4 @@ const tableBackgroundStyle = (type: string, tableAlignment: string, percentage: 
     } ${percentage}%, rgba(255, 255, 255, 0) 0%)`;
 };
 
-export {tableBackgroundStyle};
+export { tableBackgroundStyle };

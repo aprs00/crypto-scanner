@@ -28,5 +28,5 @@ const binanceInstance = axios.create({
     timeout: 5000,
 });
 
-export {binanceInstance, coingeckoInstance};
+export { binanceInstance, coingeckoInstance };
 export default baseInstance;

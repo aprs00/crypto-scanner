@@ -1,1 +1,1 @@
-export {default} from './CSSpinner';
+export { default } from './CSSpinner';

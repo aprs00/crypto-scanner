@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type {CopyrightStyles} from './types';
+import type { CopyrightStyles } from './types';
 
 export type CopyrightProps = {
     copyrightStyles?: CopyrightStyles;
@@ -10,7 +10,7 @@ export type CopyrightProps = {
     children?: never;
 };
 
-const Copyright: React.FC<CopyrightProps> = ({copyrightStyles, href, spanText, text = 'By TradingView'}) => {
+const Copyright: React.FC<CopyrightProps> = ({ copyrightStyles, href, spanText, text = 'By TradingView' }) => {
     const defaultStyles: CopyrightStyles = {
         link: {
             color: '#9db2bd',

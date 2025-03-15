@@ -1,12 +1,12 @@
-import type {SelectOption} from '@/types/api';
+import type { SelectOption } from '@/types/api';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
-import {memo} from 'react';
+import { memo } from 'react';
 
-import type {ChartConfig} from '../types';
+import type { ChartConfig } from '../types';
 
-import {useBetaHeatmapData} from '../api';
+import { useBetaHeatmapData } from '../api';
 
 export type BetaHeatmapProps = {
     tf: string;
@@ -17,16 +17,16 @@ export type BetaHeatmapProps = {
 };
 
 const BetaHeatmap = (props: BetaHeatmapProps) => {
-    const {tf, timeFrameOptions, onAddClick, onRemoveClick, onConfigChange} = props;
+    const { tf, timeFrameOptions, onAddClick, onRemoveClick, onConfigChange } = props;
 
-    const betaHeatmap = useBetaHeatmapData({duration: tf});
+    const betaHeatmap = useBetaHeatmapData({ duration: tf });
 
     const selects = [
         {
             componentName: 'select',
             id: '1',
             onChange: (val: string) => {
-                onConfigChange?.({tf: val});
+                onConfigChange?.({ tf: val });
             },
             options: timeFrameOptions,
             value: tf,

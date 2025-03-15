@@ -1,9 +1,9 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
-import {SelectOption} from '@/types/api';
-import {memo, useState} from 'react';
+import { SelectOption } from '@/types/api';
+import { memo, useState } from 'react';
 
-import {useZScoreMatrixLarge} from '../api';
+import { useZScoreMatrixLarge } from '../api';
 
 export type ScatterProps = {
     timeFrameOptions: SelectOption[];
@@ -13,7 +13,7 @@ export type ScatterProps = {
 };
 
 const ZScoreMatrix = (props: ScatterProps) => {
-    const {tf, timeFrameOptions, xAxis, yAxis} = props;
+    const { tf, timeFrameOptions, xAxis, yAxis } = props;
     const [selectedTf, setSelectedTf] = useState(tf);
     const zScoreMatrix = useZScoreMatrixLarge({
         tf: selectedTf,

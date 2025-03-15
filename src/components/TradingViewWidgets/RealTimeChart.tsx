@@ -1,6 +1,6 @@
-import React, {memo} from 'react';
+import React, { memo } from 'react';
 
-import type {AdvancedRealTimeChartProps} from './types';
+import type { AdvancedRealTimeChartProps } from './types';
 
 import Copyright from './Copyright';
 import Widget from './Widget';
@@ -45,11 +45,11 @@ const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({
             <Widget
                 containerId={container_id}
                 scriptHTML={{
-                    ...(!autosize ? {width} : {width: '100%'}),
-                    ...(!autosize ? {height} : {height: '100%'}),
+                    ...(!autosize ? { width } : { width: '100%' }),
+                    ...(!autosize ? { height } : { height: '100%' }),
                     autosize,
                     symbol,
-                    ...(!range ? {interval} : {range}),
+                    ...(!range ? { interval } : { range }),
                     allow_symbol_change,
                     calendar,
                     details,
