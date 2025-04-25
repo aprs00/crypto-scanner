@@ -6,9 +6,7 @@ import { useEffect, useState } from 'react';
 import { ExchangeInfoResponseType, StreamAggTradeResponseType } from './types';
 
 const fetchExchangeInfo = async () => {
-    const url = 'api/v3/exchangeInfo';
-
-    const { data } = await binanceInstance.get<ExchangeInfoResponseType>(url);
+    const { data } = await binanceInstance.get<ExchangeInfoResponseType>('api/v3/exchangeInfo');
     return data;
 };
 

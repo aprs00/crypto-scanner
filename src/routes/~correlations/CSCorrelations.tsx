@@ -9,7 +9,7 @@ const gridLayoutRowHeight = 30;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const CSCorrelations = () => {
-    const [selectedTf, setSelectedTf] = useState('5m');
+    const [selectedTf, setSelectedTf] = useState('1h');
     const [selectedType, setSelectedType] = useState('price');
     const timeFrameOptions = useCorrelationsTimeframeOptions();
     const typeOptions = useCorrelationTypeOptions();

@@ -14,9 +14,7 @@ import {
 } from './types';
 
 const fetchPriceChangePercentage = async (params: AveragePriceChangeParams) => {
-    const url = 'average-prices';
-
-    const { data } = await api.get<AveragePriceChangeResponse>(url, { params });
+    const { data } = await api.get<AveragePriceChangeResponse>('average-prices', { params });
     return data;
 };
 
@@ -31,9 +29,7 @@ const usePriceChangePercentage = (params: AveragePriceChangeParams) => {
 };
 
 const fetchTickersOptions = async () => {
-    const url = 'tickers-options';
-
-    const { data } = await api.get<SelectOption[]>(url);
+    const { data } = await api.get<SelectOption[]>('tickers-options');
     return data;
 };
 
@@ -80,9 +76,7 @@ const useZScoreMatrix = (params: ZScoreMatrixParams) => {
 };
 
 const fetchZScoreHistory = async (params: ZScoreHistoryParams) => {
-    const url = 'z-score-history';
-
-    const { data } = await api.get<ZScoreHistoryResponse>(url, { params });
+    const { data } = await api.get<ZScoreHistoryResponse>('z-score-history', { params });
     return data;
 };
 
@@ -97,9 +91,7 @@ const useZScoreHistory = (params: ZScoreHistoryParams) => {
 };
 
 const fetchStatsSelectOptions = async () => {
-    const url = 'stats-select-options';
-
-    const { data } = await api.get<SelectOptionsResponse>(url);
+    const { data } = await api.get<SelectOptionsResponse>('stats-select-options');
     return data;
 };
 
