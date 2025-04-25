@@ -5,9 +5,7 @@ import { ZScoreHeatmapParams, ZScoreMatrixLargeParams } from '@/routes/~z-score/
 import { useQuery } from '@tanstack/react-query';
 
 const fetchZScoreMatrixLarge = async (params: ZScoreMatrixLargeParams) => {
-    const url = 'z-score-matrix-large';
-
-    const { data } = await api.get<ZScoreMatrixResponse[]>(url, { params });
+    const { data } = await api.get<ZScoreMatrixResponse[]>('z-score-matrix-large', { params });
     return data;
 };
 
@@ -22,9 +20,7 @@ const useZScoreMatrixLarge = (params: ZScoreMatrixLargeParams) => {
 };
 
 const fetchZScoreHeatmap = async (params: ZScoreHeatmapParams) => {
-    const url = 'z-score-heatmap';
-
-    const { data } = await api.get<HeatmapResponse>(url, { params });
+    const { data } = await api.get<HeatmapResponse>('z-score-heatmap', { params });
     return data;
 };
 

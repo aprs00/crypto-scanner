@@ -4,9 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { HeatmapResponseType } from './types';
 
 const fetchHeatmapData = async () => {
-    const url = 'api/v3/global/tree_map_chart_data';
-
-    const { data } = await coingeckoInstance.get<HeatmapResponseType[]>(url);
+    const { data } = await coingeckoInstance.get<HeatmapResponseType[]>('api/v3/global/tree_map_chart_data');
     return data;
 };
 

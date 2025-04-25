@@ -1,31 +1,27 @@
 import env from '@/config/env';
-import axios from 'axios';
+import axios, { type CreateAxiosDefaults } from 'axios';
 
-const baseInstance = axios.create({
-    baseURL: env.baseAPI,
+const commonOptions: CreateAxiosDefaults = {
     headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
     },
     timeout: 5000,
+};
+
+const baseInstance = axios.create({
+    baseURL: env.baseAPI,
+    ...commonOptions,
 });
 
 const coingeckoInstance = axios.create({
     baseURL: env.coingeckoAPI,
-    headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-    },
-    timeout: 5000,
+    ...commonOptions,
 });
 
 const binanceInstance = axios.create({
     baseURL: env.binanceAPI,
-    headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-    },
-    timeout: 5000,
+    ...commonOptions,
 });
 
 export { binanceInstance, coingeckoInstance };

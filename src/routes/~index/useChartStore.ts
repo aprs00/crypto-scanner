@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 
 import type { ChartConfig, ChartItem, ChartType, Layout, LayoutItem } from './types';
 
-interface ChartStore {
+const useChartStore = create<{
     chartIds: ChartItem[];
     savedGridLayouts: Record<
         string,
@@ -16,9 +16,7 @@ interface ChartStore {
     saveGridLayout: (key: string, layout: Layout) => void;
     handleLayoutChange: (layouts: LayoutItem[]) => void;
     updateChartConfig: (chartId: string, config: ChartConfig) => void;
-}
-
-const useChartStore = create<ChartStore>()(
+}>()(
     persist(
         (set, get) => ({
             chartIds: [
