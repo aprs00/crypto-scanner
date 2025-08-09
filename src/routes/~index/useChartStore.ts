@@ -22,7 +22,7 @@ const useChartStore = create<{
             chartIds: [
                 { type: 'betaHeatmap', id: crypto.randomUUID() },
                 { type: 'scatter', id: crypto.randomUUID() },
-                { type: 'zScoreHistory', id: crypto.randomUUID() },
+                // { type: 'zScoreHistory', id: crypto.randomUUID() },
                 { type: 'priceChangePercentageDay', id: crypto.randomUUID() },
                 { type: 'priceChangePercentageHour', id: crypto.randomUUID() },
             ],

@@ -8,18 +8,17 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import {createFileRoute} from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
 // Import Routes
 
-import {Route as rootRoute} from './routes/~__root';
-import {Route as IndexRouteImport} from './routes/~index/~route';
+import { Route as rootRoute } from './routes/~__root';
+import { Route as IndexRouteImport } from './routes/~index/~route';
 
 // Create Virtual Routes
 
 const ZScoreRouteLazyImport = createFileRoute('/z-score')();
 const TreemapRouteLazyImport = createFileRoute('/treemap')();
-const CorrelationsRouteLazyImport = createFileRoute('/correlations')();
 const ChartRouteLazyImport = createFileRoute('/chart')();
 
 // Create/Update Routes
@@ -35,12 +34,6 @@ const TreemapRouteLazyRoute = TreemapRouteLazyImport.update({
     path: '/treemap',
     getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/~treemap/~route.lazy').then((d) => d.Route));
-
-const CorrelationsRouteLazyRoute = CorrelationsRouteLazyImport.update({
-    id: '/correlations',
-    path: '/correlations',
-    getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/~correlations/~route.lazy').then((d) => d.Route));
 
 const ChartRouteLazyRoute = ChartRouteLazyImport.update({
     id: '/chart',
@@ -72,13 +65,6 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof ChartRouteLazyImport;
             parentRoute: typeof rootRoute;
         };
-        '/correlations': {
-            id: '/correlations';
-            path: '/correlations';
-            fullPath: '/correlations';
-            preLoaderRoute: typeof CorrelationsRouteLazyImport;
-            parentRoute: typeof rootRoute;
-        };
         '/treemap': {
             id: '/treemap';
             path: '/treemap';
@@ -101,7 +87,6 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
     '/': typeof IndexRouteRoute;
     '/chart': typeof ChartRouteLazyRoute;
-    '/correlations': typeof CorrelationsRouteLazyRoute;
     '/treemap': typeof TreemapRouteLazyRoute;
     '/z-score': typeof ZScoreRouteLazyRoute;
 }
@@ -109,7 +94,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
     '/': typeof IndexRouteRoute;
     '/chart': typeof ChartRouteLazyRoute;
-    '/correlations': typeof CorrelationsRouteLazyRoute;
     '/treemap': typeof TreemapRouteLazyRoute;
     '/z-score': typeof ZScoreRouteLazyRoute;
 }
@@ -118,24 +102,22 @@ export interface FileRoutesById {
     __root__: typeof rootRoute;
     '/': typeof IndexRouteRoute;
     '/chart': typeof ChartRouteLazyRoute;
-    '/correlations': typeof CorrelationsRouteLazyRoute;
     '/treemap': typeof TreemapRouteLazyRoute;
     '/z-score': typeof ZScoreRouteLazyRoute;
 }
 
 export interface FileRouteTypes {
     fileRoutesByFullPath: FileRoutesByFullPath;
-    fullPaths: '/' | '/chart' | '/correlations' | '/treemap' | '/z-score';
+    fullPaths: '/' | '/chart' | '/treemap' | '/z-score';
     fileRoutesByTo: FileRoutesByTo;
-    to: '/' | '/chart' | '/correlations' | '/treemap' | '/z-score';
-    id: '__root__' | '/' | '/chart' | '/correlations' | '/treemap' | '/z-score';
+    to: '/' | '/chart' | '/treemap' | '/z-score';
+    id: '__root__' | '/' | '/chart' | '/treemap' | '/z-score';
     fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
     IndexRouteRoute: typeof IndexRouteRoute;
     ChartRouteLazyRoute: typeof ChartRouteLazyRoute;
-    CorrelationsRouteLazyRoute: typeof CorrelationsRouteLazyRoute;
     TreemapRouteLazyRoute: typeof TreemapRouteLazyRoute;
     ZScoreRouteLazyRoute: typeof ZScoreRouteLazyRoute;
 }
@@ -143,7 +125,6 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
     IndexRouteRoute: IndexRouteRoute,
     ChartRouteLazyRoute: ChartRouteLazyRoute,
-    CorrelationsRouteLazyRoute: CorrelationsRouteLazyRoute,
     TreemapRouteLazyRoute: TreemapRouteLazyRoute,
     ZScoreRouteLazyRoute: ZScoreRouteLazyRoute,
 };
@@ -158,7 +139,6 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
       "children": [
         "/",
         "/chart",
-        "/correlations",
         "/treemap",
         "/z-score"
       ]
@@ -168,9 +148,6 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/chart": {
       "filePath": "~chart/~route.lazy.tsx"
-    },
-    "/correlations": {
-      "filePath": "~correlations/~route.lazy.tsx"
     },
     "/treemap": {
       "filePath": "~treemap/~route.lazy.tsx"

@@ -103,6 +103,19 @@ const useStatsSelectOptions = () => {
     });
 };
 
+const fetchCorrelationsTypeOptions = async () => {
+    const { data } = await api.get<SelectOption[]>('pearson-type-options');
+    return data;
+};
+
+const useCorrelationTypeOptions = () => {
+    return useQuery({
+        queryFn: () => fetchCorrelationsTypeOptions(),
+        queryKey: ['correlation-type-options'],
+        staleTime: Infinity,
+    });
+};
+
 export {
     useBetaHeatmapData,
     useFetchTickersOptions,
@@ -110,4 +123,5 @@ export {
     useStatsSelectOptions,
     useZScoreHistory,
     useZScoreMatrix,
+    useCorrelationTypeOptions,
 };

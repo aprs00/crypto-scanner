@@ -1,48 +1,58 @@
 import { HeatmapResponse } from '@/types/api';
 import { resizeEChart } from '@/utils/chart';
-import { useMediaQuery } from '@mantine/hooks';
-import ReactEcharts, { EChartsOption } from 'echarts-for-react';
-import { useRef } from 'react';
+import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
+import { useRef, useMemo } from 'react';
 
 export type HeatmapProps = {
     data?: HeatmapResponse;
-    tooltipType?: 'duration';
 };
+
 const CSHeatmap = (props: HeatmapProps) => {
-    const { data, tooltipType } = props;
+    const { data } = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
-    const matches = useMediaQuery('(min-width: 48em)');
+    const formattedData = useMemo(() => {
+        if (!data?.data || !data?.axis) return [];
+
+        const N = data.axis.length;
+        const matrix = [];
+
+        for (let i = 0; i < N; i++) {
+            for (let j = i + 1; j < N; j++) {
+                const index = i * N - (i * (i + 1)) / 2 + j - i - 1;
+
+                matrix.push([i, j, data.data[index]]);
+            }
+        }
+        return matrix;
+    }, [data]);
 
     const option: EChartsOption = {
-        dataZoom: {
-            type: 'inside',
-        },
+        dataZoom: [
+            {
+                type: 'inside',
+                xAxisIndex: [0],
+            },
+        ],
         grid: { bottom: 110, left: 50, right: 15, top: 20 },
         series: [
             {
-                data: data?.data,
+                data: formattedData,
                 emphasis: {
                     itemStyle: {
-                        shadowBlur: 10,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)',
+                        borderColor: '#000',
+                        borderWidth: 1,
                     },
                 },
-                label: {
-                    show: matches && (data?.data?.length ?? 0) < 150,
-                },
                 type: 'heatmap',
+                progressive: 10000,
+                animation: false,
             },
         ],
         tooltip: {
             formatter: function (params: any) {
-                if (tooltipType === 'duration') {
-                    const xLabel = data?.yAxis[params.data?.[1]];
-                    return `${params.marker} ${xLabel}: <strong>${params.value[2]}</strong><br><span class="ml-4">${params.name}h</span>`;
-                }
-
-                const yLabel = data?.xAxis[params.data?.[1]];
+                const yLabel = data?.axis[params.data?.[1]];
                 return `${params.marker}${yLabel} - ${params.name}: <strong>${params.value[2]}</strong>`;
             },
             position: 'top',
@@ -56,6 +66,7 @@ const CSHeatmap = (props: HeatmapProps) => {
             },
             max: 1,
             min: -1,
+            realtime: false,
             orient: 'horizontal',
             precision: 2,
             right: '3',
@@ -64,14 +75,14 @@ const CSHeatmap = (props: HeatmapProps) => {
             },
         },
         xAxis: {
-            data: data?.xAxis,
+            data: data?.axis,
             splitArea: {
                 show: true,
             },
             type: 'category',
         },
         yAxis: {
-            data: data?.yAxis,
+            data: data?.axis,
             splitArea: {
                 show: true,
             },

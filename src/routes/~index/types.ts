@@ -8,6 +8,7 @@ export type AveragePriceChangeParams = {
 
 export type HeatmapParams = {
     duration: string;
+    type: string;
 };
 
 export type ZScoreMatrixParams = {
@@ -32,9 +33,9 @@ export type AveragePriceChangeResponse = {
 };
 
 export type SelectOptionsResponse = {
-    all: SelectOption[];
-    ltf: SelectOption[];
-    htf: SelectOption[];
+    average_price: SelectOption[];
+    correlation: SelectOption[];
+    zscore: SelectOption[];
 };
 
 export type ZScoreHistoryResponse = {
