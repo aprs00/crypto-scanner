@@ -10,26 +10,37 @@ import { useBetaHeatmapData } from '../api';
 
 export type BetaHeatmapProps = {
     tf: string;
+    type: string;
     timeFrameOptions: SelectOption[];
+    typeOptions: SelectOption[];
     onAddClick?: () => void;
     onRemoveClick?: () => void;
     onConfigChange?: (config: ChartConfig) => void;
 };
 
 const BetaHeatmap = (props: BetaHeatmapProps) => {
-    const { tf, timeFrameOptions, onAddClick, onRemoveClick, onConfigChange } = props;
+    const { tf, type, timeFrameOptions, typeOptions, onAddClick, onRemoveClick, onConfigChange } = props;
 
-    const betaHeatmap = useBetaHeatmapData({ duration: tf });
+    const betaHeatmap = useBetaHeatmapData({ duration: tf, type });
 
     const selects = [
         {
             componentName: 'select',
             id: '1',
-            onChange: (val: string) => {
-                onConfigChange?.({ tf: val });
+            onChange: (tf: string) => {
+                onConfigChange?.({ tf });
             },
             options: timeFrameOptions,
             value: tf,
+        },
+        {
+            componentName: 'select',
+            id: '2',
+            onChange: (type: string) => {
+                onConfigChange?.({ type });
+            },
+            options: typeOptions,
+            value: type,
         },
     ];
 

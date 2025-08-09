@@ -2,20 +2,21 @@ import { Responsive, WidthProvider } from 'react-grid-layout';
 
 import type { ChartTemplate, ChartType } from './types';
 
-import { useFetchTickersOptions, useStatsSelectOptions } from './api';
+import { useFetchTickersOptions, useStatsSelectOptions, useCorrelationTypeOptions } from './api';
 import BetaHeatmap from './components/BetaHeatmap';
 import PriceChangePercentage from './components/PriceChangePercentage';
 import ZScoreHistory from './components/ZScoreHistory';
 import Scatter from './components/ZScoreMatrix';
 import useChartStore from './useChartStore';
 
-const CHART_HEIGHT = 14;
+const CHART_HEIGHT = 25;
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const Stats = () => {
     const timeFrameOptions = useStatsSelectOptions();
     const tickerOptions = useFetchTickersOptions();
+    const typeOptions = useCorrelationTypeOptions();
 
     const chartIds = useChartStore((state) => state.chartIds);
     const savedGridLayouts = useChartStore((state) => state.savedGridLayouts);
@@ -64,7 +65,9 @@ const Stats = () => {
                         onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'betaHeatmap')}
                         tf={savedLayout.tf || '4h'}
-                        timeFrameOptions={timeFrameOptions.data?.all || []}
+                        timeFrameOptions={timeFrameOptions.data?.correlation || []}
+                        type={savedLayout.type || 'price'}
+                        typeOptions={typeOptions.data || []}
                     />
                 );
                 break;
@@ -75,7 +78,7 @@ const Stats = () => {
                         onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'scatter')}
                         tf={savedLayout.tf || '4h'}
-                        timeFrameOptions={timeFrameOptions.data?.all || []}
+                        timeFrameOptions={timeFrameOptions.data?.zscore || []}
                         xAxis={savedLayout.xAxis || 'price'}
                         yAxis={savedLayout.yAxis || 'volume'}
                     />
@@ -88,6 +91,7 @@ const Stats = () => {
                         onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'zScoreHistory')}
                         type={savedLayout.type || 'price'}
+                        typeOptions={typeOptions.data || []}
                     />
                 );
                 break;
@@ -98,9 +102,9 @@ const Stats = () => {
                         onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'priceChangePercentageDay')}
                         symbol={savedLayout.symbol || 'BTCUSDT'}
-                        tf={savedLayout.tf || '1m'}
+                        tf={savedLayout.tf || '1M'}
                         tickerOptions={tickerOptions.data || []}
-                        timeFrameOptions={timeFrameOptions.data?.htf || []}
+                        timeFrameOptions={timeFrameOptions.data?.average_price || []}
                         type="day"
                     />
                 );
@@ -112,9 +116,9 @@ const Stats = () => {
                         onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'priceChangePercentageHour')}
                         symbol={savedLayout.symbol || 'BTCUSDT'}
-                        tf={savedLayout.tf || '1m'}
+                        tf={savedLayout.tf || '1M'}
                         tickerOptions={tickerOptions.data || []}
-                        timeFrameOptions={timeFrameOptions.data?.htf || []}
+                        timeFrameOptions={timeFrameOptions.data?.average_price || []}
                         type="hour"
                     />
                 );
@@ -130,7 +134,7 @@ const Stats = () => {
 
     return (
         <ResponsiveGridLayout
-            cols={{ lg: 12, md: 12, sm: 6, xs: 6, xxs: 6 }}
+            cols={{ lg: 12, md: 12, sm: 12, xs: 12, xxs: 12 }}
             draggableHandle="#drag-handle"
             onLayoutChange={handleLayoutChange}
             rowHeight={30}

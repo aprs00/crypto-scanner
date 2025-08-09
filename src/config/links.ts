@@ -4,14 +4,6 @@ const headerLinks = [
         path: '/',
     },
     {
-        label: 'Correlations',
-        path: '/correlations',
-    },
-    {
-        label: 'Z Score',
-        path: '/z-score',
-    },
-    {
         label: 'Chart',
         path: '/chart',
     },

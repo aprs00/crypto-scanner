@@ -1,5 +1,5 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
-import { useCorrelationTypeOptions } from '@/routes/~correlations/api';
+import { SelectOption } from '@/types/api';
 import { resizeEChart } from '@/utils/chart';
 import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
 import { useRef } from 'react';
@@ -9,6 +9,7 @@ import { ChartConfig } from '../types';
 
 export type ZScoreHistoryProps = {
     type: string;
+    typeOptions: SelectOption[];
     onAddClick?: () => void;
     onRemoveClick?: () => void;
     onConfigChange?: (config: ChartConfig) => void;
@@ -17,7 +18,7 @@ export type ZScoreHistoryProps = {
 const tf = '12h';
 
 const ZScoreHistory = (props: ZScoreHistoryProps) => {
-    const { type, onAddClick, onRemoveClick, onConfigChange } = props;
+    const { type, typeOptions, onAddClick, onRemoveClick, onConfigChange } = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
@@ -25,7 +26,6 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
         duration: tf,
         type: type,
     });
-    const typeOptions = useCorrelationTypeOptions();
 
     const option: EChartsOption = {
         grid: {
@@ -70,6 +70,19 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
         },
     };
 
+    const selects = [
+        {
+            class: 'w-24',
+            componentName: 'select',
+            id: '1',
+            onChange: (val: string) => {
+                onConfigChange?.({ type: val });
+            },
+            options: typeOptions || [],
+            value: type,
+        },
+    ];
+
     return (
         <ChartContainer
             body={
@@ -82,18 +95,7 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
             }
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
-            selects={[
-                {
-                    class: 'w-24',
-                    componentName: 'select',
-                    id: '1',
-                    onChange: (val: string) => {
-                        onConfigChange?.({ type: val });
-                    },
-                    options: typeOptions.data || [],
-                    value: type,
-                },
-            ]}
+            selects={selects}
             title={`Z Score - ${tf} (UTC)`}
         />
     );
