@@ -1,4 +1,4 @@
-import { useCorrelationsTimeframeOptions, useCorrelationTypeOptions } from '@/routes/~correlations/api';
+import { useStatsSelectOptions, useCorrelationTypeOptions } from '@/routes/~index/api';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 
 import ZScoreHeatmap from './components/ZScoreHeatmap';
@@ -8,7 +8,7 @@ const gridLayoutRowHeight = 30;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const ZScore = () => {
-    const timeFrameOptions = useCorrelationsTimeframeOptions();
+    const timeFrameOptions = useStatsSelectOptions();
     const typeOptions = useCorrelationTypeOptions();
 
     const gridLayouts = [
@@ -19,7 +19,12 @@ const ZScore = () => {
         },
         {
             component: (
-                <ZScoreMatrix tf="5m" timeFrameOptions={timeFrameOptions.data || []} xAxis="price" yAxis="volume" />
+                <ZScoreMatrix
+                    tf="5m"
+                    timeFrameOptions={timeFrameOptions.data?.correlation || []}
+                    xAxis="price"
+                    yAxis="volume"
+                />
             ),
             gridLayout: { h: 24, w: 12, x: 26, y: 0 },
             key: 'zScoreMatrix',
