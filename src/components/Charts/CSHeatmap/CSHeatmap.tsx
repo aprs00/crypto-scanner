@@ -1,9 +1,15 @@
-import { HeatmapResponse } from '@/types/api';
+import {
+    type HeatmapResponse,
+    type GridHeatmapResponse,
+    type CorrelationHeatmapResponse,
+    isGridHeatmap,
+    isCorrelationHeatmap,
+} from '@/types/api';
 import { resizeEChart } from '@/utils/chart';
 import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
-import { useRef, useMemo } from 'react';
+import { useRef } from 'react';
 
-export type HeatmapProps = {
+type HeatmapProps = {
     data?: HeatmapResponse;
 };
 
@@ -12,21 +18,49 @@ const CSHeatmap = (props: HeatmapProps) => {
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
-    const formattedData = useMemo(() => {
-        if (!data?.data || !data?.axis) return [];
+    const seriesData =
+        (data && isGridHeatmap(data) && convertToHeatmapMatrix(data)) ||
+        (data && isCorrelationHeatmap(data) && convertToCorrelationMatrix(data)) ||
+        [];
 
-        const N = data.axis.length;
+    const axisData = (data && isGridHeatmap(data!) && { xAxis: data.x_axis, yAxis: data.y_axis }) ||
+        (data && isCorrelationHeatmap(data) && { xAxis: data.axis, yAxis: data.axis }) || { xAxis: [], yAxis: [] };
+
+    function convertToHeatmapMatrix({ data, x_axis: xAxis, y_axis: yAxis }: GridHeatmapResponse) {
+        const matrix = [];
+        const valuesPerYAxis = xAxis.length;
+
+        for (let row = 0; row < yAxis.length; row++) {
+            for (let col = 0; col < xAxis.length; col++) {
+                const dataIndex = row * valuesPerYAxis + col;
+                const value = data[dataIndex];
+
+                if (value !== undefined && value !== null) {
+                    matrix.push([col, row, Math.round(value * 100) / 100]);
+                }
+            }
+        }
+
+        return matrix;
+    }
+
+    function convertToCorrelationMatrix({ data, axis }: CorrelationHeatmapResponse) {
+        const N = axis.length;
         const matrix = [];
 
         for (let i = 0; i < N; i++) {
             for (let j = i + 1; j < N; j++) {
                 const index = i * N - (i * (i + 1)) / 2 + j - i - 1;
+                const value = data[index];
 
-                matrix.push([i, j, data.data[index]]);
+                if (value !== undefined && value !== null && !isNaN(value)) {
+                    matrix.push([i, j, Math.round(value * 100) / 100]);
+                }
             }
         }
+
         return matrix;
-    }, [data]);
+    }
 
     const option: EChartsOption = {
         dataZoom: [
@@ -38,7 +72,7 @@ const CSHeatmap = (props: HeatmapProps) => {
         grid: { bottom: 110, left: 50, right: 15, top: 20 },
         series: [
             {
-                data: formattedData,
+                data: seriesData,
                 emphasis: {
                     itemStyle: {
                         borderColor: '#000',
@@ -52,8 +86,12 @@ const CSHeatmap = (props: HeatmapProps) => {
         ],
         tooltip: {
             formatter: function (params: any) {
-                const yLabel = data?.axis[params.data?.[1]];
-                return `${params.marker}${yLabel} - ${params.name}: <strong>${params.value[2]}</strong>`;
+                const { yAxis, xAxis } = axisData;
+                const dataPoint = params.data as [number, number, number];
+                const yLabel = yAxis[dataPoint[1]];
+                const xLabel = xAxis[dataPoint[0]];
+                const value = dataPoint[2];
+                return `${params.marker}${yLabel} - ${xLabel}: <strong>${value}</strong>`;
             },
             position: 'top',
         },
@@ -75,14 +113,14 @@ const CSHeatmap = (props: HeatmapProps) => {
             },
         },
         xAxis: {
-            data: data?.axis,
+            data: axisData.xAxis,
             splitArea: {
                 show: true,
             },
             type: 'category',
         },
         yAxis: {
-            data: data?.axis,
+            data: axisData.yAxis,
             splitArea: {
                 show: true,
             },
