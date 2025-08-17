@@ -1,7 +1,8 @@
+import { type Layout } from 'react-grid-layout';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { ChartConfig, ChartItem, ChartType, Layout, LayoutItem } from './types';
+import type { ChartConfig, ChartItem, ChartType } from './types';
 
 const useChartStore = create<{
     chartIds: ChartItem[];
@@ -14,7 +15,7 @@ const useChartStore = create<{
     addChart: (type: ChartType) => void;
     removeChart: (id: string, type: ChartType) => void;
     saveGridLayout: (key: string, layout: Layout) => void;
-    handleLayoutChange: (layouts: LayoutItem[]) => void;
+    handleLayoutChange: (layouts: Layout[]) => void;
     updateChartConfig: (chartId: string, config: ChartConfig) => void;
 }>()(
     persist(
@@ -23,6 +24,7 @@ const useChartStore = create<{
                 { type: 'betaHeatmap', id: crypto.randomUUID() },
                 { type: 'scatter', id: crypto.randomUUID() },
                 // { type: 'zScoreHistory', id: crypto.randomUUID() },
+                { type: 'zScoreHeatmap', id: crypto.randomUUID() },
                 { type: 'priceChangePercentageDay', id: crypto.randomUUID() },
                 { type: 'priceChangePercentageHour', id: crypto.randomUUID() },
             ],
@@ -59,12 +61,12 @@ const useChartStore = create<{
                     },
                 }));
             },
-            handleLayoutChange: (layouts: LayoutItem[]) => {
+            handleLayoutChange: (layouts: Layout[]) => {
                 const state = get();
 
                 layouts.forEach((item) => {
                     const { i, x, y, w, h } = item;
-                    state.saveGridLayout(i, { x, y, w, h });
+                    state.saveGridLayout(i, { x, y, w, h, i });
                 });
             },
             updateChartConfig: (chartId: string, config: ChartConfig) => {

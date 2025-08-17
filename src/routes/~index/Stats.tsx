@@ -5,6 +5,7 @@ import type { ChartTemplate, ChartType } from './types';
 import { useFetchTickersOptions, useStatsSelectOptions, useCorrelationTypeOptions } from './api';
 import BetaHeatmap from './components/BetaHeatmap';
 import PriceChangePercentage from './components/PriceChangePercentage';
+import ZScoreHeatmap from './components/ZScoreHeatmap';
 import ZScoreHistory from './components/ZScoreHistory';
 import Scatter from './components/ZScoreMatrix';
 import useChartStore from './useChartStore';
@@ -24,23 +25,27 @@ const Stats = () => {
 
     const chartTemplates: Record<ChartType, ChartTemplate> = {
         betaHeatmap: {
-            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: 0 },
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: 0, i: '1' },
             type: 'betaHeatmap',
         },
         scatter: {
-            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT },
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT, i: '2' },
             type: 'scatter',
         },
         zScoreHistory: {
-            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2 },
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2, i: '3' },
             type: 'zScoreHistory',
         },
+        zScoreHeatmap: {
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: 0, i: '4' },
+            type: 'zScoreHeatmap',
+        },
         priceChangePercentageDay: {
-            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 3 },
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 3, i: '5' },
             type: 'priceChangePercentageDay',
         },
         priceChangePercentageHour: {
-            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4 },
+            gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4, i: '6' },
             type: 'priceChangePercentageHour',
         },
     };
@@ -91,6 +96,19 @@ const Stats = () => {
                         onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'zScoreHistory')}
                         type={savedLayout.type || 'price'}
+                        typeOptions={typeOptions.data || []}
+                    />
+                );
+                break;
+            case 'zScoreHeatmap':
+                component = (
+                    <ZScoreHeatmap
+                        onAddClick={() => addChart('zScoreHeatmap')}
+                        onConfigChange={(config) => updateChartConfig(chartKey, config)}
+                        onRemoveClick={() => removeChart(chart.id, 'zScoreHeatmap')}
+                        tf={savedLayout.tf || '4h'}
+                        timeFrameOptions={timeFrameOptions.data?.zscore_heatmap || []}
+                        type="price"
                         typeOptions={typeOptions.data || []}
                     />
                 );

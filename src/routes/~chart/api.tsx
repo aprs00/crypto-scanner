@@ -5,18 +5,12 @@ import { useEffect, useState } from 'react';
 
 import { ExchangeInfoResponseType, StreamAggTradeResponseType } from './types';
 
-const fetchExchangeInfo = async () => {
-    const { data } = await binanceInstance.get<ExchangeInfoResponseType>('api/v3/exchangeInfo');
-    return data;
-};
-
-const useExchangeInfo = () => {
-    return useQuery({
-        queryFn: () => fetchExchangeInfo(),
+const useExchangeInfo = () =>
+    useQuery({
+        queryFn: async () => (await binanceInstance.get<ExchangeInfoResponseType>('api/v3/exchangeInfo')).data,
         queryKey: ['exchange-info'],
         staleTime: Infinity,
     });
-};
 
 const useStreamAggTrade = (symbol: string) => {
     const [streamData, setStreamData] = useState<StreamAggTradeResponseType>();

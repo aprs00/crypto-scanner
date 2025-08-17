@@ -9,112 +9,76 @@ import {
     HeatmapParams,
     SelectOptionsResponse,
     ZScoreHistoryParams,
+    ZScoreHeatmapParams,
     ZScoreHistoryResponse,
     ZScoreMatrixParams,
 } from './types';
 
-const fetchPriceChangePercentage = async (params: AveragePriceChangeParams) => {
-    const { data } = await api.get<AveragePriceChangeResponse>('average-prices', { params });
-    return data;
-};
-
-const usePriceChangePercentage = (params: AveragePriceChangeParams) => {
-    return useQuery({
+const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
+    useQuery({
         gcTime: 120_000,
-        queryFn: () => fetchPriceChangePercentage(params),
+        queryFn: async () => (await api.get<AveragePriceChangeResponse>('average-prices', { params })).data,
         queryKey: ['price-change-percentage', params],
         refetchInterval: 120_000,
         staleTime: 120_000,
     });
-};
 
-const fetchTickersOptions = async () => {
-    const { data } = await api.get<SelectOption[]>('tickers-options');
-    return data;
-};
-
-const useFetchTickersOptions = () => {
-    return useQuery({
-        queryFn: () => fetchTickersOptions(),
+const useFetchTickersOptions = () =>
+    useQuery({
+        queryFn: async () => (await api.get<SelectOption[]>('tickers-options')).data,
         queryKey: ['ticker-options'],
         staleTime: Infinity,
     });
-};
 
-const fetchBetaHeatmapData = async (params: HeatmapParams) => {
-    const url = 'pearson-correlation';
-
-    const { data } = await api.get<HeatmapResponse>(url, { params });
-    return data;
-};
-
-const useBetaHeatmapData = (params: HeatmapParams) => {
-    return useQuery({
+const useBetaHeatmapData = (params: HeatmapParams) =>
+    useQuery({
         gcTime: 30_000,
-        queryFn: () => fetchBetaHeatmapData(params),
+        queryFn: async () => (await api.get<HeatmapResponse>('pearson-correlation', { params })).data,
         queryKey: ['beta-heatmap-data', params],
         refetchInterval: 30_000,
         staleTime: 30_000,
     });
-};
 
-const fetchZScoreMatrix = async (params: ZScoreMatrixParams) => {
-    const url = 'z-score-matrix';
-
-    const { data } = await api.get<ZScoreMatrixResponse[]>(url, { params });
-    return data;
-};
-
-const useZScoreMatrix = (params: ZScoreMatrixParams) => {
-    return useQuery({
+const useZScoreMatrix = (params: ZScoreMatrixParams) =>
+    useQuery({
         gcTime: 30_000,
-        queryFn: () => fetchZScoreMatrix(params),
+        queryFn: async () => (await api.get<ZScoreMatrixResponse[]>('z-score-matrix', { params })).data,
         queryKey: ['z-score-matrix', params],
         refetchInterval: 30_000,
         staleTime: 30_000,
     });
-};
 
-const fetchZScoreHistory = async (params: ZScoreHistoryParams) => {
-    const { data } = await api.get<ZScoreHistoryResponse>('z-score-history', { params });
-    return data;
-};
-
-const useZScoreHistory = (params: ZScoreHistoryParams) => {
-    return useQuery({
+const useZScoreHistory = (params: ZScoreHistoryParams) =>
+    useQuery({
         gcTime: 30_000,
-        queryFn: () => fetchZScoreHistory(params),
+        queryFn: async () => (await api.get<ZScoreHistoryResponse>('z-score-history', { params })).data,
         queryKey: ['z-score-history', params],
         refetchInterval: 30_000,
         staleTime: 30_000,
     });
-};
 
-const fetchStatsSelectOptions = async () => {
-    const { data } = await api.get<SelectOptionsResponse>('stats-select-options');
-    return data;
-};
+const useZScoreHeatmap = (params: ZScoreHeatmapParams) =>
+    useQuery({
+        gcTime: 60_000,
+        queryFn: async () => (await api.get<HeatmapResponse>('z-score-heatmap', { params })).data,
+        queryKey: ['z-score-heatmap', params],
+        refetchInterval: 60_000,
+        staleTime: 60_000,
+    });
 
-const useStatsSelectOptions = () => {
-    return useQuery({
-        queryFn: () => fetchStatsSelectOptions(),
+const useStatsSelectOptions = () =>
+    useQuery({
+        queryFn: async () => (await api.get<SelectOptionsResponse>('stats-select-options')).data,
         queryKey: ['stats-select-options'],
         staleTime: Infinity,
     });
-};
 
-const fetchCorrelationsTypeOptions = async () => {
-    const { data } = await api.get<SelectOption[]>('pearson-type-options');
-    return data;
-};
-
-const useCorrelationTypeOptions = () => {
-    return useQuery({
-        queryFn: () => fetchCorrelationsTypeOptions(),
+const useCorrelationTypeOptions = () =>
+    useQuery({
+        queryFn: async () => (await api.get<SelectOption[]>('pearson-type-options')).data,
         queryKey: ['correlation-type-options'],
         staleTime: Infinity,
     });
-};
 
 export {
     useBetaHeatmapData,
@@ -122,6 +86,7 @@ export {
     usePriceChangePercentage,
     useStatsSelectOptions,
     useZScoreHistory,
+    useZScoreHeatmap,
     useZScoreMatrix,
     useCorrelationTypeOptions,
 };

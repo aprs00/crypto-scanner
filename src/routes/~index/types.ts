@@ -1,5 +1,7 @@
 import type { SelectOption } from '@/types/api';
 
+import { type Layout } from 'react-grid-layout';
+
 export type AveragePriceChangeParams = {
     duration: string;
     symbol: string;
@@ -22,6 +24,11 @@ export type ZScoreHistoryParams = {
     duration: string;
 };
 
+export type ZScoreHeatmapParams = {
+    type: string;
+    duration: string;
+};
+
 export type AveragePriceChangeResponse = {
     data: {
         value: number;
@@ -36,6 +43,7 @@ export type SelectOptionsResponse = {
     average_price: SelectOption[];
     correlation: SelectOption[];
     zscore: SelectOption[];
+    zscore_heatmap: SelectOption[];
 };
 
 export type ZScoreHistoryResponse = {
@@ -60,23 +68,13 @@ export type ChartType =
     | 'betaHeatmap'
     | 'scatter'
     | 'zScoreHistory'
+    | 'zScoreHeatmap'
     | 'priceChangePercentageDay'
     | 'priceChangePercentageHour';
 
 export interface ChartItem {
     type: ChartType;
     id: string;
-}
-
-export interface Layout {
-    h: number;
-    w: number;
-    x: number;
-    y: number;
-}
-
-export interface LayoutItem extends Layout {
-    i: string;
 }
 
 export interface ChartTemplate {
