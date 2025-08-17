@@ -1,10 +1,4 @@
-import {
-    type HeatmapResponse,
-    type GridHeatmapResponse,
-    type CorrelationHeatmapResponse,
-    isGridHeatmap,
-    isCorrelationHeatmap,
-} from '@/types/api';
+import { CorrelationHeatmapResponse, GridHeatmapResponse, type HeatmapResponse } from '@/types/api';
 import { resizeEChart } from '@/utils/chart';
 import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
 import { useRef } from 'react';
@@ -13,45 +7,55 @@ type HeatmapProps = {
     data?: HeatmapResponse;
 };
 
-const CSHeatmap = (props: HeatmapProps) => {
+function CSHeatmap(props: HeatmapProps) {
     const { data } = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
-    const seriesData =
-        (data && isGridHeatmap(data) && convertToHeatmapMatrix(data)) ||
-        (data && isCorrelationHeatmap(data) && convertToCorrelationMatrix(data)) ||
-        [];
+    const processHeatmapData = (data?: HeatmapResponse) => {
+        switch (data?.type) {
+            case 'grid':
+                return {
+                    seriesData: processGridData(data),
+                    axisData: { xAxis: data.x_axis, yAxis: data.y_axis },
+                };
+            case 'correlation':
+                return {
+                    seriesData: processCorrelationData(data),
+                    axisData: { xAxis: data.axis, yAxis: data.axis },
+                };
+            default:
+                return {
+                    seriesData: [],
+                    axisData: { xAxis: [], yAxis: [] },
+                };
+        }
+    };
 
-    const axisData = (data && isGridHeatmap(data!) && { xAxis: data.x_axis, yAxis: data.y_axis }) ||
-        (data && isCorrelationHeatmap(data) && { xAxis: data.axis, yAxis: data.axis }) || { xAxis: [], yAxis: [] };
-
-    function convertToHeatmapMatrix({ data, x_axis: xAxis, y_axis: yAxis }: GridHeatmapResponse) {
+    const processGridData = (data: GridHeatmapResponse) => {
         const matrix = [];
-        const valuesPerYAxis = xAxis.length;
+        const valuesPerYAxis = data.x_axis.length;
 
-        for (let row = 0; row < yAxis.length; row++) {
-            for (let col = 0; col < xAxis.length; col++) {
-                const dataIndex = row * valuesPerYAxis + col;
-                const value = data[dataIndex];
+        for (let i = 0; i < data.y_axis.length; i++) {
+            for (let j = 0; j < data.x_axis.length; j++) {
+                const dataIndex = i * valuesPerYAxis + j;
+                const value = data.data[dataIndex];
 
-                if (value !== undefined && value !== null) {
-                    matrix.push([col, row, Math.round(value * 100) / 100]);
-                }
+                matrix.push([j, i, Math.round(value * 100) / 100]);
             }
         }
 
         return matrix;
-    }
+    };
 
-    function convertToCorrelationMatrix({ data, axis }: CorrelationHeatmapResponse) {
-        const N = axis.length;
+    const processCorrelationData = (data: CorrelationHeatmapResponse) => {
+        const N = data.axis.length;
         const matrix = [];
 
         for (let i = 0; i < N; i++) {
             for (let j = i + 1; j < N; j++) {
                 const index = i * N - (i * (i + 1)) / 2 + j - i - 1;
-                const value = data[index];
+                const value = data.data[index];
 
                 if (value !== undefined && value !== null && !isNaN(value)) {
                     matrix.push([i, j, Math.round(value * 100) / 100]);
@@ -60,7 +64,9 @@ const CSHeatmap = (props: HeatmapProps) => {
         }
 
         return matrix;
-    }
+    };
+
+    const { seriesData, axisData } = processHeatmapData(data);
 
     const option: EChartsOption = {
         dataZoom: [
@@ -137,6 +143,6 @@ const CSHeatmap = (props: HeatmapProps) => {
             style={{ height: '100%', width: '100%' }}
         />
     );
-};
+}
 
 export default CSHeatmap;

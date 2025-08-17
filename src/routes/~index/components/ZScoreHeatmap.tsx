@@ -1,7 +1,7 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
 import { SelectOption } from '@/types/api';
-import { memo, useState } from 'react';
+import { useState } from 'react';
 
 import type { ChartConfig } from '../types';
 
@@ -17,7 +17,7 @@ export type ZScoreHeatmapProps = {
     onConfigChange?: (config: ChartConfig) => void;
 };
 
-const PearsonHeatmap = (props: ZScoreHeatmapProps) => {
+const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
     const { tf, type, typeOptions, timeFrameOptions, onAddClick, onRemoveClick, onConfigChange } = props;
 
     const [selectedType, setSelectedType] = useState(type);
@@ -54,4 +54,4 @@ const PearsonHeatmap = (props: ZScoreHeatmapProps) => {
     );
 };
 
-export default memo(PearsonHeatmap);
+export default ZScoreHeatmap;

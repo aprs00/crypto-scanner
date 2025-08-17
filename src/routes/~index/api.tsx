@@ -1,4 +1,4 @@
-import type { HeatmapResponse, SelectOption, ZScoreMatrixResponse } from '@/types/api';
+import type { CorrelationHeatmapResponse, GridHeatmapResponse, SelectOption, ZScoreMatrixResponse } from '@/types/api';
 
 import api from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
@@ -33,7 +33,7 @@ const useFetchTickersOptions = () =>
 const useBetaHeatmapData = (params: HeatmapParams) =>
     useQuery({
         gcTime: 30_000,
-        queryFn: async () => (await api.get<HeatmapResponse>('pearson-correlation', { params })).data,
+        queryFn: async () => (await api.get<CorrelationHeatmapResponse>('pearson-correlation', { params })).data,
         queryKey: ['beta-heatmap-data', params],
         refetchInterval: 30_000,
         staleTime: 30_000,
@@ -60,7 +60,7 @@ const useZScoreHistory = (params: ZScoreHistoryParams) =>
 const useZScoreHeatmap = (params: ZScoreHeatmapParams) =>
     useQuery({
         gcTime: 60_000,
-        queryFn: async () => (await api.get<HeatmapResponse>('z-score-heatmap', { params })).data,
+        queryFn: async () => (await api.get<GridHeatmapResponse>('z-score-heatmap', { params })).data,
         queryKey: ['z-score-heatmap', params],
         refetchInterval: 60_000,
         staleTime: 60_000,
