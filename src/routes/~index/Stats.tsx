@@ -107,7 +107,7 @@ const Stats = () => {
                         onConfigChange={(config) => updateChartConfig(chartKey, config)}
                         onRemoveClick={() => removeChart(chart.id, 'zScoreHeatmap')}
                         tf={savedLayout.tf || '4h'}
-                        timeFrameOptions={timeFrameOptions.data?.zscore_heatmap || []}
+                        timeFrameOptions={timeFrameOptions.data?.zscore || []}
                         type="price"
                         typeOptions={typeOptions.data || []}
                     />

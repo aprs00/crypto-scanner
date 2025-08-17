@@ -43,7 +43,6 @@ export type SelectOptionsResponse = {
     average_price: SelectOption[];
     correlation: SelectOption[];
     zscore: SelectOption[];
-    zscore_heatmap: SelectOption[];
 };
 
 export type ZScoreHistoryResponse = {
