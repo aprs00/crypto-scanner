@@ -80,3 +80,7 @@ export interface ChartTemplate {
     gridLayout: Layout;
     type: ChartType;
 }
+
+export interface GridLayout extends ChartConfig {
+    layout: Layout;
+}

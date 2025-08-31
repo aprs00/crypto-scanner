@@ -1,6 +1,7 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
 import { SelectOption } from '@/types/api';
+import { memo } from 'react';
 
 import { useZScoreMatrix } from '../api';
 import { ChartConfig } from '../types';
@@ -46,4 +47,5 @@ const ZScoreMatrix = (props: ScatterProps) => {
         />
     );
 };
-export default ZScoreMatrix;
+
+export default memo(ZScoreMatrix);

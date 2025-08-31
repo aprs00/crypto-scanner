@@ -2,22 +2,48 @@ import { type Layout } from 'react-grid-layout';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { ChartConfig, ChartItem, ChartType } from './types';
+import type { ChartConfig, ChartItem, ChartType, ChartTemplate, GridLayout } from './types';
 
-const useChartStore = create<{
+export const CHART_HEIGHT = 25;
+
+export const chartTemplates: Record<ChartType, ChartTemplate> = {
+    betaHeatmap: {
+        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: 0, i: '1' },
+        type: 'betaHeatmap',
+    },
+    scatter: {
+        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT, i: '2' },
+        type: 'scatter',
+    },
+    zScoreHistory: {
+        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2, i: '3' },
+        type: 'zScoreHistory',
+    },
+    zScoreHeatmap: {
+        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: 0, i: '4' },
+        type: 'zScoreHeatmap',
+    },
+    priceChangePercentageDay: {
+        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 3, i: '5' },
+        type: 'priceChangePercentageDay',
+    },
+    priceChangePercentageHour: {
+        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4, i: '6' },
+        type: 'priceChangePercentageHour',
+    },
+};
+
+export interface ChartStore {
     chartIds: ChartItem[];
-    savedGridLayouts: Record<
-        string,
-        {
-            layout: Layout;
-        } & ChartConfig
-    >;
+    savedGridLayouts: Record<string, GridLayout>;
     addChart: (type: ChartType) => void;
     removeChart: (id: string, type: ChartType) => void;
     saveGridLayout: (key: string, layout: Layout) => void;
     handleLayoutChange: (layouts: Layout[]) => void;
     updateChartConfig: (chartId: string, config: ChartConfig) => void;
-}>()(
+}
+
+const useChartStore = create<ChartStore>()(
     persist(
         (set, get) => ({
             chartIds: [
