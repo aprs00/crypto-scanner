@@ -8,7 +8,7 @@ import { ChartConfig } from '../types';
 
 export type ZScoreHistoryProps = {
     type: string;
-    hoursOptions: string[];
+    hoursOptions: Record<string, string>;
     onAddClick?: () => void;
     onRemoveClick?: () => void;
     onConfigChange?: (config: ChartConfig) => void;

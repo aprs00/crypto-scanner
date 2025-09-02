@@ -37,10 +37,11 @@ export type AveragePriceChangeResponse = {
     xAxis: string[];
 };
 
-export type SelectOptionsResponse = {
-    average_price: Record<string, string>;
-    correlation: Record<string, string>;
-    zscore: Record<string, string>;
+export type BootstrapResponse = {
+    data_types: string[];
+    hours_options: Record<string, Record<string, string>>;
+    ticker_colors: string[];
+    tickers: string[];
 };
 
 export type ZScoreHistoryResponse = {

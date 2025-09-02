@@ -2,7 +2,7 @@ import { useMemo, memo } from 'react';
 
 import type { ChartConfig, ChartItem, GridLayout } from '../types';
 
-import { useFetchTickersOptions, useStatsSelectOptions, useCorrelationTypeOptions } from '../api';
+import { useBootstrap } from '../api';
 import useChartStore from '../useChartStore';
 import BetaHeatmap from './BetaHeatmap';
 import PriceChangePercentage from './PriceChangePercentage';
@@ -11,9 +11,7 @@ import ZScoreHistory from './ZScoreHistory';
 import Scatter from './ZScoreMatrix';
 
 const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: GridLayout }) => {
-    const timeFrameOptions = useStatsSelectOptions();
-    const tickerOptions = useFetchTickersOptions();
-    const typeOptions = useCorrelationTypeOptions();
+    const bootstrap = useBootstrap();
 
     const addChart = useChartStore((state) => state.addChart);
     const removeChart = useChartStore((state) => state.removeChart);
@@ -34,9 +32,9 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                 <BetaHeatmap
                     {...commonProps}
                     hours={savedLayout.hours || '4'}
-                    hoursOptions={timeFrameOptions.data?.correlation || {}}
+                    hoursOptions={bootstrap.data?.hours_options.correlation || {}}
                     type={savedLayout.type || 'price'}
-                    typeOptions={typeOptions.data || []}
+                    typeOptions={bootstrap.data?.data_types || []}
                 />
             );
         case 'scatter':
@@ -44,7 +42,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                 <Scatter
                     {...commonProps}
                     hours={savedLayout.hours || '4'}
-                    hoursOptions={timeFrameOptions.data?.zscore || {}}
+                    hoursOptions={bootstrap.data?.hours_options.zscore || {}}
                     xAxis={savedLayout.xAxis || 'price'}
                     yAxis={savedLayout.yAxis || 'volume'}
                 />
@@ -53,7 +51,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <ZScoreHistory
                     {...commonProps}
-                    hoursOptions={typeOptions.data || []}
+                    hoursOptions={bootstrap.data?.hours_options.zscore || {}}
                     type={savedLayout.type || 'price'}
                 />
             );
@@ -62,9 +60,9 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                 <ZScoreHeatmap
                     {...commonProps}
                     hours={savedLayout.hours || '4'}
-                    hoursOptions={timeFrameOptions.data?.zscore || {}}
+                    hoursOptions={bootstrap.data?.hours_options.zscore || {}}
                     type="price"
-                    typeOptions={typeOptions.data || []}
+                    typeOptions={bootstrap.data?.data_types || []}
                 />
             );
         case 'priceChangePercentageDay':
@@ -73,8 +71,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     {...commonProps}
                     hours={savedLayout.hours || '168'}
                     symbol={savedLayout.symbol || 'BTCUSDT'}
-                    tickerOptions={tickerOptions.data || []}
-                    timeFrameOptions={timeFrameOptions.data?.average_price || {}}
+                    tickerOptions={bootstrap.data?.tickers || []}
+                    timeFrameOptions={bootstrap.data?.hours_options.average_price || {}}
                     type="day"
                 />
             );
@@ -84,8 +82,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     {...commonProps}
                     hours={savedLayout.hours || '168'}
                     symbol={savedLayout.symbol || 'BTCUSDT'}
-                    tickerOptions={tickerOptions.data || []}
-                    timeFrameOptions={timeFrameOptions.data?.average_price || {}}
+                    tickerOptions={bootstrap.data?.tickers || []}
+                    timeFrameOptions={bootstrap.data?.hours_options.average_price || {}}
                     type="hour"
                 />
             );

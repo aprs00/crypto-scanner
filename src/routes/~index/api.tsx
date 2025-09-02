@@ -7,11 +7,11 @@ import {
     AveragePriceChangeParams,
     AveragePriceChangeResponse,
     HeatmapParams,
-    SelectOptionsResponse,
     ZScoreHistoryParams,
     ZScoreHeatmapParams,
     ZScoreHistoryResponse,
     ZScoreMatrixParams,
+    BootstrapResponse,
 } from './types';
 
 const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
@@ -21,13 +21,6 @@ const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
         queryKey: ['average-prices', params],
         refetchInterval: 120_000,
         staleTime: 120_000,
-    });
-
-const useFetchTickersOptions = () =>
-    useQuery({
-        queryFn: async () => (await api.get<string[]>('tickers-options')).data,
-        queryKey: ['ticker-options'],
-        staleTime: Infinity,
     });
 
 const useBetaHeatmapData = (params: HeatmapParams) =>
@@ -66,27 +59,18 @@ const useZScoreHeatmap = (params: ZScoreHeatmapParams) =>
         staleTime: 60_000,
     });
 
-const useStatsSelectOptions = () =>
+const useBootstrap = () =>
     useQuery({
-        queryFn: async () => (await api.get<SelectOptionsResponse>('stats-select-options')).data,
-        queryKey: ['stats-select-options'],
-        staleTime: Infinity,
-    });
-
-const useCorrelationTypeOptions = () =>
-    useQuery({
-        queryFn: async () => (await api.get<string[]>('pearson-type-options')).data,
-        queryKey: ['pearson-type-options'],
+        queryFn: async () => (await api.get<BootstrapResponse>('bootstrap')).data,
+        queryKey: ['bootstrap'],
         staleTime: Infinity,
     });
 
 export {
     useBetaHeatmapData,
-    useFetchTickersOptions,
     usePriceChangePercentage,
-    useStatsSelectOptions,
     useZScoreHistory,
     useZScoreHeatmap,
     useZScoreMatrix,
-    useCorrelationTypeOptions,
+    useBootstrap,
 };
