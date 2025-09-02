@@ -13,17 +13,20 @@ import Scatter from './ZScoreMatrix';
 const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: GridLayout }) => {
     const bootstrap = useBootstrap();
 
+    const chartIds = useChartStore((state) => state.chartIds);
     const addChart = useChartStore((state) => state.addChart);
     const removeChart = useChartStore((state) => state.removeChart);
     const updateChartConfig = useChartStore((state) => state.updateChartConfig);
+
+    const canRemove = useMemo(() => chartIds.filter((c) => c.type === chart.type).length > 1, [chartIds, chart.type]);
 
     const commonProps = useMemo(
         () => ({
             onAddClick: () => addChart(chart.type),
             onConfigChange: (config: ChartConfig) => updateChartConfig(chart.id, config),
-            onRemoveClick: () => removeChart(chart.id, chart.type),
+            onRemoveClick: canRemove ? () => removeChart(chart.id, chart.type) : undefined,
         }),
-        [addChart, updateChartConfig, removeChart, chart.type, chart.id],
+        [addChart, updateChartConfig, removeChart, chart.type, chart.id, canRemove],
     );
 
     switch (chart.type) {

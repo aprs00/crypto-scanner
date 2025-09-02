@@ -67,10 +67,7 @@ const useChartStore = create<ChartStore>()(
                     ],
                 }));
             },
-            removeChart: (id, type) => {
-                const state = get();
-                if (state.chartIds.filter((chart) => chart.type === type).length === 1) return;
-
+            removeChart: (id) => {
                 set((state) => ({
                     chartIds: state.chartIds.filter((chart) => chart.id !== id),
                 }));
