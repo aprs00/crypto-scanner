@@ -24,6 +24,15 @@ const ZScoreMatrix = (props: ScatterProps) => {
         yAxis,
     });
 
+    const scatterData: echarts.SeriesOption[] =
+        zScoreMatrix.data?.map((item) => ({
+            type: 'scatter',
+            name: item.symbol,
+            data: [item.data],
+            symbolSize: 20,
+            emphasis: { scale: 1.6 },
+        })) || [];
+
     const selects = [
         {
             componentName: 'select',
@@ -37,7 +46,7 @@ const ZScoreMatrix = (props: ScatterProps) => {
 
     return (
         <ChartContainer
-            body={<CSScatter data={zScoreMatrix.data || []} xAxis={xAxis} yAxis={yAxis} />}
+            body={<CSScatter data={scatterData || []} xAxis={xAxis} yAxis={yAxis} />}
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
             selects={selects}

@@ -40,7 +40,6 @@ export type AveragePriceChangeResponse = {
 export type BootstrapResponse = {
     data_types: string[];
     hours_options: Record<string, Record<string, string>>;
-    ticker_colors: string[];
     tickers: string[];
 };
 

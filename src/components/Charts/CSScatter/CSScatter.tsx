@@ -1,12 +1,10 @@
-import type { ZScoreMatrixResponse } from '@/types/api';
-
 import { resizeEChart } from '@/utils/chart';
 import ReactEcharts, { EChartsOption } from 'echarts-for-react';
 import { capitalize } from 'lodash-es';
 import { useRef } from 'react';
 
 export type ScatterProps = {
-    data: ZScoreMatrixResponse[];
+    data: echarts.SeriesOption[];
     xAxis: string;
     yAxis: string;
 };
@@ -56,7 +54,7 @@ const CSScatter = (props: ScatterProps) => {
             top: 10,
             type: 'scroll',
         },
-        series: data as echarts.SeriesOption[],
+        series: data,
         tooltip: {
             formatter: function (params: any) {
                 return `
