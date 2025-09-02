@@ -1,11 +1,10 @@
-import { SelectOption } from '@/types/api';
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from '@headlessui/react';
 import { Dispatch, SetStateAction } from 'react';
 
 import SelectIcon from './SelectIcon';
 
 export type SelectProps = {
-    options: SelectOption[];
+    options: Record<string, string> | string[];
     value: string;
     classes?: string;
     onChange: Dispatch<SetStateAction<string>> | ((value: string) => void);
@@ -14,13 +13,17 @@ export type SelectProps = {
 const CSSelect = (props: SelectProps) => {
     const { classes = 'w-20', onChange, options, value } = props;
 
+    const normalizedOptions = Array.isArray(options)
+        ? options.map((item) => ({ label: item, value: item }))
+        : Object.entries(options).map(([key, val]) => ({ label: key, value: val.toString() }));
+
     return (
         <Listbox onChange={onChange} value={value}>
             {({ open }) => (
                 <div className={classes}>
                     <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 h-8 text-left relative cursor-pointer">
                         <div className="flex items-center">
-                            {options
+                            {normalizedOptions
                                 ?.filter((option) => value === option.value)
                                 .map((option) => (
                                     <div className="flex items-center" key={option.value.toString()}>
@@ -44,7 +47,7 @@ const CSSelect = (props: SelectProps) => {
                     >
                         <div className="relative z-99">
                             <ListboxOptions className="bg-slate-800 rounded-xs absolute w-full px-1 py-1 mt-2 border border-slate-600 flex flex-col gap-0.5">
-                                {options.map((item) => (
+                                {normalizedOptions.map((item) => (
                                     <ListboxOption
                                         className="cursor-pointer hover:bg-slate-900 rounded-xs gap-2"
                                         key={item.value.toString()}

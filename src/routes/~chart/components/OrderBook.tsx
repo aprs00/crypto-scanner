@@ -15,10 +15,7 @@ export type OrderBookTablePropsType = {
     symbolTickSize: number;
 };
 
-const tableAlignmentOptions = [
-    { label: 'V', value: 'V' },
-    { label: 'H', value: 'H' },
-];
+const tableAlignmentOptions = ['V', 'H'];
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
     const { symbolTickSize, tableHeight } = props;

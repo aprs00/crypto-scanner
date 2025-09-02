@@ -1,5 +1,3 @@
-import type { SelectOption } from '@/types/api';
-
 import ChartContainer from '@/components/Charts/ChartContainer';
 import { resizeEChart } from '@/utils/chart';
 import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
@@ -9,10 +7,10 @@ import { usePriceChangePercentage } from '../api';
 import { ChartConfig } from '../types';
 
 export type PriceChangePercentageProps = {
-    tf: string;
+    hours: string;
     symbol: string;
-    timeFrameOptions: SelectOption[];
-    tickerOptions: SelectOption[];
+    timeFrameOptions: Record<string, string>;
+    tickerOptions: string[];
     type: 'day' | 'hour';
     onAddClick?: () => void;
     onRemoveClick?: () => void;
@@ -20,15 +18,11 @@ export type PriceChangePercentageProps = {
 };
 
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
-    const { symbol, tf, tickerOptions, timeFrameOptions, type, onAddClick, onRemoveClick, onConfigChange } = props;
+    const { symbol, hours, tickerOptions, timeFrameOptions, type, onAddClick, onRemoveClick, onConfigChange } = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
-    const priceChangePercentageApi = usePriceChangePercentage({
-        duration: tf,
-        symbol: symbol,
-        type,
-    });
+    const priceChangePercentageApi = usePriceChangePercentage({ hours, symbol, type });
 
     const titleMapper = {
         day: 'Price change per day of week',
@@ -38,17 +32,15 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const selects = [
         {
             componentName: 'select',
-            id: '1',
-            onChange: (tf: string) => {
-                onConfigChange?.({ tf });
+            onChange: (hours: string) => {
+                onConfigChange?.({ hours });
             },
             options: timeFrameOptions,
-            value: tf,
+            value: hours,
         },
         {
             class: 'w-28',
             componentName: 'select',
-            id: '2',
             onChange: (symbol: string) => {
                 onConfigChange?.({ symbol });
             },

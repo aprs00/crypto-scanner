@@ -17,17 +17,10 @@ import { Route as IndexRouteImport } from './routes/~index/~route';
 
 // Create Virtual Routes
 
-const ZScoreRouteLazyImport = createFileRoute('/z-score')();
 const TreemapRouteLazyImport = createFileRoute('/treemap')();
 const ChartRouteLazyImport = createFileRoute('/chart')();
 
 // Create/Update Routes
-
-const ZScoreRouteLazyRoute = ZScoreRouteLazyImport.update({
-    id: '/z-score',
-    path: '/z-score',
-    getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/~z-score/~route.lazy').then((d) => d.Route));
 
 const TreemapRouteLazyRoute = TreemapRouteLazyImport.update({
     id: '/treemap',
@@ -72,13 +65,6 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof TreemapRouteLazyImport;
             parentRoute: typeof rootRoute;
         };
-        '/z-score': {
-            id: '/z-score';
-            path: '/z-score';
-            fullPath: '/z-score';
-            preLoaderRoute: typeof ZScoreRouteLazyImport;
-            parentRoute: typeof rootRoute;
-        };
     }
 }
 
@@ -88,14 +74,12 @@ export interface FileRoutesByFullPath {
     '/': typeof IndexRouteRoute;
     '/chart': typeof ChartRouteLazyRoute;
     '/treemap': typeof TreemapRouteLazyRoute;
-    '/z-score': typeof ZScoreRouteLazyRoute;
 }
 
 export interface FileRoutesByTo {
     '/': typeof IndexRouteRoute;
     '/chart': typeof ChartRouteLazyRoute;
     '/treemap': typeof TreemapRouteLazyRoute;
-    '/z-score': typeof ZScoreRouteLazyRoute;
 }
 
 export interface FileRoutesById {
@@ -103,15 +87,14 @@ export interface FileRoutesById {
     '/': typeof IndexRouteRoute;
     '/chart': typeof ChartRouteLazyRoute;
     '/treemap': typeof TreemapRouteLazyRoute;
-    '/z-score': typeof ZScoreRouteLazyRoute;
 }
 
 export interface FileRouteTypes {
     fileRoutesByFullPath: FileRoutesByFullPath;
-    fullPaths: '/' | '/chart' | '/treemap' | '/z-score';
+    fullPaths: '/' | '/chart' | '/treemap';
     fileRoutesByTo: FileRoutesByTo;
-    to: '/' | '/chart' | '/treemap' | '/z-score';
-    id: '__root__' | '/' | '/chart' | '/treemap' | '/z-score';
+    to: '/' | '/chart' | '/treemap';
+    id: '__root__' | '/' | '/chart' | '/treemap';
     fileRoutesById: FileRoutesById;
 }
 
@@ -119,14 +102,12 @@ export interface RootRouteChildren {
     IndexRouteRoute: typeof IndexRouteRoute;
     ChartRouteLazyRoute: typeof ChartRouteLazyRoute;
     TreemapRouteLazyRoute: typeof TreemapRouteLazyRoute;
-    ZScoreRouteLazyRoute: typeof ZScoreRouteLazyRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
     IndexRouteRoute: IndexRouteRoute,
     ChartRouteLazyRoute: ChartRouteLazyRoute,
     TreemapRouteLazyRoute: TreemapRouteLazyRoute,
-    ZScoreRouteLazyRoute: ZScoreRouteLazyRoute,
 };
 
 export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
@@ -139,8 +120,7 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
       "children": [
         "/",
         "/chart",
-        "/treemap",
-        "/z-score"
+        "/treemap"
       ]
     },
     "/": {
@@ -151,9 +131,6 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/treemap": {
       "filePath": "~treemap/~route.lazy.tsx"
-    },
-    "/z-score": {
-      "filePath": "~z-score/~route.lazy.tsx"
     }
   }
 }

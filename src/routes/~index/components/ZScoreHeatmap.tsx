@@ -1,6 +1,5 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
-import { SelectOption } from '@/types/api';
 import { memo, useState } from 'react';
 
 import type { ChartConfig } from '../types';
@@ -8,30 +7,30 @@ import type { ChartConfig } from '../types';
 import { useZScoreHeatmap } from '../api';
 
 export type ZScoreHeatmapProps = {
-    tf: string;
+    hours: string;
     type: string;
-    typeOptions: SelectOption[];
-    timeFrameOptions: SelectOption[];
+    typeOptions: string[];
+    hoursOptions: Record<string, string>;
     onAddClick?: () => void;
     onRemoveClick?: () => void;
     onConfigChange?: (config: ChartConfig) => void;
 };
 
 const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
-    const { tf, type, typeOptions, timeFrameOptions, onAddClick, onRemoveClick, onConfigChange } = props;
+    const { hours, type, typeOptions, hoursOptions, onAddClick, onRemoveClick, onConfigChange } = props;
 
     const [selectedType, setSelectedType] = useState(type);
-    const heatmap = useZScoreHeatmap({ type: selectedType, duration: tf });
+    const heatmap = useZScoreHeatmap({ type: selectedType, hours });
 
     const selects = [
         {
             componentName: 'select',
             id: '1',
-            onChange: (tf: string) => {
-                onConfigChange?.({ tf });
+            onChange: (hours: string) => {
+                onConfigChange?.({ hours });
             },
-            options: timeFrameOptions,
-            value: tf,
+            options: hoursOptions,
+            value: hours,
         },
         {
             class: 'w-24',
