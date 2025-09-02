@@ -1,5 +1,4 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
-import { SelectOption } from '@/types/api';
 import { resizeEChart } from '@/utils/chart';
 import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
 import { useRef } from 'react';
@@ -9,7 +8,7 @@ import { ChartConfig } from '../types';
 
 export type ZScoreHistoryProps = {
     type: string;
-    typeOptions: SelectOption[];
+    hoursOptions: string[];
     onAddClick?: () => void;
     onRemoveClick?: () => void;
     onConfigChange?: (config: ChartConfig) => void;
@@ -18,7 +17,7 @@ export type ZScoreHistoryProps = {
 const tf = '12h';
 
 const ZScoreHistory = (props: ZScoreHistoryProps) => {
-    const { type, typeOptions, onAddClick, onRemoveClick, onConfigChange } = props;
+    const { type, hoursOptions, onAddClick, onRemoveClick, onConfigChange } = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
@@ -78,7 +77,7 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
             onChange: (val: string) => {
                 onConfigChange?.({ type: val });
             },
-            options: typeOptions || [],
+            options: hoursOptions || [],
             value: type,
         },
     ];

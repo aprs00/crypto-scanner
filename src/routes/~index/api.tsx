@@ -1,4 +1,4 @@
-import type { CorrelationHeatmapResponse, GridHeatmapResponse, SelectOption, ZScoreMatrixResponse } from '@/types/api';
+import type { CorrelationHeatmapResponse, GridHeatmapResponse, ZScoreMatrixResponse } from '@/types/api';
 
 import api from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
@@ -18,14 +18,14 @@ const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
     useQuery({
         gcTime: 120_000,
         queryFn: async () => (await api.get<AveragePriceChangeResponse>('average-prices', { params })).data,
-        queryKey: ['price-change-percentage', params],
+        queryKey: ['average-prices', params],
         refetchInterval: 120_000,
         staleTime: 120_000,
     });
 
 const useFetchTickersOptions = () =>
     useQuery({
-        queryFn: async () => (await api.get<SelectOption[]>('tickers-options')).data,
+        queryFn: async () => (await api.get<string[]>('tickers-options')).data,
         queryKey: ['ticker-options'],
         staleTime: Infinity,
     });
@@ -34,7 +34,7 @@ const useBetaHeatmapData = (params: HeatmapParams) =>
     useQuery({
         gcTime: 30_000,
         queryFn: async () => (await api.get<CorrelationHeatmapResponse>('pearson-correlation', { params })).data,
-        queryKey: ['beta-heatmap-data', params],
+        queryKey: ['pearson-correlation', params],
         refetchInterval: 30_000,
         staleTime: 30_000,
     });
@@ -75,8 +75,8 @@ const useStatsSelectOptions = () =>
 
 const useCorrelationTypeOptions = () =>
     useQuery({
-        queryFn: async () => (await api.get<SelectOption[]>('pearson-type-options')).data,
-        queryKey: ['correlation-type-options'],
+        queryFn: async () => (await api.get<string[]>('pearson-type-options')).data,
+        queryKey: ['pearson-type-options'],
         staleTime: Infinity,
     });
 

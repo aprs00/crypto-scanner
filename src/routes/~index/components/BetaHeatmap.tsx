@@ -1,5 +1,3 @@
-import type { SelectOption } from '@/types/api';
-
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
 import { memo } from 'react';
@@ -9,33 +7,31 @@ import type { ChartConfig } from '../types';
 import { useBetaHeatmapData } from '../api';
 
 export type BetaHeatmapProps = {
-    tf: string;
+    hours: string;
     type: string;
-    timeFrameOptions: SelectOption[];
-    typeOptions: SelectOption[];
+    hoursOptions: Record<string, string>;
+    typeOptions: string[];
     onAddClick?: () => void;
     onRemoveClick?: () => void;
     onConfigChange?: (config: ChartConfig) => void;
 };
 
 const BetaHeatmap = (props: BetaHeatmapProps) => {
-    const { tf, type, timeFrameOptions, typeOptions, onAddClick, onRemoveClick, onConfigChange } = props;
+    const { hours, type, hoursOptions, typeOptions, onAddClick, onRemoveClick, onConfigChange } = props;
 
-    const betaHeatmap = useBetaHeatmapData({ duration: tf, type });
+    const betaHeatmap = useBetaHeatmapData({ hours, type });
 
     const selects = [
         {
             componentName: 'select',
-            id: '1',
-            onChange: (tf: string) => {
-                onConfigChange?.({ tf });
+            onChange: (hours: string) => {
+                onConfigChange?.({ hours });
             },
-            options: timeFrameOptions,
-            value: tf,
+            options: hoursOptions,
+            value: hours,
         },
         {
             componentName: 'select',
-            id: '2',
             onChange: (type: string) => {
                 onConfigChange?.({ type });
             },

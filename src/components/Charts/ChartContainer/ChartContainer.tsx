@@ -7,16 +7,13 @@ const selectsMapper: { [key: string]: (props: ComponentProps<typeof CSSelect>) =
     select: CSSelect,
 };
 
-import { SelectOption } from '@/types/api';
-
 export type ChartContainerProps = {
     body: ReactNode;
     title: string;
     selects?: {
         componentName: string;
-        id: string;
         onChange: Dispatch<SetStateAction<string>> | ((value: string) => void);
-        options: SelectOption[];
+        options: Record<string, string> | string[];
         value: string;
         class?: string;
     }[];
@@ -39,13 +36,13 @@ const ChartContainer = (props: ChartContainerProps) => {
                     {onAddClick && <IconButton label="+" onClick={onAddClick} />}
                     {onRemoveClick && <IconButton label="-" onClick={onRemoveClick} />}
 
-                    {selects?.map((select) => {
+                    {selects?.map((select, idx) => {
                         const Component = selectsMapper[select.componentName];
 
                         return (
                             <Component
                                 classes={select.class}
-                                key={select.id}
+                                key={idx}
                                 onChange={select.onChange}
                                 options={select.options}
                                 value={select.value}

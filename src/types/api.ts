@@ -15,11 +15,6 @@ export interface GridHeatmapResponse extends BaseHeatmapResponse {
 
 export type HeatmapResponse = CorrelationHeatmapResponse | GridHeatmapResponse;
 
-export type SelectOption = {
-    value: string;
-    label: string;
-};
-
 export type ZScoreMatrixResponse = {
     type: string;
     name: string;

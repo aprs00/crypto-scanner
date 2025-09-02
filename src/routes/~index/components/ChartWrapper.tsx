@@ -11,7 +11,6 @@ import ZScoreHistory from './ZScoreHistory';
 import Scatter from './ZScoreMatrix';
 
 const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: GridLayout }) => {
-    console.log('CHART', chart);
     const timeFrameOptions = useStatsSelectOptions();
     const tickerOptions = useFetchTickersOptions();
     const typeOptions = useCorrelationTypeOptions();
@@ -34,8 +33,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <BetaHeatmap
                     {...commonProps}
-                    tf={savedLayout.tf || '4h'}
-                    timeFrameOptions={timeFrameOptions.data?.correlation || []}
+                    hours={savedLayout.hours || '4'}
+                    hoursOptions={timeFrameOptions.data?.correlation || {}}
                     type={savedLayout.type || 'price'}
                     typeOptions={typeOptions.data || []}
                 />
@@ -44,8 +43,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <Scatter
                     {...commonProps}
-                    tf={savedLayout.tf || '4h'}
-                    timeFrameOptions={timeFrameOptions.data?.zscore || []}
+                    hours={savedLayout.hours || '4'}
+                    hoursOptions={timeFrameOptions.data?.zscore || {}}
                     xAxis={savedLayout.xAxis || 'price'}
                     yAxis={savedLayout.yAxis || 'volume'}
                 />
@@ -54,16 +53,16 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <ZScoreHistory
                     {...commonProps}
+                    hoursOptions={typeOptions.data || []}
                     type={savedLayout.type || 'price'}
-                    typeOptions={typeOptions.data || []}
                 />
             );
         case 'zScoreHeatmap':
             return (
                 <ZScoreHeatmap
                     {...commonProps}
-                    tf={savedLayout.tf || '4h'}
-                    timeFrameOptions={timeFrameOptions.data?.zscore || []}
+                    hours={savedLayout.hours || '4h'}
+                    hoursOptions={timeFrameOptions.data?.zscore || {}}
                     type="price"
                     typeOptions={typeOptions.data || []}
                 />
@@ -72,10 +71,10 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <PriceChangePercentage
                     {...commonProps}
+                    hours={savedLayout.hours || '1M'}
                     symbol={savedLayout.symbol || 'BTCUSDT'}
-                    tf={savedLayout.tf || '1M'}
                     tickerOptions={tickerOptions.data || []}
-                    timeFrameOptions={timeFrameOptions.data?.average_price || []}
+                    timeFrameOptions={timeFrameOptions.data?.average_price || {}}
                     type="day"
                 />
             );
@@ -83,10 +82,10 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <PriceChangePercentage
                     {...commonProps}
+                    hours={savedLayout.hours || '1M'}
                     symbol={savedLayout.symbol || 'BTCUSDT'}
-                    tf={savedLayout.tf || '1M'}
                     tickerOptions={tickerOptions.data || []}
-                    timeFrameOptions={timeFrameOptions.data?.average_price || []}
+                    timeFrameOptions={timeFrameOptions.data?.average_price || {}}
                     type="hour"
                 />
             );
