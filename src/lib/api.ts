@@ -6,7 +6,7 @@ const commonOptions: CreateAxiosDefaults = {
         Accept: 'application/json',
         'Content-Type': 'application/json',
     },
-    timeout: 5000,
+    timeout: 15000,
 };
 
 const baseInstance = axios.create({
