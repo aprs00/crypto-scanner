@@ -61,7 +61,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <ZScoreHeatmap
                     {...commonProps}
-                    hours={savedLayout.hours || '4h'}
+                    hours={savedLayout.hours || '4'}
                     hoursOptions={timeFrameOptions.data?.zscore || {}}
                     type="price"
                     typeOptions={typeOptions.data || []}
@@ -71,7 +71,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <PriceChangePercentage
                     {...commonProps}
-                    hours={savedLayout.hours || '1M'}
+                    hours={savedLayout.hours || '168'}
                     symbol={savedLayout.symbol || 'BTCUSDT'}
                     tickerOptions={tickerOptions.data || []}
                     timeFrameOptions={timeFrameOptions.data?.average_price || {}}
@@ -82,7 +82,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <PriceChangePercentage
                     {...commonProps}
-                    hours={savedLayout.hours || '1M'}
+                    hours={savedLayout.hours || '168'}
                     symbol={savedLayout.symbol || 'BTCUSDT'}
                     tickerOptions={tickerOptions.data || []}
                     timeFrameOptions={timeFrameOptions.data?.average_price || {}}
