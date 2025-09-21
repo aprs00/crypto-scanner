@@ -1,4 +1,4 @@
-import type { CorrelationHeatmapResponse, GridHeatmapResponse, ZScoreMatrixResponse } from '@/types/api';
+import type { CorrelationHeatmapResponse, GridHeatmapResponse, ZScoreScatterResponse } from '@/types/api';
 
 import api from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
@@ -10,7 +10,7 @@ import {
     ZScoreHistoryParams,
     ZScoreHeatmapParams,
     ZScoreHistoryResponse,
-    ZScoreMatrixParams,
+    ZScoreScatterParams,
     BootstrapResponse,
 } from './types';
 
@@ -32,10 +32,10 @@ const useBetaHeatmapData = (params: HeatmapParams) =>
         staleTime: 30_000,
     });
 
-const useZScoreMatrix = (params: ZScoreMatrixParams) =>
+const useZScoreScatter = (params: ZScoreScatterParams) =>
     useQuery({
         gcTime: 30_000,
-        queryFn: async () => (await api.get<ZScoreMatrixResponse[]>('z-score-matrix', { params })).data,
+        queryFn: async () => (await api.get<ZScoreScatterResponse[]>('z-score-matrix', { params })).data,
         queryKey: ['z-score-matrix', params],
         refetchInterval: 30_000,
         staleTime: 30_000,
@@ -71,6 +71,6 @@ export {
     usePriceChangePercentage,
     useZScoreHistory,
     useZScoreHeatmap,
-    useZScoreMatrix,
+    useZScoreScatter,
     useBootstrap,
 };

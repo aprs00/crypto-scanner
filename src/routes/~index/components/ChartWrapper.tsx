@@ -8,7 +8,7 @@ import BetaHeatmap from './BetaHeatmap';
 import PriceChangePercentage from './PriceChangePercentage';
 import ZScoreHeatmap from './ZScoreHeatmap';
 import ZScoreHistory from './ZScoreHistory';
-import Scatter from './ZScoreMatrix';
+import Scatter from './ZScoreScatter';
 
 const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: GridLayout }) => {
     const bootstrap = useBootstrap();

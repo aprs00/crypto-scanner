@@ -2,7 +2,7 @@ import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
 import { memo } from 'react';
 
-import { useZScoreMatrix } from '../api';
+import { useZScoreScatter } from '../api';
 import { ChartConfig } from '../types';
 
 export type ScatterProps = {
@@ -15,17 +15,17 @@ export type ScatterProps = {
     onConfigChange?: (config: ChartConfig) => void;
 };
 
-const ZScoreMatrix = (props: ScatterProps) => {
+const ZScoreScatter = (props: ScatterProps) => {
     const { hours, hoursOptions, xAxis, yAxis, onAddClick, onRemoveClick, onConfigChange } = props;
 
-    const zScoreMatrix = useZScoreMatrix({
+    const zScoreScatter = useZScoreScatter({
         hours,
         xAxis,
         yAxis,
     });
 
     const scatterData: echarts.SeriesOption[] =
-        zScoreMatrix.data?.map((item) => ({
+        zScoreScatter.data?.map((item) => ({
             type: 'scatter',
             name: item.symbol,
             data: [item.data],
@@ -55,4 +55,4 @@ const ZScoreMatrix = (props: ScatterProps) => {
     );
 };
 
-export default memo(ZScoreMatrix);
+export default memo(ZScoreScatter);

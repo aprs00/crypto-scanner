@@ -11,7 +11,7 @@ export type HeatmapParams = {
     type: string;
 };
 
-export type ZScoreMatrixParams = {
+export type ZScoreScatterParams = {
     xAxis: string;
     yAxis: string;
     hours: string;
