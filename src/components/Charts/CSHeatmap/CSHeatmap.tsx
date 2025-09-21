@@ -5,10 +5,12 @@ import { useRef } from 'react';
 
 type HeatmapProps = {
     data?: HeatmapResponse;
+    visualMin?: number;
+    visualMax?: number;
 };
 
 function CSHeatmap(props: HeatmapProps) {
-    const { data } = props;
+    const { data, visualMin, visualMax } = props;
 
     const chartRef = useRef<ReactEcharts | null>(null);
 
@@ -108,8 +110,8 @@ function CSHeatmap(props: HeatmapProps) {
             inRange: {
                 color: ['#67001f', '#a50f15', '#d6604d', '#f4a582', '#ffffff', '#92c5de', '#4393c3', '#2166ac'],
             },
-            max: 1,
-            min: -1,
+            max: visualMax ?? 1,
+            min: visualMin ?? -1,
             realtime: false,
             orient: 'horizontal',
             precision: 2,
