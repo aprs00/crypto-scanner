@@ -1,7 +1,8 @@
+import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
+import { useRef } from 'react';
+
 import ChartContainer from '@/components/Charts/ChartContainer';
 import { resizeEChart } from '@/utils/chart';
-import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
-import { memo, useRef } from 'react';
 
 import { usePriceChangePercentage } from '../api';
 import { ChartConfig } from '../types';
@@ -101,4 +102,4 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     );
 };
 
-export default memo(PriceChangePercentage);
+export default PriceChangePercentage;

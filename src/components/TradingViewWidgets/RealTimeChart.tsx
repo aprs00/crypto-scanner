@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 
 import type { AdvancedRealTimeChartProps } from './types';
 
@@ -89,4 +89,4 @@ const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({
     );
 };
 
-export default memo(AdvancedRealTimeChart);
+export default AdvancedRealTimeChart;

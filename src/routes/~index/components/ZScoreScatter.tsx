@@ -1,6 +1,5 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
-import { memo } from 'react';
 
 import { useZScoreScatter } from '../api';
 import { ChartConfig } from '../types';
@@ -55,4 +54,4 @@ const ZScoreScatter = (props: ScatterProps) => {
     );
 };
 
-export default memo(ZScoreScatter);
+export default ZScoreScatter;

@@ -1,5 +1,3 @@
-import { useMemo, memo } from 'react';
-
 import type { ChartConfig, ChartItem, GridLayout } from '../types';
 
 import { useBootstrap } from '../api';
@@ -18,16 +16,13 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
     const removeChart = useChartStore((state) => state.removeChart);
     const updateChartConfig = useChartStore((state) => state.updateChartConfig);
 
-    const canRemove = useMemo(() => chartIds.filter((c) => c.type === chart.type).length > 1, [chartIds, chart.type]);
+    const canRemove = chartIds.filter((c) => c.type === chart.type).length > 1;
 
-    const commonProps = useMemo(
-        () => ({
-            onAddClick: () => addChart(chart.type),
-            onConfigChange: (config: ChartConfig) => updateChartConfig(chart.id, config),
-            onRemoveClick: canRemove ? () => removeChart(chart.id, chart.type) : undefined,
-        }),
-        [addChart, updateChartConfig, removeChart, chart.type, chart.id, canRemove],
-    );
+    const commonProps = {
+        onAddClick: () => addChart(chart.type),
+        onConfigChange: (config: ChartConfig) => updateChartConfig(chart.id, config),
+        onRemoveClick: canRemove ? () => removeChart(chart.id, chart.type) : undefined,
+    };
 
     switch (chart.type) {
         case 'betaHeatmap':
@@ -95,4 +90,4 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
     }
 };
 
-export default memo(ChartWrapper);
+export default ChartWrapper;

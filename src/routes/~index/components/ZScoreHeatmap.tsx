@@ -1,6 +1,7 @@
+import { useState } from 'react';
+
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
-import { memo, useState } from 'react';
 
 import type { ChartConfig } from '../types';
 
@@ -53,4 +54,4 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
     );
 };
 
-export default memo(ZScoreHeatmap);
+export default ZScoreHeatmap;
