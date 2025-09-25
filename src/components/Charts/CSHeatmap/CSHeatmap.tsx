@@ -88,7 +88,7 @@ function CSHeatmap(props: HeatmapProps) {
                     },
                 },
                 type: 'heatmap',
-                progressive: 10000,
+                progressive: 100000,
                 animation: false,
             },
         ],
