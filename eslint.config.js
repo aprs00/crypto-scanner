@@ -5,6 +5,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import perfectionist from 'eslint-plugin-perfectionist';
 import prettier from 'eslint-plugin-prettier';
 import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
     {
@@ -44,6 +45,7 @@ export default [
         plugins: {
             '@typescript-eslint': typescriptEslint,
             react,
+            reactHooks,
             'jsx-a11y': jsxA11y,
             prettier,
             perfectionist,

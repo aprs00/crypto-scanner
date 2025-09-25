@@ -1,6 +1,5 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
-import { memo } from 'react';
 
 import type { ChartConfig } from '../types';
 
@@ -51,4 +50,4 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
     );
 };
 
-export default memo(BetaHeatmap);
+export default BetaHeatmap;

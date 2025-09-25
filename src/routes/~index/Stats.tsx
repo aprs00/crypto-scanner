@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 
 import useChartStore, { chartTemplates, CHART_HEIGHT } from './useChartStore';
@@ -12,22 +11,20 @@ const Stats = () => {
     const savedGridLayouts = useChartStore((state) => state.savedGridLayouts);
     const handleLayoutChange = useChartStore((state) => state.handleLayoutChange);
 
-    const gridLayouts = useMemo(() => {
-        return chartIds.map((chart, index) => {
-            const template = chartTemplates[chart.type];
-            const savedLayout = savedGridLayouts[chart.id] || {};
+    const gridLayouts = chartIds.map((chart, index) => {
+        const template = chartTemplates[chart.type];
+        const savedLayout = savedGridLayouts[chart.id] || {};
 
-            return {
-                component: <ChartWrapper chart={chart} savedLayout={savedLayout} />,
-                gridLayout: {
-                    ...template.gridLayout,
-                    ...savedLayout?.layout,
-                    y: index * CHART_HEIGHT,
-                },
-                key: chart.id,
-            };
-        });
-    }, [chartIds, savedGridLayouts]);
+        return {
+            component: <ChartWrapper chart={chart} savedLayout={savedLayout} />,
+            gridLayout: {
+                ...template.gridLayout,
+                ...savedLayout?.layout,
+                y: index * CHART_HEIGHT,
+            },
+            key: chart.id,
+        };
+    });
 
     return (
         <ResponsiveGridLayout

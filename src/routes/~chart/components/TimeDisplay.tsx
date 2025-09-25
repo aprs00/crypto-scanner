@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type TimeDisplayProps = {
     timestamp: number;
@@ -27,4 +27,4 @@ const TimeDisplay = (props: TimeDisplayProps) => {
     return <div className="text-xs">{formatTimeDiff(timeDiff)}</div>;
 };
 
-export default memo(TimeDisplay);
+export default TimeDisplay;
