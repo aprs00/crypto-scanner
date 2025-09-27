@@ -1,7 +1,8 @@
-import { CorrelationHeatmapResponse, GridHeatmapResponse, type HeatmapResponse } from '@/types/api';
-import { resizeEChart } from '@/utils/chart';
 import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
 import { useRef } from 'react';
+
+import { CorrelationHeatmapResponse, GridHeatmapResponse, type HeatmapResponse } from '@/types/api';
+import { resizeEChart } from '@/utils/chart';
 
 type HeatmapProps = {
     data?: HeatmapResponse;
@@ -123,14 +124,14 @@ function CSHeatmap(props: HeatmapProps) {
         xAxis: {
             data: axisData.xAxis,
             splitArea: {
-                show: true,
+                show: false,
             },
             type: 'category',
         },
         yAxis: {
             data: axisData.yAxis,
             splitArea: {
-                show: true,
+                show: false,
             },
             type: 'category',
         },
