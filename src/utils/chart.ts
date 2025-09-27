@@ -1,7 +1,7 @@
-import ReactEcharts from 'echarts-for-react';
+import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { RefObject } from 'react';
 
-const resizeEChart = (chartRef: RefObject<ReactEcharts | null>): void => {
+const resizeEChart = (chartRef: RefObject<ReactEChartsCore | null>): void => {
     setTimeout(() => {
         if (chartRef.current) {
             chartRef.current.getEchartsInstance().resize({ height: 'auto', width: 'auto' });

@@ -1,8 +1,9 @@
 import type { Layout } from 'react-grid-layout';
 
-import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
 import { useState } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout';
+
+import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
 
 import { useExchangeInfo } from './api';
 import ChartTape from './components/ChartTape';

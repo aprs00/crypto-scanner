@@ -1,5 +1,6 @@
-import env from '@/config/env';
 import axios, { type CreateAxiosDefaults } from 'axios';
+
+import env from '@/config/env';
 
 const commonOptions: CreateAxiosDefaults = {
     headers: {

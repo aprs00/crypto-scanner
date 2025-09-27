@@ -1,7 +1,10 @@
-import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
+import type { EChartsOption } from 'echarts';
+
+import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
+import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
 import { usePriceChangePercentage } from '../api';
@@ -21,7 +24,7 @@ export type PriceChangePercentageProps = {
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const { symbol, hours, tickerOptions, timeFrameOptions, type, onAddClick, onRemoveClick, onConfigChange } = props;
 
-    const chartRef = useRef<ReactEcharts | null>(null);
+    const chartRef = useRef<ReactEChartsCore | null>(null);
 
     const priceChangePercentageApi = usePriceChangePercentage({ hours, symbol, type });
 
@@ -87,7 +90,8 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     return (
         <ChartContainer
             body={
-                <ReactEcharts
+                <ReactEChartsCore
+                    echarts={echarts}
                     onChartReady={() => resizeEChart(chartRef)}
                     option={option}
                     ref={chartRef}

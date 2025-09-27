@@ -1,6 +1,9 @@
-import ReactEcharts, { type EChartsOption } from 'echarts-for-react';
+import type { EChartsOption } from 'echarts';
+
+import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
+import { echarts } from '@/lib/echarts';
 import { CorrelationHeatmapResponse, GridHeatmapResponse, type HeatmapResponse } from '@/types/api';
 import { resizeEChart } from '@/utils/chart';
 
@@ -13,7 +16,7 @@ type HeatmapProps = {
 function CSHeatmap(props: HeatmapProps) {
     const { data, visualMin, visualMax } = props;
 
-    const chartRef = useRef<ReactEcharts | null>(null);
+    const chartRef = useRef<ReactEChartsCore | null>(null);
 
     const processHeatmapData = (data?: HeatmapResponse) => {
         switch (data?.type) {
@@ -106,7 +109,7 @@ function CSHeatmap(props: HeatmapProps) {
         },
         visualMap: {
             align: 'top',
-            bottom: 32,
+            bottom: 22,
             calculable: true,
             inRange: {
                 color: ['#67001f', '#a50f15', '#d6604d', '#f4a582', '#ffffff', '#92c5de', '#4393c3', '#2166ac'],
@@ -123,22 +126,17 @@ function CSHeatmap(props: HeatmapProps) {
         },
         xAxis: {
             data: axisData.xAxis,
-            splitArea: {
-                show: false,
-            },
             type: 'category',
         },
         yAxis: {
             data: axisData.yAxis,
-            splitArea: {
-                show: false,
-            },
             type: 'category',
         },
     };
 
     return (
-        <ReactEcharts
+        <ReactEChartsCore
+            echarts={echarts}
             onChartReady={() => resizeEChart(chartRef)}
             option={option}
             opts={{ renderer: 'canvas' }}

@@ -1,5 +1,6 @@
-import { headerLinks } from '@/config/links';
 import { Link } from '@tanstack/react-router';
+
+import { headerLinks } from '@/config/links';
 
 const CSNavigation = () => {
     return (

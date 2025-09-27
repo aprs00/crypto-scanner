@@ -1,10 +1,14 @@
-import { resizeEChart } from '@/utils/chart';
-import ReactEcharts, { EChartsOption } from 'echarts-for-react';
+import type { EChartsOption, SeriesOption } from 'echarts';
+
+import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { capitalize } from 'lodash-es';
 import { useRef } from 'react';
 
+import { echarts } from '@/lib/echarts';
+import { resizeEChart } from '@/utils/chart';
+
 export type ScatterProps = {
-    data: echarts.SeriesOption[];
+    data: SeriesOption[];
     xAxis: string;
     yAxis: string;
 };
@@ -12,7 +16,7 @@ export type ScatterProps = {
 const CSScatter = (props: ScatterProps) => {
     const { data, xAxis, yAxis } = props;
 
-    const chartRef = useRef<ReactEcharts | null>(null);
+    const chartRef = useRef<ReactEChartsCore | null>(null);
 
     const option: EChartsOption = {
         dataZoom: {
@@ -85,7 +89,8 @@ const CSScatter = (props: ScatterProps) => {
     };
 
     return (
-        <ReactEcharts
+        <ReactEChartsCore
+            echarts={echarts}
             onChartReady={() => resizeEChart(chartRef)}
             option={option}
             ref={chartRef}
