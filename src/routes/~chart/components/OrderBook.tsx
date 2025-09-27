@@ -65,7 +65,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
             rows.push(
                 <div
-                    className={`grid grid-cols-2 mb-0.5 rounded-sm text-slate-200 text-sm p-0.5 ${tableAlignmentClassContainer}`}
+                    className={`grid grid-cols-2 mb-0.5 text-slate-200 text-sm p-0.5 ${tableAlignmentClassContainer}`}
                     key={price}
                     style={{ background: tableBackgroundStyle(type, tableAlignment, percentage) }}
                 >
