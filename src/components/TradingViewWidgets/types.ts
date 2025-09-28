@@ -1,8 +1,15 @@
+export const WidgetType = {
+    Widget: 'Widget',
+    MediumWidget: 'MediumWidget',
+} as const;
+
+export type WidgetType = (typeof WidgetType)[keyof typeof WidgetType];
+
 export type WidgetProps = {
     scriptHTML: any;
     scriptSRC: string;
     containerId?: string;
-    type?: 'Widget' | 'MediumWidget';
+    type?: WidgetType;
 };
 
 export type AdvancedRealTimeChartProps = {

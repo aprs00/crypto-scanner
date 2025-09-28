@@ -4,7 +4,7 @@ import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
 import { echarts } from '@/lib/echarts';
-import { CorrelationHeatmapResponse, GridHeatmapResponse, type HeatmapResponse } from '@/types/api';
+import { CorrelationHeatmapResponse, GridHeatmapResponse, HeatmapType, type HeatmapResponse } from '@/types/api';
 import { resizeEChart } from '@/utils/chart';
 
 type HeatmapProps = {
@@ -20,12 +20,12 @@ function CSHeatmap(props: HeatmapProps) {
 
     const processHeatmapData = (data?: HeatmapResponse) => {
         switch (data?.type) {
-            case 'grid':
+            case HeatmapType.Grid:
                 return {
                     seriesData: processGridData(data),
                     axisData: { xAxis: data.x_axis, yAxis: data.y_axis },
                 };
-            case 'correlation':
+            case HeatmapType.Correlation:
                 return {
                     seriesData: processCorrelationData(data),
                     axisData: { xAxis: data.axis, yAxis: data.axis },

@@ -99,6 +99,6 @@ export type TableAlignment = (typeof TableAlignment)[keyof typeof TableAlignment
 export const OrderbookType = {
     Asks: 'asks',
     Bids: 'bids',
-};
+} as const;
 
 export type OrderbookType = (typeof OrderbookType)[keyof typeof OrderbookType];

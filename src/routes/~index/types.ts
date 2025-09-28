@@ -61,13 +61,16 @@ export interface ChartConfig {
     type?: string;
 }
 
-export type ChartType =
-    | 'betaHeatmap'
-    | 'scatter'
-    | 'zScoreHistory'
-    | 'zScoreHeatmap'
-    | 'priceChangePercentageDay'
-    | 'priceChangePercentageHour';
+export const ChartType = {
+    BetaHeatmap: 'betaHeatmap',
+    Scatter: 'scatter',
+    ZScoreHistory: 'zScoreHistory',
+    ZScoreHeatmap: 'zScoreHeatmap',
+    PriceChangePercentageDay: 'priceChangePercentageDay',
+    PriceChangePercentageHour: 'priceChangePercentageHour',
+} as const;
+
+export type ChartType = (typeof ChartType)[keyof typeof ChartType];
 
 export interface ChartItem {
     type: ChartType;

@@ -7,7 +7,7 @@ import NumberInput from '@/components/UI/NumberInput';
 import BinanceOrderBookService from '@/services/binance/OrderbookService';
 import { formatNumber } from '@/utils/number';
 
-import { OrderBookResponseType, TableAlignment } from '../types';
+import { OrderBookResponseType, OrderbookType, TableAlignment } from '../types';
 import { tableBackgroundStyle } from '../utils';
 
 export type OrderBookTablePropsType = {
@@ -50,9 +50,9 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         return Math.max(...bidsAndAsks.map((limit: [number, number]) => limit?.[1]));
     })();
 
-    const orderBookTable = (groupedGetter: [number, number][], type: string) => {
+    const orderBookTable = (groupedGetter: [number, number][], type: OrderbookType) => {
         const rows = [];
-        const isTableAlignmentHorizontal = tableAlignment === TableAlignment.H && type === 'bids';
+        const isTableAlignmentHorizontal = tableAlignment === TableAlignment.H && type === OrderbookType.Bids;
         const tableAlignmentClassContainer = isTableAlignmentHorizontal ? 'text-right' : '';
         const tableAlignmentClassRow = isTableAlignmentHorizontal ? 'order-1' : '';
 
@@ -115,9 +115,13 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                     </div>
                 </div>
                 <div className={orderbookContainerClasses}>
-                    <div className="flex flex-1 flex-col-reverse">{orderBookTable(groupedOrderBook.asks, 'asks')}</div>
+                    <div className="flex flex-1 flex-col-reverse">
+                        {orderBookTable(groupedOrderBook.asks, OrderbookType.Asks)}
+                    </div>
                     <div className="my-1" />
-                    <div className={bidsContainerClasses}>{orderBookTable(groupedOrderBook.bids, 'bids')}</div>
+                    <div className={bidsContainerClasses}>
+                        {orderBookTable(groupedOrderBook.bids, OrderbookType.Bids)}
+                    </div>
                 </div>
             </div>
         </>

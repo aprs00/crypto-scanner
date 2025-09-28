@@ -1,6 +1,5 @@
-import type { ChartConfig, ChartItem, GridLayout } from '../types';
-
 import { useBootstrap } from '../api';
+import { ChartType, type ChartConfig, type ChartItem, type GridLayout } from '../types';
 import useChartStore from '../useChartStore';
 import BetaHeatmap from './BetaHeatmap';
 import PriceChangePercentage from './PriceChangePercentage';
@@ -25,7 +24,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
     };
 
     switch (chart.type) {
-        case 'betaHeatmap':
+        case ChartType.BetaHeatmap:
             return (
                 <BetaHeatmap
                     {...commonProps}
@@ -35,7 +34,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     typeOptions={bootstrap.data?.data_types || []}
                 />
             );
-        case 'scatter':
+        case ChartType.Scatter:
             return (
                 <Scatter
                     {...commonProps}
@@ -45,7 +44,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     yAxis={savedLayout.yAxis || 'volume'}
                 />
             );
-        case 'zScoreHistory':
+        case ChartType.ZScoreHistory:
             return (
                 <ZScoreHistory
                     {...commonProps}
@@ -53,7 +52,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     type={savedLayout.type || 'price'}
                 />
             );
-        case 'zScoreHeatmap':
+        case ChartType.ZScoreHeatmap:
             return (
                 <ZScoreHeatmap
                     {...commonProps}
@@ -63,7 +62,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     typeOptions={bootstrap.data?.data_types || []}
                 />
             );
-        case 'priceChangePercentageDay':
+        case ChartType.PriceChangePercentageDay:
             return (
                 <PriceChangePercentage
                     {...commonProps}
@@ -74,7 +73,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     type="day"
                 />
             );
-        case 'priceChangePercentageHour':
+        case ChartType.PriceChangePercentageHour:
             return (
                 <PriceChangePercentage
                     {...commonProps}

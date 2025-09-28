@@ -1,6 +1,6 @@
 import React, { createRef, useEffect } from 'react';
 
-import type { WidgetProps } from './types';
+import { WidgetType, type WidgetProps } from './types';
 
 declare const TradingView: any;
 
@@ -17,13 +17,13 @@ const Widget: React.FC<WidgetProps> = ({ containerId, scriptHTML, scriptSRC, typ
             script.async = true;
             script.type = 'text/javascript';
 
-            if (type === 'Widget' || type === 'MediumWidget') {
+            if (type === WidgetType.Widget || type === WidgetType.MediumWidget) {
                 script.onload = () => {
                     if (TradingView !== undefined) {
                         script.innerHTML = JSON.stringify(
-                            type === 'Widget'
+                            type === WidgetType.Widget
                                 ? new TradingView.widget(scriptHTML)
-                                : type === 'MediumWidget'
+                                : type === WidgetType.MediumWidget
                                   ? new TradingView.MediumWidget(scriptHTML)
                                   : undefined,
                         );
