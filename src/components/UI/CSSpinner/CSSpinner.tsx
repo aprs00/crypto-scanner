@@ -1,6 +1,6 @@
 const CSSpinner = () => {
     return (
-        <div role="status">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" role="status">
             <svg
                 aria-hidden="true"
                 className="inline w-10 h-10 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"

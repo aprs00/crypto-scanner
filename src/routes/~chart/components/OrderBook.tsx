@@ -95,13 +95,12 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         };
     }, []);
 
+    const orderbookContainerClasses = `m-1 ${tableAlignment === 'H' ? 'flex flex-row-reverse' : ''}`;
+    const bidsContainerClasses = tableAlignment === 'H' ? 'flex flex-col-reverse flex-1' : '';
+
     return (
         <>
-            {!groupedOrderBook.asks.length && (
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <CSSpinner />
-                </div>
-            )}
+            {!groupedOrderBook.asks.length && <CSSpinner />}
 
             <div className="border-4 border-slate-800 rounded-sm h-full z-50">
                 <div className="flex items-center bg-slate-800 pb-1 justify-between">
@@ -111,12 +110,10 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                         <NumberInput onChange={(e) => setNumOfTicks(e)} value={numOfTicks} />
                     </div>
                 </div>
-                <div className={`m-1 ${tableAlignment === 'H' ? 'flex flex-row-reverse' : ''}`}>
+                <div className={orderbookContainerClasses}>
                     <div className="flex flex-1 flex-col-reverse">{orderBookTable(groupedOrderBook.asks, 'asks')}</div>
                     <div className="my-1" />
-                    <div className={`${tableAlignment === 'H' ? 'flex flex-col-reverse flex-1' : ''}`}>
-                        {orderBookTable(groupedOrderBook.bids, 'bids')}
-                    </div>
+                    <div className={bidsContainerClasses}>{orderBookTable(groupedOrderBook.bids, 'bids')}</div>
                 </div>
             </div>
         </>

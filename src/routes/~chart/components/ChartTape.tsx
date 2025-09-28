@@ -5,7 +5,6 @@ import { formatNumber } from '@/utils/number';
 import type { TapeStateType } from '../types';
 
 import { useStreamAggTrade } from '../api';
-import TimeDisplay from './TimeDisplay';
 
 const ChartTape = () => {
     const streamAggTrade = useStreamAggTrade('BTCUSDT');
@@ -22,7 +21,7 @@ const ChartTape = () => {
         >
             <div>{formatNumber(parseFloat(data.price), {})}</div>
             <div>{formatNumber(parseFloat(data.size), { maximumFractionDigits: 8 })}</div>
-            <TimeDisplay timestamp={data.time} />
+            <div className="text-xs">{new Date().toLocaleTimeString()}</div>
         </div>
     ));
 
