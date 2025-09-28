@@ -58,6 +58,7 @@ export default [
             ...prettier.configs.recommended.rules,
 
             'no-undef': 'off',
+            'no-redeclare': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
             'prettier/prettier': ['error', {}, { usePrettierrc: true }],
             'react/react-in-jsx-scope': 'off',

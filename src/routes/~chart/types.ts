@@ -88,3 +88,17 @@ export type StreamAggTradeResponseType = {
     q: string;
     s: string;
 };
+
+export const TableAlignment = {
+    V: 'V',
+    H: 'H',
+} as const;
+
+export type TableAlignment = (typeof TableAlignment)[keyof typeof TableAlignment];
+
+export const OrderbookType = {
+    Asks: 'asks',
+    Bids: 'bids',
+};
+
+export type OrderbookType = (typeof OrderbookType)[keyof typeof OrderbookType];

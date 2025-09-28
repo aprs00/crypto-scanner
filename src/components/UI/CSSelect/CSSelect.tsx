@@ -3,19 +3,19 @@ import { Dispatch, SetStateAction } from 'react';
 
 import SelectIcon from './SelectIcon';
 
-export type SelectProps = {
-    options: Record<string, string> | string[];
-    value: string;
+export type SelectProps<T = string> = {
+    options: Record<string, string> | T[];
+    value: T;
     classes?: string;
-    onChange: Dispatch<SetStateAction<string>> | ((value: string) => void);
+    onChange: Dispatch<SetStateAction<T>> | ((value: T) => void);
 };
 
-const CSSelect = (props: SelectProps) => {
+const CSSelect = <T = string,>(props: SelectProps<T>) => {
     const { classes = 'w-20', onChange, options, value } = props;
 
     const normalizedOptions = Array.isArray(options)
-        ? options.map((item) => ({ label: item, value: item }))
-        : Object.entries(options).map(([key, val]) => ({ label: key, value: val.toString() }));
+        ? options.map((item) => ({ label: String(item), value: item }))
+        : Object.entries(options).map(([key, val]) => ({ label: key, value: val.toString() as T }));
 
     return (
         <Listbox onChange={onChange} value={value}>
@@ -26,7 +26,7 @@ const CSSelect = (props: SelectProps) => {
                             {normalizedOptions
                                 ?.filter((option) => value === option.value)
                                 .map((option) => (
-                                    <div className="flex items-center" key={option.value.toString()}>
+                                    <div className="flex items-center" key={String(option.value)}>
                                         <span className="text-slate-200">{option.label}</span>
                                     </div>
                                 ))}
@@ -50,7 +50,7 @@ const CSSelect = (props: SelectProps) => {
                                 {normalizedOptions.map((item) => (
                                     <ListboxOption
                                         className="cursor-pointer hover:bg-slate-900 rounded-xs gap-2"
-                                        key={item.value.toString()}
+                                        key={String(item.value)}
                                         value={item.value}
                                     >
                                         {({ selected }) => {

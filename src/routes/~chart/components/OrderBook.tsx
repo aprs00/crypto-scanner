@@ -7,7 +7,7 @@ import NumberInput from '@/components/UI/NumberInput';
 import BinanceOrderBookService from '@/services/binance/OrderbookService';
 import { formatNumber } from '@/utils/number';
 
-import { OrderBookResponseType } from '../types';
+import { OrderBookResponseType, TableAlignment } from '../types';
 import { tableBackgroundStyle } from '../utils';
 
 export type OrderBookTablePropsType = {
@@ -16,7 +16,7 @@ export type OrderBookTablePropsType = {
     symbolTickSize: number;
 };
 
-const tableAlignmentOptions = ['V', 'H'];
+const tableAlignmentOptions: TableAlignment[] = [TableAlignment.V, TableAlignment.H];
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
     const { symbolTickSize, tableHeight } = props;
@@ -27,7 +27,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         asks: [number, number][];
     }>({ bids: [], asks: [] });
     const [numOfTicks, setNumOfTicks] = useState(100);
-    const [tableAlignment, setTableAlignment] = useState('V');
+    const [tableAlignment, setTableAlignment] = useState<TableAlignment>(TableAlignment.V);
     const binanceServiceRef = useRef<BinanceOrderBookService | null>(null);
 
     const groupByVal = symbolTickSize * numOfTicks;
@@ -39,7 +39,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     })();
 
     const calculatedNumOfRows = (() => {
-        const divideBy = tableAlignment === 'V' ? 4 : 1;
+        const divideBy = tableAlignment === TableAlignment.V ? 4 : 1;
         const calc = Math.floor(tableHeight / 30);
         const numOfRows = (calc % 2 === 0 ? calc : calc - 1) / 2 + calc / divideBy;
         return Math.floor(numOfRows);
@@ -52,7 +52,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
     const orderBookTable = (groupedGetter: [number, number][], type: string) => {
         const rows = [];
-        const isTableAlignmentHorizontal = tableAlignment === 'H' && type === 'bids';
+        const isTableAlignmentHorizontal = tableAlignment === TableAlignment.H && type === 'bids';
         const tableAlignmentClassContainer = isTableAlignmentHorizontal ? 'text-right' : '';
         const tableAlignmentClassRow = isTableAlignmentHorizontal ? 'order-1' : '';
 
@@ -95,8 +95,8 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         };
     }, []);
 
-    const orderbookContainerClasses = `m-1 ${tableAlignment === 'H' ? 'flex flex-row-reverse' : ''}`;
-    const bidsContainerClasses = tableAlignment === 'H' ? 'flex flex-col-reverse flex-1' : '';
+    const orderbookContainerClasses = `m-1 ${tableAlignment === TableAlignment.H ? 'flex flex-row-reverse' : ''}`;
+    const bidsContainerClasses = tableAlignment === TableAlignment.H ? 'flex flex-col-reverse flex-1' : '';
 
     return (
         <>
@@ -106,7 +106,11 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 <div className="flex items-center bg-slate-800 pb-1 justify-between">
                     <DraggableIcon id="drag-handle" />
                     <div className="flex items-center gap-2">
-                        <CSSelect onChange={setTableAlignment} options={tableAlignmentOptions} value={tableAlignment} />
+                        <CSSelect<TableAlignment>
+                            onChange={setTableAlignment}
+                            options={tableAlignmentOptions}
+                            value={tableAlignment}
+                        />
                         <NumberInput onChange={(e) => setNumOfTicks(e)} value={numOfTicks} />
                     </div>
                 </div>
