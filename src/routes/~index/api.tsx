@@ -26,34 +26,26 @@ const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
 
 const useBetaHeatmapData = (params: HeatmapParams) =>
     useQuery({
-        gcTime: 30_000,
         queryFn: async () => (await api.get<CorrelationHeatmapResponse>('pearson-correlation', { params })).data,
         queryKey: ['pearson-correlation', params],
-        staleTime: 30_000,
     });
 
 const useZScoreScatter = (params: ZScoreScatterParams) =>
     useQuery({
-        gcTime: 30_000,
         queryFn: async () => (await api.get<ZScoreScatterResponse[]>('z-score-matrix', { params })).data,
         queryKey: ['z-score-matrix', params],
-        staleTime: 30_000,
     });
 
 const useZScoreHistory = (params: ZScoreHistoryParams) =>
     useQuery({
-        gcTime: 30_000,
         queryFn: async () => (await api.get<ZScoreHistoryResponse>('z-score-history', { params })).data,
         queryKey: ['z-score-history', params],
-        staleTime: 30_000,
     });
 
 const useZScoreHeatmap = (params: ZScoreHeatmapParams) =>
     useQuery({
-        gcTime: 60_000,
         queryFn: async () => (await api.get<GridHeatmapResponse>('z-score-heatmap', { params })).data,
         queryKey: ['z-score-heatmap', params],
-        staleTime: 60_000,
     });
 
 const useBootstrap = () =>
