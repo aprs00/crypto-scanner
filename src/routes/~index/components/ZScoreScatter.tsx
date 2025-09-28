@@ -1,4 +1,4 @@
-import ChartContainer from '@/components/Charts/ChartContainer';
+import ChartContainer, { ComponentName } from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
 
 import { useZScoreScatter } from '../api';
@@ -34,7 +34,7 @@ const ZScoreScatter = (props: ScatterProps) => {
 
     const selects = [
         {
-            componentName: 'select',
+            componentName: ComponentName.Select,
             onChange: (hours: string) => {
                 onConfigChange?.({ hours });
             },

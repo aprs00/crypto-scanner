@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import ChartContainer from '@/components/Charts/ChartContainer';
+import ChartContainer, { ComponentName } from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
 
 import type { ChartConfig } from '../types';
@@ -25,7 +25,7 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
 
     const selects = [
         {
-            componentName: 'select',
+            componentName: ComponentName.Select,
             id: '1',
             onChange: (hours: string) => {
                 onConfigChange?.({ hours });
@@ -35,7 +35,7 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
         },
         {
             class: 'w-24',
-            componentName: 'select',
+            componentName: ComponentName.Select,
             id: '2',
             onChange: setSelectedType,
             options: typeOptions,

@@ -3,7 +3,7 @@ import type { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
-import ChartContainer from '@/components/Charts/ChartContainer';
+import ChartContainer, { ComponentName } from '@/components/Charts/ChartContainer';
 import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
@@ -35,7 +35,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
 
     const selects = [
         {
-            componentName: 'select',
+            componentName: ComponentName.Select,
             onChange: (hours: string) => {
                 onConfigChange?.({ hours });
             },
@@ -44,7 +44,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         },
         {
             class: 'w-28',
-            componentName: 'select',
+            componentName: ComponentName.Select,
             onChange: (symbol: string) => {
                 onConfigChange?.({ symbol });
             },

@@ -1,4 +1,4 @@
-import ChartContainer from '@/components/Charts/ChartContainer';
+import ChartContainer, { ComponentName } from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
 
 import type { ChartConfig } from '../types';
@@ -22,7 +22,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
 
     const selects = [
         {
-            componentName: 'select',
+            componentName: ComponentName.Select,
             onChange: (hours: string) => {
                 onConfigChange?.({ hours });
             },
@@ -30,7 +30,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
             value: hours,
         },
         {
-            componentName: 'select',
+            componentName: ComponentName.Select,
             onChange: (type: string) => {
                 onConfigChange?.({ type });
             },

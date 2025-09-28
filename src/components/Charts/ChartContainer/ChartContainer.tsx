@@ -1,18 +1,22 @@
-import { ComponentProps, Dispatch, ReactNode, SetStateAction } from 'react';
+import { Dispatch, ReactNode, SetStateAction } from 'react';
 
 import DraggableIcon from '@/assets/svg/draggable.svg?react';
 import IconButton from '@/components/UI/CSIconButton';
 import CSSelect from '@/components/UI/CSSelect';
 
-const selectsMapper: { [key: string]: (props: ComponentProps<typeof CSSelect>) => ReactNode } = {
-    select: CSSelect,
-};
+export const ComponentName = {
+    Select: 'select',
+} as const;
+
+export type ComponentName = (typeof ComponentName)[keyof typeof ComponentName];
+
+const StringCSSelect = CSSelect<string>;
 
 export type ChartContainerProps = {
     body: ReactNode;
     title: string;
     selects?: {
-        componentName: string;
+        componentName: ComponentName;
         onChange: Dispatch<SetStateAction<string>> | ((value: string) => void);
         options: Record<string, string> | string[];
         value: string;
@@ -38,10 +42,9 @@ const ChartContainer = (props: ChartContainerProps) => {
                     {onRemoveClick && <IconButton label="-" onClick={onRemoveClick} />}
 
                     {selects?.map((select, idx) => {
-                        const Component = selectsMapper[select.componentName];
-
+                        if (select.componentName !== ComponentName.Select) return null;
                         return (
-                            <Component
+                            <StringCSSelect
                                 classes={select.class}
                                 key={idx}
                                 onChange={select.onChange}

@@ -3,7 +3,7 @@ import type { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
-import ChartContainer from '@/components/Charts/ChartContainer';
+import ChartContainer, { ComponentName } from '@/components/Charts/ChartContainer';
 import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
@@ -76,7 +76,7 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
     const selects = [
         {
             class: 'w-24',
-            componentName: 'select',
+            componentName: ComponentName.Select,
             id: '1',
             onChange: (val: string) => {
                 onConfigChange?.({ type: val });
