@@ -89,20 +89,19 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
 
     return (
         <ChartContainer
-            body={
-                <ReactEChartsCore
-                    echarts={echarts}
-                    onChartReady={() => resizeEChart(chartRef)}
-                    option={option}
-                    ref={chartRef}
-                    style={{ height: '100%', width: '100%' }}
-                />
-            }
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
             selects={selects}
             title={titleMapper[type]}
-        />
+        >
+            <ReactEChartsCore
+                echarts={echarts}
+                onChartReady={() => resizeEChart(chartRef)}
+                option={option}
+                ref={chartRef}
+                style={{ height: '100%', width: '100%' }}
+            />
+        </ChartContainer>
     );
 };
 

@@ -41,12 +41,13 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
 
     return (
         <ChartContainer
-            body={<CSHeatmap data={betaHeatmap.data} />}
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
             selects={selects}
             title="Pearson correlation"
-        />
+        >
+            <CSHeatmap data={betaHeatmap.data} />
+        </ChartContainer>
     );
 };
 

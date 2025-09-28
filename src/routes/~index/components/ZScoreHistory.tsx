@@ -77,7 +77,6 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
         {
             class: 'w-24',
             componentName: ComponentName.Select,
-            id: '1',
             onChange: (val: string) => {
                 onConfigChange?.({ type: val });
             },
@@ -88,20 +87,19 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
 
     return (
         <ChartContainer
-            body={
-                <ReactEChartsCore
-                    echarts={echarts}
-                    onChartReady={() => resizeEChart(chartRef)}
-                    option={option}
-                    ref={chartRef}
-                    style={{ height: '92%', width: '100%' }}
-                />
-            }
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
             selects={selects}
             title={`Z Score - ${tf} (UTC)`}
-        />
+        >
+            <ReactEChartsCore
+                echarts={echarts}
+                onChartReady={() => resizeEChart(chartRef)}
+                option={option}
+                ref={chartRef}
+                style={{ height: '92%', width: '100%' }}
+            />
+        </ChartContainer>
     );
 };
 

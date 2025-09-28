@@ -11,7 +11,7 @@ export const ComponentName = {
 export type ComponentName = (typeof ComponentName)[keyof typeof ComponentName];
 
 export type ChartContainerProps = {
-    body: ReactNode;
+    children: ReactNode;
     title: string;
     selects?: {
         componentName: ComponentName;
@@ -25,7 +25,7 @@ export type ChartContainerProps = {
 };
 
 const ChartContainer = (props: ChartContainerProps) => {
-    const { body, selects, title, onAddClick, onRemoveClick } = props;
+    const { children, selects, title, onAddClick, onRemoveClick } = props;
 
     return (
         <div className="border-4 border-slate-800 rounded-sm h-full">
@@ -53,7 +53,7 @@ const ChartContainer = (props: ChartContainerProps) => {
                     })}
                 </div>
             </div>
-            {body}
+            {children}
         </div>
     );
 };

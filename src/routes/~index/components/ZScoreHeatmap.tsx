@@ -42,13 +42,9 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
     ];
 
     return (
-        <ChartContainer
-            body={<CSHeatmap data={heatmap.data} visualMax={2} visualMin={-2} />}
-            onAddClick={onAddClick}
-            onRemoveClick={onRemoveClick}
-            selects={selects}
-            title="Z Score Heatmap"
-        />
+        <ChartContainer onAddClick={onAddClick} onRemoveClick={onRemoveClick} selects={selects} title="Z Score Heatmap">
+            <CSHeatmap data={heatmap.data} visualMax={2} visualMin={-2} />
+        </ChartContainer>
     );
 };
 

@@ -44,13 +44,9 @@ const ZScoreScatter = (props: ScatterProps) => {
     ];
 
     return (
-        <ChartContainer
-            body={<CSScatter data={scatterData || []} xAxis={xAxis} yAxis={yAxis} />}
-            onAddClick={onAddClick}
-            onRemoveClick={onRemoveClick}
-            selects={selects}
-            title="Z Score"
-        />
+        <ChartContainer onAddClick={onAddClick} onRemoveClick={onRemoveClick} selects={selects} title="Z Score">
+            <CSScatter data={scatterData || []} xAxis={xAxis} yAxis={yAxis} />
+        </ChartContainer>
     );
 };
 
