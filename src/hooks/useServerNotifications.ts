@@ -3,12 +3,12 @@ import { useEffect, useRef, useState } from 'react';
 
 import env from '@/config/env';
 
-const SocketMessageTypes = {
+const SocketMessageType = {
     ZscoreUpdated: 'zscore_updated',
     CorrelationsUpdated: 'correlations_updated',
 } as const;
 
-type SocketMessageType = (typeof SocketMessageTypes)[keyof typeof SocketMessageTypes];
+type SocketMessageType = (typeof SocketMessageType)[keyof typeof SocketMessageType];
 
 interface SocketMessage {
     type: SocketMessageType;
@@ -189,14 +189,13 @@ export function useServerNotifications(options: UseServerNotificationsOptions) {
 
             debounceTimeoutRef.current = setTimeout(() => {
                 switch (message.type) {
-                    case SocketMessageTypes.ZscoreUpdated:
+                    case SocketMessageType.ZscoreUpdated:
                         void queryClient.invalidateQueries({ queryKey: ['z-score-matrix'] });
                         void queryClient.invalidateQueries({ queryKey: ['z-score-heatmap'] });
                         void queryClient.invalidateQueries({ queryKey: ['z-score-history'] });
                         break;
 
-                    case SocketMessageTypes.CorrelationsUpdated:
-                        console.log('CORRELATIONS UPDATED');
+                    case SocketMessageType.CorrelationsUpdated:
                         void queryClient.invalidateQueries({ queryKey: ['pearson-correlation'] });
                         break;
 
