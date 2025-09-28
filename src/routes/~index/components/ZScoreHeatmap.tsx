@@ -26,7 +26,6 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
     const selects = [
         {
             componentName: ComponentName.Select,
-            id: '1',
             onChange: (hours: string) => {
                 onConfigChange?.({ hours });
             },
@@ -36,7 +35,6 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
         {
             class: 'w-24',
             componentName: ComponentName.Select,
-            id: '2',
             onChange: setSelectedType,
             options: typeOptions,
             value: selectedType,

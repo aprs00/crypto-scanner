@@ -17,11 +17,11 @@ import {
 
 const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
     useQuery({
-        gcTime: 120_000,
+        gcTime: 60_000,
         queryFn: async () => (await api.get<AveragePriceChangeResponse>('average-prices', { params })).data,
         queryKey: ['average-prices', params],
-        refetchInterval: 120_000,
-        staleTime: 120_000,
+        refetchInterval: 60_000,
+        staleTime: 60_000,
     });
 
 const useBetaHeatmapData = (params: HeatmapParams) =>
@@ -52,7 +52,6 @@ const useBootstrap = () =>
     useQuery({
         queryFn: async () => (await api.get<BootstrapResponse>('bootstrap')).data,
         queryKey: ['bootstrap'],
-        staleTime: Infinity,
     });
 
 export {

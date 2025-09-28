@@ -10,8 +10,6 @@ export const ComponentName = {
 
 export type ComponentName = (typeof ComponentName)[keyof typeof ComponentName];
 
-const StringCSSelect = CSSelect<string>;
-
 export type ChartContainerProps = {
     body: ReactNode;
     title: string;
@@ -44,7 +42,7 @@ const ChartContainer = (props: ChartContainerProps) => {
                     {selects?.map((select, idx) => {
                         if (select.componentName !== ComponentName.Select) return null;
                         return (
-                            <StringCSSelect
+                            <CSSelect<string>
                                 classes={select.class}
                                 key={idx}
                                 onChange={select.onChange}
