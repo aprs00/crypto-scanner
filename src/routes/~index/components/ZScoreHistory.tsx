@@ -80,7 +80,7 @@ const ZScoreHistory = (props: ZScoreHistoryProps) => {
             onChange: (val: string) => {
                 onConfigChange?.({ type: val });
             },
-            options: hoursOptions || [],
+            options: hoursOptions,
             value: type,
         },
     ];
