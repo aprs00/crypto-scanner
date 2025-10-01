@@ -1,5 +1,5 @@
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from '@headlessui/react';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 
 import SelectIcon from './SelectIcon';
 
@@ -10,12 +10,20 @@ export type SelectProps<T = string> = {
     onChange: Dispatch<SetStateAction<T>> | ((value: T) => void);
 };
 
+const SHOW_SEARCH_LIMIT = 12;
+
 const CSSelect = <T = string,>(props: SelectProps<T>) => {
     const { classes = 'w-20', onChange, options, value } = props;
+    const [searchQuery, setSearchQuery] = useState('');
 
     const normalizedOptions = Array.isArray(options)
         ? options.map((item) => ({ label: String(item), value: item }))
         : Object.entries(options).map(([key, val]) => ({ label: key, value: val.toString() as T }));
+
+    const showSearch = normalizedOptions.length > SHOW_SEARCH_LIMIT;
+    const filteredOptions = showSearch
+        ? normalizedOptions.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
+        : normalizedOptions;
 
     return (
         <Listbox onChange={onChange} value={value}>
@@ -37,6 +45,7 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
                     </ListboxButton>
 
                     <Transition
+                        afterLeave={() => setSearchQuery('')}
                         enter="transition ease-out duration-100"
                         enterFrom="transform opacity-0 scale-95"
                         enterTo="transform opacity-100 scale-100"
@@ -46,23 +55,33 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
                         show={open}
                     >
                         <div className="relative z-99">
-                            <ListboxOptions className="bg-slate-800 rounded-xs absolute w-full px-1 py-1 mt-2 border border-slate-600 flex flex-col gap-0.5">
-                                {normalizedOptions.map((item) => (
+                            <ListboxOptions
+                                className={`bg-slate-800 rounded-xs absolute right-0 w-fit min-w-full px-1 mt-2 border border-slate-600 flex flex-col gap-0.5 max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full ${showSearch ? 'py-0' : 'py-1'}`}
+                            >
+                                {showSearch && (
+                                    <div className="px-1 pb-1 pt-1 sticky top-0 bg-slate-800 z-10 w-32 -mx-1 -mt-1 mb-0.5">
+                                        <input
+                                            className="w-full px-2 py-1 bg-slate-900 border border-slate-600 rounded-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-slate-500"
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            placeholder="Search..."
+                                            type="text"
+                                            value={searchQuery}
+                                        />
+                                    </div>
+                                )}
+                                {filteredOptions.map((item) => (
                                     <ListboxOption
                                         className="cursor-pointer hover:bg-slate-900 rounded-xs gap-2"
                                         key={String(item.value)}
                                         value={item.value}
                                     >
                                         {({ selected }) => {
+                                            const optionClass = `${selected ? 'bg-slate-900' : ''} px-2 py-0.5 rounded-sm grow`;
+
                                             return (
-                                                <div
-                                                    className={`${
-                                                        selected ? 'bg-slate-900' : ''
-                                                    } px-2 py-0.5 rounded-sm grow`}
-                                                >
+                                                <div className={optionClass}>
                                                     <div className="flex justify-between">
                                                         <span className={`block truncate relative`}>{item.label}</span>
-                                                        {/* <span>{selected ? <CheckIcon /> : null}</span> */}
                                                     </div>
                                                 </div>
                                             );
