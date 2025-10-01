@@ -10,7 +10,7 @@ export type SelectProps<T = string> = {
     onChange: Dispatch<SetStateAction<T>> | ((value: T) => void);
 };
 
-const SHOW_SEARCH_LIMIT = 12;
+const SHOW_SEARCH_LIMIT = 16;
 
 const CSSelect = <T = string,>(props: SelectProps<T>) => {
     const { classes = 'w-20', onChange, options, value } = props;
@@ -29,13 +29,13 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
         <Listbox onChange={onChange} value={value}>
             {({ open }) => (
                 <div className={classes}>
-                    <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 h-8 text-left relative cursor-pointer">
-                        <div className="flex items-center">
+                    <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 h-8 text-left relative cursor-pointer focus:outline-none">
+                        <div className="flex items-center pr-3.5">
                             {normalizedOptions
                                 ?.filter((option) => value === option.value)
                                 .map((option) => (
-                                    <div className="flex items-center" key={String(option.value)}>
-                                        <span className="text-slate-200">{option.label}</span>
+                                    <div className="flex items-center truncate" key={String(option.value)}>
+                                        <span className="text-slate-200 truncate">{option.label}</span>
                                     </div>
                                 ))}
                         </div>
@@ -56,10 +56,10 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
                     >
                         <div className="relative z-99">
                             <ListboxOptions
-                                className={`bg-slate-800 rounded-xs absolute right-0 w-fit min-w-full px-1 mt-2 border border-slate-600 flex flex-col gap-0.5 max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full ${showSearch ? 'py-0' : 'py-1'}`}
+                                className={`bg-slate-800 rounded-xs absolute right-0 w-fit min-w-full px-1 mt-2 border border-slate-600 flex flex-col gap-0.5 max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full focus:outline-none ${showSearch ? 'py-0' : 'py-1'}`}
                             >
                                 {showSearch && (
-                                    <div className="px-1 pb-1 pt-1 sticky top-0 bg-slate-800 z-10 w-32 -mx-1 -mt-1 mb-0.5">
+                                    <div className="px-1 pb-1 pt-1 sticky top-0 bg-slate-800 z-10 -mx-1 -mt-1 mb-0.5">
                                         <input
                                             className="w-full px-2 py-1 bg-slate-900 border border-slate-600 rounded-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-slate-500"
                                             onChange={(e) => setSearchQuery(e.target.value)}

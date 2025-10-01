@@ -68,7 +68,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     {...commonProps}
                     hours={savedLayout.hours || '168'}
                     symbol={savedLayout.symbol || 'BTCUSDT'}
-                    tickerOptions={bootstrap.data?.tickers || []}
+                    symbolOptions={bootstrap.data?.symbols || []}
                     timeFrameOptions={bootstrap.data?.hours_options.average_price || {}}
                     type="day"
                 />
@@ -79,7 +79,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     {...commonProps}
                     hours={savedLayout.hours || '168'}
                     symbol={savedLayout.symbol || 'BTCUSDT'}
-                    tickerOptions={bootstrap.data?.tickers || []}
+                    symbolOptions={bootstrap.data?.symbols || []}
                     timeFrameOptions={bootstrap.data?.hours_options.average_price || {}}
                     type="hour"
                 />

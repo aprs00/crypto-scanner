@@ -40,7 +40,7 @@ export type AveragePriceChangeResponse = {
 export type BootstrapResponse = {
     data_types: string[];
     hours_options: Record<string, Record<string, string>>;
-    tickers: string[];
+    symbols: string[];
 };
 
 export type ZScoreHistoryResponse = {

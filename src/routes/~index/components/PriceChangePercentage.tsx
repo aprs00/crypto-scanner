@@ -14,7 +14,7 @@ export type PriceChangePercentageProps = {
     hours: string;
     symbol: string;
     timeFrameOptions: Record<string, string>;
-    tickerOptions: string[];
+    symbolOptions: string[];
     type: 'day' | 'hour';
     onAddClick?: () => void;
     onRemoveClick?: () => void;
@@ -22,7 +22,7 @@ export type PriceChangePercentageProps = {
 };
 
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
-    const { symbol, hours, tickerOptions, timeFrameOptions, type, onAddClick, onRemoveClick, onConfigChange } = props;
+    const { symbol, hours, symbolOptions, timeFrameOptions, type, onAddClick, onRemoveClick, onConfigChange } = props;
 
     const chartRef = useRef<ReactEChartsCore | null>(null);
 
@@ -43,12 +43,12 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
             value: hours,
         },
         {
-            class: 'w-28',
+            class: 'w-32',
             componentName: ComponentName.Select,
             onChange: (symbol: string) => {
                 onConfigChange?.({ symbol });
             },
-            options: tickerOptions,
+            options: symbolOptions,
             value: symbol,
         },
     ];
