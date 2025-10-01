@@ -36,8 +36,8 @@ const ChartContainer = (props: ChartContainerProps) => {
                 </div>
 
                 <div className="z-50 flex gap-2 flex-wrap justify-end flex-shrink-0 max-w-[200px] md:max-w-[300px]">
-                    {onAddClick && <IconButton label="+" onClick={onAddClick} />}
                     {onRemoveClick && <IconButton label="-" onClick={onRemoveClick} />}
+                    {onAddClick && <IconButton label="+" onClick={onAddClick} />}
 
                     {selects?.map((select, idx) => {
                         if (select.componentName !== ComponentName.Select) return null;
