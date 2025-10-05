@@ -30,6 +30,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
             value: hours,
         },
         {
+            class: 'w-24',
             componentName: ComponentName.Select,
             onChange: (type: string) => {
                 onConfigChange?.({ type });

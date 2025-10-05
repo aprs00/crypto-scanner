@@ -17,11 +17,7 @@ export type ScatterProps = {
 const ZScoreScatter = (props: ScatterProps) => {
     const { hours, hoursOptions, xAxis, yAxis, onAddClick, onRemoveClick, onConfigChange } = props;
 
-    const zScoreScatter = useZScoreScatter({
-        hours,
-        xAxis,
-        yAxis,
-    });
+    const zScoreScatter = useZScoreScatter({ hours, xAxis, yAxis });
 
     const scatterData: echarts.SeriesOption[] =
         zScoreScatter.data?.map((item) => ({
