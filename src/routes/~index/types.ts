@@ -27,6 +27,13 @@ export type ZScoreHeatmapParams = {
     hours: string;
 };
 
+export type CorrelationPairHistoryParams = {
+    symbol1: string;
+    symbol2: string;
+    type: string;
+    hours: string;
+};
+
 export type AveragePriceChangeResponse = {
     data: {
         value: number;
@@ -53,11 +60,17 @@ export type ZScoreHistoryResponse = {
     xAxis: string[];
 };
 
+export type CorrelationPairHistoryResponse = {
+    history: [number, string][];
+};
+
 export interface ChartConfig {
     hours?: string;
     xAxis?: string;
     yAxis?: string;
     symbol?: string;
+    symbol1?: string;
+    symbol2?: string;
     type?: string;
 }
 
@@ -68,6 +81,7 @@ export const ChartType = {
     ZScoreHeatmap: 'zScoreHeatmap',
     PriceChangePercentageDay: 'priceChangePercentageDay',
     PriceChangePercentageHour: 'priceChangePercentageHour',
+    CorrelationPairHistory: 'correlationPairHistory',
 } as const;
 
 export type ChartType = (typeof ChartType)[keyof typeof ChartType];

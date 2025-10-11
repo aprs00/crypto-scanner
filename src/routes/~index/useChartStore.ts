@@ -11,24 +11,28 @@ export const chartTemplates: Record<ChartType, ChartTemplate> = {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: 0, i: '1' },
         type: 'betaHeatmap',
     },
+    correlationPairHistory: {
+        gridLayout: { h: 12, w: 12, x: 0, y: CHART_HEIGHT, i: '2' },
+        type: 'correlationPairHistory',
+    },
     scatter: {
-        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT, i: '2' },
+        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2, i: '3' },
         type: 'scatter',
     },
     zScoreHistory: {
-        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2, i: '3' },
+        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 3, i: '4' },
         type: 'zScoreHistory',
     },
     zScoreHeatmap: {
-        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: 0, i: '4' },
+        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4, i: '5' },
         type: 'zScoreHeatmap',
     },
     priceChangePercentageDay: {
-        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 3, i: '5' },
+        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 5, i: '6' },
         type: 'priceChangePercentageDay',
     },
     priceChangePercentageHour: {
-        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4, i: '6' },
+        gridLayout: { h: 20, w: 12, x: 0, y: CHART_HEIGHT * 6, i: '7' },
         type: 'priceChangePercentageHour',
     },
 };
@@ -53,6 +57,7 @@ const useChartStore = create<ChartStore>()(
                 { type: 'zScoreHeatmap', id: crypto.randomUUID() },
                 { type: 'priceChangePercentageDay', id: crypto.randomUUID() },
                 { type: 'priceChangePercentageHour', id: crypto.randomUUID() },
+                { type: 'correlationPairHistory', id: crypto.randomUUID() },
             ],
             savedGridLayouts: {},
             addChart: (type) => {

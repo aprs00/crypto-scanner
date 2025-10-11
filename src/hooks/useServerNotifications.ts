@@ -197,6 +197,7 @@ export function useServerNotifications(options: UseServerNotificationsOptions) {
 
                     case SocketMessageType.CorrelationsUpdated:
                         void queryClient.invalidateQueries({ queryKey: ['pearson-correlation'] });
+                        void queryClient.invalidateQueries({ queryKey: ['correlation-pair-history'] });
                         break;
 
                     default:

@@ -13,6 +13,8 @@ import {
     ZScoreHistoryResponse,
     ZScoreScatterParams,
     BootstrapResponse,
+    CorrelationPairHistoryParams,
+    CorrelationPairHistoryResponse,
 } from './types';
 
 const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
@@ -54,6 +56,13 @@ const useBootstrap = () =>
         queryKey: ['bootstrap'],
     });
 
+const useCorrelationPairHistory = (params: CorrelationPairHistoryParams) =>
+    useQuery({
+        queryFn: async () =>
+            (await api.get<CorrelationPairHistoryResponse>('correlation-pair-history', { params })).data,
+        queryKey: ['correlation-pair-history', params],
+    });
+
 export {
     useBetaHeatmapData,
     usePriceChangePercentage,
@@ -61,4 +70,5 @@ export {
     useZScoreHeatmap,
     useZScoreScatter,
     useBootstrap,
+    useCorrelationPairHistory,
 };

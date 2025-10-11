@@ -29,13 +29,13 @@ const ChartContainer = (props: ChartContainerProps) => {
 
     return (
         <div className="border-4 border-slate-800 rounded-sm h-full">
-            <div className="flex justify-between items-center w-full pb-1 bg-slate-800 gap-1">
-                <div className="flex items-center flex-shrink">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center w-full pb-1 bg-slate-800 gap-2 md:gap-1">
+                <div className="flex items-center flex-shrink-0 min-w-0">
                     <DraggableIcon className="size-6 flex-shrink-0" id="drag-handle" />
-                    <span className="ml-0.5">{title}</span>
+                    <span className="ml-0.5 truncate">{title}</span>
                 </div>
 
-                <div className="z-50 flex gap-2 flex-wrap justify-end flex-shrink-0 max-w-[200px] md:max-w-[300px]">
+                <div className="z-50 flex gap-2 flex-wrap justify-end md:justify-end items-center flex-1">
                     {onRemoveClick && <IconButton label="-" onClick={onRemoveClick} />}
                     {onAddClick && <IconButton label="+" onClick={onAddClick} />}
 

@@ -2,6 +2,7 @@ import { useBootstrap } from '../api';
 import { ChartType, type ChartConfig, type ChartItem, type GridLayout } from '../types';
 import useChartStore from '../useChartStore';
 import BetaHeatmap from './BetaHeatmap';
+import CorrelationPairHistory from './CorrelationPairHistory';
 import PriceChangePercentage from './PriceChangePercentage';
 import ZScoreHeatmap from './ZScoreHeatmap';
 import ZScoreHistory from './ZScoreHistory';
@@ -82,6 +83,19 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     symbolOptions={bootstrap.data?.symbols || []}
                     timeFrameOptions={bootstrap.data?.hours_options.average_price || {}}
                     type="hour"
+                />
+            );
+        case ChartType.CorrelationPairHistory:
+            return (
+                <CorrelationPairHistory
+                    {...commonProps}
+                    hours={savedLayout.hours || '4'}
+                    hoursOptions={bootstrap.data?.hours_options.correlation || {}}
+                    symbol1={savedLayout.symbol1 || 'BTCUSDT'}
+                    symbol2={savedLayout.symbol2 || 'SOLUSDT'}
+                    symbolOptions={bootstrap.data?.symbols || []}
+                    type={savedLayout.type || 'price'}
+                    typeOptions={bootstrap.data?.data_types || []}
                 />
             );
         default:
