@@ -101,7 +101,6 @@ export interface ChartItem {
 
 export interface ChartTemplate {
     gridLayout: Layout;
-    type: ChartType;
 }
 
 export interface GridLayout extends ChartConfig {

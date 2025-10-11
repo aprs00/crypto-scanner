@@ -9,27 +9,21 @@ export const CHART_HEIGHT = 25;
 export const chartTemplates: Record<ChartType, ChartTemplate> = {
     [ChartType.BetaHeatmap]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: 0, i: '1' },
-        type: ChartType.BetaHeatmap,
     },
     [ChartType.CorrelationPairHistory]: {
         gridLayout: { h: 12, w: 12, x: 0, y: CHART_HEIGHT, i: '2' },
-        type: ChartType.CorrelationPairHistory,
     },
     [ChartType.Scatter]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2, i: '3' },
-        type: ChartType.Scatter,
     },
     [ChartType.ZScoreHeatmap]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4, i: '5' },
-        type: ChartType.ZScoreHeatmap,
     },
     [ChartType.PriceChangePercentageDay]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 5, i: '6' },
-        type: ChartType.PriceChangePercentageDay,
     },
     [ChartType.PriceChangePercentageHour]: {
         gridLayout: { h: 20, w: 12, x: 0, y: CHART_HEIGHT * 6, i: '7' },
-        type: ChartType.PriceChangePercentageHour,
     },
 };
 
@@ -76,7 +70,6 @@ const useChartStore = create<ChartStore>()(
                 set((state) => ({
                     savedGridLayouts: {
                         ...state.savedGridLayouts,
-                        // [key]: layout,
                         [key]: {
                             ...state.savedGridLayouts[key],
                             layout,
@@ -106,7 +99,25 @@ const useChartStore = create<ChartStore>()(
                 });
             },
         }),
-        { name: 'chart-layout' },
+        {
+            name: 'chart-layout',
+            onRehydrateStorage: () => (state) => {
+                if (!state) return;
+
+                const allChartTypes = Object.values(ChartType);
+                const existingChartTypes = new Set(state.chartIds.map((chart) => chart.type));
+                const missingChartTypes = allChartTypes.filter((type) => !existingChartTypes.has(type));
+
+                if (missingChartTypes.length === 0) return;
+
+                const newCharts = missingChartTypes.map((type) => ({
+                    type,
+                    id: crypto.randomUUID(),
+                }));
+
+                state.chartIds = [...state.chartIds, ...newCharts];
+            },
+        },
     ),
 );
 
