@@ -41,11 +41,6 @@ export type ZScoreScatterParams = {
     hours: string;
 };
 
-export type ZScoreHistoryParams = {
-    type: string;
-    duration: string;
-};
-
 export type ZScoreHeatmapParams = {
     type: string;
     hours: string;
@@ -74,16 +69,6 @@ export type BootstrapResponse = {
     symbols: string[];
 };
 
-export type ZScoreHistoryResponse = {
-    legend: string[];
-    data: {
-        name: string;
-        stack: string;
-        data: number[];
-    }[];
-    xAxis: string[];
-};
-
 export type CorrelationPairHistoryResponse = {
     history: [number, string][];
 };
@@ -101,7 +86,6 @@ export interface ChartConfig {
 export const ChartType = {
     BetaHeatmap: 'betaHeatmap',
     Scatter: 'scatter',
-    ZScoreHistory: 'zScoreHistory',
     ZScoreHeatmap: 'zScoreHeatmap',
     PriceChangePercentageDay: 'priceChangePercentageDay',
     PriceChangePercentageHour: 'priceChangePercentageHour',

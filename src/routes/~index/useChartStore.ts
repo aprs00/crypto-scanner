@@ -19,10 +19,6 @@ export const chartTemplates: Record<ChartType, ChartTemplate> = {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2, i: '3' },
         type: ChartType.Scatter,
     },
-    [ChartType.ZScoreHistory]: {
-        gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 3, i: '4' },
-        type: ChartType.ZScoreHistory,
-    },
     [ChartType.ZScoreHeatmap]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4, i: '5' },
         type: ChartType.ZScoreHeatmap,

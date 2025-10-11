@@ -8,9 +8,7 @@ import {
     AveragePriceChangeParams,
     AveragePriceChangeResponse,
     HeatmapParams,
-    ZScoreHistoryParams,
     ZScoreHeatmapParams,
-    ZScoreHistoryResponse,
     ZScoreScatterParams,
     BootstrapResponse,
     CorrelationPairHistoryParams,
@@ -38,12 +36,6 @@ const useZScoreScatter = (params: ZScoreScatterParams) =>
         queryKey: ['z-score-matrix', params],
     });
 
-const useZScoreHistory = (params: ZScoreHistoryParams) =>
-    useQuery({
-        queryFn: async () => (await api.get<ZScoreHistoryResponse>('z-score-history', { params })).data,
-        queryKey: ['z-score-history', params],
-    });
-
 const useZScoreHeatmap = (params: ZScoreHeatmapParams) =>
     useQuery({
         queryFn: async () => (await api.get<GridHeatmapResponse>('z-score-heatmap', { params })).data,
@@ -66,7 +58,6 @@ const useCorrelationPairHistory = (params: CorrelationPairHistoryParams) =>
 export {
     useBetaHeatmapData,
     usePriceChangePercentage,
-    useZScoreHistory,
     useZScoreHeatmap,
     useZScoreScatter,
     useBootstrap,

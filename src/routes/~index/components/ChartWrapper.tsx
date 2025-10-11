@@ -97,8 +97,6 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     typeOptions={bootstrap.data?.data_types || []}
                 />
             );
-        default:
-            return null;
     }
 };
 
