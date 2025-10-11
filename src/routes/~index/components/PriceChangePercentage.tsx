@@ -8,14 +8,14 @@ import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
 import { usePriceChangePercentage } from '../api';
-import { ChartConfig } from '../types';
+import { ChartConfig, TimePeriodType } from '../types';
 
 export type PriceChangePercentageProps = {
     hours: string;
     symbol: string;
     timeFrameOptions: Record<string, string>;
     symbolOptions: string[];
-    type: 'day' | 'hour';
+    type: TimePeriodType;
     onAddClick?: () => void;
     onRemoveClick?: () => void;
     onConfigChange?: (config: ChartConfig) => void;

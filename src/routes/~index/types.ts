@@ -1,9 +1,33 @@
 import { type Layout } from 'react-grid-layout';
 
+export const HoursOptionCategory = {
+    Correlation: 'correlation',
+    CorrelationPair: 'correlation_pair',
+    ZScore: 'zscore',
+    AveragePrice: 'average_price',
+} as const;
+
+export type HoursOptionCategory = (typeof HoursOptionCategory)[keyof typeof HoursOptionCategory];
+
+export const DataType = {
+    Price: 'price',
+    Volume: 'volume',
+    Trades: 'trades',
+} as const;
+
+export type DataType = (typeof DataType)[keyof typeof DataType];
+
+export const TimePeriodType = {
+    Day: 'day',
+    Hour: 'hour',
+} as const;
+
+export type TimePeriodType = (typeof TimePeriodType)[keyof typeof TimePeriodType];
+
 export type AveragePriceChangeParams = {
     hours: string;
     symbol: string;
-    type: string;
+    type: TimePeriodType;
 };
 
 export type HeatmapParams = {

@@ -2,38 +2,38 @@ import { type Layout } from 'react-grid-layout';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { ChartConfig, ChartItem, ChartType, ChartTemplate, GridLayout } from './types';
+import { ChartType, type ChartConfig, type ChartItem, type ChartTemplate, type GridLayout } from './types';
 
 export const CHART_HEIGHT = 25;
 
 export const chartTemplates: Record<ChartType, ChartTemplate> = {
-    betaHeatmap: {
+    [ChartType.BetaHeatmap]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: 0, i: '1' },
-        type: 'betaHeatmap',
+        type: ChartType.BetaHeatmap,
     },
-    correlationPairHistory: {
+    [ChartType.CorrelationPairHistory]: {
         gridLayout: { h: 12, w: 12, x: 0, y: CHART_HEIGHT, i: '2' },
-        type: 'correlationPairHistory',
+        type: ChartType.CorrelationPairHistory,
     },
-    scatter: {
+    [ChartType.Scatter]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2, i: '3' },
-        type: 'scatter',
+        type: ChartType.Scatter,
     },
-    zScoreHistory: {
+    [ChartType.ZScoreHistory]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 3, i: '4' },
-        type: 'zScoreHistory',
+        type: ChartType.ZScoreHistory,
     },
-    zScoreHeatmap: {
+    [ChartType.ZScoreHeatmap]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4, i: '5' },
-        type: 'zScoreHeatmap',
+        type: ChartType.ZScoreHeatmap,
     },
-    priceChangePercentageDay: {
+    [ChartType.PriceChangePercentageDay]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 5, i: '6' },
-        type: 'priceChangePercentageDay',
+        type: ChartType.PriceChangePercentageDay,
     },
-    priceChangePercentageHour: {
+    [ChartType.PriceChangePercentageHour]: {
         gridLayout: { h: 20, w: 12, x: 0, y: CHART_HEIGHT * 6, i: '7' },
-        type: 'priceChangePercentageHour',
+        type: ChartType.PriceChangePercentageHour,
     },
 };
 
@@ -51,13 +51,12 @@ const useChartStore = create<ChartStore>()(
     persist(
         (set, get) => ({
             chartIds: [
-                { type: 'betaHeatmap', id: crypto.randomUUID() },
-                { type: 'scatter', id: crypto.randomUUID() },
-                // { type: 'zScoreHistory', id: crypto.randomUUID() },
-                { type: 'zScoreHeatmap', id: crypto.randomUUID() },
-                { type: 'priceChangePercentageDay', id: crypto.randomUUID() },
-                { type: 'priceChangePercentageHour', id: crypto.randomUUID() },
-                { type: 'correlationPairHistory', id: crypto.randomUUID() },
+                { type: ChartType.BetaHeatmap, id: crypto.randomUUID() },
+                { type: ChartType.Scatter, id: crypto.randomUUID() },
+                { type: ChartType.ZScoreHeatmap, id: crypto.randomUUID() },
+                { type: ChartType.PriceChangePercentageDay, id: crypto.randomUUID() },
+                { type: ChartType.PriceChangePercentageHour, id: crypto.randomUUID() },
+                { type: ChartType.CorrelationPairHistory, id: crypto.randomUUID() },
             ],
             savedGridLayouts: {},
             addChart: (type) => {

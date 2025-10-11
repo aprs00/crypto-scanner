@@ -1,11 +1,18 @@
 import { useBootstrap } from '../api';
-import { ChartType, type ChartConfig, type ChartItem, type GridLayout } from '../types';
+import {
+    ChartType,
+    DataType,
+    HoursOptionCategory,
+    TimePeriodType,
+    type ChartConfig,
+    type ChartItem,
+    type GridLayout,
+} from '../types';
 import useChartStore from '../useChartStore';
 import BetaHeatmap from './BetaHeatmap';
 import CorrelationPairHistory from './CorrelationPairHistory';
 import PriceChangePercentage from './PriceChangePercentage';
 import ZScoreHeatmap from './ZScoreHeatmap';
-import ZScoreHistory from './ZScoreHistory';
 import Scatter from './ZScoreScatter';
 
 const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: GridLayout }) => {
@@ -30,8 +37,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                 <BetaHeatmap
                     {...commonProps}
                     hours={savedLayout.hours || '4'}
-                    hoursOptions={bootstrap.data?.hours_options.correlation || {}}
-                    type={savedLayout.type || 'price'}
+                    hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.Correlation] || {}}
+                    type={savedLayout.type || DataType.Price}
                     typeOptions={bootstrap.data?.data_types || []}
                 />
             );
@@ -40,17 +47,9 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                 <Scatter
                     {...commonProps}
                     hours={savedLayout.hours || '4'}
-                    hoursOptions={bootstrap.data?.hours_options.zscore || {}}
-                    xAxis={savedLayout.xAxis || 'price'}
-                    yAxis={savedLayout.yAxis || 'volume'}
-                />
-            );
-        case ChartType.ZScoreHistory:
-            return (
-                <ZScoreHistory
-                    {...commonProps}
-                    hoursOptions={bootstrap.data?.hours_options.zscore || {}}
-                    type={savedLayout.type || 'price'}
+                    hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
+                    xAxis={savedLayout.xAxis || DataType.Price}
+                    yAxis={savedLayout.yAxis || DataType.Volume}
                 />
             );
         case ChartType.ZScoreHeatmap:
@@ -58,8 +57,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                 <ZScoreHeatmap
                     {...commonProps}
                     hours={savedLayout.hours || '4'}
-                    hoursOptions={bootstrap.data?.hours_options.zscore || {}}
-                    type="price"
+                    hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
+                    type={savedLayout.type || DataType.Price}
                     typeOptions={bootstrap.data?.data_types || []}
                 />
             );
@@ -70,8 +69,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     hours={savedLayout.hours || '168'}
                     symbol={savedLayout.symbol || 'BTCUSDT'}
                     symbolOptions={bootstrap.data?.symbols || []}
-                    timeFrameOptions={bootstrap.data?.hours_options.average_price || {}}
-                    type="day"
+                    timeFrameOptions={bootstrap.data?.hours_options[HoursOptionCategory.AveragePrice] || {}}
+                    type={TimePeriodType.Day}
                 />
             );
         case ChartType.PriceChangePercentageHour:
@@ -81,20 +80,20 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     hours={savedLayout.hours || '168'}
                     symbol={savedLayout.symbol || 'BTCUSDT'}
                     symbolOptions={bootstrap.data?.symbols || []}
-                    timeFrameOptions={bootstrap.data?.hours_options.average_price || {}}
-                    type="hour"
+                    timeFrameOptions={bootstrap.data?.hours_options[HoursOptionCategory.AveragePrice] || {}}
+                    type={TimePeriodType.Hour}
                 />
             );
         case ChartType.CorrelationPairHistory:
             return (
                 <CorrelationPairHistory
                     {...commonProps}
-                    hours={savedLayout.hours || '4'}
-                    hoursOptions={bootstrap.data?.hours_options.correlation || {}}
+                    hours={savedLayout.hours || '1'}
+                    hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.CorrelationPair] || {}}
                     symbol1={savedLayout.symbol1 || 'BTCUSDT'}
                     symbol2={savedLayout.symbol2 || 'SOLUSDT'}
                     symbolOptions={bootstrap.data?.symbols || []}
-                    type={savedLayout.type || 'price'}
+                    type={savedLayout.type || DataType.Price}
                     typeOptions={bootstrap.data?.data_types || []}
                 />
             );
