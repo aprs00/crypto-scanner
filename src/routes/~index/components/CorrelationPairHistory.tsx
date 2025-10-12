@@ -70,9 +70,13 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
             },
             trigger: 'axis',
             formatter: (params: any) => {
-                const param = params[0];
-                const date = format(subMinutes(new Date(param.value[0]), 1), 'M/d/yyyy h:mm a');
-                return `${param.marker}${date}<br/>Correlation: <strong>${param.value[1]}</strong>`;
+                const date = format(subMinutes(new Date(params[0].value[0]), 1), 'M/d/yyyy h:mm a');
+                const lines = params
+                    .map((param: any) => {
+                        return `${param.marker}${param.seriesName}: <strong>${param.value[1]}</strong>`;
+                    })
+                    .join('<br/>');
+                return `${date}<br/>${lines}`;
             },
         },
         xAxis: {
