@@ -89,7 +89,9 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                 <CorrelationPairHistory
                     {...commonProps}
                     baseSymbol={savedLayout.baseSymbol || 'BTCUSDT'}
-                    comparisonSymbols={savedLayout.comparisonSymbols || ['SOLUSDT']}
+                    comparisonSymbols={
+                        savedLayout.comparisonSymbols || ['ETHUSDT', 'ADAUSDT', 'XRPUSDT', 'SOLUSDT', 'RUNEUSDT']
+                    }
                     dataType={savedLayout.dataType || DataType.Price}
                     hours={savedLayout.hours || '1'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.CorrelationPair] || {}}

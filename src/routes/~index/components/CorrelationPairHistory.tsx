@@ -150,7 +150,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
         >
             <ReactEChartsCore
                 echarts={echarts}
-                notMerge={false}
+                notMerge={true}
                 onChartReady={() => resizeEChart(chartRef)}
                 option={option}
                 ref={chartRef}
