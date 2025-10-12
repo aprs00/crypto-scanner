@@ -1,6 +1,6 @@
 import type { EChartsOption } from 'echarts';
 
-import { format } from 'date-fns';
+import { format, subMinutes } from 'date-fns';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
@@ -70,7 +70,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
             trigger: 'axis',
             formatter: (params: any) => {
                 const param = params[0];
-                const date = format(new Date(param.value[0]), 'M/d/yyyy h:mm a');
+                const date = format(subMinutes(new Date(param.value[0]), 1), 'M/d/yyyy h:mm a');
                 return `${param.marker}${date}<br/>Correlation: <strong>${param.value[1]}</strong>`;
             },
         },
