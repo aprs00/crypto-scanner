@@ -15,18 +15,19 @@ export type PriceChangePercentageProps = {
     symbol: string;
     timeFrameOptions: Record<string, string>;
     symbolOptions: string[];
-    type: TimePeriodType;
+    periodType: TimePeriodType;
     onAddClick?: () => void;
     onRemoveClick?: () => void;
     onConfigChange?: (config: ChartConfig) => void;
 };
 
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
-    const { symbol, hours, symbolOptions, timeFrameOptions, type, onAddClick, onRemoveClick, onConfigChange } = props;
+    const { symbol, hours, symbolOptions, timeFrameOptions, periodType, onAddClick, onRemoveClick, onConfigChange } =
+        props;
 
     const chartRef = useRef<ReactEChartsCore | null>(null);
 
-    const priceChangePercentageApi = usePriceChangePercentage({ hours, symbol, type });
+    const priceChangePercentageApi = usePriceChangePercentage({ hours, symbol, type: periodType });
 
     const titleMapper = {
         day: 'Price change per day of week',
@@ -92,7 +93,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
             selects={selects}
-            title={titleMapper[type]}
+            title={titleMapper[periodType]}
         >
             <ReactEChartsCore
                 echarts={echarts}

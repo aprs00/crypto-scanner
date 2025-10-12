@@ -9,7 +9,7 @@ import { useZScoreHeatmap } from '../api';
 
 export type ZScoreHeatmapProps = {
     hours: string;
-    type: string;
+    dataType: string;
     typeOptions: string[];
     hoursOptions: Record<string, string>;
     onAddClick?: () => void;
@@ -18,10 +18,10 @@ export type ZScoreHeatmapProps = {
 };
 
 const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
-    const { hours, type, typeOptions, hoursOptions, onAddClick, onRemoveClick, onConfigChange } = props;
+    const { hours, dataType, typeOptions, hoursOptions, onAddClick, onRemoveClick, onConfigChange } = props;
 
-    const [selectedType, setSelectedType] = useState(type);
-    const heatmap = useZScoreHeatmap({ type: selectedType, hours });
+    const [selectedDataType, setSelectedDataType] = useState(dataType);
+    const heatmap = useZScoreHeatmap({ type: selectedDataType, hours });
 
     const selects = [
         {
@@ -35,9 +35,9 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
         {
             class: 'w-24',
             componentName: ComponentName.Select,
-            onChange: setSelectedType,
+            onChange: setSelectedDataType,
             options: typeOptions,
-            value: selectedType,
+            value: selectedDataType,
         },
     ];
 

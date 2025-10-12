@@ -7,7 +7,7 @@ import { useBetaHeatmapData } from '../api';
 
 export type BetaHeatmapProps = {
     hours: string;
-    type: string;
+    dataType: string;
     hoursOptions: Record<string, string>;
     typeOptions: string[];
     onAddClick?: () => void;
@@ -16,9 +16,9 @@ export type BetaHeatmapProps = {
 };
 
 const BetaHeatmap = (props: BetaHeatmapProps) => {
-    const { hours, type, hoursOptions, typeOptions, onAddClick, onRemoveClick, onConfigChange } = props;
+    const { hours, dataType, hoursOptions, typeOptions, onAddClick, onRemoveClick, onConfigChange } = props;
 
-    const betaHeatmap = useBetaHeatmapData({ hours, type });
+    const betaHeatmap = useBetaHeatmapData({ hours, type: dataType });
 
     const selects = [
         {
@@ -32,11 +32,11 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
         {
             class: 'w-24',
             componentName: ComponentName.Select,
-            onChange: (type: string) => {
-                onConfigChange?.({ type });
+            onChange: (dataType: string) => {
+                onConfigChange?.({ type: dataType });
             },
             options: typeOptions,
-            value: type,
+            value: dataType,
         },
     ];
 

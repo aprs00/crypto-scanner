@@ -14,7 +14,7 @@ import { ChartConfig } from '../types';
 export type CorrelationPairHistoryProps = {
     symbol1: string;
     symbol2: string;
-    type: string;
+    dataType: string;
     hours: string;
     hoursOptions: Record<string, string>;
     typeOptions: string[];
@@ -28,7 +28,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     const {
         symbol1,
         symbol2,
-        type,
+        dataType,
         hours,
         hoursOptions,
         typeOptions,
@@ -43,7 +43,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     const correlationPairHistory = useCorrelationPairHistory({
         symbol1,
         symbol2,
-        type,
+        type: dataType,
         hours,
     });
 
@@ -137,7 +137,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 onConfigChange?.({ type: val });
             },
             options: typeOptions,
-            value: type,
+            value: dataType,
         },
     ];
 
