@@ -13,22 +13,22 @@ import { useCorrelationPairHistory } from '../api';
 import { ChartConfig, DataType } from '../types';
 
 export type CorrelationPairHistoryProps = {
-    symbol1: string;
-    symbol2: string;
+    baseSymbol: string;
+    comparisonSymbols: string[];
     dataType: DataType;
     hours: string;
     hoursOptions: Record<string, string>;
     typeOptions: Array<DataType>;
     symbolOptions: string[];
-    onAddClick?: () => void;
+    onAddClick: () => void;
     onRemoveClick?: () => void;
-    onConfigChange?: (config: ChartConfig) => void;
+    onConfigChange: (config: ChartConfig) => void;
 };
 
 const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     const {
-        symbol1,
-        symbol2,
+        baseSymbol,
+        comparisonSymbols,
         dataType,
         hours,
         hoursOptions,
@@ -42,28 +42,28 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     const chartRef = useRef<ReactEChartsCore | null>(null);
 
     const correlationPairHistory = useCorrelationPairHistory({
-        symbol1,
-        symbol2,
+        baseSymbol,
+        comparisonSymbols,
         type: dataType,
         hours,
     });
 
     const option: EChartsOption = {
         grid: {
-            bottom: '15',
-            containLabel: true,
-            left: '5',
-            right: '5',
+            bottom: '40',
+            left: '50',
+            right: '20',
             top: '15',
         },
-        series: [
-            {
-                data: correlationPairHistory.data?.history,
+        series:
+            correlationPairHistory.data?.history.map((data, index) => ({
+                name: comparisonSymbols[index],
+                data: data,
                 smooth: true,
                 type: 'line',
                 symbol: 'circle',
-            },
-        ],
+                visible: false,
+            })) || [],
         tooltip: {
             axisPointer: {
                 type: 'line',
@@ -108,23 +108,24 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
         <>
             <CSSelect<string>
                 classes="w-32"
-                onChange={(symbol1: string) => {
-                    onConfigChange?.({ symbol1 });
+                onChange={(baseSymbol: string) => {
+                    onConfigChange({ baseSymbol });
                 }}
                 options={symbolOptions}
-                value={symbol1}
+                value={baseSymbol}
             />
             <CSSelect<string>
                 classes="w-32"
-                onChange={(symbol2: string) => {
-                    onConfigChange?.({ symbol2 });
+                multiple
+                onChange={(comparisonSymbols: string[]) => {
+                    onConfigChange({ comparisonSymbols });
                 }}
                 options={symbolOptions}
-                value={symbol2}
+                value={comparisonSymbols}
             />
             <CSSelect<string>
                 onChange={(hours: string) => {
-                    onConfigChange?.({ hours });
+                    onConfigChange({ hours });
                 }}
                 options={hoursOptions}
                 value={hours}
@@ -132,7 +133,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
             <CSSelect<DataType>
                 classes="w-24"
                 onChange={(dataType: DataType) => {
-                    onConfigChange?.({ dataType });
+                    onConfigChange({ dataType });
                 }}
                 options={typeOptions}
                 value={dataType}
@@ -149,6 +150,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
         >
             <ReactEChartsCore
                 echarts={echarts}
+                notMerge={false}
                 onChartReady={() => resizeEChart(chartRef)}
                 option={option}
                 ref={chartRef}

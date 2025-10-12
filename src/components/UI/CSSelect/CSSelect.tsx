@@ -3,17 +3,26 @@ import { Dispatch, SetStateAction, useState } from 'react';
 
 import SelectIcon from './SelectIcon';
 
-export type SelectProps<T = string> = {
-    options: Record<string, string> | T[];
-    value: T;
-    classes?: string;
-    onChange: Dispatch<SetStateAction<T>> | ((value: T) => void);
-};
+export type SelectProps<T = string> =
+    | {
+          options: Record<string, string> | T[];
+          value: T;
+          classes?: string;
+          onChange: Dispatch<SetStateAction<T>> | ((value: T) => void);
+          multiple?: false;
+      }
+    | {
+          options: Record<string, string> | T[];
+          value: T[];
+          classes?: string;
+          onChange: Dispatch<SetStateAction<T[]>> | ((value: T[]) => void);
+          multiple: true;
+      };
 
 const SHOW_SEARCH_LIMIT = 16;
 
 const CSSelect = <T = string,>(props: SelectProps<T>) => {
-    const { classes = 'w-20', onChange, options, value } = props;
+    const { classes = 'w-20', onChange, options, value, multiple = false } = props;
     const [searchQuery, setSearchQuery] = useState('');
 
     const normalizedOptions = Array.isArray(options)
@@ -25,20 +34,28 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
         ? normalizedOptions.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
         : normalizedOptions;
 
+    const displayValue = () => {
+        if (multiple && Array.isArray(value)) {
+            if (value.length === 0) {
+                return <span className="text-slate-400">Select...</span>;
+            }
+            if (value.length === 1) {
+                const option = normalizedOptions.find((opt) => opt.value === value[0]);
+                return <span className="text-slate-200 truncate">{option?.label}</span>;
+            }
+            return <span className="text-slate-200 truncate">{value.length} selected</span>;
+        } else {
+            const option = normalizedOptions.find((opt) => opt.value === value);
+            return <span className="text-slate-200 truncate">{option?.label}</span>;
+        }
+    };
+
     return (
-        <Listbox onChange={onChange} value={value}>
+        <Listbox multiple={multiple} onChange={onChange as any} value={value}>
             {({ open }) => (
                 <div className={classes}>
                     <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 h-8 text-left relative cursor-pointer focus:outline-none">
-                        <div className="flex items-center pr-3.5">
-                            {normalizedOptions
-                                ?.filter((option) => value === option.value)
-                                .map((option) => (
-                                    <div className="flex items-center truncate" key={String(option.value)}>
-                                        <span className="text-slate-200 truncate">{option.label}</span>
-                                    </div>
-                                ))}
-                        </div>
+                        <div className="flex items-center pr-3.5">{displayValue()}</div>
                         <span className="absolute inset-y-0 right-0 flex items-center pr-1 pointer-events-none">
                             <SelectIcon />
                         </span>
@@ -80,7 +97,15 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
 
                                             return (
                                                 <div className={optionClass}>
-                                                    <div className="flex justify-between">
+                                                    <div className="flex justify-between items-center">
+                                                        {multiple && (
+                                                            <input
+                                                                checked={selected}
+                                                                className="mr-2 cursor-pointer"
+                                                                readOnly
+                                                                type="checkbox"
+                                                            />
+                                                        )}
                                                         <span className={`block truncate relative`}>{item.label}</span>
                                                     </div>
                                                 </div>

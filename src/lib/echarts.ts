@@ -8,6 +8,7 @@ import {
     TitleComponent,
     TooltipComponent,
     VisualMapComponent,
+    ToolboxComponent,
 } from 'echarts/components';
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
@@ -26,6 +27,7 @@ echarts.use([
     TitleComponent,
     TooltipComponent,
     VisualMapComponent,
+    ToolboxComponent,
     CanvasRenderer,
 ]);
 

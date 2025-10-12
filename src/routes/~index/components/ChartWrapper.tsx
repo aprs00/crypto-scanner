@@ -88,11 +88,11 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <CorrelationPairHistory
                     {...commonProps}
+                    baseSymbol={savedLayout.baseSymbol || 'BTCUSDT'}
+                    comparisonSymbols={savedLayout.comparisonSymbols || ['SOLUSDT']}
                     dataType={savedLayout.dataType || DataType.Price}
                     hours={savedLayout.hours || '1'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.CorrelationPair] || {}}
-                    symbol1={savedLayout.symbol1 || 'BTCUSDT'}
-                    symbol2={savedLayout.symbol2 || 'SOLUSDT'}
                     symbolOptions={bootstrap.data?.symbols || []}
                     typeOptions={bootstrap.data?.data_types || []}
                 />

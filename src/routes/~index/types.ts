@@ -47,8 +47,8 @@ export type ZScoreHeatmapParams = {
 };
 
 export type CorrelationPairHistoryParams = {
-    symbol1: string;
-    symbol2: string;
+    baseSymbol: string;
+    comparisonSymbols: string[];
     type: string;
     hours: string;
 };
@@ -70,7 +70,7 @@ export type BootstrapResponse = {
 };
 
 export type CorrelationPairHistoryResponse = {
-    history: [number, string][];
+    history: [number, string][][];
 };
 
 export interface ChartConfig {
@@ -78,8 +78,8 @@ export interface ChartConfig {
     xAxis?: string;
     yAxis?: string;
     symbol?: string;
-    symbol1?: string;
-    symbol2?: string;
+    baseSymbol?: string;
+    comparisonSymbols?: string[];
     dataType?: DataType;
     periodType?: TimePeriodType;
 }
