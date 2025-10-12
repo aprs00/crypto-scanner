@@ -1,1 +1,1 @@
-export { default, ComponentName, type ChartContainerProps } from './ChartContainer';
+export { default, type ChartContainerProps } from './ChartContainer';

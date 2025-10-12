@@ -1,5 +1,6 @@
-import ChartContainer, { ComponentName } from '@/components/Charts/ChartContainer';
+import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
+import CSSelect from '@/components/UI/CSSelect';
 
 import { useZScoreScatter } from '../api';
 import { ChartConfig } from '../types';
@@ -28,19 +29,20 @@ const ZScoreScatter = (props: ScatterProps) => {
             emphasis: { scale: 1.6 },
         })) || [];
 
-    const selects = [
-        {
-            componentName: ComponentName.Select,
-            onChange: (hours: string) => {
-                onConfigChange?.({ hours });
-            },
-            options: hoursOptions,
-            value: hours,
-        },
-    ];
+    const controls = (
+        <>
+            <CSSelect<string>
+                onChange={(hours: string) => {
+                    onConfigChange?.({ hours });
+                }}
+                options={hoursOptions}
+                value={hours}
+            />
+        </>
+    );
 
     return (
-        <ChartContainer onAddClick={onAddClick} onRemoveClick={onRemoveClick} selects={selects} title="Z Score">
+        <ChartContainer controls={controls} onAddClick={onAddClick} onRemoveClick={onRemoveClick} title="Z Score">
             <CSScatter data={scatterData || []} xAxis={xAxis} yAxis={yAxis} />
         </ChartContainer>
     );

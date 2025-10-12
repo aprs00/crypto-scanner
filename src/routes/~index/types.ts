@@ -64,7 +64,7 @@ export type AveragePriceChangeResponse = {
 };
 
 export type BootstrapResponse = {
-    data_types: string[];
+    data_types: Array<DataType>;
     hours_options: Record<string, Record<string, string>>;
     symbols: string[];
 };
@@ -80,7 +80,8 @@ export interface ChartConfig {
     symbol?: string;
     symbol1?: string;
     symbol2?: string;
-    type?: string;
+    dataType?: DataType;
+    periodType?: TimePeriodType;
 }
 
 export const ChartType = {

@@ -1,16 +1,17 @@
 import { useState } from 'react';
 
-import ChartContainer, { ComponentName } from '@/components/Charts/ChartContainer';
+import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
+import CSSelect from '@/components/UI/CSSelect';
 
-import type { ChartConfig } from '../types';
+import type { ChartConfig, DataType } from '../types';
 
 import { useZScoreHeatmap } from '../api';
 
 export type ZScoreHeatmapProps = {
     hours: string;
-    dataType: string;
-    typeOptions: string[];
+    dataType: DataType;
+    typeOptions: Array<DataType>;
     hoursOptions: Record<string, string>;
     onAddClick?: () => void;
     onRemoveClick?: () => void;
@@ -20,29 +21,34 @@ export type ZScoreHeatmapProps = {
 const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
     const { hours, dataType, typeOptions, hoursOptions, onAddClick, onRemoveClick, onConfigChange } = props;
 
-    const [selectedDataType, setSelectedDataType] = useState(dataType);
+    const [selectedDataType, setSelectedDataType] = useState<DataType>(dataType);
     const heatmap = useZScoreHeatmap({ type: selectedDataType, hours });
 
-    const selects = [
-        {
-            componentName: ComponentName.Select,
-            onChange: (hours: string) => {
-                onConfigChange?.({ hours });
-            },
-            options: hoursOptions,
-            value: hours,
-        },
-        {
-            class: 'w-24',
-            componentName: ComponentName.Select,
-            onChange: setSelectedDataType,
-            options: typeOptions,
-            value: selectedDataType,
-        },
-    ];
+    const controls = (
+        <>
+            <CSSelect<string>
+                onChange={(hours: string) => {
+                    onConfigChange?.({ hours });
+                }}
+                options={hoursOptions}
+                value={hours}
+            />
+            <CSSelect<DataType>
+                classes="w-24"
+                onChange={setSelectedDataType}
+                options={typeOptions}
+                value={selectedDataType}
+            />
+        </>
+    );
 
     return (
-        <ChartContainer onAddClick={onAddClick} onRemoveClick={onRemoveClick} selects={selects} title="Z Score Heatmap">
+        <ChartContainer
+            controls={controls}
+            onAddClick={onAddClick}
+            onRemoveClick={onRemoveClick}
+            title="Z Score Heatmap"
+        >
             <CSHeatmap data={heatmap.data} visualMax={2} visualMin={-2} />
         </ChartContainer>
     );

@@ -3,7 +3,8 @@ import type { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
-import ChartContainer, { ComponentName } from '@/components/Charts/ChartContainer';
+import ChartContainer from '@/components/Charts/ChartContainer';
+import CSSelect from '@/components/UI/CSSelect';
 import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
@@ -34,25 +35,25 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         hour: 'Price change per hour of day (UTC)',
     };
 
-    const selects = [
-        {
-            componentName: ComponentName.Select,
-            onChange: (hours: string) => {
-                onConfigChange?.({ hours });
-            },
-            options: timeFrameOptions,
-            value: hours,
-        },
-        {
-            class: 'w-32',
-            componentName: ComponentName.Select,
-            onChange: (symbol: string) => {
-                onConfigChange?.({ symbol });
-            },
-            options: symbolOptions,
-            value: symbol,
-        },
-    ];
+    const controls = (
+        <>
+            <CSSelect<string>
+                onChange={(hours: string) => {
+                    onConfigChange?.({ hours });
+                }}
+                options={timeFrameOptions}
+                value={hours}
+            />
+            <CSSelect<string>
+                classes="w-32"
+                onChange={(symbol: string) => {
+                    onConfigChange?.({ symbol });
+                }}
+                options={symbolOptions}
+                value={symbol}
+            />
+        </>
+    );
 
     const option: EChartsOption = {
         grid: { bottom: 60, left: 45, right: 20, top: 20 },
@@ -90,9 +91,9 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
 
     return (
         <ChartContainer
+            controls={controls}
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
-            selects={selects}
             title={titleMapper[periodType]}
         >
             <ReactEChartsCore

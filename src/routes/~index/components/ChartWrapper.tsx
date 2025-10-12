@@ -36,7 +36,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <BetaHeatmap
                     {...commonProps}
-                    dataType={savedLayout.type || DataType.Price}
+                    dataType={savedLayout.dataType || DataType.Price}
                     hours={savedLayout.hours || '4'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.Correlation] || {}}
                     typeOptions={bootstrap.data?.data_types || []}
@@ -56,7 +56,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <ZScoreHeatmap
                     {...commonProps}
-                    dataType={savedLayout.type || DataType.Price}
+                    dataType={savedLayout.dataType || DataType.Price}
                     hours={savedLayout.hours || '4'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
                     typeOptions={bootstrap.data?.data_types || []}
@@ -88,7 +88,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <CorrelationPairHistory
                     {...commonProps}
-                    dataType={savedLayout.type || DataType.Price}
+                    dataType={savedLayout.dataType || DataType.Price}
                     hours={savedLayout.hours || '1'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.CorrelationPair] || {}}
                     symbol1={savedLayout.symbol1 || 'BTCUSDT'}

@@ -4,20 +4,21 @@ import { format, subMinutes } from 'date-fns';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
-import ChartContainer, { ComponentName } from '@/components/Charts/ChartContainer';
+import ChartContainer from '@/components/Charts/ChartContainer';
+import CSSelect from '@/components/UI/CSSelect';
 import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
 import { useCorrelationPairHistory } from '../api';
-import { ChartConfig } from '../types';
+import { ChartConfig, DataType } from '../types';
 
 export type CorrelationPairHistoryProps = {
     symbol1: string;
     symbol2: string;
-    dataType: string;
+    dataType: DataType;
     hours: string;
     hoursOptions: Record<string, string>;
-    typeOptions: string[];
+    typeOptions: Array<DataType>;
     symbolOptions: string[];
     onAddClick?: () => void;
     onRemoveClick?: () => void;
@@ -103,49 +104,47 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
         },
     };
 
-    const selects = [
-        {
-            class: 'w-32',
-            componentName: ComponentName.Select,
-            onChange: (val: string) => {
-                onConfigChange?.({ symbol1: val });
-            },
-            options: symbolOptions,
-            value: symbol1,
-        },
-        {
-            class: 'w-32',
-            componentName: ComponentName.Select,
-            onChange: (val: string) => {
-                onConfigChange?.({ symbol2: val });
-            },
-            options: symbolOptions,
-            value: symbol2,
-        },
-        {
-            componentName: ComponentName.Select,
-            onChange: (val: string) => {
-                onConfigChange?.({ hours: val });
-            },
-            options: hoursOptions,
-            value: hours,
-        },
-        {
-            class: 'w-24',
-            componentName: ComponentName.Select,
-            onChange: (val: string) => {
-                onConfigChange?.({ type: val });
-            },
-            options: typeOptions,
-            value: dataType,
-        },
-    ];
+    const controls = (
+        <>
+            <CSSelect<string>
+                classes="w-32"
+                onChange={(symbol1: string) => {
+                    onConfigChange?.({ symbol1 });
+                }}
+                options={symbolOptions}
+                value={symbol1}
+            />
+            <CSSelect<string>
+                classes="w-32"
+                onChange={(symbol2: string) => {
+                    onConfigChange?.({ symbol2 });
+                }}
+                options={symbolOptions}
+                value={symbol2}
+            />
+            <CSSelect<string>
+                onChange={(hours: string) => {
+                    onConfigChange?.({ hours });
+                }}
+                options={hoursOptions}
+                value={hours}
+            />
+            <CSSelect<DataType>
+                classes="w-24"
+                onChange={(dataType: DataType) => {
+                    onConfigChange?.({ dataType });
+                }}
+                options={typeOptions}
+                value={dataType}
+            />
+        </>
+    );
 
     return (
         <ChartContainer
+            controls={controls}
             onAddClick={onAddClick}
             onRemoveClick={onRemoveClick}
-            selects={selects}
             title={'Correlation Pair History'}
         >
             <ReactEChartsCore
