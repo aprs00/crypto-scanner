@@ -41,6 +41,13 @@ export type ZScoreScatterParams = {
     hours: string;
 };
 
+export type ZScoreScatter3DParams = {
+    xAxis: string;
+    yAxis: string;
+    zAxis: string;
+    hours: string;
+};
+
 export type ZScoreHeatmapParams = {
     type: string;
     hours: string;
@@ -77,6 +84,7 @@ export interface ChartConfig {
     hours?: string;
     xAxis?: string;
     yAxis?: string;
+    zAxis?: string;
     symbol?: string;
     baseSymbol?: string;
     comparisonSymbols?: string[];
@@ -87,6 +95,7 @@ export interface ChartConfig {
 export const ChartType = {
     BetaHeatmap: 'betaHeatmap',
     Scatter: 'scatter',
+    Scatter3D: 'scatter3D',
     ZScoreHeatmap: 'zScoreHeatmap',
     PriceChangePercentageDay: 'priceChangePercentageDay',
     PriceChangePercentageHour: 'priceChangePercentageHour',

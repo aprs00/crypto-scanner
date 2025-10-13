@@ -14,6 +14,7 @@ import CorrelationPairHistory from './CorrelationPairHistory';
 import PriceChangePercentage from './PriceChangePercentage';
 import ZScoreHeatmap from './ZScoreHeatmap';
 import Scatter from './ZScoreScatter';
+import Scatter3D from './ZScoreScatter3D';
 
 const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: GridLayout }) => {
     const bootstrap = useBootstrap();
@@ -50,6 +51,17 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
                     xAxis={savedLayout.xAxis || DataType.Price}
                     yAxis={savedLayout.yAxis || DataType.Volume}
+                />
+            );
+        case ChartType.Scatter3D:
+            return (
+                <Scatter3D
+                    {...commonProps}
+                    hours={savedLayout.hours || '4'}
+                    hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
+                    xAxis={savedLayout.xAxis || DataType.Price}
+                    yAxis={savedLayout.yAxis || DataType.Volume}
+                    zAxis={savedLayout.zAxis || DataType.Trades}
                 />
             );
         case ChartType.ZScoreHeatmap:

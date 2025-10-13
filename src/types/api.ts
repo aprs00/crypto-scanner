@@ -26,3 +26,8 @@ export type ZScoreScatterResponse = {
     symbol: string;
     data: [number, number];
 };
+
+export type ZScoreScatter3DResponse = {
+    symbol: string;
+    data: [number, number, number];
+};

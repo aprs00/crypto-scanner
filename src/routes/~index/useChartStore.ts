@@ -16,6 +16,9 @@ export const chartTemplates: Record<ChartType, ChartTemplate> = {
     [ChartType.Scatter]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2, i: '3' },
     },
+    [ChartType.Scatter3D]: {
+        gridLayout: { h: 20, w: 12, x: 0, y: CHART_HEIGHT * 3, i: '4' },
+    },
     [ChartType.ZScoreHeatmap]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 4, i: '5' },
     },
