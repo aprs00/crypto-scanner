@@ -53,7 +53,7 @@ const CSScatter3D = (props: Scatter3DProps) => {
             show: true,
             formatter: (params: any) => {
                 const [x, y, z] = params.value;
-                return `<strong>${params.data.name}</strong><br/>${capitalize(xAxis)}: ${x}<br/>${capitalize(yAxis)}: ${y}<br/>${capitalize(zAxis)}: ${z}`;
+                return `${params.marker}<strong>${params.data.name}</strong><br/>${capitalize(xAxis)}: ${x}<br/>${capitalize(yAxis)}: ${y}<br/>${capitalize(zAxis)}: ${z}`;
             },
         },
         series: [
