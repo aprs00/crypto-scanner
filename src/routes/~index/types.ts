@@ -33,6 +33,7 @@ export type AveragePriceChangeParams = {
 export type HeatmapParams = {
     hours: string;
     type: string;
+    symbols?: string[];
 };
 
 export type ZScoreScatterParams = {
@@ -74,6 +75,7 @@ export type BootstrapResponse = {
     data_types: Array<DataType>;
     hours_options: Record<string, Record<string, string>>;
     symbols: string[];
+    market_cap_symbols: string[];
 };
 
 export type CorrelationPairHistoryResponse = {
@@ -88,6 +90,7 @@ export interface ChartConfig {
     symbol?: string;
     baseSymbol?: string;
     comparisonSymbols?: string[];
+    symbols?: string[];
     dataType?: DataType;
     periodType?: TimePeriodType;
 }

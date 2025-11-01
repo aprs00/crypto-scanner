@@ -40,6 +40,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     dataType={savedLayout.dataType || DataType.Price}
                     hours={savedLayout.hours || '4'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.Correlation] || {}}
+                    symbolOptions={bootstrap.data?.symbols || []}
+                    symbols={savedLayout.symbols ?? bootstrap.data?.market_cap_symbols ?? []}
                     typeOptions={bootstrap.data?.data_types || []}
                 />
             );
