@@ -93,9 +93,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
             type: 'time',
         },
         yAxis: {
-            axisLabel: {
-                formatter: (value: number) => value.toFixed(2),
-            },
+            axisLabel: {},
             max: 1,
             min: -1,
             splitLine: {

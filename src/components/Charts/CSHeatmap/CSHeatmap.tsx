@@ -47,7 +47,7 @@ function CSHeatmap(props: HeatmapProps) {
                 const dataIndex = i * valuesPerYAxis + j;
                 const value = data.data[dataIndex];
 
-                matrix.push([j, i, Math.round(value * 100) / 100]);
+                matrix.push([j, i, value]);
             }
         }
 
@@ -64,7 +64,7 @@ function CSHeatmap(props: HeatmapProps) {
                 const value = data.data[index];
 
                 if (value !== undefined && value !== null && !isNaN(value)) {
-                    matrix.push([i, j, Math.round(value * 100) / 100]);
+                    matrix.push([i, j, value]);
                 }
             }
         }
