@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import type {
     CorrelationHeatmapResponse,
@@ -24,6 +24,7 @@ import {
 const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
     useQuery({
         gcTime: 60_000,
+        placeholderData: keepPreviousData,
         queryFn: async () => (await api.get<AveragePriceChangeResponse>('average-prices', { params })).data,
         queryKey: ['average-prices', params],
         refetchInterval: 60_000,
@@ -32,24 +33,28 @@ const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
 
 const useBetaHeatmapData = (params: HeatmapParams) =>
     useQuery({
+        placeholderData: keepPreviousData,
         queryFn: async () => (await api.get<CorrelationHeatmapResponse>('pearson-correlation', { params })).data,
         queryKey: ['pearson-correlation', params],
     });
 
 const useZScoreScatter = (params: ZScoreScatterParams) =>
     useQuery({
+        placeholderData: keepPreviousData,
         queryFn: async () => (await api.get<ZScoreScatterResponse[]>('z-score-matrix', { params })).data,
         queryKey: ['z-score-matrix', params],
     });
 
 const useZScoreScatter3D = (params: ZScoreScatter3DParams) =>
     useQuery({
+        placeholderData: keepPreviousData,
         queryFn: async () => (await api.get<ZScoreScatter3DResponse[]>('z-score-matrix', { params })).data,
         queryKey: ['z-score-matrix-3d', params],
     });
 
 const useZScoreHeatmap = (params: ZScoreHeatmapParams) =>
     useQuery({
+        placeholderData: keepPreviousData,
         queryFn: async () => (await api.get<GridHeatmapResponse>('z-score-heatmap', { params })).data,
         queryKey: ['z-score-heatmap', params],
     });
@@ -62,6 +67,7 @@ const useBootstrap = () =>
 
 const useCorrelationPairHistory = (params: CorrelationPairHistoryParams) =>
     useQuery({
+        placeholderData: keepPreviousData,
         queryFn: async () =>
             (await api.get<CorrelationPairHistoryResponse>('correlation-pair-history', { params })).data,
         queryKey: ['correlation-pair-history', params],
