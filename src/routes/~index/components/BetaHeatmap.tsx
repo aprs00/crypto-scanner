@@ -42,6 +42,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
                     onConfigChange?.({ symbols: nextSymbols });
                 }}
                 options={symbolOptions}
+                title="Select symbols"
                 value={symbols}
             />
             <CSSelect<string>

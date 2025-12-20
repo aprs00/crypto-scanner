@@ -42,12 +42,11 @@ export type CSMultiSelectModalProps<T = string> = {
     value: T[];
     classes?: string;
     onChange: (value: T[]) => void;
-    placeholder?: string;
-    title?: string;
+    title: string;
 };
 
 const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>) => {
-    const { classes = 'w-32', onChange, options, value, placeholder = 'Select...', title = 'Select items' } = props;
+    const { classes = 'w-32', onChange, options, value, title } = props;
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -80,7 +79,7 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
         setSearchQuery('');
     };
 
-    const displayValue = (value.length === 0 && <span className="text-slate-400">{placeholder}</span>) ||
+    const displayValue = (value.length === 0 && <span className="text-slate-400">Select...</span>) ||
         (value.length === 1 && <span className="text-slate-200 truncate">{value[0]}</span>) || (
             <span className="text-slate-200 truncate">{value.length} selected</span>
         );

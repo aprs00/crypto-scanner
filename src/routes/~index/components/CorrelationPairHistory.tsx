@@ -122,6 +122,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                     onConfigChange({ comparisonSymbols });
                 }}
                 options={symbolOptions}
+                title="Select comparison symbols"
                 value={comparisonSymbols}
             />
             <CSSelect<string>
