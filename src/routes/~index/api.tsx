@@ -34,7 +34,7 @@ const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
 const useBetaHeatmapData = (params: HeatmapParams) =>
     useQuery({
         placeholderData: keepPreviousData,
-        queryFn: async () => (await api.get<CorrelationHeatmapResponse>('pearson-correlation', { params })).data,
+        queryFn: async () => (await api.post<CorrelationHeatmapResponse>('pearson-correlation', params)).data,
         queryKey: ['pearson-correlation', params],
     });
 
@@ -68,8 +68,7 @@ const useBootstrap = () =>
 const useCorrelationPairHistory = (params: CorrelationPairHistoryParams) =>
     useQuery({
         placeholderData: keepPreviousData,
-        queryFn: async () =>
-            (await api.get<CorrelationPairHistoryResponse>('correlation-pair-history', { params })).data,
+        queryFn: async () => (await api.post<CorrelationPairHistoryResponse>('correlation-pair-history', params)).data,
         queryKey: ['correlation-pair-history', params],
     });
 
