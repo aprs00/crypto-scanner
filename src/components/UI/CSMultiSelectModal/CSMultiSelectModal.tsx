@@ -10,32 +10,27 @@ type OptionsSectionProps<T> = {
     onToggle: (option: T) => void;
 };
 
-const OptionsSection = <T extends string>({ label, options, isSelected, onToggle }: OptionsSectionProps<T>) => {
-    if (options.length === 0) return null;
-    return (
-        <div className="p-2">
-            <div className="text-xs text-slate-500 px-2 pb-1">{label}</div>
-            {options.map((option) => (
-                <button
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xs hover:bg-slate-700 cursor-pointer text-left"
-                    key={String(option)}
-                    onClick={() => onToggle(option)}
-                    type="button"
-                >
-                    <input
-                        checked={isSelected}
-                        className={`cursor-pointer w-4 h-4 ${isSelected ? 'accent-blue-500' : ''}`}
-                        readOnly
-                        type="checkbox"
-                    />
-                    <span className={`truncate ${isSelected ? 'text-slate-200' : 'text-slate-400'}`}>
-                        {String(option)}
-                    </span>
-                </button>
-            ))}
-        </div>
-    );
-};
+const OptionsSection = <T extends string>({ label, options, isSelected, onToggle }: OptionsSectionProps<T>) => (
+    <div className="p-2">
+        <div className="text-xs text-slate-500 px-2 pb-1">{label}</div>
+        {options.map((option) => (
+            <button
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-xs hover:bg-slate-700 cursor-pointer text-left"
+                key={String(option)}
+                onClick={() => onToggle(option)}
+                type="button"
+            >
+                <input
+                    checked={isSelected}
+                    className={`cursor-pointer w-4 h-4 ${isSelected ? 'accent-blue-500' : ''}`}
+                    readOnly
+                    type="checkbox"
+                />
+                <span className={`truncate ${isSelected ? 'text-slate-200' : 'text-slate-400'}`}>{String(option)}</span>
+            </button>
+        ))}
+    </div>
+);
 
 export type CSMultiSelectModalProps<T = string> = {
     options: T[];
