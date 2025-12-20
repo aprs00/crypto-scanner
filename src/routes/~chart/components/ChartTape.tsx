@@ -12,16 +12,16 @@ const ChartTape = () => {
     const [tapeData, setTapeData] = useState<TapeStateType[]>([]);
 
     const tapeTable = tapeData.map((data) => (
-        <div
-            className="flex justify-between text-xs px-1 py-px"
-            key={data.aggregateTradeId}
-            style={{
-                color: data.market ? 'rgba(0, 215, 9, 1)' : 'rgba(215, 6, 6, 1)',
-            }}
-        >
+        <div className="flex justify-between text-xs px-1 py-px" key={data.aggregateTradeId}>
             <div>{formatNumber(parseFloat(data.price), {})}</div>
-            <div>{formatNumber(parseFloat(data.size), { maximumFractionDigits: 8 })}</div>
-            <div className="text-xs">{new Date().toLocaleTimeString()}</div>
+            <div
+                style={{
+                    color: data.market ? 'rgba(0, 215, 9, 1)' : 'rgba(215, 6, 6, 1)',
+                }}
+            >
+                {formatNumber(parseFloat(data.size), { maximumFractionDigits: 8 })}
+            </div>
+            <div>{new Date().toLocaleTimeString()}</div>
         </div>
     ));
 
