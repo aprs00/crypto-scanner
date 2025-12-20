@@ -1,7 +1,7 @@
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from '@headlessui/react';
 import { Dispatch, SetStateAction, useState } from 'react';
 
-import SelectIcon from './SelectIcon';
+import { SelectIcon } from '@/components/Icons';
 
 export type SelectProps<T = string> =
     | {

@@ -5,6 +5,7 @@ import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
+import CSMultiSelectModal from '@/components/UI/CSMultiSelectModal';
 import CSSelect from '@/components/UI/CSSelect';
 import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
@@ -115,9 +116,8 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 options={symbolOptions}
                 value={baseSymbol}
             />
-            <CSSelect<string>
+            <CSMultiSelectModal
                 classes="w-32"
-                multiple
                 onChange={(comparisonSymbols: string[]) => {
                     onConfigChange({ comparisonSymbols });
                 }}

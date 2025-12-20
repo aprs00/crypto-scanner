@@ -1,7 +1,7 @@
 import { Listbox, ListboxButton, Transition } from '@headlessui/react';
 import { Dispatch, SetStateAction } from 'react';
 
-import XIcon from './XIcon';
+import { XIcon } from '@/components/Icons';
 
 export type MultiSelectProps = {
     options: {

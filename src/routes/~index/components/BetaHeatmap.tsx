@@ -1,5 +1,6 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
+import CSMultiSelectModal from '@/components/UI/CSMultiSelectModal';
 import CSSelect from '@/components/UI/CSSelect';
 
 import type { ChartConfig, DataType } from '../types';
@@ -35,9 +36,8 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
 
     const controls = (
         <>
-            <CSSelect<string>
+            <CSMultiSelectModal
                 classes="w-32"
-                multiple
                 onChange={(nextSymbols: string[]) => {
                     onConfigChange?.({ symbols: nextSymbols });
                 }}

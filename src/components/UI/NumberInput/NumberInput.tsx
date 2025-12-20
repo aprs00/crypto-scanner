@@ -1,7 +1,6 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
-import DownIcon from './DownIcon';
-import UpIcon from './UpIcon';
+import { DownIcon, UpIcon } from '@/components/Icons';
 
 export type NumberInputPropsType = {
     value: number;
