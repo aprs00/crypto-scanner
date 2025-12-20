@@ -74,8 +74,16 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
         onChange(value.filter((v) => !filteredSelected.includes(v)));
     };
 
+    const handleOpen = () => {
+        setIsOpen(true);
+    };
+
     const handleClose = () => {
         setIsOpen(false);
+        setSearchQuery('');
+    };
+
+    const handleClearSearch = () => {
         setSearchQuery('');
     };
 
@@ -89,7 +97,7 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
             {/* Trigger button */}
             <button
                 className={`${classes} rounded-xs border border-slate-500 px-2 h-8 text-left relative cursor-pointer focus:outline-none`}
-                onClick={() => setIsOpen(true)}
+                onClick={handleOpen}
                 type="button"
             >
                 <div className="flex items-center pr-3.5">{displayValue}</div>
@@ -147,7 +155,7 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                         {searchQuery && (
                                             <button
                                                 className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 cursor-pointer"
-                                                onClick={() => setSearchQuery('')}
+                                                onClick={handleClearSearch}
                                                 type="button"
                                             >
                                                 <XIcon className="w-4 h-4" height={16} width={16} />

@@ -10,6 +10,17 @@ export type NumberInputPropsType = {
 const NumberInput = (props: NumberInputPropsType) => {
     const { onChange, value } = props;
 
+    const handleIncrement = () => {
+        if (value > 1000) return;
+        onChange((value) => Number(value) + 1);
+    };
+
+    const handleDecrement = () => {
+        if (value === 1) return;
+        if (value > 1000) return;
+        onChange((value) => Number(value) - 1);
+    };
+
     const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
         const val = Number(e.target.value);
 
@@ -28,21 +39,10 @@ const NumberInput = (props: NumberInputPropsType) => {
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-1">
                 <div className="flex flex-col pr-px">
-                    <button
-                        onClick={() => {
-                            if (value > 1000) return;
-                            onChange((value) => Number(value) + 1);
-                        }}
-                    >
+                    <button onClick={handleIncrement}>
                         <UpIcon />
                     </button>
-                    <button
-                        onClick={() => {
-                            if (value === 1) return;
-                            if (value > 1000) return;
-                            onChange((value) => Number(value) - 1);
-                        }}
-                    >
+                    <button onClick={handleDecrement}>
                         <DownIcon />
                     </button>
                 </div>
