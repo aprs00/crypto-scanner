@@ -35,6 +35,28 @@ const OrderBookVolumeIndicators = ({ groupedOrderBook, orderBook }: OrderBookVol
     const visibleBidPercentage = visibleTotalVolume > 0 ? (visibleBidVolume / visibleTotalVolume) * 100 : 0;
     const visibleAskPercentage = visibleTotalVolume > 0 ? (visibleAskVolume / visibleTotalVolume) * 100 : 0;
 
+    const renderBarSegment = (side: 'bid' | 'ask', percentage: number, volumeUSD?: number) => {
+        const isBid = side === 'bid';
+
+        return (
+            <div
+                className={`bg-gradient-to-r ${isBid ? 'from-emerald-500 to-emerald-400 justify-start rounded-l-lg' : 'from-orange-500 to-orange-400 justify-end rounded-r-lg'} transition-all duration-300 flex items-center gap-1 overflow-visible`}
+                style={{ width: `${percentage}%` }}
+            >
+                <div className={`relative z-10 flex items-center gap-1 whitespace-nowrap ${isBid ? 'pl-4' : 'pr-4'}`}>
+                    <div className={`text-xs font-medium ${isBid ? 'text-emerald-950' : 'text-orange-950'}`}>
+                        {percentage.toFixed(1)}%
+                    </div>
+                    {volumeUSD !== undefined && (
+                        <div className={`text-xs ${isBid ? 'text-emerald-950' : 'text-orange-950'}`}>
+                            ${formatNumber(volumeUSD, { notation: 'compact', maximumFractionDigits: 2 })}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
     const renderPercentageIndicator = (
         label: string,
         bidPct: number,
@@ -42,47 +64,17 @@ const OrderBookVolumeIndicators = ({ groupedOrderBook, orderBook }: OrderBookVol
         bidVolumeUSD?: number,
         askVolumeUSD?: number,
     ) => (
-        <div className="px-2 pb-1.5">
-            <div className="space-y-2">
-                <span className="text-xs font-semibold text-slate-300">{label}</span>
-                <div className="h-6 bg-gradient-to-r from-slate-800 to-slate-700 rounded-lg overflow-hidden flex shadow-sm">
-                    <div
-                        className="bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-300 flex items-center justify-center gap-1"
-                        style={{ width: `${bidPct}%` }}
-                    >
-                        {bidPct > 10 && (
-                            <div className="flex items-center gap-1">
-                                <div className="text-xs font-medium text-emerald-950">{bidPct.toFixed(1)}%</div>
-                                {bidVolumeUSD !== undefined && (
-                                    <div className="text-xs text-emerald-950">
-                                        ${formatNumber(bidVolumeUSD, { notation: 'compact', maximumFractionDigits: 2 })}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                    <div
-                        className="bg-gradient-to-r from-orange-500 to-orange-400 transition-all duration-300 flex items-center justify-center gap-1"
-                        style={{ width: `${askPct}%` }}
-                    >
-                        {askPct > 10 && (
-                            <div className="flex items-center gap-1">
-                                <div className="text-xs font-medium text-orange-950">{askPct.toFixed(1)}%</div>
-                                {askVolumeUSD !== undefined && (
-                                    <div className="text-xs text-orange-950">
-                                        ${formatNumber(askVolumeUSD, { notation: 'compact', maximumFractionDigits: 2 })}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
+        <div className="space-y-1">
+            <h4 className="text-xs font-bold text-slate-300">{label}</h4>
+            <div className="h-6 bg-gradient-to-r font-medium from-slate-800 to-slate-700 rounded-lg overflow-visible flex shadow-sm">
+                {renderBarSegment('bid', bidPct, bidVolumeUSD)}
+                {renderBarSegment('ask', askPct, askVolumeUSD)}
             </div>
         </div>
     );
 
     return (
-        <>
+        <div className="space-y-2 mb-3 px-1">
             {renderPercentageIndicator(
                 'Total Market',
                 bidPercentage,
@@ -97,7 +89,7 @@ const OrderBookVolumeIndicators = ({ groupedOrderBook, orderBook }: OrderBookVol
                 visibleBidVolumeUSD,
                 visibleAskVolumeUSD,
             )}
-        </>
+        </div>
     );
 };
 
