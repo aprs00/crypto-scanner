@@ -40,7 +40,7 @@ const OrderBookVolumeIndicators = ({ groupedOrderBook, orderBook }: OrderBookVol
 
         return (
             <div
-                className={`bg-gradient-to-r ${isBid ? 'from-emerald-500 to-emerald-400 justify-start rounded-l-lg' : 'from-orange-500 to-orange-400 justify-end rounded-r-lg'} transition-all duration-300 flex items-center gap-1 overflow-visible`}
+                className={`bg-gradient-to-r ${isBid ? 'from-emerald-500 to-emerald-400 justify-start rounded-l-lg' : 'from-orange-500 to-orange-400 justify-end rounded-r-lg'} flex items-center gap-1 overflow-visible transition-[width] duration-500 ease-out`}
                 style={{ width: `${percentage}%` }}
             >
                 <div className={`relative z-10 flex items-center gap-1 whitespace-nowrap ${isBid ? 'pl-4' : 'pr-4'}`}>
