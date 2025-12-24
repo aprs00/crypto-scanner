@@ -41,7 +41,7 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
 
     return (
         <ChartContainer controls={controls} onAddClick={onAddClick} onRemoveClick={onRemoveClick} title="Z Score 3D">
-            <CSScatter3D data={scatterData || []} xAxis={xAxis} yAxis={yAxis} zAxis={zAxis} />
+            <CSScatter3D data={scatterData} xAxis={xAxis} yAxis={yAxis} zAxis={zAxis} />
         </ChartContainer>
     );
 };

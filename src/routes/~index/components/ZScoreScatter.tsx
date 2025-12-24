@@ -1,3 +1,5 @@
+import type { SeriesOption } from 'echarts';
+
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
 import CSSelect from '@/components/UI/CSSelect';
@@ -20,7 +22,7 @@ const ZScoreScatter = (props: ScatterProps) => {
 
     const zScoreScatter = useZScoreScatter({ hours, xAxis, yAxis });
 
-    const scatterData: echarts.SeriesOption[] =
+    const scatterData: SeriesOption[] =
         zScoreScatter.data?.map((item) => ({
             type: 'scatter',
             name: item.symbol,
@@ -43,7 +45,7 @@ const ZScoreScatter = (props: ScatterProps) => {
 
     return (
         <ChartContainer controls={controls} onAddClick={onAddClick} onRemoveClick={onRemoveClick} title="Z Score">
-            <CSScatter data={scatterData || []} xAxis={xAxis} yAxis={yAxis} />
+            <CSScatter data={scatterData} xAxis={xAxis} yAxis={yAxis} />
         </ChartContainer>
     );
 };
