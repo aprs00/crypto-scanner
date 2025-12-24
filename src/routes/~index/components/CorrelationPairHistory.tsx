@@ -110,7 +110,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
         <>
             <CSSelect<string>
                 classes="w-32"
-                onChange={(baseSymbol: string) => {
+                onChange={(baseSymbol) => {
                     onConfigChange({ baseSymbol });
                 }}
                 options={symbolOptions}
@@ -118,7 +118,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
             />
             <CSMultiSelectModal
                 classes="w-32"
-                onChange={(comparisonSymbols: string[]) => {
+                onChange={(comparisonSymbols) => {
                     onConfigChange({ comparisonSymbols });
                 }}
                 options={symbolOptions}
@@ -126,7 +126,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 value={comparisonSymbols}
             />
             <CSSelect<string>
-                onChange={(hours: string) => {
+                onChange={(hours) => {
                     onConfigChange({ hours });
                 }}
                 options={hoursOptions}
@@ -134,7 +134,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
             />
             <CSSelect<DataType>
                 classes="w-24"
-                onChange={(dataType: DataType) => {
+                onChange={(dataType) => {
                     onConfigChange({ dataType });
                 }}
                 options={typeOptions}

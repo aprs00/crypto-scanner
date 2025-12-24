@@ -11,9 +11,9 @@ export type Scatter3DProps = {
     zAxis: string;
     hours: string;
     hoursOptions: Record<string, string>;
-    onAddClick?: () => void;
+    onAddClick: () => void;
     onRemoveClick?: () => void;
-    onConfigChange?: (config: ChartConfig) => void;
+    onConfigChange: (config: ChartConfig) => void;
 };
 
 const ZScoreScatter3D = (props: Scatter3DProps) => {
@@ -30,8 +30,8 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
     const controls = (
         <>
             <CSSelect<string>
-                onChange={(hours: string) => {
-                    onConfigChange?.({ hours });
+                onChange={(hours) => {
+                    onConfigChange({ hours });
                 }}
                 options={hoursOptions}
                 value={hours}

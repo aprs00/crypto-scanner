@@ -1,5 +1,5 @@
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from '@headlessui/react';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 
 import { SelectIcon } from '@/components/Icons';
 
@@ -8,14 +8,14 @@ export type SelectProps<T = string> =
           options: Record<string, string> | T[];
           value: T;
           classes?: string;
-          onChange: Dispatch<SetStateAction<T>> | ((value: T) => void);
+          onChange: (value: T) => void;
           multiple?: false;
       }
     | {
           options: Record<string, string> | T[];
           value: T[];
           classes?: string;
-          onChange: Dispatch<SetStateAction<T[]>> | ((value: T[]) => void);
+          onChange: (value: T[]) => void;
           multiple: true;
       };
 
@@ -51,7 +51,7 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
     };
 
     return (
-        <Listbox multiple={multiple} onChange={onChange as any} value={value}>
+        <Listbox multiple={multiple} onChange={onChange as (value: T | T[]) => void} value={value}>
             {({ open }) => (
                 <div className={classes}>
                     <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 h-8 text-left relative cursor-pointer focus:outline-none">

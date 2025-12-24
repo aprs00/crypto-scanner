@@ -17,9 +17,9 @@ export type PriceChangePercentageProps = {
     timeFrameOptions: Record<string, string>;
     symbolOptions: string[];
     periodType: TimePeriodType;
-    onAddClick?: () => void;
+    onAddClick: () => void;
     onRemoveClick?: () => void;
-    onConfigChange?: (config: ChartConfig) => void;
+    onConfigChange: (config: ChartConfig) => void;
 };
 
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
@@ -38,16 +38,16 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const controls = (
         <>
             <CSSelect<string>
-                onChange={(hours: string) => {
-                    onConfigChange?.({ hours });
+                onChange={(hours) => {
+                    onConfigChange({ hours });
                 }}
                 options={timeFrameOptions}
                 value={hours}
             />
             <CSSelect<string>
                 classes="w-32"
-                onChange={(symbol: string) => {
-                    onConfigChange?.({ symbol });
+                onChange={(symbol) => {
+                    onConfigChange({ symbol });
                 }}
                 options={symbolOptions}
                 value={symbol}

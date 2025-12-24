@@ -14,9 +14,9 @@ export type BetaHeatmapProps = {
     symbolOptions: string[];
     hoursOptions: Record<string, string>;
     typeOptions: Array<DataType>;
-    onAddClick?: () => void;
+    onAddClick: () => void;
     onRemoveClick?: () => void;
-    onConfigChange?: (config: ChartConfig) => void;
+    onConfigChange: (config: ChartConfig) => void;
 };
 
 const BetaHeatmap = (props: BetaHeatmapProps) => {
@@ -38,24 +38,24 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
         <>
             <CSMultiSelectModal
                 classes="w-32"
-                onChange={(nextSymbols: string[]) => {
-                    onConfigChange?.({ symbols: nextSymbols });
+                onChange={(nextSymbols) => {
+                    onConfigChange({ symbols: nextSymbols });
                 }}
                 options={symbolOptions}
                 title="Select symbols"
                 value={symbols}
             />
             <CSSelect<string>
-                onChange={(hours: string) => {
-                    onConfigChange?.({ hours });
+                onChange={(hours) => {
+                    onConfigChange({ hours });
                 }}
                 options={hoursOptions}
                 value={hours}
             />
             <CSSelect<DataType>
                 classes="w-24"
-                onChange={(dataType: DataType) => {
-                    onConfigChange?.({ dataType });
+                onChange={(dataType) => {
+                    onConfigChange({ dataType });
                 }}
                 options={typeOptions}
                 value={dataType}

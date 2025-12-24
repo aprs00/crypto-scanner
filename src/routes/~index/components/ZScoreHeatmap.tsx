@@ -13,9 +13,9 @@ export type ZScoreHeatmapProps = {
     dataType: DataType;
     typeOptions: Array<DataType>;
     hoursOptions: Record<string, string>;
-    onAddClick?: () => void;
+    onAddClick: () => void;
     onRemoveClick?: () => void;
-    onConfigChange?: (config: ChartConfig) => void;
+    onConfigChange: (config: ChartConfig) => void;
 };
 
 const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
@@ -27,8 +27,8 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
     const controls = (
         <>
             <CSSelect<string>
-                onChange={(hours: string) => {
-                    onConfigChange?.({ hours });
+                onChange={(hours) => {
+                    onConfigChange({ hours });
                 }}
                 options={hoursOptions}
                 value={hours}
