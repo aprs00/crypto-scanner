@@ -5,13 +5,16 @@ import { useRef } from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSSelect from '@/components/UI/CSSelect';
+import ExchangeSelector from '@/components/UI/ExchangeSelector';
 import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
 import { usePriceChangePercentage } from '../api';
-import { ChartConfig, TimePeriodType } from '../types';
+import { ContractType, Exchange, ExchangeChartConfig, TimePeriodType } from '../types';
 
 export type PriceChangePercentageProps = {
+    exchange: Exchange;
+    contractType: ContractType;
     hours: string;
     symbol: string;
     timeFrameOptions: Record<string, string>;
@@ -19,16 +22,34 @@ export type PriceChangePercentageProps = {
     periodType: TimePeriodType;
     onAddClick: () => void;
     onRemoveClick?: () => void;
-    onConfigChange: (config: ChartConfig) => void;
+    onExchangeChange: (exchange: Exchange) => void;
+    onConfigChange: (config: ExchangeChartConfig) => void;
 };
 
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
-    const { symbol, hours, symbolOptions, timeFrameOptions, periodType, onAddClick, onRemoveClick, onConfigChange } =
-        props;
+    const {
+        exchange,
+        contractType,
+        symbol,
+        hours,
+        symbolOptions,
+        timeFrameOptions,
+        periodType,
+        onAddClick,
+        onRemoveClick,
+        onExchangeChange,
+        onConfigChange,
+    } = props;
 
     const chartRef = useRef<ReactEChartsCore | null>(null);
 
-    const priceChangePercentageApi = usePriceChangePercentage({ hours, symbol, type: periodType });
+    const priceChangePercentageApi = usePriceChangePercentage({
+        exchange,
+        contractType,
+        hours,
+        symbol,
+        type: periodType,
+    });
 
     const titleMapper = {
         day: 'Price change per day of week',
@@ -52,6 +73,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
                 options={symbolOptions}
                 value={symbol}
             />
+            <ExchangeSelector onChange={onExchangeChange} value={exchange} />
         </>
     );
 

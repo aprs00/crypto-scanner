@@ -2,7 +2,14 @@ import { type Layout } from 'react-grid-layout';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { ChartType, type ChartConfig, type ChartItem, type ChartTemplate, type GridLayout } from './types';
+import {
+    ChartType,
+    Exchange,
+    type ChartItem,
+    type ChartTemplate,
+    type ExchangeChartConfig,
+    type GridLayout,
+} from './types';
 
 export const CHART_HEIGHT = 25;
 
@@ -37,20 +44,23 @@ export interface ChartStore {
     removeChart: (id: string, type: ChartType) => void;
     saveGridLayout: (key: string, layout: Layout) => void;
     handleLayoutChange: (layouts: Layout[]) => void;
-    updateChartConfig: (chartId: string, config: ChartConfig) => void;
+    setChartExchange: (chartId: string, exchange: Exchange) => void;
+    updateExchangeConfig: (chartId: string, exchange: Exchange, config: ExchangeChartConfig) => void;
 }
+
+const getDefaultChartIds = () => [
+    { type: ChartType.BetaHeatmap, id: crypto.randomUUID() },
+    { type: ChartType.Scatter, id: crypto.randomUUID() },
+    { type: ChartType.ZScoreHeatmap, id: crypto.randomUUID() },
+    { type: ChartType.PriceChangePercentageDay, id: crypto.randomUUID() },
+    { type: ChartType.PriceChangePercentageHour, id: crypto.randomUUID() },
+    { type: ChartType.CorrelationPairHistory, id: crypto.randomUUID() },
+];
 
 const useChartStore = create<ChartStore>()(
     persist(
         (set, get) => ({
-            chartIds: [
-                { type: ChartType.BetaHeatmap, id: crypto.randomUUID() },
-                { type: ChartType.Scatter, id: crypto.randomUUID() },
-                { type: ChartType.ZScoreHeatmap, id: crypto.randomUUID() },
-                { type: ChartType.PriceChangePercentageDay, id: crypto.randomUUID() },
-                { type: ChartType.PriceChangePercentageHour, id: crypto.randomUUID() },
-                { type: ChartType.CorrelationPairHistory, id: crypto.randomUUID() },
-            ],
+            chartIds: getDefaultChartIds(),
             savedGridLayouts: {},
             addChart: (type) => {
                 const state = get();
@@ -88,14 +98,38 @@ const useChartStore = create<ChartStore>()(
                     state.saveGridLayout(i, { x, y, w, h, i });
                 });
             },
-            updateChartConfig: (chartId: string, config: ChartConfig) => {
+            setChartExchange: (chartId: string, exchange: Exchange) => {
                 set((state) => {
+                    const currentLayout = state.savedGridLayouts[chartId] || {};
                     return {
                         savedGridLayouts: {
                             ...state.savedGridLayouts,
                             [chartId]: {
-                                ...(state.savedGridLayouts[chartId] || {}),
-                                ...config,
+                                ...currentLayout,
+                                exchange,
+                            },
+                        },
+                    };
+                });
+            },
+            updateExchangeConfig: (chartId: string, exchange: Exchange, config: ExchangeChartConfig) => {
+                set((state) => {
+                    const currentLayout = state.savedGridLayouts[chartId] || {};
+                    const currentExchangeConfigs = currentLayout.exchangeConfigs || {};
+                    const currentExchangeConfig = currentExchangeConfigs[exchange] || {};
+
+                    return {
+                        savedGridLayouts: {
+                            ...state.savedGridLayouts,
+                            [chartId]: {
+                                ...currentLayout,
+                                exchangeConfigs: {
+                                    ...currentExchangeConfigs,
+                                    [exchange]: {
+                                        ...currentExchangeConfig,
+                                        ...config,
+                                    },
+                                },
                             },
                         },
                     };
@@ -104,6 +138,9 @@ const useChartStore = create<ChartStore>()(
         }),
         {
             name: 'chart-layout',
+            version: 3,
+            migrate: (persistedState, version) =>
+                version < 3 ? { chartIds: getDefaultChartIds(), savedGridLayouts: {} } : (persistedState as ChartStore),
             onRehydrateStorage: () => (state) => {
                 if (!state) return;
 

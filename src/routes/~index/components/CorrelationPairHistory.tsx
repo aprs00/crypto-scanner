@@ -7,13 +7,16 @@ import { useRef } from 'react';
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSMultiSelectModal from '@/components/UI/CSMultiSelectModal';
 import CSSelect from '@/components/UI/CSSelect';
+import ExchangeSelector from '@/components/UI/ExchangeSelector';
 import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
 import { useCorrelationPairHistory } from '../api';
-import { ChartConfig, DataType } from '../types';
+import { ContractType, DataType, Exchange, ExchangeChartConfig } from '../types';
 
 export type CorrelationPairHistoryProps = {
+    exchange: Exchange;
+    contractType: ContractType;
     baseSymbol: string;
     comparisonSymbols: string[];
     dataType: DataType;
@@ -23,11 +26,14 @@ export type CorrelationPairHistoryProps = {
     symbolOptions: string[];
     onAddClick: () => void;
     onRemoveClick?: () => void;
-    onConfigChange: (config: ChartConfig) => void;
+    onExchangeChange: (exchange: Exchange) => void;
+    onConfigChange: (config: ExchangeChartConfig) => void;
 };
 
 const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     const {
+        exchange,
+        contractType,
         baseSymbol,
         comparisonSymbols,
         dataType,
@@ -37,12 +43,15 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
         symbolOptions,
         onAddClick,
         onRemoveClick,
+        onExchangeChange,
         onConfigChange,
     } = props;
 
     const chartRef = useRef<ReactEChartsCore | null>(null);
 
     const correlationPairHistory = useCorrelationPairHistory({
+        exchange,
+        contractType,
         baseSymbol,
         comparisonSymbols,
         type: dataType,
@@ -140,6 +149,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 options={typeOptions}
                 value={dataType}
             />
+            <ExchangeSelector onChange={onExchangeChange} value={exchange} />
         </>
     );
 

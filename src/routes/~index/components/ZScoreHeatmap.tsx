@@ -1,28 +1,40 @@
-import { useState } from 'react';
-
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
 import CSSelect from '@/components/UI/CSSelect';
+import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
-import type { ChartConfig, DataType } from '../types';
+import type { ContractType, DataType, Exchange, ExchangeChartConfig } from '../types';
 
 import { useZScoreHeatmap } from '../api';
 
 export type ZScoreHeatmapProps = {
+    exchange: Exchange;
+    contractType: ContractType;
     hours: string;
     dataType: DataType;
     typeOptions: Array<DataType>;
     hoursOptions: Record<string, string>;
     onAddClick: () => void;
     onRemoveClick?: () => void;
-    onConfigChange: (config: ChartConfig) => void;
+    onExchangeChange: (exchange: Exchange) => void;
+    onConfigChange: (config: ExchangeChartConfig) => void;
 };
 
 const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
-    const { hours, dataType, typeOptions, hoursOptions, onAddClick, onRemoveClick, onConfigChange } = props;
+    const {
+        exchange,
+        contractType,
+        hours,
+        dataType,
+        typeOptions,
+        hoursOptions,
+        onAddClick,
+        onRemoveClick,
+        onExchangeChange,
+        onConfigChange,
+    } = props;
 
-    const [selectedDataType, setSelectedDataType] = useState<DataType>(dataType);
-    const heatmap = useZScoreHeatmap({ type: selectedDataType, hours });
+    const heatmap = useZScoreHeatmap({ exchange, contractType, type: dataType, hours });
 
     const controls = (
         <>
@@ -35,10 +47,11 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
             />
             <CSSelect<DataType>
                 classes="w-24"
-                onChange={setSelectedDataType}
+                onChange={(dataType) => onConfigChange({ dataType })}
                 options={typeOptions}
-                value={selectedDataType}
+                value={dataType}
             />
+            <ExchangeSelector onChange={onExchangeChange} value={exchange} />
         </>
     );
 
