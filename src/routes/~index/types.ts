@@ -75,6 +75,7 @@ export type ZScoreHeatmapParams = {
     contractType: ContractType;
     type: string;
     hours: string;
+    symbols?: string[];
 };
 
 export type CorrelationPairHistoryParams = {
@@ -97,7 +98,7 @@ export type AveragePriceChangeResponse = {
 };
 
 export type ChartDefaults = {
-    beta_heatmap: { symbols: string[] };
+    heatmap: { symbols: string[] };
     price_change_percentage: { symbol: string };
     correlation_pair_history: {
         base_symbol: string;

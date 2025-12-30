@@ -1,5 +1,6 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
+import CSMultiSelectModal from '@/components/UI/CSMultiSelectModal';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
@@ -12,6 +13,8 @@ export type ZScoreHeatmapProps = {
     contractType: ContractType;
     hours: string;
     dataType: DataType;
+    symbols: string[];
+    symbolOptions: string[];
     typeOptions: Array<DataType>;
     hoursOptions: Record<string, string>;
     onAddClick: () => void;
@@ -26,6 +29,8 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
         contractType,
         hours,
         dataType,
+        symbols,
+        symbolOptions,
         typeOptions,
         hoursOptions,
         onAddClick,
@@ -34,10 +39,19 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
         onConfigChange,
     } = props;
 
-    const heatmap = useZScoreHeatmap({ exchange, contractType, type: dataType, hours });
+    const heatmap = useZScoreHeatmap({ exchange, contractType, type: dataType, hours, symbols });
 
     const controls = (
         <>
+            <CSMultiSelectModal
+                classes="w-32"
+                onChange={(nextSymbols) => {
+                    onConfigChange({ symbols: nextSymbols });
+                }}
+                options={symbolOptions}
+                title="Select symbols"
+                value={symbols}
+            />
             <CSSelect<string>
                 onChange={(hours) => {
                     onConfigChange({ hours });

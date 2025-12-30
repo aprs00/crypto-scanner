@@ -56,7 +56,7 @@ const useZScoreScatter3D = (params: ZScoreScatter3DParams) =>
 const useZScoreHeatmap = (params: ZScoreHeatmapParams) =>
     useQuery({
         placeholderData: keepPreviousData,
-        queryFn: async () => (await api.get<GridHeatmapResponse>('z-score-heatmap', { params })).data,
+        queryFn: async () => (await api.post<GridHeatmapResponse>('z-score-heatmap', params)).data,
         queryKey: ['z-score-heatmap', params],
     });
 

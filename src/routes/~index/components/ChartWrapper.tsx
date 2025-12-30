@@ -53,7 +53,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     hours={exchangeConfig.hours || '4'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.Correlation] || {}}
                     symbolOptions={bootstrap.data?.symbols || []}
-                    symbols={exchangeConfig.symbols ?? chartDefaults?.beta_heatmap.symbols ?? []}
+                    symbols={exchangeConfig.symbols ?? chartDefaults?.heatmap.symbols ?? []}
                     typeOptions={bootstrap.data?.data_types || []}
                 />
             );
@@ -85,6 +85,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     dataType={exchangeConfig.dataType || DataType.Price}
                     hours={exchangeConfig.hours || '4'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
+                    symbolOptions={bootstrap.data?.symbols || []}
+                    symbols={exchangeConfig.symbols ?? chartDefaults?.heatmap.symbols ?? []}
                     typeOptions={bootstrap.data?.data_types || []}
                 />
             );
