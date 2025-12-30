@@ -1,10 +1,9 @@
 import { Responsive, WidthProvider } from 'react-grid-layout';
 
+import ChartWrapper from './components/ChartWrapper';
 import useChartStore, { chartTemplates, CHART_HEIGHT } from './useChartStore';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
-
-import ChartWrapper from './components/ChartWrapper';
 
 const Stats = () => {
     const chartIds = useChartStore((state) => state.chartIds);

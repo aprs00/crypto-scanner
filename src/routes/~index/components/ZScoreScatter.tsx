@@ -3,24 +3,39 @@ import type { SeriesOption } from 'echarts';
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
 import CSSelect from '@/components/UI/CSSelect';
+import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
 import { useZScoreScatter } from '../api';
-import { ChartConfig } from '../types';
+import { ContractType, Exchange, ExchangeChartConfig } from '../types';
 
 export type ScatterProps = {
+    exchange: Exchange;
+    contractType: ContractType;
     xAxis: string;
     yAxis: string;
     hours: string;
     hoursOptions: Record<string, string>;
     onAddClick: () => void;
     onRemoveClick?: () => void;
-    onConfigChange: (config: ChartConfig) => void;
+    onExchangeChange: (exchange: Exchange) => void;
+    onConfigChange: (config: ExchangeChartConfig) => void;
 };
 
 const ZScoreScatter = (props: ScatterProps) => {
-    const { hours, hoursOptions, xAxis, yAxis, onAddClick, onRemoveClick, onConfigChange } = props;
+    const {
+        exchange,
+        contractType,
+        hours,
+        hoursOptions,
+        xAxis,
+        yAxis,
+        onAddClick,
+        onRemoveClick,
+        onExchangeChange,
+        onConfigChange,
+    } = props;
 
-    const zScoreScatter = useZScoreScatter({ hours, xAxis, yAxis });
+    const zScoreScatter = useZScoreScatter({ exchange, contractType, hours, xAxis, yAxis });
 
     const scatterData: SeriesOption[] =
         zScoreScatter.data?.map((item) => ({
@@ -40,6 +55,7 @@ const ZScoreScatter = (props: ScatterProps) => {
                 options={hoursOptions}
                 value={hours}
             />
+            <ExchangeSelector onChange={onExchangeChange} value={exchange} />
         </>
     );
 

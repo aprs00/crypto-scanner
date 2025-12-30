@@ -2,12 +2,15 @@ import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
 import CSMultiSelectModal from '@/components/UI/CSMultiSelectModal';
 import CSSelect from '@/components/UI/CSSelect';
+import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
-import type { ChartConfig, DataType } from '../types';
+import type { ContractType, DataType, Exchange, ExchangeChartConfig } from '../types';
 
 import { useBetaHeatmapData } from '../api';
 
 export type BetaHeatmapProps = {
+    exchange: Exchange;
+    contractType: ContractType;
     hours: string;
     dataType: DataType;
     symbols: string[];
@@ -16,11 +19,14 @@ export type BetaHeatmapProps = {
     typeOptions: Array<DataType>;
     onAddClick: () => void;
     onRemoveClick?: () => void;
-    onConfigChange: (config: ChartConfig) => void;
+    onExchangeChange: (exchange: Exchange) => void;
+    onConfigChange: (config: ExchangeChartConfig) => void;
 };
 
 const BetaHeatmap = (props: BetaHeatmapProps) => {
     const {
+        exchange,
+        contractType,
         hours,
         dataType,
         symbols,
@@ -29,10 +35,11 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
         typeOptions,
         onAddClick,
         onRemoveClick,
+        onExchangeChange,
         onConfigChange,
     } = props;
 
-    const betaHeatmap = useBetaHeatmapData({ hours, symbols, type: dataType });
+    const betaHeatmap = useBetaHeatmapData({ exchange, contractType, hours, symbols, type: dataType });
 
     const controls = (
         <>
@@ -60,6 +67,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
                 options={typeOptions}
                 value={dataType}
             />
+            <ExchangeSelector onChange={onExchangeChange} value={exchange} />
         </>
     );
 

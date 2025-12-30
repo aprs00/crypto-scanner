@@ -1,5 +1,18 @@
 import { type Layout } from 'react-grid-layout';
 
+export const Exchange = {
+    Binance: 'binance',
+    Hyperliquid: 'hyperliquid',
+} as const;
+
+export type Exchange = (typeof Exchange)[keyof typeof Exchange];
+
+export const ContractType = {
+    Perpetual: 'perpetual',
+} as const;
+
+export type ContractType = (typeof ContractType)[keyof typeof ContractType];
+
 export const HoursOptionCategory = {
     Correlation: 'correlation',
     CorrelationPair: 'correlation_pair',
@@ -25,24 +38,32 @@ export const TimePeriodType = {
 export type TimePeriodType = (typeof TimePeriodType)[keyof typeof TimePeriodType];
 
 export type AveragePriceChangeParams = {
+    exchange: Exchange;
+    contractType: ContractType;
     hours: string;
     symbol: string;
     type: TimePeriodType;
 };
 
 export type HeatmapParams = {
+    exchange: Exchange;
+    contractType: ContractType;
     hours: string;
     type: string;
     symbols?: string[];
 };
 
 export type ZScoreScatterParams = {
+    exchange: Exchange;
+    contractType: ContractType;
     xAxis: string;
     yAxis: string;
     hours: string;
 };
 
 export type ZScoreScatter3DParams = {
+    exchange: Exchange;
+    contractType: ContractType;
     xAxis: string;
     yAxis: string;
     zAxis: string;
@@ -50,11 +71,15 @@ export type ZScoreScatter3DParams = {
 };
 
 export type ZScoreHeatmapParams = {
+    exchange: Exchange;
+    contractType: ContractType;
     type: string;
     hours: string;
 };
 
 export type CorrelationPairHistoryParams = {
+    exchange: Exchange;
+    contractType: ContractType;
     baseSymbol: string;
     comparisonSymbols: string[];
     type: string;
@@ -71,18 +96,34 @@ export type AveragePriceChangeResponse = {
     xAxis: string[];
 };
 
+export type ChartDefaults = {
+    beta_heatmap: { symbols: string[] };
+    price_change_percentage: { symbol: string };
+    correlation_pair_history: {
+        base_symbol: string;
+        comparison_symbols: string[];
+    };
+};
+
 export type BootstrapResponse = {
+    exchange: Exchange;
+    contract_type: ContractType;
+    chart_defaults: ChartDefaults;
     data_types: Array<DataType>;
     hours_options: Record<string, Record<string, string>>;
     symbols: string[];
-    market_cap_symbols: string[];
+};
+
+export type BootstrapParams = {
+    exchange: Exchange;
+    contractType: ContractType;
 };
 
 export type CorrelationPairHistoryResponse = {
     history: [number, string][][];
 };
 
-export interface ChartConfig {
+export interface ExchangeChartConfig {
     hours?: string;
     xAxis?: string;
     yAxis?: string;
@@ -116,6 +157,8 @@ export interface ChartTemplate {
     gridLayout: Layout;
 }
 
-export interface GridLayout extends ChartConfig {
-    layout: Layout;
+export interface GridLayout {
+    layout?: Layout;
+    exchange?: Exchange;
+    exchangeConfigs?: Partial<Record<Exchange, ExchangeChartConfig>>;
 }
