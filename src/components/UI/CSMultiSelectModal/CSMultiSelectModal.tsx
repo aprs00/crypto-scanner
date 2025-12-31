@@ -7,22 +7,30 @@ type OptionsSectionProps<T> = {
     label: string;
     options: T[];
     isSelected: boolean;
+    disabled?: boolean;
     onToggle: (option: T) => void;
 };
 
-const OptionsSection = <T extends string>({ label, options, isSelected, onToggle }: OptionsSectionProps<T>) => (
+const OptionsSection = <T extends string>({
+    label,
+    options,
+    isSelected,
+    disabled,
+    onToggle,
+}: OptionsSectionProps<T>) => (
     <div className="p-2">
         <div className="text-xs text-slate-500 px-2 pb-1">{label}</div>
         {options.map((option) => (
             <button
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-xs hover:bg-slate-700 cursor-pointer text-left"
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xs text-left ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-700 cursor-pointer'}`}
+                disabled={disabled}
                 key={String(option)}
                 onClick={() => onToggle(option)}
                 type="button"
             >
                 <input
                     checked={isSelected}
-                    className={`cursor-pointer w-4 h-4 ${isSelected ? 'accent-blue-500' : ''}`}
+                    className={`w-4 h-4 ${disabled ? 'pointer-events-none' : 'cursor-pointer'} ${isSelected ? 'accent-blue-500' : ''}`}
                     readOnly
                     type="checkbox"
                 />
@@ -37,12 +45,13 @@ export type CSMultiSelectModalProps<T = string> = {
     value: T[];
     classes?: string;
     defaultValue?: T[];
+    maxSelected?: number;
     onChange: (value: T[]) => void;
     title: string;
 };
 
 const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>) => {
-    const { classes = 'w-32', defaultValue, onChange, options, value, title } = props;
+    const { classes = 'w-32', defaultValue, maxSelected, onChange, options, value, title } = props;
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -53,6 +62,7 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
     const selectedSet = new Set(value);
     const filteredSelected = filteredOptions.filter((opt) => selectedSet.has(opt));
     const filteredUnselected = filteredOptions.filter((opt) => !selectedSet.has(opt));
+    const isAtMax = maxSelected !== undefined && value.length >= maxSelected;
 
     const handleToggle = (option: T) => {
         if (selectedSet.has(option)) {
@@ -167,7 +177,9 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                 {/* Actions bar */}
                                 <div className="px-4 py-2 border-b border-slate-600 flex items-center justify-between">
                                     <span className="text-sm text-slate-400">
-                                        {value.length} of {options.length} selected
+                                        {value.length}
+                                        {maxSelected ? `/${maxSelected}` : ` of ${options.length}`} selected
+                                        {isAtMax && <span className="text-amber-400 ml-1">(max)</span>}
                                     </span>
                                     <div className="flex gap-3">
                                         {defaultValue && (
@@ -179,13 +191,15 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                                 Defaults
                                             </button>
                                         )}
-                                        <button
-                                            className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer transition-colors duration-150"
-                                            onClick={handleSelectAll}
-                                            type="button"
-                                        >
-                                            Select all
-                                        </button>
+                                        {!maxSelected && (
+                                            <button
+                                                className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer transition-colors duration-150"
+                                                onClick={handleSelectAll}
+                                                type="button"
+                                            >
+                                                Select all
+                                            </button>
+                                        )}
                                         <button
                                             className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer transition-colors duration-150"
                                             onClick={handleDeselectAll}
@@ -211,6 +225,7 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                     )}
 
                                     <OptionsSection
+                                        disabled={isAtMax}
                                         isSelected={false}
                                         label="Available"
                                         onToggle={handleToggle}

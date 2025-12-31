@@ -130,6 +130,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
             <CSMultiSelectModal
                 classes="w-32"
                 defaultValue={defaultComparisonSymbols}
+                maxSelected={32}
                 onChange={(comparisonSymbols) => {
                     onConfigChange({ comparisonSymbols });
                 }}
