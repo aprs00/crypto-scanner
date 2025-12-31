@@ -15,6 +15,7 @@ export type BetaHeatmapProps = {
     dataType: DataType;
     symbols: string[];
     symbolOptions: string[];
+    defaultSymbols?: string[];
     hoursOptions: Record<string, string>;
     typeOptions: Array<DataType>;
     onAddClick: () => void;
@@ -31,6 +32,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
         dataType,
         symbols,
         symbolOptions,
+        defaultSymbols,
         hoursOptions,
         typeOptions,
         onAddClick,
@@ -45,6 +47,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
         <>
             <CSMultiSelectModal
                 classes="w-32"
+                defaultValue={defaultSymbols}
                 onChange={(nextSymbols) => {
                     onConfigChange({ symbols: nextSymbols });
                 }}

@@ -50,6 +50,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                 <BetaHeatmap
                     {...commonProps}
                     dataType={exchangeConfig.dataType || DataType.Price}
+                    defaultSymbols={chartDefaults?.heatmap.symbols}
                     hours={exchangeConfig.hours || '4'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.Correlation] || {}}
                     symbolOptions={bootstrap.data?.symbols || []}
@@ -83,6 +84,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                 <ZScoreHeatmap
                     {...commonProps}
                     dataType={exchangeConfig.dataType || DataType.Price}
+                    defaultSymbols={chartDefaults?.heatmap.symbols}
                     hours={exchangeConfig.hours || '4'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
                     symbolOptions={bootstrap.data?.symbols || []}
@@ -123,6 +125,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                         []
                     }
                     dataType={exchangeConfig.dataType || DataType.Price}
+                    defaultComparisonSymbols={chartDefaults?.correlation_pair_history.comparison_symbols}
                     hours={exchangeConfig.hours || '1'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.CorrelationPair] || {}}
                     symbolOptions={bootstrap.data?.symbols || []}

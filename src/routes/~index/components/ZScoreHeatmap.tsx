@@ -15,6 +15,7 @@ export type ZScoreHeatmapProps = {
     dataType: DataType;
     symbols: string[];
     symbolOptions: string[];
+    defaultSymbols?: string[];
     typeOptions: Array<DataType>;
     hoursOptions: Record<string, string>;
     onAddClick: () => void;
@@ -31,6 +32,7 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
         dataType,
         symbols,
         symbolOptions,
+        defaultSymbols,
         typeOptions,
         hoursOptions,
         onAddClick,
@@ -45,6 +47,7 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
         <>
             <CSMultiSelectModal
                 classes="w-32"
+                defaultValue={defaultSymbols}
                 onChange={(nextSymbols) => {
                     onConfigChange({ symbols: nextSymbols });
                 }}

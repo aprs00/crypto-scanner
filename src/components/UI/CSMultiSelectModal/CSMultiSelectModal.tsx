@@ -36,12 +36,13 @@ export type CSMultiSelectModalProps<T = string> = {
     options: T[];
     value: T[];
     classes?: string;
+    defaultValue?: T[];
     onChange: (value: T[]) => void;
     title: string;
 };
 
 const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>) => {
-    const { classes = 'w-32', onChange, options, value, title } = props;
+    const { classes = 'w-32', defaultValue, onChange, options, value, title } = props;
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -67,6 +68,10 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
 
     const handleDeselectAll = () => {
         onChange(value.filter((v) => !filteredSelected.includes(v)));
+    };
+
+    const handleResetToDefaults = () => {
+        onChange([...defaultValue!]);
     };
 
     const handleOpen = () => {
@@ -165,6 +170,15 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                         {value.length} of {options.length} selected
                                     </span>
                                     <div className="flex gap-3">
+                                        {defaultValue && (
+                                            <button
+                                                className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer transition-colors duration-150"
+                                                onClick={handleResetToDefaults}
+                                                type="button"
+                                            >
+                                                Defaults
+                                            </button>
+                                        )}
                                         <button
                                             className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer transition-colors duration-150"
                                             onClick={handleSelectAll}

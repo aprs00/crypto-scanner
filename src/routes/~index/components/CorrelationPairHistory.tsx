@@ -19,6 +19,7 @@ export type CorrelationPairHistoryProps = {
     contractType: ContractType;
     baseSymbol: string;
     comparisonSymbols: string[];
+    defaultComparisonSymbols?: string[];
     dataType: DataType;
     hours: string;
     hoursOptions: Record<string, string>;
@@ -36,6 +37,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
         contractType,
         baseSymbol,
         comparisonSymbols,
+        defaultComparisonSymbols,
         dataType,
         hours,
         hoursOptions,
@@ -127,6 +129,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
             />
             <CSMultiSelectModal
                 classes="w-32"
+                defaultValue={defaultComparisonSymbols}
                 onChange={(comparisonSymbols) => {
                     onConfigChange({ comparisonSymbols });
                 }}
