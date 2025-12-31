@@ -91,6 +91,7 @@ const CSScatter = (props: ScatterProps) => {
     return (
         <ReactEChartsCore
             echarts={echarts}
+            notMerge={true}
             onChartReady={() => resizeEChart(chartRef)}
             option={option}
             ref={chartRef}
