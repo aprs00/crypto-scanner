@@ -2,6 +2,7 @@ import type { SeriesOption } from 'echarts';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
+import CSMultiSelectModal from '@/components/UI/CSMultiSelectModal';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
@@ -14,6 +15,9 @@ export type ScatterProps = {
     xAxis: string;
     yAxis: string;
     hours: string;
+    symbols: string[];
+    symbolOptions: string[];
+    defaultSymbols?: string[];
     hoursOptions: Record<string, string>;
     onAddClick: () => void;
     onRemoveClick?: () => void;
@@ -26,6 +30,9 @@ const ZScoreScatter = (props: ScatterProps) => {
         exchange,
         contractType,
         hours,
+        symbols,
+        symbolOptions,
+        defaultSymbols,
         hoursOptions,
         xAxis,
         yAxis,
@@ -35,7 +42,7 @@ const ZScoreScatter = (props: ScatterProps) => {
         onConfigChange,
     } = props;
 
-    const zScoreScatter = useZScoreScatter({ exchange, contractType, hours, xAxis, yAxis });
+    const zScoreScatter = useZScoreScatter({ exchange, contractType, hours, xAxis, yAxis, symbols });
 
     const scatterData: SeriesOption[] =
         zScoreScatter.data?.map((item) => ({
@@ -48,6 +55,16 @@ const ZScoreScatter = (props: ScatterProps) => {
 
     const controls = (
         <>
+            <CSMultiSelectModal
+                classes="w-32"
+                defaultValue={defaultSymbols}
+                onChange={(nextSymbols) => {
+                    onConfigChange({ symbols: nextSymbols });
+                }}
+                options={symbolOptions}
+                title="Select symbols"
+                value={symbols}
+            />
             <CSSelect<string>
                 onChange={(hours) => {
                     onConfigChange({ hours });

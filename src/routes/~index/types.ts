@@ -59,6 +59,7 @@ export type ZScoreScatterParams = {
     xAxis: string;
     yAxis: string;
     hours: string;
+    symbols?: string[];
 };
 
 export type ZScoreScatter3DParams = {
@@ -68,6 +69,7 @@ export type ZScoreScatter3DParams = {
     yAxis: string;
     zAxis: string;
     hours: string;
+    symbols?: string[];
 };
 
 export type ZScoreHeatmapParams = {

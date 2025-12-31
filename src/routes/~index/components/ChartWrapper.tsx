@@ -62,8 +62,11 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <Scatter
                     {...commonProps}
+                    defaultSymbols={chartDefaults?.heatmap.symbols}
                     hours={exchangeConfig.hours || '4'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
+                    symbolOptions={bootstrap.data?.symbols || []}
+                    symbols={exchangeConfig.symbols ?? chartDefaults?.heatmap.symbols ?? []}
                     xAxis={exchangeConfig.xAxis || DataType.Price}
                     yAxis={exchangeConfig.yAxis || DataType.Volume}
                 />
@@ -72,8 +75,11 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
             return (
                 <Scatter3D
                     {...commonProps}
+                    defaultSymbols={chartDefaults?.heatmap.symbols}
                     hours={exchangeConfig.hours || '4'}
                     hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
+                    symbolOptions={bootstrap.data?.symbols || []}
+                    symbols={exchangeConfig.symbols ?? chartDefaults?.heatmap.symbols ?? []}
                     xAxis={exchangeConfig.xAxis || DataType.Price}
                     yAxis={exchangeConfig.yAxis || DataType.Volume}
                     zAxis={exchangeConfig.zAxis || DataType.Trades}

@@ -42,14 +42,14 @@ const useBetaHeatmapData = (params: HeatmapParams) =>
 const useZScoreScatter = (params: ZScoreScatterParams) =>
     useQuery({
         placeholderData: keepPreviousData,
-        queryFn: async () => (await api.get<ZScoreScatterResponse[]>('z-score-matrix', { params })).data,
+        queryFn: async () => (await api.post<ZScoreScatterResponse[]>('z-score-matrix', params)).data,
         queryKey: ['z-score-matrix', params],
     });
 
 const useZScoreScatter3D = (params: ZScoreScatter3DParams) =>
     useQuery({
         placeholderData: keepPreviousData,
-        queryFn: async () => (await api.get<ZScoreScatter3DResponse[]>('z-score-matrix', { params })).data,
+        queryFn: async () => (await api.post<ZScoreScatter3DResponse[]>('z-score-matrix', params)).data,
         queryKey: ['z-score-matrix-3d', params],
     });
 
