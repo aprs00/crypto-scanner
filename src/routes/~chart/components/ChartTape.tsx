@@ -26,7 +26,7 @@ const ChartTape = () => {
     ));
 
     useEffect(() => {
-        if (!streamAggTrade.data?.p || (Number(streamAggTrade.data?.q) || 0) <= 0.01) return;
+        if (!streamAggTrade.data?.p) return;
 
         const newTape = {
             aggregateTradeId: streamAggTrade.data.a,

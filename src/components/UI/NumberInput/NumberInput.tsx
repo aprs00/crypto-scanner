@@ -11,21 +11,18 @@ const NumberInput = (props: NumberInputPropsType) => {
     const { onChange, value } = props;
 
     const handleIncrement = () => {
-        if (value > 1000) return;
+        if (value === 1000) return;
         onChange((value) => Number(value) + 1);
     };
 
     const handleDecrement = () => {
         if (value === 1) return;
-        if (value > 1000) return;
         onChange((value) => Number(value) - 1);
     };
 
     const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
         const val = Number(e.target.value);
-
-        if (isNaN(val)) return;
-        if (val > 1000 || val <= 0) return;
+        if (isNaN(val) || val > 1000 || val <= 0) return;
         onChange(val);
     };
 

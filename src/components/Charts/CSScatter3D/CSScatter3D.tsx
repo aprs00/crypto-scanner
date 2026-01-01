@@ -1,7 +1,7 @@
 import { color } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { capitalize } from 'lodash-es';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
 import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
@@ -91,13 +91,6 @@ const CSScatter3D = (props: Scatter3DProps) => {
             type: 'value',
         },
     };
-
-    useEffect(() => {
-        const chart = chartRef.current?.getEchartsInstance();
-        chart?.on('mouseover', (params: any) => {
-            console.log('Hovered:', params);
-        });
-    }, []);
 
     return (
         <ReactEChartsCore
