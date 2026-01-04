@@ -7,12 +7,11 @@ export type ChartContainerProps = {
     children: ReactNode;
     title: string;
     controls?: ReactNode;
-    onAddClick?: () => void;
-    onRemoveClick?: () => void;
+    onRemoveClick: () => void;
 };
 
 const ChartContainer = (props: ChartContainerProps) => {
-    const { children, controls, title, onAddClick, onRemoveClick } = props;
+    const { children, controls, title, onRemoveClick } = props;
 
     return (
         <div className="border-4 border-slate-800 rounded-sm h-full">
@@ -23,9 +22,8 @@ const ChartContainer = (props: ChartContainerProps) => {
                 </div>
 
                 <div className="z-50 flex gap-2 flex-wrap items-center ml-auto">
-                    {onRemoveClick && <IconButton label="-" onClick={onRemoveClick} />}
-                    {onAddClick && <IconButton label="+" onClick={onAddClick} />}
                     {controls}
+                    <IconButton label="-" onClick={onRemoveClick} />
                 </div>
             </div>
             {children}

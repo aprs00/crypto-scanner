@@ -59,6 +59,7 @@ export default [
 
             'no-undef': 'off',
             'no-redeclare': 'off',
+            '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
             '@typescript-eslint/no-explicit-any': 'off',
             'prettier/prettier': ['error', {}, { usePrettierrc: true }],
             'react/react-in-jsx-scope': 'off',

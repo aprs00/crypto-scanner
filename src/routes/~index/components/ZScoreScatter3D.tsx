@@ -18,8 +18,7 @@ export type Scatter3DProps = {
     symbolOptions: string[];
     defaultSymbols?: string[];
     hoursOptions: Record<string, string>;
-    onAddClick: () => void;
-    onRemoveClick?: () => void;
+    onRemoveClick: () => void;
     onExchangeChange: (exchange: Exchange) => void;
     onConfigChange: (config: ExchangeChartConfig) => void;
 };
@@ -36,7 +35,6 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
         xAxis,
         yAxis,
         zAxis,
-        onAddClick,
         onRemoveClick,
         onExchangeChange,
         onConfigChange,
@@ -74,7 +72,7 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
     );
 
     return (
-        <ChartContainer controls={controls} onAddClick={onAddClick} onRemoveClick={onRemoveClick} title="Z Score 3D">
+        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title="Z Score 3D">
             <CSScatter3D data={scatterData} xAxis={xAxis} yAxis={yAxis} zAxis={zAxis} />
         </ChartContainer>
     );

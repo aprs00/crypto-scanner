@@ -165,3 +165,31 @@ export interface GridLayout {
     exchange?: Exchange;
     exchangeConfigs?: Partial<Record<Exchange, ExchangeChartConfig>>;
 }
+
+export interface ChartGroup {
+    id: string;
+    name: string;
+    chartIds: string[];
+}
+
+export const DEFAULT_GROUP_ID = 'default';
+
+export const ChartTypeLabels: Record<ChartType, string> = {
+    [ChartType.BetaHeatmap]: 'Pearson Correlation Heatmap',
+    [ChartType.Scatter]: 'Z-Score Scatter',
+    [ChartType.Scatter3D]: 'Z-Score Scatter 3D',
+    [ChartType.ZScoreHeatmap]: 'Z-Score Heatmap',
+    [ChartType.PriceChangePercentageDay]: 'Price Change % (Day)',
+    [ChartType.PriceChangePercentageHour]: 'Price Change % (Hour)',
+    [ChartType.CorrelationPairHistory]: 'Correlation Pair History',
+};
+
+export const ChartTypeDescriptions: Record<ChartType, string> = {
+    [ChartType.BetaHeatmap]: 'Visualize Pearson correlation coefficients between assets as a heatmap',
+    [ChartType.Scatter]: '2D scatter plot showing z-scores for two data types',
+    [ChartType.Scatter3D]: '3D scatter plot showing z-scores for three data types',
+    [ChartType.ZScoreHeatmap]: 'Z-score values displayed as a heatmap grid',
+    [ChartType.PriceChangePercentageDay]: 'Daily price change percentages over time',
+    [ChartType.PriceChangePercentageHour]: 'Hourly price change percentages over time',
+    [ChartType.CorrelationPairHistory]: 'Track correlation between a base symbol and comparison symbols over time',
+};

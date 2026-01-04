@@ -19,8 +19,7 @@ export type ScatterProps = {
     symbolOptions: string[];
     defaultSymbols?: string[];
     hoursOptions: Record<string, string>;
-    onAddClick: () => void;
-    onRemoveClick?: () => void;
+    onRemoveClick: () => void;
     onExchangeChange: (exchange: Exchange) => void;
     onConfigChange: (config: ExchangeChartConfig) => void;
 };
@@ -36,7 +35,6 @@ const ZScoreScatter = (props: ScatterProps) => {
         hoursOptions,
         xAxis,
         yAxis,
-        onAddClick,
         onRemoveClick,
         onExchangeChange,
         onConfigChange,
@@ -77,7 +75,7 @@ const ZScoreScatter = (props: ScatterProps) => {
     );
 
     return (
-        <ChartContainer controls={controls} onAddClick={onAddClick} onRemoveClick={onRemoveClick} title="Z Score">
+        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title="Z Score">
             <CSScatter data={scatterData} xAxis={xAxis} yAxis={yAxis} />
         </ChartContainer>
     );

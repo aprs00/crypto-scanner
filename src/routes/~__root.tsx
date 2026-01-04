@@ -1,6 +1,7 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 
 import CSNavigation from '../components/Layouts/CSNavigation';
+import CSToastContainer from '../components/UI/CSToast';
 import useServerNotifications from '../hooks/useServerNotifications';
 
 export const Route = createRootRoute({
@@ -17,6 +18,7 @@ function BaseLayout() {
         <>
             <CSNavigation />
             <Outlet />
+            <CSToastContainer />
         </>
     );
 }

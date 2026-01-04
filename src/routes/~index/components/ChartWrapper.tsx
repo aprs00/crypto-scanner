@@ -27,21 +27,16 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
     const bootstrap = useBootstrap({ exchange, contractType });
     const chartDefaults = bootstrap.data?.chart_defaults;
 
-    const chartIds = useChartStore((state) => state.chartIds);
-    const addChart = useChartStore((state) => state.addChart);
     const removeChart = useChartStore((state) => state.removeChart);
     const setChartExchange = useChartStore((state) => state.setChartExchange);
     const updateExchangeConfig = useChartStore((state) => state.updateExchangeConfig);
 
-    const canRemove = chartIds.filter((c) => c.type === chart.type).length > 1;
-
     const commonProps = {
         exchange,
         contractType,
-        onAddClick: () => addChart(chart.type),
         onExchangeChange: (newExchange: Exchange) => setChartExchange(chart.id, newExchange),
         onConfigChange: (config: ExchangeChartConfig) => updateExchangeConfig(chart.id, exchange, config),
-        onRemoveClick: canRemove ? () => removeChart(chart.id, chart.type) : undefined,
+        onRemoveClick: () => removeChart(chart.id, chart.type),
     };
 
     switch (chart.type) {

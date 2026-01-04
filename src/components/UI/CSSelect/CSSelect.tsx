@@ -54,7 +54,7 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
         <Listbox multiple={multiple} onChange={onChange as (value: T | T[]) => void} value={value}>
             {({ open }) => (
                 <div className={classes}>
-                    <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 h-8 text-left relative cursor-pointer focus:outline-none">
+                    <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 h-8 text-left relative focus:outline-none">
                         <div className="flex items-center pr-3.5">{displayValue()}</div>
                         <span className="absolute inset-y-0 right-0 flex items-center pr-1 pointer-events-none">
                             <SelectIcon />

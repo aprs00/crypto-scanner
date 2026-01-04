@@ -4,7 +4,9 @@ import { persist } from 'zustand/middleware';
 
 import {
     ChartType,
+    DEFAULT_GROUP_ID,
     Exchange,
+    type ChartGroup,
     type ChartItem,
     type ChartTemplate,
     type ExchangeChartConfig,
@@ -40,44 +42,62 @@ export const chartTemplates: Record<ChartType, ChartTemplate> = {
 export interface ChartStore {
     chartIds: ChartItem[];
     savedGridLayouts: Record<string, GridLayout>;
-    addChart: (type: ChartType) => void;
+    groups: ChartGroup[];
+    activeGroupId: string;
     removeChart: (id: string, type: ChartType) => void;
     saveGridLayout: (key: string, layout: Layout) => void;
     handleLayoutChange: (layouts: Layout[]) => void;
     setChartExchange: (chartId: string, exchange: Exchange) => void;
     updateExchangeConfig: (chartId: string, exchange: Exchange, config: ExchangeChartConfig) => void;
+    setActiveGroup: (groupId: string) => void;
+    createGroup: (name: string) => string;
+    renameGroup: (groupId: string, name: string) => void;
+    deleteGroup: (groupId: string) => void;
+    addChartToGroup: (type: ChartType, groupId?: string) => void;
 }
 
 const getDefaultChartIds = () => [
     { type: ChartType.BetaHeatmap, id: crypto.randomUUID() },
     { type: ChartType.Scatter, id: crypto.randomUUID() },
+    { type: ChartType.Scatter3D, id: crypto.randomUUID() },
     { type: ChartType.ZScoreHeatmap, id: crypto.randomUUID() },
     { type: ChartType.PriceChangePercentageDay, id: crypto.randomUUID() },
     { type: ChartType.PriceChangePercentageHour, id: crypto.randomUUID() },
     { type: ChartType.CorrelationPairHistory, id: crypto.randomUUID() },
 ];
 
+const createDefaultGroup = (chartIds: string[]): ChartGroup => ({
+    id: DEFAULT_GROUP_ID,
+    name: 'Default',
+    chartIds,
+});
+
+const initialDefaultCharts = getDefaultChartIds();
+
 const useChartStore = create<ChartStore>()(
     persist(
         (set, get) => ({
-            chartIds: getDefaultChartIds(),
+            chartIds: initialDefaultCharts,
             savedGridLayouts: {},
-            addChart: (type) => {
-                const state = get();
-                const clickedChartIndex = state.chartIds.findIndex((chart) => chart.type === type);
-
-                set((state) => ({
-                    chartIds: [
-                        ...state.chartIds.slice(0, clickedChartIndex),
-                        { type, id: crypto.randomUUID() },
-                        ...state.chartIds.slice(clickedChartIndex),
-                    ],
-                }));
-            },
+            groups: [createDefaultGroup(initialDefaultCharts.map((c) => c.id))],
+            activeGroupId: DEFAULT_GROUP_ID,
             removeChart: (id) => {
-                set((state) => ({
-                    chartIds: state.chartIds.filter((chart) => chart.id !== id),
-                }));
+                set((state) => {
+                    const newChartIds = state.chartIds.filter((chart) => chart.id !== id);
+
+                    const updatedGroups = state.groups.map((group) => ({
+                        ...group,
+                        chartIds: group.chartIds.filter((chartId) => chartId !== id),
+                    }));
+
+                    const { [id]: _, ...remainingLayouts } = state.savedGridLayouts;
+
+                    return {
+                        chartIds: newChartIds,
+                        groups: updatedGroups,
+                        savedGridLayouts: remainingLayouts,
+                    };
+                });
             },
             saveGridLayout: (key, layout) => {
                 set((state) => ({
@@ -135,28 +155,73 @@ const useChartStore = create<ChartStore>()(
                     };
                 });
             },
+            setActiveGroup: (groupId: string) => {
+                set({ activeGroupId: groupId });
+            },
+            createGroup: (name: string) => {
+                const newGroupId = crypto.randomUUID();
+                set((state) => ({
+                    groups: [...state.groups, { id: newGroupId, name, chartIds: [] }],
+                    activeGroupId: newGroupId,
+                }));
+                return newGroupId;
+            },
+            renameGroup: (groupId: string, name: string) => {
+                set((state) => ({
+                    groups: state.groups.map((group) => (group.id === groupId ? { ...group, name } : group)),
+                }));
+            },
+            deleteGroup: (groupId: string) => {
+                if (groupId === DEFAULT_GROUP_ID) return;
+
+                set((state) => {
+                    const groupToDelete = state.groups.find((g) => g.id === groupId);
+                    if (!groupToDelete) return state;
+
+                    // Remove charts that belong to this group
+                    const chartIdsToRemove = new Set(groupToDelete.chartIds);
+                    const newChartIds = state.chartIds.filter((chart) => !chartIdsToRemove.has(chart.id));
+
+                    // Remove layouts for deleted charts
+                    const newLayouts = { ...state.savedGridLayouts };
+                    groupToDelete.chartIds.forEach((chartId) => {
+                        delete newLayouts[chartId];
+                    });
+
+                    // Remove the group
+                    const newGroups = state.groups.filter((g) => g.id !== groupId);
+
+                    // Switch to default group if active group is being deleted
+                    const newActiveGroupId = state.activeGroupId === groupId ? DEFAULT_GROUP_ID : state.activeGroupId;
+
+                    return {
+                        chartIds: newChartIds,
+                        groups: newGroups,
+                        savedGridLayouts: newLayouts,
+                        activeGroupId: newActiveGroupId,
+                    };
+                });
+            },
+            addChartToGroup: (type: ChartType, groupId?: string) => {
+                const state = get();
+                const targetGroupId = groupId || state.activeGroupId;
+                const newChartId = crypto.randomUUID();
+
+                set((state) => {
+                    const updatedGroups = state.groups.map((group) =>
+                        group.id === targetGroupId ? { ...group, chartIds: [newChartId, ...group.chartIds] } : group,
+                    );
+
+                    return {
+                        chartIds: [{ type, id: newChartId }, ...state.chartIds],
+                        groups: updatedGroups,
+                    };
+                });
+            },
         }),
         {
             name: 'chart-layout',
-            version: 3,
-            migrate: (persistedState, version) =>
-                version < 3 ? { chartIds: getDefaultChartIds(), savedGridLayouts: {} } : (persistedState as ChartStore),
-            onRehydrateStorage: () => (state) => {
-                if (!state) return;
-
-                const allChartTypes = Object.values(ChartType);
-                const existingChartTypes = new Set(state.chartIds.map((chart) => chart.type));
-                const missingChartTypes = allChartTypes.filter((type) => !existingChartTypes.has(type));
-
-                if (missingChartTypes.length === 0) return;
-
-                const newCharts = missingChartTypes.map((type) => ({
-                    type,
-                    id: crypto.randomUUID(),
-                }));
-
-                state.chartIds = [...state.chartIds, ...newCharts];
-            },
+            version: 4,
         },
     ),
 );

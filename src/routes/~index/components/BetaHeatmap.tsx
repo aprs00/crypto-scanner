@@ -18,8 +18,7 @@ export type BetaHeatmapProps = {
     defaultSymbols?: string[];
     hoursOptions: Record<string, string>;
     typeOptions: Array<DataType>;
-    onAddClick: () => void;
-    onRemoveClick?: () => void;
+    onRemoveClick: () => void;
     onExchangeChange: (exchange: Exchange) => void;
     onConfigChange: (config: ExchangeChartConfig) => void;
 };
@@ -35,7 +34,6 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
         defaultSymbols,
         hoursOptions,
         typeOptions,
-        onAddClick,
         onRemoveClick,
         onExchangeChange,
         onConfigChange,
@@ -75,12 +73,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
     );
 
     return (
-        <ChartContainer
-            controls={controls}
-            onAddClick={onAddClick}
-            onRemoveClick={onRemoveClick}
-            title="Pearson correlation"
-        >
+        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title="Pearson correlation">
             <CSHeatmap data={betaHeatmap.data} />
         </ChartContainer>
     );

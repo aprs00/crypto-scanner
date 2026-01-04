@@ -18,8 +18,7 @@ export type ZScoreHeatmapProps = {
     defaultSymbols?: string[];
     typeOptions: Array<DataType>;
     hoursOptions: Record<string, string>;
-    onAddClick: () => void;
-    onRemoveClick?: () => void;
+    onRemoveClick: () => void;
     onExchangeChange: (exchange: Exchange) => void;
     onConfigChange: (config: ExchangeChartConfig) => void;
 };
@@ -35,7 +34,6 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
         defaultSymbols,
         typeOptions,
         hoursOptions,
-        onAddClick,
         onRemoveClick,
         onExchangeChange,
         onConfigChange,
@@ -73,12 +71,7 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
     );
 
     return (
-        <ChartContainer
-            controls={controls}
-            onAddClick={onAddClick}
-            onRemoveClick={onRemoveClick}
-            title="Z Score Heatmap"
-        >
+        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title="Z Score Heatmap">
             <CSHeatmap data={heatmap.data} visualMax={2} visualMin={-2} />
         </ChartContainer>
     );

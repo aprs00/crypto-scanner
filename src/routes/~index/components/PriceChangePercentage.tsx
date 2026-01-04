@@ -20,8 +20,7 @@ export type PriceChangePercentageProps = {
     timeFrameOptions: Record<string, string>;
     symbolOptions: string[];
     periodType: TimePeriodType;
-    onAddClick: () => void;
-    onRemoveClick?: () => void;
+    onRemoveClick: () => void;
     onExchangeChange: (exchange: Exchange) => void;
     onConfigChange: (config: ExchangeChartConfig) => void;
 };
@@ -35,7 +34,6 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         symbolOptions,
         timeFrameOptions,
         periodType,
-        onAddClick,
         onRemoveClick,
         onExchangeChange,
         onConfigChange,
@@ -112,12 +110,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     };
 
     return (
-        <ChartContainer
-            controls={controls}
-            onAddClick={onAddClick}
-            onRemoveClick={onRemoveClick}
-            title={titleMapper[periodType]}
-        >
+        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title={titleMapper[periodType]}>
             <ReactEChartsCore
                 echarts={echarts}
                 onChartReady={() => resizeEChart(chartRef)}

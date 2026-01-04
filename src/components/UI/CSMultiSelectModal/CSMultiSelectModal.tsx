@@ -22,7 +22,7 @@ const OptionsSection = <T extends string>({
         <div className="text-xs text-slate-500 px-2 pb-1">{label}</div>
         {options.map((option) => (
             <button
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xs text-left ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-700 cursor-pointer'}`}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xs text-left ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-700'}`}
                 disabled={disabled}
                 key={String(option)}
                 onClick={() => onToggle(option)}
@@ -106,7 +106,7 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
         <>
             {/* Trigger button */}
             <button
-                className={`${classes} rounded-xs border border-slate-500 px-2 h-8 text-left relative cursor-pointer focus:outline-none`}
+                className={`${classes} rounded-xs border border-slate-500 px-2 h-8 text-left relative focus:outline-none`}
                 onClick={handleOpen}
                 type="button"
             >
@@ -144,11 +144,11 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                 <div className="flex items-center justify-between px-4 py-3 border-b border-slate-600">
                                     <h3 className="text-lg font-medium text-slate-200">{title}</h3>
                                     <button
-                                        className="text-slate-400 hover:text-slate-200 cursor-pointer transition-colors duration-150"
+                                        className="text-slate-400 hover:text-slate-200 transition-colors duration-150"
                                         onClick={handleClose}
                                         type="button"
                                     >
-                                        <XIcon className="w-5 h-5" height={20} width={20} />
+                                        <XIcon className="size-5" />
                                     </button>
                                 </div>
 
@@ -164,11 +164,11 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                         />
                                         {searchQuery && (
                                             <button
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 cursor-pointer"
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
                                                 onClick={handleClearSearch}
                                                 type="button"
                                             >
-                                                <XIcon className="w-4 h-4" height={16} width={16} />
+                                                <XIcon className="size-4" />
                                             </button>
                                         )}
                                     </div>
@@ -184,7 +184,7 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                     <div className="flex gap-3">
                                         {defaultValue && (
                                             <button
-                                                className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer transition-colors duration-150"
+                                                className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-150"
                                                 onClick={handleResetToDefaults}
                                                 type="button"
                                             >
@@ -193,7 +193,7 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                         )}
                                         {!maxSelected && (
                                             <button
-                                                className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer transition-colors duration-150"
+                                                className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-150"
                                                 onClick={handleSelectAll}
                                                 type="button"
                                             >
@@ -201,7 +201,7 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                             </button>
                                         )}
                                         <button
-                                            className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer transition-colors duration-150"
+                                            className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-150"
                                             onClick={handleDeselectAll}
                                             type="button"
                                         >
@@ -241,7 +241,7 @@ const CSMultiSelectModal = <T extends string>(props: CSMultiSelectModalProps<T>)
                                 {/* Footer */}
                                 <div className="px-4 py-3 border-t border-slate-600 flex justify-end">
                                     <button
-                                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xs cursor-pointer transition-colors duration-150"
+                                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xs transition-colors duration-150"
                                         onClick={handleClose}
                                         type="button"
                                     >

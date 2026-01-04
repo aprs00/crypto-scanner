@@ -25,8 +25,7 @@ export type CorrelationPairHistoryProps = {
     hoursOptions: Record<string, string>;
     typeOptions: Array<DataType>;
     symbolOptions: string[];
-    onAddClick: () => void;
-    onRemoveClick?: () => void;
+    onRemoveClick: () => void;
     onExchangeChange: (exchange: Exchange) => void;
     onConfigChange: (config: ExchangeChartConfig) => void;
 };
@@ -43,7 +42,6 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
         hoursOptions,
         typeOptions,
         symbolOptions,
-        onAddClick,
         onRemoveClick,
         onExchangeChange,
         onConfigChange,
@@ -158,12 +156,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     );
 
     return (
-        <ChartContainer
-            controls={controls}
-            onAddClick={onAddClick}
-            onRemoveClick={onRemoveClick}
-            title={'Correlation Pair History'}
-        >
+        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title={'Correlation Pair History'}>
             <ReactEChartsCore
                 echarts={echarts}
                 notMerge={true}
