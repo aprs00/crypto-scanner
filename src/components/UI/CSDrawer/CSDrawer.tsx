@@ -19,7 +19,6 @@ const CSDrawer = (props: CSDrawerProps) => {
     const { handleTouchStart, handleTouchMove, handleTouchEnd, panelStyle, backdropStyle } = useDragToClose({
         isOpen,
         onClose,
-        enabled: !isDesktop,
     });
 
     return (

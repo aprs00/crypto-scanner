@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface UseDragToCloseOptions {
     isOpen: boolean;
@@ -19,7 +19,7 @@ interface UseDragToCloseReturn {
 }
 
 export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseReturn => {
-    const { isOpen, onClose, enabled = true, threshold = 100, velocityThreshold = 0.5 } = options;
+    const { isOpen, onClose, threshold = 100, velocityThreshold = 0.5 } = options;
 
     const [dragOffset, setDragOffset] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
@@ -34,39 +34,31 @@ export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseRe
         }
     }, [isOpen]);
 
-    const handleTouchStart = useCallback(
-        (e: React.TouchEvent) => {
-            if (!enabled) return;
+    const handleTouchStart = (e: React.TouchEvent) => {
+        const touchY = e.touches[0].clientY;
+        dragStartY.current = touchY;
+        dragStartTime.current = Date.now();
+        lastY.current = touchY;
+        setIsDragging(true);
+    };
 
-            const touchY = e.touches[0].clientY;
-            dragStartY.current = touchY;
-            dragStartTime.current = Date.now();
-            lastY.current = touchY;
-            setIsDragging(true);
-        },
-        [enabled],
-    );
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (!isDragging) return;
 
-    const handleTouchMove = useCallback(
-        (e: React.TouchEvent) => {
-            if (!enabled || !isDragging) return;
+        const touchY = e.touches[0].clientY;
+        const delta = touchY - dragStartY.current;
+        lastY.current = touchY;
 
-            const touchY = e.touches[0].clientY;
-            const delta = touchY - dragStartY.current;
-            lastY.current = touchY;
+        if (delta > 0) {
+            e.preventDefault();
+            setDragOffset(delta);
+        } else {
+            setDragOffset(0);
+        }
+    };
 
-            if (delta > 0) {
-                e.preventDefault();
-                setDragOffset(delta);
-            } else {
-                setDragOffset(0);
-            }
-        },
-        [enabled, isDragging],
-    );
-
-    const handleTouchEnd = useCallback(() => {
-        if (!enabled || !isDragging) return;
+    const handleTouchEnd = () => {
+        if (!isDragging) return;
 
         const dragDuration = Date.now() - dragStartTime.current;
         const velocity = dragOffset / dragDuration;
@@ -80,10 +72,10 @@ export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseRe
         }
 
         setIsDragging(false);
-    }, [enabled, isDragging, dragOffset, threshold, velocityThreshold, onClose]);
+    };
 
     const panelStyle: React.CSSProperties | undefined =
-        enabled && (isDragging || dragOffset > 0)
+        isDragging || dragOffset > 0
             ? {
                   transform: dragOffset > 0 ? `translateY(${dragOffset}px)` : undefined,
                   transition: isDragging ? 'none' : 'transform 0.2s ease-out',
@@ -91,7 +83,7 @@ export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseRe
               }
             : undefined;
 
-    const backdropStyle = enabled && dragOffset > 0 ? { opacity: Math.max(0.2, 1 - dragOffset / 500) } : undefined;
+    const backdropStyle = dragOffset > 0 ? { opacity: Math.max(0.2, 1 - dragOffset / 500) } : undefined;
 
     return {
         dragOffset,
