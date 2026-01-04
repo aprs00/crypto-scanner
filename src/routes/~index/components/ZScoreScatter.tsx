@@ -2,12 +2,12 @@ import type { SeriesOption } from 'echarts';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
-import CSMultiSelectModal from '@/components/UI/CSMultiSelectModal';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
 import { useZScoreScatter } from '../api';
 import { ContractType, Exchange, ExchangeChartConfig } from '../types';
+import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type ScatterProps = {
     exchange: Exchange;
@@ -53,7 +53,7 @@ const ZScoreScatter = (props: ScatterProps) => {
 
     const controls = (
         <>
-            <CSMultiSelectModal
+            <MultiSelectDrawer
                 classes="w-32"
                 defaultValue={defaultSymbols}
                 onChange={(nextSymbols) => {

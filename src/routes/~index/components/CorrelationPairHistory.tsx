@@ -5,7 +5,6 @@ import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
-import CSMultiSelectModal from '@/components/UI/CSMultiSelectModal';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 import { echarts } from '@/lib/echarts';
@@ -13,6 +12,7 @@ import { resizeEChart } from '@/utils/chart';
 
 import { useCorrelationPairHistory } from '../api';
 import { ContractType, DataType, Exchange, ExchangeChartConfig } from '../types';
+import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type CorrelationPairHistoryProps = {
     exchange: Exchange;
@@ -125,7 +125,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 options={symbolOptions}
                 value={baseSymbol}
             />
-            <CSMultiSelectModal
+            <MultiSelectDrawer
                 classes="w-32"
                 defaultValue={defaultComparisonSymbols}
                 maxSelected={32}

@@ -1,12 +1,12 @@
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSHeatmap from '@/components/Charts/CSHeatmap';
-import CSMultiSelectModal from '@/components/UI/CSMultiSelectModal';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
 import type { ContractType, DataType, Exchange, ExchangeChartConfig } from '../types';
 
 import { useBetaHeatmapData } from '../api';
+import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type BetaHeatmapProps = {
     exchange: Exchange;
@@ -43,7 +43,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
 
     const controls = (
         <>
-            <CSMultiSelectModal
+            <MultiSelectDrawer
                 classes="w-32"
                 defaultValue={defaultSymbols}
                 onChange={(nextSymbols) => {
