@@ -103,11 +103,12 @@ export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseRe
         isDraggingFromHandle.current = false;
     }, [enabled, isDragging, dragOffset, threshold, velocityThreshold, onClose]);
 
-    const panelStyle =
-        enabled && dragOffset > 0
+    const panelStyle: React.CSSProperties | undefined =
+        enabled && (isDragging || dragOffset > 0)
             ? {
-                  transform: `translateY(${dragOffset}px)`,
+                  transform: dragOffset > 0 ? `translateY(${dragOffset}px)` : undefined,
                   transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+                  touchAction: isDragging ? 'none' : undefined,
               }
             : undefined;
 
