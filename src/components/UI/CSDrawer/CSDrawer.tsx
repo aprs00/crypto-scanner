@@ -16,12 +16,11 @@ const CSDrawer = (props: CSDrawerProps) => {
     const { isOpen, onClose, title, children } = props;
     const isDesktop = useMediaQuery('(min-width: 768px)');
 
-    const { handleTouchStart, handleTouchMove, handleTouchEnd, scrollContainerRef, panelStyle, backdropStyle } =
-        useDragToClose({
-            isOpen,
-            onClose,
-            enabled: !isDesktop,
-        });
+    const { handleTouchStart, handleTouchMove, handleTouchEnd, panelStyle, backdropStyle } = useDragToClose({
+        isOpen,
+        onClose,
+        enabled: !isDesktop,
+    });
 
     return (
         <Transition appear as={Fragment} show={isOpen}>
@@ -52,30 +51,25 @@ const CSDrawer = (props: CSDrawerProps) => {
                             leaveTo={isDesktop ? 'translate-x-full' : 'translate-y-full'}
                         >
                             <DialogPanel
-                                className={`bg-slate-800 ${
-                                    isDesktop ? 'w-full max-w-md h-full' : 'w-full max-h-[80vh] rounded-t-2xl'
+                                className={`bg-slate-800 flex flex-col overflow-hidden ${
+                                    isDesktop ? 'w-full max-w-md h-full' : 'w-full h-[80vh] rounded-t-2xl'
                                 }`}
                                 style={panelStyle}
                             >
                                 {/* Drag handle for mobile */}
                                 {!isDesktop && (
                                     <div
-                                        className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none"
+                                        className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none shrink-0"
                                         onTouchEnd={handleTouchEnd}
                                         onTouchMove={handleTouchMove}
-                                        onTouchStart={(e) => handleTouchStart(e, true)}
+                                        onTouchStart={handleTouchStart}
                                     >
                                         <div className="w-12 h-1.5 bg-slate-600 rounded-full" />
                                     </div>
                                 )}
 
                                 {/* Header */}
-                                <div
-                                    className="flex items-center justify-between px-6 py-4 border-b border-slate-700"
-                                    onTouchEnd={isDesktop ? undefined : handleTouchEnd}
-                                    onTouchMove={isDesktop ? undefined : handleTouchMove}
-                                    onTouchStart={isDesktop ? undefined : (e) => handleTouchStart(e, true)}
-                                >
+                                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
                                     <h2 className="text-lg font-semibold text-white">{title}</h2>
                                     <button
                                         className="p-2 rounded-lg hover:bg-slate-700 transition-colors"
@@ -87,15 +81,7 @@ const CSDrawer = (props: CSDrawerProps) => {
                                 </div>
 
                                 {/* Content */}
-                                <div
-                                    className="overflow-y-auto max-h-[calc(80vh-80px)] md:max-h-[calc(100vh-80px)]"
-                                    onTouchEnd={isDesktop ? undefined : handleTouchEnd}
-                                    onTouchMove={isDesktop ? undefined : handleTouchMove}
-                                    onTouchStart={isDesktop ? undefined : (e) => handleTouchStart(e, false)}
-                                    ref={scrollContainerRef}
-                                >
-                                    {children}
-                                </div>
+                                <div className="flex-1 overflow-y-auto">{children}</div>
                             </DialogPanel>
                         </TransitionChild>
                     </div>

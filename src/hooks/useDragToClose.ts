@@ -11,10 +11,9 @@ interface UseDragToCloseOptions {
 interface UseDragToCloseReturn {
     dragOffset: number;
     isDragging: boolean;
-    handleTouchStart: (e: React.TouchEvent, isFromHandle?: boolean) => void;
+    handleTouchStart: (e: React.TouchEvent) => void;
     handleTouchMove: (e: React.TouchEvent) => void;
     handleTouchEnd: () => void;
-    scrollContainerRef: React.RefObject<HTMLDivElement | null>;
     panelStyle: React.CSSProperties | undefined;
     backdropStyle: React.CSSProperties | undefined;
 }
@@ -27,8 +26,6 @@ export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseRe
     const dragStartY = useRef(0);
     const dragStartTime = useRef(0);
     const lastY = useRef(0);
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const isDraggingFromHandle = useRef(false);
 
     useEffect(() => {
         if (!isOpen) {
@@ -37,32 +34,17 @@ export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseRe
         }
     }, [isOpen]);
 
-    const canStartDrag = useCallback((isFromHandle: boolean) => {
-        if (isFromHandle) return true;
-
-        const scrollContainer = scrollContainerRef.current;
-        if (scrollContainer && scrollContainer.scrollTop > 0) {
-            return false;
-        }
-
-        return true;
-    }, []);
-
     const handleTouchStart = useCallback(
-        (e: React.TouchEvent, isFromHandle = false) => {
+        (e: React.TouchEvent) => {
             if (!enabled) return;
 
             const touchY = e.touches[0].clientY;
-
-            if (!canStartDrag(isFromHandle)) return;
-
-            isDraggingFromHandle.current = isFromHandle;
             dragStartY.current = touchY;
             dragStartTime.current = Date.now();
             lastY.current = touchY;
             setIsDragging(true);
         },
-        [enabled, canStartDrag],
+        [enabled],
     );
 
     const handleTouchMove = useCallback(
@@ -74,9 +56,7 @@ export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseRe
             lastY.current = touchY;
 
             if (delta > 0) {
-                if (isDraggingFromHandle.current || scrollContainerRef.current?.scrollTop === 0) {
-                    e.preventDefault();
-                }
+                e.preventDefault();
                 setDragOffset(delta);
             } else {
                 setDragOffset(0);
@@ -100,7 +80,6 @@ export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseRe
         }
 
         setIsDragging(false);
-        isDraggingFromHandle.current = false;
     }, [enabled, isDragging, dragOffset, threshold, velocityThreshold, onClose]);
 
     const panelStyle: React.CSSProperties | undefined =
@@ -120,7 +99,6 @@ export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseRe
         handleTouchStart,
         handleTouchMove,
         handleTouchEnd,
-        scrollContainerRef,
         panelStyle,
         backdropStyle,
     };
