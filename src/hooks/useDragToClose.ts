@@ -103,21 +103,6 @@ export const useDragToClose = (options: UseDragToCloseOptions): UseDragToCloseRe
         isDraggingFromHandle.current = false;
     }, [enabled, isDragging, dragOffset, threshold, velocityThreshold, onClose]);
 
-    useEffect(() => {
-        if (isDragging && enabled) {
-            document.body.style.overflow = 'hidden';
-            document.body.style.touchAction = 'none';
-        } else {
-            document.body.style.overflow = '';
-            document.body.style.touchAction = '';
-        }
-
-        return () => {
-            document.body.style.overflow = '';
-            document.body.style.touchAction = '';
-        };
-    }, [isDragging, enabled]);
-
     const panelStyle =
         enabled && dragOffset > 0
             ? {
