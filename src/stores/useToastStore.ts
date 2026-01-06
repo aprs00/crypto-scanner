@@ -16,7 +16,7 @@ export interface Toast {
 
 interface ToastStore {
     toasts: Toast[];
-    showToast: (options: Omit<Toast, 'id'>) => void;
+    showToast: (toast: Toast) => void;
     removeToast: (toast: Toast) => void;
 }
 
@@ -25,12 +25,7 @@ const TOAST_DURATION = 3000;
 export const useToastStore = create<ToastStore>((set, get) => ({
     toasts: [],
 
-    showToast: (options) => {
-        const toast: Toast = {
-            message: options.message,
-            type: options.type,
-        };
-
+    showToast: (toast) => {
         set((state) => ({
             toasts: [...state.toasts, toast],
         }));
