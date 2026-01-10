@@ -4,12 +4,13 @@ import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
 import { useZScoreScatter3D } from '../api';
-import { ContractType, Exchange, ExchangeChartConfig } from '../types';
+import { ContractType, ExchangeChartConfig, ExchangeInfo } from '../types';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type Scatter3DProps = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
+    exchanges: ExchangeInfo[];
     xAxis: string;
     yAxis: string;
     zAxis: string;
@@ -19,7 +20,7 @@ export type Scatter3DProps = {
     defaultSymbols?: string[];
     hoursOptions: Record<string, string>;
     onRemoveClick: () => void;
-    onExchangeChange: (exchange: Exchange) => void;
+    onExchangeChange: (exchange: string) => void;
     onConfigChange: (config: ExchangeChartConfig) => void;
 };
 
@@ -27,6 +28,7 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
     const {
         exchange,
         contractType,
+        exchanges,
         hours,
         symbols,
         symbolOptions,
@@ -67,7 +69,7 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
                 options={hoursOptions}
                 value={hours}
             />
-            <ExchangeSelector onChange={onExchangeChange} value={exchange} />
+            <ExchangeSelector exchanges={exchanges} onChange={onExchangeChange} value={exchange} />
         </>
     );
 

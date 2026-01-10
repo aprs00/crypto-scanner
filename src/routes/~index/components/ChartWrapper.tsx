@@ -3,7 +3,6 @@ import {
     ChartType,
     ContractType,
     DataType,
-    Exchange,
     HoursOptionCategory,
     TimePeriodType,
     type ChartItem,
@@ -18,8 +17,10 @@ import ZScoreHeatmap from './ZScoreHeatmap';
 import Scatter from './ZScoreScatter';
 import Scatter3D from './ZScoreScatter3D';
 
+const DEFAULT_EXCHANGE = 'binance';
+
 const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: GridLayout }) => {
-    const exchange = savedLayout.exchange || Exchange.Binance;
+    const exchange = savedLayout.exchange || DEFAULT_EXCHANGE;
     const contractType = ContractType.Perpetual;
 
     const exchangeConfig = savedLayout.exchangeConfigs?.[exchange] || {};
@@ -31,10 +32,13 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
     const setChartExchange = useChartStore((state) => state.setChartExchange);
     const updateExchangeConfig = useChartStore((state) => state.updateExchangeConfig);
 
+    const exchanges = bootstrap.data?.exchanges || [];
+
     const commonProps = {
         exchange,
         contractType,
-        onExchangeChange: (newExchange: Exchange) => setChartExchange(chart.id, newExchange),
+        exchanges,
+        onExchangeChange: (newExchange: string) => setChartExchange(chart.id, newExchange),
         onConfigChange: (config: ExchangeChartConfig) => updateExchangeConfig(chart.id, exchange, config),
         onRemoveClick: () => removeChart(chart.id, chart.type),
     };
@@ -66,7 +70,9 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     yAxis={exchangeConfig.yAxis || DataType.Volume}
                 />
             );
-        case ChartType.Scatter3D:
+        case ChartType.Scatter3D: {
+            const dataTypes = bootstrap.data?.data_types || [];
+            const defaultZAxis = dataTypes.includes(DataType.Trades) ? DataType.Trades : DataType.Volume;
             return (
                 <Scatter3D
                     {...commonProps}
@@ -77,9 +83,10 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     symbols={exchangeConfig.symbols ?? chartDefaults?.heatmap.symbols ?? []}
                     xAxis={exchangeConfig.xAxis || DataType.Price}
                     yAxis={exchangeConfig.yAxis || DataType.Volume}
-                    zAxis={exchangeConfig.zAxis || DataType.Trades}
+                    zAxis={exchangeConfig.zAxis || defaultZAxis}
                 />
             );
+        }
         case ChartType.ZScoreHeatmap:
             return (
                 <ZScoreHeatmap

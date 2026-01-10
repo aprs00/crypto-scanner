@@ -10,18 +10,19 @@ import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
 import { usePriceChangePercentage } from '../api';
-import { ContractType, Exchange, ExchangeChartConfig, TimePeriodType } from '../types';
+import { ContractType, ExchangeChartConfig, ExchangeInfo, TimePeriodType } from '../types';
 
 export type PriceChangePercentageProps = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
+    exchanges: ExchangeInfo[];
     hours: string;
     symbol: string;
     timeFrameOptions: Record<string, string>;
     symbolOptions: string[];
     periodType: TimePeriodType;
     onRemoveClick: () => void;
-    onExchangeChange: (exchange: Exchange) => void;
+    onExchangeChange: (exchange: string) => void;
     onConfigChange: (config: ExchangeChartConfig) => void;
 };
 
@@ -29,6 +30,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const {
         exchange,
         contractType,
+        exchanges,
         symbol,
         hours,
         symbolOptions,
@@ -71,7 +73,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
                 options={symbolOptions}
                 value={symbol}
             />
-            <ExchangeSelector onChange={onExchangeChange} value={exchange} />
+            <ExchangeSelector exchanges={exchanges} onChange={onExchangeChange} value={exchange} />
         </>
     );
 

@@ -11,12 +11,13 @@ import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
 import { useCorrelationPairHistory } from '../api';
-import { ContractType, DataType, Exchange, ExchangeChartConfig } from '../types';
+import { ContractType, DataType, ExchangeChartConfig, ExchangeInfo } from '../types';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type CorrelationPairHistoryProps = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
+    exchanges: ExchangeInfo[];
     baseSymbol: string;
     comparisonSymbols: string[];
     defaultComparisonSymbols?: string[];
@@ -26,7 +27,7 @@ export type CorrelationPairHistoryProps = {
     typeOptions: Array<DataType>;
     symbolOptions: string[];
     onRemoveClick: () => void;
-    onExchangeChange: (exchange: Exchange) => void;
+    onExchangeChange: (exchange: string) => void;
     onConfigChange: (config: ExchangeChartConfig) => void;
 };
 
@@ -34,6 +35,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     const {
         exchange,
         contractType,
+        exchanges,
         baseSymbol,
         comparisonSymbols,
         defaultComparisonSymbols,
@@ -151,7 +153,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 options={typeOptions}
                 value={dataType}
             />
-            <ExchangeSelector onChange={onExchangeChange} value={exchange} />
+            <ExchangeSelector exchanges={exchanges} onChange={onExchangeChange} value={exchange} />
         </>
     );
 

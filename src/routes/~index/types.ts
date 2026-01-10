@@ -1,11 +1,9 @@
 import { type Layout } from 'react-grid-layout';
 
-export const Exchange = {
-    Binance: 'binance',
-    Hyperliquid: 'hyperliquid',
-} as const;
-
-export type Exchange = (typeof Exchange)[keyof typeof Exchange];
+export interface ExchangeInfo {
+    id: string;
+    name: string;
+}
 
 export const ContractType = {
     Perpetual: 'perpetual',
@@ -38,7 +36,7 @@ export const TimePeriodType = {
 export type TimePeriodType = (typeof TimePeriodType)[keyof typeof TimePeriodType];
 
 export type AveragePriceChangeParams = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
     hours: string;
     symbol: string;
@@ -46,7 +44,7 @@ export type AveragePriceChangeParams = {
 };
 
 export type HeatmapParams = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
     hours: string;
     type: string;
@@ -54,7 +52,7 @@ export type HeatmapParams = {
 };
 
 export type ZScoreScatterParams = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
     xAxis: string;
     yAxis: string;
@@ -63,7 +61,7 @@ export type ZScoreScatterParams = {
 };
 
 export type ZScoreScatter3DParams = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
     xAxis: string;
     yAxis: string;
@@ -73,7 +71,7 @@ export type ZScoreScatter3DParams = {
 };
 
 export type ZScoreHeatmapParams = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
     type: string;
     hours: string;
@@ -81,7 +79,7 @@ export type ZScoreHeatmapParams = {
 };
 
 export type CorrelationPairHistoryParams = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
     baseSymbol: string;
     comparisonSymbols: string[];
@@ -109,7 +107,8 @@ export type ChartDefaults = {
 };
 
 export type BootstrapResponse = {
-    exchange: Exchange;
+    exchanges: ExchangeInfo[];
+    exchange: string;
     contract_type: ContractType;
     chart_defaults: ChartDefaults;
     data_types: Array<DataType>;
@@ -118,7 +117,7 @@ export type BootstrapResponse = {
 };
 
 export type BootstrapParams = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
 };
 
@@ -162,8 +161,8 @@ export interface ChartTemplate {
 
 export interface GridLayout {
     layout?: Layout;
-    exchange?: Exchange;
-    exchangeConfigs?: Partial<Record<Exchange, ExchangeChartConfig>>;
+    exchange?: string;
+    exchangeConfigs?: Partial<Record<string, ExchangeChartConfig>>;
 }
 
 export interface ChartGroup {

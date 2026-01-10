@@ -5,7 +5,6 @@ import { persist } from 'zustand/middleware';
 import {
     ChartType,
     DEFAULT_GROUP_ID,
-    Exchange,
     type ChartGroup,
     type ChartItem,
     type ChartTemplate,
@@ -47,8 +46,8 @@ export interface ChartStore {
     removeChart: (id: string, type: ChartType) => void;
     saveGridLayout: (key: string, layout: Layout) => void;
     handleLayoutChange: (layouts: Layout[]) => void;
-    setChartExchange: (chartId: string, exchange: Exchange) => void;
-    updateExchangeConfig: (chartId: string, exchange: Exchange, config: ExchangeChartConfig) => void;
+    setChartExchange: (chartId: string, exchange: string) => void;
+    updateExchangeConfig: (chartId: string, exchange: string, config: ExchangeChartConfig) => void;
     setActiveGroup: (groupId: string) => void;
     createGroup: (name: string) => string;
     renameGroup: (groupId: string, name: string) => void;
@@ -118,7 +117,7 @@ const useChartStore = create<ChartStore>()(
                     state.saveGridLayout(i, { x, y, w, h, i });
                 });
             },
-            setChartExchange: (chartId: string, exchange: Exchange) => {
+            setChartExchange: (chartId: string, exchange: string) => {
                 set((state) => {
                     const currentLayout = state.savedGridLayouts[chartId] || {};
                     return {
@@ -132,7 +131,7 @@ const useChartStore = create<ChartStore>()(
                     };
                 });
             },
-            updateExchangeConfig: (chartId: string, exchange: Exchange, config: ExchangeChartConfig) => {
+            updateExchangeConfig: (chartId: string, exchange: string, config: ExchangeChartConfig) => {
                 set((state) => {
                     const currentLayout = state.savedGridLayouts[chartId] || {};
                     const currentExchangeConfigs = currentLayout.exchangeConfigs || {};

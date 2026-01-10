@@ -3,14 +3,15 @@ import CSHeatmap from '@/components/Charts/CSHeatmap';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
-import type { ContractType, DataType, Exchange, ExchangeChartConfig } from '../types';
+import type { ContractType, DataType, ExchangeChartConfig, ExchangeInfo } from '../types';
 
 import { useZScoreHeatmap } from '../api';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type ZScoreHeatmapProps = {
-    exchange: Exchange;
+    exchange: string;
     contractType: ContractType;
+    exchanges: ExchangeInfo[];
     hours: string;
     dataType: DataType;
     symbols: string[];
@@ -19,7 +20,7 @@ export type ZScoreHeatmapProps = {
     typeOptions: Array<DataType>;
     hoursOptions: Record<string, string>;
     onRemoveClick: () => void;
-    onExchangeChange: (exchange: Exchange) => void;
+    onExchangeChange: (exchange: string) => void;
     onConfigChange: (config: ExchangeChartConfig) => void;
 };
 
@@ -27,6 +28,7 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
     const {
         exchange,
         contractType,
+        exchanges,
         hours,
         dataType,
         symbols,
@@ -66,7 +68,7 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
                 options={typeOptions}
                 value={dataType}
             />
-            <ExchangeSelector onChange={onExchangeChange} value={exchange} />
+            <ExchangeSelector exchanges={exchanges} onChange={onExchangeChange} value={exchange} />
         </>
     );
 

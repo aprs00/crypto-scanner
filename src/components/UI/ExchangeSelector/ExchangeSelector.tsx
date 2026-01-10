@@ -1,18 +1,16 @@
 import CSSelect from '@/components/UI/CSSelect';
-import { Exchange } from '@/routes/~index/types';
+import { ExchangeInfo } from '@/routes/~index/types';
 
 export type ExchangeSelectorProps = {
-    value: Exchange;
-    onChange: (exchange: Exchange) => void;
+    value: string;
+    onChange: (exchange: string) => void;
+    exchanges: ExchangeInfo[];
 };
 
-const exchangeOptions: Record<string, string> = {
-    Binance: Exchange.Binance,
-    Hyperliquid: Exchange.Hyperliquid,
-};
+const ExchangeSelector = ({ value, onChange, exchanges }: ExchangeSelectorProps) => {
+    const exchangeOptions: Record<string, string> = Object.fromEntries(exchanges.map((e) => [e.name, e.id]));
 
-const ExchangeSelector = ({ value, onChange }: ExchangeSelectorProps) => {
-    return <CSSelect<Exchange> classes="w-32" onChange={onChange} options={exchangeOptions} value={value} />;
+    return <CSSelect<string> classes="w-32" onChange={onChange} options={exchangeOptions} value={value} />;
 };
 
 export default ExchangeSelector;
