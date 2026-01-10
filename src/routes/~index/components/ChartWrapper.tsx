@@ -1,7 +1,6 @@
 import { useBootstrap } from '../api';
 import {
     ChartType,
-    ContractType,
     DataType,
     HoursOptionCategory,
     TimePeriodType,
@@ -21,12 +20,17 @@ const DEFAULT_EXCHANGE = 'binance';
 
 const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: GridLayout }) => {
     const exchange = savedLayout.exchange || DEFAULT_EXCHANGE;
-    const contractType = ContractType.Perpetual;
 
     const exchangeConfig = savedLayout.exchangeConfigs?.[exchange] || {};
 
-    const bootstrap = useBootstrap({ exchange, contractType });
-    const chartDefaults = bootstrap.data?.chart_defaults;
+    const bootstrap = useBootstrap();
+
+    // Extract exchange-specific data
+    const exchangeData = bootstrap.data?.exchange_data?.[exchange];
+    const chartDefaults = exchangeData?.chart_defaults;
+    const symbols = exchangeData?.symbols || [];
+    const dataTypes = exchangeData?.data_types || [];
+    const hoursOptions = exchangeData?.hours_options || {};
 
     const removeChart = useChartStore((state) => state.removeChart);
     const setChartExchange = useChartStore((state) => state.setChartExchange);
@@ -36,7 +40,6 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
 
     const commonProps = {
         exchange,
-        contractType,
         exchanges,
         onExchangeChange: (newExchange: string) => setChartExchange(chart.id, newExchange),
         onConfigChange: (config: ExchangeChartConfig) => updateExchangeConfig(chart.id, exchange, config),
@@ -51,10 +54,10 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     dataType={exchangeConfig.dataType || DataType.Price}
                     defaultSymbols={chartDefaults?.heatmap.symbols}
                     hours={exchangeConfig.hours || '4'}
-                    hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.Correlation] || {}}
-                    symbolOptions={bootstrap.data?.symbols || []}
+                    hoursOptions={hoursOptions[HoursOptionCategory.Correlation] || {}}
+                    symbolOptions={symbols}
                     symbols={exchangeConfig.symbols ?? chartDefaults?.heatmap.symbols ?? []}
-                    typeOptions={bootstrap.data?.data_types || []}
+                    typeOptions={dataTypes}
                 />
             );
         case ChartType.Scatter:
@@ -63,23 +66,22 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     {...commonProps}
                     defaultSymbols={chartDefaults?.heatmap.symbols}
                     hours={exchangeConfig.hours || '4'}
-                    hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
-                    symbolOptions={bootstrap.data?.symbols || []}
+                    hoursOptions={hoursOptions[HoursOptionCategory.ZScore] || {}}
+                    symbolOptions={symbols}
                     symbols={exchangeConfig.symbols ?? chartDefaults?.heatmap.symbols ?? []}
                     xAxis={exchangeConfig.xAxis || DataType.Price}
                     yAxis={exchangeConfig.yAxis || DataType.Volume}
                 />
             );
         case ChartType.Scatter3D: {
-            const dataTypes = bootstrap.data?.data_types || [];
             const defaultZAxis = dataTypes.includes(DataType.Trades) ? DataType.Trades : DataType.Volume;
             return (
                 <Scatter3D
                     {...commonProps}
                     defaultSymbols={chartDefaults?.heatmap.symbols}
                     hours={exchangeConfig.hours || '4'}
-                    hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
-                    symbolOptions={bootstrap.data?.symbols || []}
+                    hoursOptions={hoursOptions[HoursOptionCategory.ZScore] || {}}
+                    symbolOptions={symbols}
                     symbols={exchangeConfig.symbols ?? chartDefaults?.heatmap.symbols ?? []}
                     xAxis={exchangeConfig.xAxis || DataType.Price}
                     yAxis={exchangeConfig.yAxis || DataType.Volume}
@@ -94,10 +96,10 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     dataType={exchangeConfig.dataType || DataType.Price}
                     defaultSymbols={chartDefaults?.heatmap.symbols}
                     hours={exchangeConfig.hours || '4'}
-                    hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.ZScore] || {}}
-                    symbolOptions={bootstrap.data?.symbols || []}
+                    hoursOptions={hoursOptions[HoursOptionCategory.ZScore] || {}}
+                    symbolOptions={symbols}
                     symbols={exchangeConfig.symbols ?? chartDefaults?.heatmap.symbols ?? []}
-                    typeOptions={bootstrap.data?.data_types || []}
+                    typeOptions={dataTypes}
                 />
             );
         case ChartType.PriceChangePercentageDay:
@@ -107,8 +109,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     hours={exchangeConfig.hours || '168'}
                     periodType={TimePeriodType.Day}
                     symbol={exchangeConfig.symbol || chartDefaults?.price_change_percentage.symbol || ''}
-                    symbolOptions={bootstrap.data?.symbols || []}
-                    timeFrameOptions={bootstrap.data?.hours_options[HoursOptionCategory.AveragePrice] || {}}
+                    symbolOptions={symbols}
+                    timeFrameOptions={hoursOptions[HoursOptionCategory.AveragePrice] || {}}
                 />
             );
         case ChartType.PriceChangePercentageHour:
@@ -118,8 +120,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     hours={exchangeConfig.hours || '168'}
                     periodType={TimePeriodType.Hour}
                     symbol={exchangeConfig.symbol || chartDefaults?.price_change_percentage.symbol || ''}
-                    symbolOptions={bootstrap.data?.symbols || []}
-                    timeFrameOptions={bootstrap.data?.hours_options[HoursOptionCategory.AveragePrice] || {}}
+                    symbolOptions={symbols}
+                    timeFrameOptions={hoursOptions[HoursOptionCategory.AveragePrice] || {}}
                 />
             );
         case ChartType.CorrelationPairHistory:
@@ -135,9 +137,9 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     dataType={exchangeConfig.dataType || DataType.Price}
                     defaultComparisonSymbols={chartDefaults?.correlation_pair_history.comparison_symbols}
                     hours={exchangeConfig.hours || '1'}
-                    hoursOptions={bootstrap.data?.hours_options[HoursOptionCategory.CorrelationPair] || {}}
-                    symbolOptions={bootstrap.data?.symbols || []}
-                    typeOptions={bootstrap.data?.data_types || []}
+                    hoursOptions={hoursOptions[HoursOptionCategory.CorrelationPair] || {}}
+                    symbolOptions={symbols}
+                    typeOptions={dataTypes}
                 />
             );
     }

@@ -10,11 +10,10 @@ import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
 import { usePriceChangePercentage } from '../api';
-import { ContractType, ExchangeChartConfig, ExchangeInfo, TimePeriodType } from '../types';
+import { ExchangeChartConfig, ExchangeInfo, TimePeriodType } from '../types';
 
 export type PriceChangePercentageProps = {
     exchange: string;
-    contractType: ContractType;
     exchanges: ExchangeInfo[];
     hours: string;
     symbol: string;
@@ -29,7 +28,6 @@ export type PriceChangePercentageProps = {
 const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const {
         exchange,
-        contractType,
         exchanges,
         symbol,
         hours,
@@ -45,7 +43,6 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
 
     const priceChangePercentageApi = usePriceChangePercentage({
         exchange,
-        contractType,
         hours,
         symbol,
         type: periodType,

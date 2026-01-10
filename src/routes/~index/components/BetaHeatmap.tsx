@@ -3,14 +3,13 @@ import CSHeatmap from '@/components/Charts/CSHeatmap';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
-import type { ContractType, DataType, ExchangeChartConfig, ExchangeInfo } from '../types';
+import type { DataType, ExchangeChartConfig, ExchangeInfo } from '../types';
 
 import { useBetaHeatmapData } from '../api';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type BetaHeatmapProps = {
     exchange: string;
-    contractType: ContractType;
     exchanges: ExchangeInfo[];
     hours: string;
     dataType: DataType;
@@ -27,7 +26,6 @@ export type BetaHeatmapProps = {
 const BetaHeatmap = (props: BetaHeatmapProps) => {
     const {
         exchange,
-        contractType,
         exchanges,
         hours,
         dataType,
@@ -41,7 +39,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
         onConfigChange,
     } = props;
 
-    const betaHeatmap = useBetaHeatmapData({ exchange, contractType, hours, symbols, type: dataType });
+    const betaHeatmap = useBetaHeatmapData({ exchange, hours, symbols, type: dataType });
 
     const controls = (
         <>

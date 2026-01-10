@@ -12,7 +12,6 @@ import api from '@/lib/api';
 import {
     AveragePriceChangeParams,
     AveragePriceChangeResponse,
-    BootstrapParams,
     HeatmapParams,
     ZScoreHeatmapParams,
     ZScoreScatterParams,
@@ -60,10 +59,10 @@ const useZScoreHeatmap = (params: ZScoreHeatmapParams) =>
         queryKey: ['z-score-heatmap', params],
     });
 
-const useBootstrap = (params: BootstrapParams) =>
+const useBootstrap = () =>
     useQuery({
-        queryFn: async () => (await api.get<BootstrapResponse>('bootstrap', { params })).data,
-        queryKey: ['bootstrap', params],
+        queryFn: async () => (await api.get<BootstrapResponse>('bootstrap')).data,
+        queryKey: ['bootstrap'],
     });
 
 const useCorrelationPairHistory = (params: CorrelationPairHistoryParams) =>

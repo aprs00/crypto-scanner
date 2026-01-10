@@ -3,13 +3,12 @@ import CSScatter3D from '@/components/Charts/CSScatter3D';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
-import { useZScoreScatter3D } from '../api';
-import { ContractType, ExchangeChartConfig, ExchangeInfo } from '../types';
+import { useBootstrap, useZScoreScatter3D } from '../api';
+import { ExchangeChartConfig, ExchangeInfo } from '../types';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type Scatter3DProps = {
     exchange: string;
-    contractType: ContractType;
     exchanges: ExchangeInfo[];
     xAxis: string;
     yAxis: string;
@@ -27,7 +26,6 @@ export type Scatter3DProps = {
 const ZScoreScatter3D = (props: Scatter3DProps) => {
     const {
         exchange,
-        contractType,
         exchanges,
         hours,
         symbols,
@@ -42,7 +40,14 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
         onConfigChange,
     } = props;
 
-    const zScoreScatter3D = useZScoreScatter3D({ exchange, contractType, hours, xAxis, yAxis, zAxis, symbols });
+    const bootstrap = useBootstrap();
+
+    const filteredExchanges = exchanges.filter((ex) => {
+        const exchangeData = bootstrap.data?.exchange_data?.[ex.id];
+        return exchangeData?.data_types.length === 3;
+    });
+
+    const zScoreScatter3D = useZScoreScatter3D({ exchange, hours, xAxis, yAxis, zAxis, symbols });
 
     const scatterData =
         zScoreScatter3D.data?.map((item) => ({
@@ -69,7 +74,7 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
                 options={hoursOptions}
                 value={hours}
             />
-            <ExchangeSelector exchanges={exchanges} onChange={onExchangeChange} value={exchange} />
+            <ExchangeSelector exchanges={filteredExchanges} onChange={onExchangeChange} value={exchange} />
         </>
     );
 

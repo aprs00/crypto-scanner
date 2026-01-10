@@ -6,12 +6,11 @@ import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
 import { useZScoreScatter } from '../api';
-import { ContractType, ExchangeChartConfig, ExchangeInfo } from '../types';
+import { ExchangeChartConfig, ExchangeInfo } from '../types';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type ScatterProps = {
     exchange: string;
-    contractType: ContractType;
     exchanges: ExchangeInfo[];
     xAxis: string;
     yAxis: string;
@@ -28,7 +27,6 @@ export type ScatterProps = {
 const ZScoreScatter = (props: ScatterProps) => {
     const {
         exchange,
-        contractType,
         exchanges,
         hours,
         symbols,
@@ -42,7 +40,7 @@ const ZScoreScatter = (props: ScatterProps) => {
         onConfigChange,
     } = props;
 
-    const zScoreScatter = useZScoreScatter({ exchange, contractType, hours, xAxis, yAxis, symbols });
+    const zScoreScatter = useZScoreScatter({ exchange, hours, xAxis, yAxis, symbols });
 
     const scatterData: SeriesOption[] =
         zScoreScatter.data?.map((item) => ({

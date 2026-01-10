@@ -11,12 +11,11 @@ import { echarts } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
 import { useCorrelationPairHistory } from '../api';
-import { ContractType, DataType, ExchangeChartConfig, ExchangeInfo } from '../types';
+import { DataType, ExchangeChartConfig, ExchangeInfo } from '../types';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type CorrelationPairHistoryProps = {
     exchange: string;
-    contractType: ContractType;
     exchanges: ExchangeInfo[];
     baseSymbol: string;
     comparisonSymbols: string[];
@@ -34,7 +33,6 @@ export type CorrelationPairHistoryProps = {
 const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     const {
         exchange,
-        contractType,
         exchanges,
         baseSymbol,
         comparisonSymbols,
@@ -53,7 +51,6 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
 
     const correlationPairHistory = useCorrelationPairHistory({
         exchange,
-        contractType,
         baseSymbol,
         comparisonSymbols,
         type: dataType,

@@ -37,7 +37,6 @@ export type TimePeriodType = (typeof TimePeriodType)[keyof typeof TimePeriodType
 
 export type AveragePriceChangeParams = {
     exchange: string;
-    contractType: ContractType;
     hours: string;
     symbol: string;
     type: TimePeriodType;
@@ -45,7 +44,6 @@ export type AveragePriceChangeParams = {
 
 export type HeatmapParams = {
     exchange: string;
-    contractType: ContractType;
     hours: string;
     type: string;
     symbols?: string[];
@@ -53,7 +51,6 @@ export type HeatmapParams = {
 
 export type ZScoreScatterParams = {
     exchange: string;
-    contractType: ContractType;
     xAxis: string;
     yAxis: string;
     hours: string;
@@ -62,7 +59,6 @@ export type ZScoreScatterParams = {
 
 export type ZScoreScatter3DParams = {
     exchange: string;
-    contractType: ContractType;
     xAxis: string;
     yAxis: string;
     zAxis: string;
@@ -72,7 +68,6 @@ export type ZScoreScatter3DParams = {
 
 export type ZScoreHeatmapParams = {
     exchange: string;
-    contractType: ContractType;
     type: string;
     hours: string;
     symbols?: string[];
@@ -80,7 +75,6 @@ export type ZScoreHeatmapParams = {
 
 export type CorrelationPairHistoryParams = {
     exchange: string;
-    contractType: ContractType;
     baseSymbol: string;
     comparisonSymbols: string[];
     type: string;
@@ -108,17 +102,15 @@ export type ChartDefaults = {
 
 export type BootstrapResponse = {
     exchanges: ExchangeInfo[];
-    exchange: string;
-    contract_type: ContractType;
-    chart_defaults: ChartDefaults;
-    data_types: Array<DataType>;
-    hours_options: Record<string, Record<string, string>>;
-    symbols: string[];
-};
-
-export type BootstrapParams = {
-    exchange: string;
-    contractType: ContractType;
+    exchange_data: Record<
+        string,
+        {
+            symbols: string[];
+            data_types: Array<DataType>;
+            hours_options: Record<string, Record<string, string>>;
+            chart_defaults: ChartDefaults;
+        }
+    >;
 };
 
 export type CorrelationPairHistoryResponse = {
