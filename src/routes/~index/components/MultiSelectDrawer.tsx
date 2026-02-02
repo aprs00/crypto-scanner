@@ -168,7 +168,10 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
                     </div>
 
                     {/* Scrollable options list */}
-                    <div className="flex-1 min-h-0 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full">
+                    <div
+                        className="flex-1 min-h-0 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full"
+                        data-drag-scroll
+                    >
                         {filteredSelected.length > 0 && (
                             <div className="p-2">
                                 <SectionLabel label="Selected" />

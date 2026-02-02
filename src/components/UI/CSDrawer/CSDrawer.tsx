@@ -15,7 +15,6 @@ interface CSDrawerProps {
 const CSDrawer = (props: CSDrawerProps) => {
     const { isOpen, onClose, title, children } = props;
     const isDesktop = useMediaQuery('(min-width: 768px)');
-
     const { handleTouchStart, handleTouchMove, handleTouchEnd, panelStyle, backdropStyle } = useDragToClose({
         isOpen,
         onClose,
@@ -53,17 +52,15 @@ const CSDrawer = (props: CSDrawerProps) => {
                                 className={`bg-slate-800 flex flex-col overflow-hidden ${
                                     isDesktop ? 'w-full max-w-md h-full' : 'w-full h-[80vh] rounded-t-2xl'
                                 }`}
+                                onTouchEnd={handleTouchEnd}
+                                onTouchMove={handleTouchMove}
+                                onTouchStart={handleTouchStart}
                                 style={panelStyle}
                             >
                                 {/* Drag handle for mobile */}
                                 {!isDesktop && (
-                                    <div
-                                        className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none shrink-0"
-                                        onTouchEnd={handleTouchEnd}
-                                        onTouchMove={handleTouchMove}
-                                        onTouchStart={handleTouchStart}
-                                    >
-                                        <div className="w-12 h-1.5 bg-slate-600 rounded-full" />
+                                    <div className="flex justify-center cursor-grab active:cursor-grabbing touch-none shrink-0">
+                                        <div className="w-16 h-1.5 bg-slate-600 rounded-b-full" />
                                     </div>
                                 )}
 
@@ -80,7 +77,9 @@ const CSDrawer = (props: CSDrawerProps) => {
                                 </div>
 
                                 {/* Content */}
-                                <div className="flex-1 overflow-y-auto">{children}</div>
+                                <div className="flex-1 overflow-y-auto" data-drag-scroll>
+                                    {children}
+                                </div>
                             </DialogPanel>
                         </TransitionChild>
                     </div>
