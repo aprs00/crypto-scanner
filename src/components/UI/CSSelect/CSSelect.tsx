@@ -6,7 +6,7 @@ import { SelectIcon } from '@/components/Icons';
 export type SelectProps<T = string> =
     | {
           options: Record<string, string> | T[];
-          value: T;
+          value: T | undefined;
           classes?: string;
           onChange: (value: T) => void;
           multiple?: false;
@@ -45,8 +45,11 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
             }
             return <span className="text-slate-200 truncate">{value.length} selected</span>;
         } else {
+            if (value === undefined || value === null) {
+                return <span className="text-slate-400">Select...</span>;
+            }
             const option = normalizedOptions.find((opt) => opt.value === value);
-            return <span className="text-slate-200 truncate">{option?.label}</span>;
+            return <span className="text-slate-200 truncate">{option?.label ?? 'Select...'}</span>;
         }
     };
 

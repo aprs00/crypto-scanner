@@ -36,6 +36,9 @@ export const chartTemplates: Record<ChartType, ChartTemplate> = {
     [ChartType.PriceChangePercentageHour]: {
         gridLayout: { h: 20, w: 12, x: 0, y: CHART_HEIGHT * 6, i: '7' },
     },
+    [ChartType.CointegrationLiveTable]: {
+        gridLayout: { h: 20, w: 12, x: 0, y: CHART_HEIGHT * 7, i: '8' },
+    },
 };
 
 export interface ChartStore {
@@ -57,12 +60,13 @@ export interface ChartStore {
 
 const getDefaultChartIds = () => [
     { type: ChartType.BetaHeatmap, id: crypto.randomUUID() },
+    { type: ChartType.CorrelationPairHistory, id: crypto.randomUUID() },
+    { type: ChartType.CointegrationLiveTable, id: crypto.randomUUID() },
     { type: ChartType.Scatter, id: crypto.randomUUID() },
     { type: ChartType.Scatter3D, id: crypto.randomUUID() },
     { type: ChartType.ZScoreHeatmap, id: crypto.randomUUID() },
     { type: ChartType.PriceChangePercentageDay, id: crypto.randomUUID() },
     { type: ChartType.PriceChangePercentageHour, id: crypto.randomUUID() },
-    { type: ChartType.CorrelationPairHistory, id: crypto.randomUUID() },
 ];
 
 const createDefaultGroup = (chartIds: string[]): ChartGroup => ({

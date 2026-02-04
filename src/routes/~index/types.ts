@@ -35,6 +35,13 @@ export const TimePeriodType = {
 
 export type TimePeriodType = (typeof TimePeriodType)[keyof typeof TimePeriodType];
 
+export const SortDirection = {
+    Asc: 'asc',
+    Desc: 'desc',
+} as const;
+
+export type SortDirection = (typeof SortDirection)[keyof typeof SortDirection];
+
 export type AveragePriceChangeParams = {
     exchange: string;
     hours: string;
@@ -81,6 +88,16 @@ export type CorrelationPairHistoryParams = {
     hours: string;
 };
 
+export type CointegrationLiveTableParams = {
+    exchange: string;
+    window?: string;
+    contractType?: string;
+    limit?: number;
+    offset?: number;
+    sort?: string;
+    sortDirection?: SortDirection;
+};
+
 export type AveragePriceChangeResponse = {
     data: {
         value: number;
@@ -111,10 +128,38 @@ export type BootstrapResponse = {
             chart_defaults: ChartDefaults;
         }
     >;
+    cointegration_live_table: CointegrationLiveTableConfig;
 };
 
 export type CorrelationPairHistoryResponse = {
     history: [number, string][][];
+};
+
+export type CointegrationLiveTableRow = {
+    pair: string;
+    symbol1: string;
+    symbol2: string;
+    spread_z: number;
+    half_life: number | null;
+    adf_t: number;
+    hedge_ratio: number;
+    intercept: number;
+    spread_std: number;
+    updated_at: string;
+};
+
+export type CointegrationLiveTableResponse = {
+    data: CointegrationLiveTableRow[];
+};
+
+export type CointegrationLiveTableConfig = {
+    window_options: Record<string, string>;
+    limit_options: number[];
+    sort_key_to_column_id: Record<string, string>;
+    column_id_to_sort_key: Record<string, string>;
+    right_aligned_columns: string[];
+    sortable_column_ids: string[];
+    default_sort_desc: Record<string, boolean>;
 };
 
 export interface ExchangeChartConfig {
@@ -128,6 +173,10 @@ export interface ExchangeChartConfig {
     symbols?: string[];
     dataType?: DataType;
     periodType?: TimePeriodType;
+    window?: string;
+    sort?: string;
+    sortDirection?: SortDirection;
+    limit?: number;
 }
 
 export const ChartType = {
@@ -138,6 +187,7 @@ export const ChartType = {
     PriceChangePercentageDay: 'priceChangePercentageDay',
     PriceChangePercentageHour: 'priceChangePercentageHour',
     CorrelationPairHistory: 'correlationPairHistory',
+    CointegrationLiveTable: 'cointegrationLiveTable',
 } as const;
 
 export type ChartType = (typeof ChartType)[keyof typeof ChartType];
@@ -173,6 +223,7 @@ export const ChartTypeLabels: Record<ChartType, string> = {
     [ChartType.PriceChangePercentageDay]: 'Price Change % (Day)',
     [ChartType.PriceChangePercentageHour]: 'Price Change % (Hour)',
     [ChartType.CorrelationPairHistory]: 'Correlation Pair History',
+    [ChartType.CointegrationLiveTable]: 'Cointegration Table (Pairs / Mean-Reversion)',
 };
 
 export const ChartTypeDescriptions: Record<ChartType, string> = {
@@ -183,4 +234,5 @@ export const ChartTypeDescriptions: Record<ChartType, string> = {
     [ChartType.PriceChangePercentageDay]: 'Daily price change percentages over time',
     [ChartType.PriceChangePercentageHour]: 'Hourly price change percentages over time',
     [ChartType.CorrelationPairHistory]: 'Track correlation between a base symbol and comparison symbols over time',
+    [ChartType.CointegrationLiveTable]: 'Monitor top cointegrated pairs with key statistical metrics',
 };

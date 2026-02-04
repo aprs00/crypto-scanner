@@ -10,6 +10,7 @@ import {
 } from '../types';
 import useChartStore from '../useChartStore';
 import BetaHeatmap from './BetaHeatmap';
+import CointegrationLiveTable from './CointegrationLiveTable';
 import CorrelationPairHistory from './CorrelationPairHistory';
 import PriceChangePercentage from './PriceChangePercentage';
 import ZScoreHeatmap from './ZScoreHeatmap';
@@ -31,6 +32,7 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
     const symbols = exchangeData?.symbols || [];
     const dataTypes = exchangeData?.data_types || [];
     const hoursOptions = exchangeData?.hours_options || {};
+    const cointegrationConfig = bootstrap.data?.cointegration_live_table;
 
     const removeChart = useChartStore((state) => state.removeChart);
     const setChartExchange = useChartStore((state) => state.setChartExchange);
@@ -140,6 +142,17 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     hoursOptions={hoursOptions[HoursOptionCategory.CorrelationPair] || {}}
                     symbolOptions={symbols}
                     typeOptions={dataTypes}
+                />
+            );
+        case ChartType.CointegrationLiveTable:
+            return (
+                <CointegrationLiveTable
+                    {...commonProps}
+                    config={cointegrationConfig}
+                    limit={exchangeConfig.limit}
+                    sort={exchangeConfig.sort}
+                    sortDirection={exchangeConfig.sortDirection}
+                    window={exchangeConfig.window}
                 />
             );
     }

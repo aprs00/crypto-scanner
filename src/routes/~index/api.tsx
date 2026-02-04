@@ -19,6 +19,8 @@ import {
     BootstrapResponse,
     CorrelationPairHistoryParams,
     CorrelationPairHistoryResponse,
+    CointegrationLiveTableParams,
+    CointegrationLiveTableResponse,
 } from './types';
 
 const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
@@ -72,6 +74,17 @@ const useCorrelationPairHistory = (params: CorrelationPairHistoryParams) =>
         queryKey: ['correlation-pair-history', params],
     });
 
+const useCointegrationLiveTable = (params: CointegrationLiveTableParams) =>
+    useQuery({
+        gcTime: 60_000,
+        placeholderData: keepPreviousData,
+        queryFn: async () =>
+            (await api.get<CointegrationLiveTableResponse>('cointegration-live-table', { params })).data,
+        queryKey: ['cointegration-live-table', params],
+        refetchInterval: 60_000,
+        staleTime: 60_000,
+    });
+
 export {
     useBetaHeatmapData,
     usePriceChangePercentage,
@@ -80,4 +93,5 @@ export {
     useZScoreScatter3D,
     useBootstrap,
     useCorrelationPairHistory,
+    useCointegrationLiveTable,
 };
