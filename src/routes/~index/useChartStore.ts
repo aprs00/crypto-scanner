@@ -21,6 +21,9 @@ export const chartTemplates: Record<ChartType, ChartTemplate> = {
     [ChartType.CorrelationPairHistory]: {
         gridLayout: { h: 12, w: 12, x: 0, y: CHART_HEIGHT, i: '2' },
     },
+    [ChartType.CointegrationPairHistory]: {
+        gridLayout: { h: 14, w: 12, x: 0, y: CHART_HEIGHT + 12, i: '2b' },
+    },
     [ChartType.Scatter]: {
         gridLayout: { h: CHART_HEIGHT, w: 12, x: 0, y: CHART_HEIGHT * 2, i: '3' },
     },

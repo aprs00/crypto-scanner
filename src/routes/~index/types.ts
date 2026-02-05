@@ -14,6 +14,7 @@ export type ContractType = (typeof ContractType)[keyof typeof ContractType];
 export const HoursOptionCategory = {
     Correlation: 'correlation',
     CorrelationPair: 'correlation_pair',
+    CointegrationPair: 'cointegration_pair',
     ZScore: 'zscore',
     AveragePrice: 'average_price',
 } as const;
@@ -88,6 +89,25 @@ export type CorrelationPairHistoryParams = {
     hours: string;
 };
 
+export const CointegrationMetric = {
+    SpreadZ: 'spread_z',
+    HalfLife: 'half_life',
+    AdfT: 'adf_t',
+    HedgeRatio: 'hedge_ratio',
+    SpreadStd: 'spread_std',
+} as const;
+
+export type CointegrationMetric = (typeof CointegrationMetric)[keyof typeof CointegrationMetric];
+
+export type CointegrationPairHistoryParams = {
+    exchange: string;
+    baseSymbol: string;
+    comparisonSymbols: string[];
+    window: string;
+    hours: string;
+    metric: CointegrationMetric;
+};
+
 export type CointegrationLiveTableParams = {
     exchange: string;
     window?: string;
@@ -115,6 +135,11 @@ export type ChartDefaults = {
         base_symbol: string;
         comparison_symbols: string[];
     };
+    cointegration_pair_history: {
+        base_symbol: string;
+        comparison_symbols: string[];
+        window: string;
+    };
 };
 
 export type BootstrapResponse = {
@@ -133,6 +158,14 @@ export type BootstrapResponse = {
 
 export type CorrelationPairHistoryResponse = {
     history: [number, string][][];
+};
+
+export type CointegrationPairHistoryResponse = {
+    history: [string, number | null][][];
+    metric: CointegrationMetric;
+    base_symbol: string;
+    comparison_symbols: string[];
+    window_minutes: number;
 };
 
 export type CointegrationLiveTableRow = {
@@ -177,6 +210,7 @@ export interface ExchangeChartConfig {
     sort?: string;
     sortDirection?: SortDirection;
     limit?: number;
+    cointegrationMetric?: CointegrationMetric;
 }
 
 export const ChartType = {
@@ -187,6 +221,7 @@ export const ChartType = {
     PriceChangePercentageDay: 'priceChangePercentageDay',
     PriceChangePercentageHour: 'priceChangePercentageHour',
     CorrelationPairHistory: 'correlationPairHistory',
+    CointegrationPairHistory: 'cointegrationPairHistory',
     CointegrationLiveTable: 'cointegrationLiveTable',
 } as const;
 
@@ -223,6 +258,7 @@ export const ChartTypeLabels: Record<ChartType, string> = {
     [ChartType.PriceChangePercentageDay]: 'Price Change % (Day)',
     [ChartType.PriceChangePercentageHour]: 'Price Change % (Hour)',
     [ChartType.CorrelationPairHistory]: 'Correlation Pair History',
+    [ChartType.CointegrationPairHistory]: 'Cointegration Pair History',
     [ChartType.CointegrationLiveTable]: 'Cointegration Table (Pairs / Mean-Reversion)',
 };
 
@@ -234,5 +270,7 @@ export const ChartTypeDescriptions: Record<ChartType, string> = {
     [ChartType.PriceChangePercentageDay]: 'Daily price change percentages over time',
     [ChartType.PriceChangePercentageHour]: 'Hourly price change percentages over time',
     [ChartType.CorrelationPairHistory]: 'Track correlation between a base symbol and comparison symbols over time',
+    [ChartType.CointegrationPairHistory]:
+        'Track cointegration metrics (spread Z, half-life, ADF t) for a base symbol vs comparison symbols over time',
     [ChartType.CointegrationLiveTable]: 'Monitor top cointegrated pairs with key statistical metrics',
 };

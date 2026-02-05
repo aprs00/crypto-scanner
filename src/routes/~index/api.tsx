@@ -19,6 +19,8 @@ import {
     BootstrapResponse,
     CorrelationPairHistoryParams,
     CorrelationPairHistoryResponse,
+    CointegrationPairHistoryParams,
+    CointegrationPairHistoryResponse,
     CointegrationLiveTableParams,
     CointegrationLiveTableResponse,
 } from './types';
@@ -74,6 +76,24 @@ const useCorrelationPairHistory = (params: CorrelationPairHistoryParams) =>
         queryKey: ['correlation-pair-history', params],
     });
 
+const useCointegrationPairHistory = (params: CointegrationPairHistoryParams) =>
+    useQuery({
+        enabled: Boolean(
+            params.exchange &&
+                params.baseSymbol &&
+                params.comparisonSymbols.length > 0 &&
+                params.window &&
+                params.hours &&
+                params.metric,
+        ),
+        placeholderData: keepPreviousData,
+        queryFn: async () =>
+            (await api.post<CointegrationPairHistoryResponse>('cointegration-pair-history', params)).data,
+        queryKey: ['cointegration-pair-history', params],
+        refetchInterval: 60_000,
+        staleTime: 60_000,
+    });
+
 const useCointegrationLiveTable = (params: CointegrationLiveTableParams) =>
     useQuery({
         gcTime: 60_000,
@@ -93,5 +113,6 @@ export {
     useZScoreScatter3D,
     useBootstrap,
     useCorrelationPairHistory,
+    useCointegrationPairHistory,
     useCointegrationLiveTable,
 };

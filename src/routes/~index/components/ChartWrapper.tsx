@@ -11,6 +11,7 @@ import {
 import useChartStore from '../useChartStore';
 import BetaHeatmap from './BetaHeatmap';
 import CointegrationLiveTable from './CointegrationLiveTable';
+import CointegrationPairHistory from './CointegrationPairHistory';
 import CorrelationPairHistory from './CorrelationPairHistory';
 import PriceChangePercentage from './PriceChangePercentage';
 import ZScoreHeatmap from './ZScoreHeatmap';
@@ -142,6 +143,27 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     hoursOptions={hoursOptions[HoursOptionCategory.CorrelationPair] || {}}
                     symbolOptions={symbols}
                     typeOptions={dataTypes}
+                />
+            );
+        case ChartType.CointegrationPairHistory:
+            return (
+                <CointegrationPairHistory
+                    {...commonProps}
+                    baseSymbol={
+                        exchangeConfig.baseSymbol || chartDefaults?.cointegration_pair_history.base_symbol || ''
+                    }
+                    comparisonSymbols={
+                        exchangeConfig.comparisonSymbols ||
+                        chartDefaults?.cointegration_pair_history.comparison_symbols ||
+                        []
+                    }
+                    defaultComparisonSymbols={chartDefaults?.cointegration_pair_history.comparison_symbols}
+                    hours={exchangeConfig.hours || '4'}
+                    hoursOptions={hoursOptions[HoursOptionCategory.CointegrationPair] || {}}
+                    metric={exchangeConfig.cointegrationMetric}
+                    symbolOptions={symbols}
+                    window={exchangeConfig.window || chartDefaults?.cointegration_pair_history.window || ''}
+                    windowOptions={cointegrationConfig?.window_options || {}}
                 />
             );
         case ChartType.CointegrationLiveTable:
