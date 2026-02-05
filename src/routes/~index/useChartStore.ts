@@ -64,6 +64,7 @@ export interface ChartStore {
 const getDefaultChartIds = () => [
     { type: ChartType.BetaHeatmap, id: crypto.randomUUID() },
     { type: ChartType.CorrelationPairHistory, id: crypto.randomUUID() },
+    { type: ChartType.CointegrationPairHistory, id: crypto.randomUUID() },
     { type: ChartType.CointegrationLiveTable, id: crypto.randomUUID() },
     { type: ChartType.Scatter, id: crypto.randomUUID() },
     { type: ChartType.Scatter3D, id: crypto.randomUUID() },
