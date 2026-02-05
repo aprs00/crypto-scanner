@@ -39,6 +39,10 @@ const tableBackgroundStyle = (type: OrderbookType, tableAlignment: TableAlignmen
         linearGradingColors[type]
     } ${percentage}%, rgba(255, 255, 255, 0) 0%)`;
 
+const ORDERBOOK_ROW_HEIGHT = 24;
+const ORDERBOOK_HEADER_HEIGHT = 152;
+const ORDERBOOK_BODY_MARGIN = 8;
+
 const OrderBookTable = (props: OrderBookTablePropsType) => {
     const { symbolTickSize, tableHeight } = props;
 
@@ -59,12 +63,12 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         return decimalIndex === -1 ? 0 : tickSizeStr.length - decimalIndex - 1;
     })();
 
-    const calculatedNumOfRows = (() => {
-        const divideBy = tableAlignment === TableAlignment.V ? 4 : 1;
-        const calc = Math.floor(tableHeight / 30);
-        const numOfRows = (calc % 2 === 0 ? calc : calc - 1) / 2 + calc / divideBy;
-        return Math.floor(numOfRows);
-    })();
+    const availableBodyHeight = Math.max(0, tableHeight - ORDERBOOK_HEADER_HEIGHT - ORDERBOOK_BODY_MARGIN);
+    const rowsThatFit = Math.max(0, Math.floor(availableBodyHeight / ORDERBOOK_ROW_HEIGHT));
+    const calculatedBidRows =
+        tableAlignment === TableAlignment.V ? Math.max(0, Math.floor(rowsThatFit / 2)) : rowsThatFit;
+    const calculatedAskRows =
+        tableAlignment === TableAlignment.V ? Math.max(0, rowsThatFit - calculatedBidRows) : rowsThatFit;
 
     const maxQuantity = (() => {
         const bidsAndAsks = groupedOrderBook.asks?.concat(groupedOrderBook.bids) || [];
@@ -105,7 +109,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
             const cumulativeBackground = `linear-gradient(${gradientDir}, ${cumulativeColors[type]} ${cumulativePercentage}%, rgba(255, 255, 255, 0) 0%)`;
 
             rows.push(
-                <div className="mb-0.5" key={price} style={{ background: cumulativeBackground }}>
+                <div className="h-6" key={price} style={{ background: cumulativeBackground }}>
                     <div
                         className={`grid grid-cols-2 text-slate-200 text-sm p-0.5 ${tableAlignmentClassContainer}`}
                         style={{ background: tableBackgroundStyle(type, tableAlignment, percentage) }}
@@ -125,8 +129,13 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     useEffect(() => {
         if (!symbolTickSize || !orderBook.asks || !binanceServiceRef.current) return;
 
-        setGroupedOrderBook(binanceServiceRef.current.groupOrders(orderBook, groupByVal, calculatedNumOfRows));
-    }, [numOfTicks, calculatedNumOfRows, orderBook, groupByVal, symbolTickSize]);
+        setGroupedOrderBook(
+            binanceServiceRef.current.groupOrders(orderBook, groupByVal, {
+                asks: calculatedAskRows,
+                bids: calculatedBidRows,
+            }),
+        );
+    }, [numOfTicks, calculatedAskRows, calculatedBidRows, orderBook, groupByVal, symbolTickSize]);
 
     useEffect(() => {
         binanceServiceRef.current = new BinanceOrderBookService('btcusdt', setOrderBook);
@@ -167,7 +176,6 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                     <div className="flex flex-1 flex-col-reverse">
                         {orderBookTable(groupedOrderBook.asks, OrderbookType.Asks)}
                     </div>
-                    <div className="my-1" />
                     <div className={bidsContainerClasses}>
                         {orderBookTable(groupedOrderBook.bids, OrderbookType.Bids)}
                     </div>

@@ -43,10 +43,16 @@ export default class BinanceOrderBookService {
         };
     }
 
-    public groupOrders = (orderBook: OrderBookResponseType, groupByVal: number, numOfRows: number) => {
+    public groupOrders = (
+        orderBook: OrderBookResponseType,
+        groupByVal: number,
+        numOfRows: number | { bids: number; asks: number },
+    ) => {
+        const bidsRows = typeof numOfRows === 'number' ? numOfRows : numOfRows.bids;
+        const asksRows = typeof numOfRows === 'number' ? numOfRows : numOfRows.asks;
         return {
-            bids: this.groupOrdersByPrice(orderBook.bids, groupByVal, false, numOfRows),
-            asks: this.groupOrdersByPrice(orderBook.asks, groupByVal, true, numOfRows),
+            bids: this.groupOrdersByPrice(orderBook.bids, groupByVal, false, bidsRows),
+            asks: this.groupOrdersByPrice(orderBook.asks, groupByVal, true, asksRows),
         };
     };
 

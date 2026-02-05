@@ -12,12 +12,15 @@ import Table from './components/OrderBook';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const gridLayoutRowHeight = 30;
+const gridLayoutMargin: [number, number] = [10, 10];
+const tableGridRows = 14;
+const tableInitialHeight = tableGridRows * gridLayoutRowHeight + (tableGridRows - 1) * gridLayoutMargin[1];
 
 const CSChart = () => {
     const exchangeInfo = useExchangeInfo();
 
     const [symbol] = useState('BTCUSDT');
-    const [tableHeight, setTableHeight] = useState(() => gridLayoutRowHeight * 13);
+    const [tableHeight, setTableHeight] = useState(() => tableInitialHeight);
 
     const symbolInfo = exchangeInfo.data?.symbols.find((s) => s.symbol === symbol);
     const symbolTickSize = Number(symbolInfo?.filters[0].tickSize);
@@ -26,9 +29,12 @@ const CSChart = () => {
         <ResponsiveGridLayout
             cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
             draggableHandle="#drag-handle"
+            margin={gridLayoutMargin}
             onResize={(grids: Layout[]) => {
                 grids.forEach((grid) => {
-                    if (grid.i === 'table') setTableHeight(grid.h * gridLayoutRowHeight);
+                    if (grid.i === 'table') {
+                        setTableHeight(grid.h * gridLayoutRowHeight + (grid.h - 1) * gridLayoutMargin[1]);
+                    }
                 });
             }}
             rowHeight={gridLayoutRowHeight}
