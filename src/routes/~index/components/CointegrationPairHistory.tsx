@@ -1,4 +1,5 @@
 import type { EChartsOption } from 'echarts';
+import type { CallbackDataParams, TopLevelFormatterParams } from 'echarts/types/dist/shared';
 
 import { format } from 'date-fns';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
@@ -117,20 +118,25 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
                     type: 'line',
                 },
                 trigger: 'axis',
-                formatter: (params: any) => {
-                    if (!params?.length) return '';
-                    const date = new Date(params[0].value?.[0]);
+                formatter: (params: TopLevelFormatterParams) => {
+                    if (!Array.isArray(params) || !params.length) return '';
+                    const date = new Date((params[0].value as number[])?.[0]);
                     const timestamp = Number.isNaN(date.getTime()) ? '' : format(date, 'M/d/yyyy h:mm a');
-                    const lines = params.map((point: any) => {
-                        const value = point.value?.[1];
-                        const valueText =
-                            value === null || value === undefined
-                                ? '-'
-                                : formatNumber(Number(value), {
-                                      maximumFractionDigits: metricDecimals[resolvedMetric] ?? 3,
-                                  });
-                        return `${point.marker}${point.seriesName}: <strong>${valueText}</strong>`;
-                    });
+                    const lines = [...params]
+                        .sort(
+                            (a: CallbackDataParams, b: CallbackDataParams) =>
+                                Number((b.value as number[])?.[1]) - Number((a.value as number[])?.[1]),
+                        )
+                        .map((point: CallbackDataParams) => {
+                            const value = (point.value as number[])?.[1];
+                            const valueText =
+                                value === null || value === undefined
+                                    ? '-'
+                                    : formatNumber(Number(value), {
+                                          maximumFractionDigits: metricDecimals[resolvedMetric] ?? 3,
+                                      });
+                            return `${point.marker}${point.seriesName}: <strong>${valueText}</strong>`;
+                        });
                     return `${timestamp}<br/>${lines.join('<br/>')}`;
                 },
             },
