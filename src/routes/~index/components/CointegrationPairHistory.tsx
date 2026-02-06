@@ -76,9 +76,7 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
     const defaultHours = Object.values(hoursOptions)[0];
 
     const resolvedBaseSymbol = baseSymbol || symbolOptions[0] || '';
-    const resolvedComparisonSymbols = comparisonSymbols.length
-        ? sanitizeComparisonSymbols(comparisonSymbols, resolvedBaseSymbol)
-        : sanitizeComparisonSymbols(defaultComparisonSymbols || [], resolvedBaseSymbol);
+    const resolvedComparisonSymbols = sanitizeComparisonSymbols(comparisonSymbols, resolvedBaseSymbol);
     const resolvedWindow = window || defaultWindow;
     const resolvedHours = hours || defaultHours;
     const resolvedMetric = metric || CointegrationMetric.SpreadZ;
