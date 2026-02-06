@@ -119,17 +119,19 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
                 trigger: 'axis',
                 formatter: (params: any) => {
                     if (!params?.length) return '';
-                    const point = params[0];
-                    const date = new Date(point.value?.[0]);
+                    const date = new Date(params[0].value?.[0]);
                     const timestamp = Number.isNaN(date.getTime()) ? '' : format(date, 'M/d/yyyy h:mm a');
-                    const value = point.value?.[1];
-                    const valueText =
-                        value === null || value === undefined
-                            ? '-'
-                            : formatNumber(Number(value), {
-                                  maximumFractionDigits: metricDecimals[resolvedMetric] ?? 3,
-                              });
-                    return `${timestamp}<br/>${point.marker}${point.seriesName}: <strong>${valueText}</strong>`;
+                    const lines = params.map((point: any) => {
+                        const value = point.value?.[1];
+                        const valueText =
+                            value === null || value === undefined
+                                ? '-'
+                                : formatNumber(Number(value), {
+                                      maximumFractionDigits: metricDecimals[resolvedMetric] ?? 3,
+                                  });
+                        return `${point.marker}${point.seriesName}: <strong>${valueText}</strong>`;
+                    });
+                    return `${timestamp}<br/>${lines.join('<br/>')}`;
                 },
             },
             xAxis: {
