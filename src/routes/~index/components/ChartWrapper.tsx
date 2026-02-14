@@ -171,11 +171,12 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                 <CointegrationLiveTable
                     {...commonProps}
                     config={cointegrationConfig}
+                    defaultSymbols={chartDefaults?.cointegration_live_table.symbols}
                     limit={exchangeConfig.limit}
                     sort={exchangeConfig.sort}
                     sortDirection={exchangeConfig.sortDirection}
                     symbolOptions={symbols}
-                    symbols={exchangeConfig.symbols ?? symbols}
+                    symbols={exchangeConfig.symbols ?? chartDefaults?.cointegration_live_table.symbols ?? []}
                     window={exchangeConfig.window}
                 />
             );

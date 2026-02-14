@@ -141,6 +141,9 @@ export type ChartDefaults = {
         comparison_symbols: string[];
         window: string;
     };
+    cointegration_live_table: {
+        symbols: string[];
+    };
 };
 
 export type BootstrapResponse = {

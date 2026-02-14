@@ -23,6 +23,7 @@ export type CointegrationLiveTableProps = {
     config?: CointegrationLiveTableConfig;
     exchange: string;
     exchanges: ExchangeInfo[];
+    defaultSymbols?: string[];
     symbolOptions: string[];
     symbols: string[];
     window?: string;
@@ -88,6 +89,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
         config,
         exchange,
         exchanges,
+        defaultSymbols,
         symbolOptions,
         symbols,
         window: windowMinutes,
@@ -119,6 +121,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
     const resolvedLimit = limit ?? defaultLimit;
     const resolvedSortKey = sort ?? defaultSortKey;
     const resolvedSymbols = sanitizeSelectedSymbols(symbols, symbolOptions);
+    const resolvedDefaultSymbols = sanitizeSelectedSymbols(defaultSymbols ?? [], symbolOptions);
 
     const resolveSortDesc = (columnId: string, direction?: SortDirection) => {
         if (direction === 'asc') return false;
@@ -267,7 +270,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
             />
             <MultiSelectDrawer
                 classes="w-40"
-                defaultValue={symbolOptions}
+                defaultValue={resolvedDefaultSymbols}
                 onChange={(nextSymbols) => onConfigChange({ symbols: nextSymbols })}
                 options={symbolOptions}
                 title="Select symbols"
