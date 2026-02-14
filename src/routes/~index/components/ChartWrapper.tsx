@@ -174,6 +174,8 @@ const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: G
                     limit={exchangeConfig.limit}
                     sort={exchangeConfig.sort}
                     sortDirection={exchangeConfig.sortDirection}
+                    symbolOptions={symbols}
+                    symbols={exchangeConfig.symbols ?? symbols}
                     window={exchangeConfig.window}
                 />
             );

@@ -116,6 +116,7 @@ export type CointegrationLiveTableParams = {
     offset?: number;
     sort?: string;
     sortDirection?: SortDirection;
+    symbols?: string[];
 };
 
 export type AveragePriceChangeResponse = {

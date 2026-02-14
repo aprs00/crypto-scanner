@@ -17,11 +17,14 @@ import type {
 } from '../types';
 
 import { useCointegrationLiveTable } from '../api';
+import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type CointegrationLiveTableProps = {
     config?: CointegrationLiveTableConfig;
     exchange: string;
     exchanges: ExchangeInfo[];
+    symbolOptions: string[];
+    symbols: string[];
     window?: string;
     sort?: string;
     sortDirection?: SortDirection;
@@ -64,11 +67,29 @@ const getZScoreClass = (value: number) => {
     return absZ >= 3 ? 'text-amber-300' : absZ >= 2 ? 'text-blue-300' : 'text-slate-200';
 };
 
+const sanitizeSelectedSymbols = (selectedSymbols: string[], options: string[]) => {
+    const optionSet = new Set(options);
+    const seen = new Set<string>();
+    const cleanedSymbols: string[] = [];
+
+    for (const symbol of selectedSymbols) {
+        if (!symbol || !optionSet.has(symbol) || seen.has(symbol)) {
+            continue;
+        }
+        seen.add(symbol);
+        cleanedSymbols.push(symbol);
+    }
+
+    return cleanedSymbols;
+};
+
 const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
     const {
         config,
         exchange,
         exchanges,
+        symbolOptions,
+        symbols,
         window: windowMinutes,
         sort,
         sortDirection,
@@ -97,6 +118,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
     const resolvedWindow = windowMinutes ?? defaultWindow;
     const resolvedLimit = limit ?? defaultLimit;
     const resolvedSortKey = sort ?? defaultSortKey;
+    const resolvedSymbols = sanitizeSelectedSymbols(symbols, symbolOptions);
 
     const resolveSortDesc = (columnId: string, direction?: SortDirection) => {
         if (direction === 'asc') return false;
@@ -121,6 +143,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
         limit: resolvedLimit,
         sort: resolvedSortKey,
         sortDirection: resolvedSortDirection,
+        symbols: resolvedSymbols,
         window: resolvedWindow,
     });
 
@@ -240,6 +263,14 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
                 onChange={(nextLimit) => onConfigChange({ limit: nextLimit })}
                 options={limitOptions}
                 value={resolvedLimit}
+            />
+            <MultiSelectDrawer
+                classes="w-40"
+                defaultValue={symbolOptions}
+                onChange={(nextSymbols) => onConfigChange({ symbols: nextSymbols })}
+                options={symbolOptions}
+                title="Select symbols"
+                value={resolvedSymbols}
             />
             <ExchangeSelector exchanges={exchanges} onChange={onExchangeChange} value={exchange} />
         </>
