@@ -98,8 +98,7 @@ const useCointegrationLiveTable = (params: CointegrationLiveTableParams) =>
     useQuery({
         gcTime: 60_000,
         placeholderData: keepPreviousData,
-        queryFn: async () =>
-            (await api.get<CointegrationLiveTableResponse>('cointegration-live-table', { params })).data,
+        queryFn: async () => (await api.post<CointegrationLiveTableResponse>('cointegration-live-table', params)).data,
         queryKey: ['cointegration-live-table', params],
         refetchInterval: 60_000,
         staleTime: 60_000,

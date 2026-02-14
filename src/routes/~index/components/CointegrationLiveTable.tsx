@@ -141,6 +141,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
     const cointegration = useCointegrationLiveTable({
         exchange,
         limit: resolvedLimit,
+        offset: 0,
         sort: resolvedSortKey,
         sortDirection: resolvedSortDirection,
         symbols: resolvedSymbols,

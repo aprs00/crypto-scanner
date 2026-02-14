@@ -112,8 +112,8 @@ export type CointegrationLiveTableParams = {
     exchange: string;
     window?: string;
     contractType?: string;
-    limit?: number;
-    offset?: number;
+    limit: number;
+    offset: number;
     sort?: string;
     sortDirection?: SortDirection;
     symbols?: string[];
