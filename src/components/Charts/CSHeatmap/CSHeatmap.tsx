@@ -107,7 +107,6 @@ function CSHeatmap(props: HeatmapProps) {
 
                 return `${params.marker}${yLabel} - ${xLabel}: <strong>${value}</strong>`;
             },
-            position: 'top',
         },
         visualMap: {
             align: 'top',
