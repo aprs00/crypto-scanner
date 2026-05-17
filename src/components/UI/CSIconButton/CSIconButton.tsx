@@ -1,9 +1,6 @@
 const IconButton = (props: { onClick: () => void; label: string }) => {
     return (
-        <button
-            className="text-white border border-slate-500 rounded-sm px-2 font-bold hover:bg-slate-700 size-8"
-            onClick={props.onClick}
-        >
+        <button className="btn square" onClick={props.onClick} type="button">
             {props.label}
         </button>
     );

@@ -1,4 +1,3 @@
-import tailwindcss from '@tailwindcss/vite';
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
 import react from '@vitejs/plugin-react';
 import * as path from 'path';
@@ -15,7 +14,6 @@ export default defineConfig({
         }),
         svgr(),
         TanStackRouterVite(),
-        tailwindcss(),
     ],
     resolve: {
         alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],

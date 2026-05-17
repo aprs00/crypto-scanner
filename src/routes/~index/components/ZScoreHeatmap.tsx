@@ -6,6 +6,7 @@ import ExchangeSelector from '@/components/UI/ExchangeSelector';
 import type { DataType, ExchangeChartConfig, ExchangeInfo } from '../types';
 
 import { useZScoreHeatmap } from '../api';
+import { ChartType } from '../types';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type ZScoreHeatmapProps = {
@@ -71,7 +72,7 @@ const ZScoreHeatmap = (props: ZScoreHeatmapProps) => {
     );
 
     return (
-        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title="Z Score Heatmap">
+        <ChartContainer chartType={ChartType.ZScoreHeatmap} controls={controls} onRemoveClick={onRemoveClick}>
             <CSHeatmap data={heatmap.data} visualMax={2} visualMin={-2} />
         </ChartContainer>
     );

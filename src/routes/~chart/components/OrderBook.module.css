@@ -1,0 +1,49 @@
+.panelBody {
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+
+    &.horizontal {
+        display: flex;
+        flex-direction: row-reverse;
+    }
+}
+
+.asks {
+    display: flex;
+    flex: 1;
+    flex-direction: column-reverse;
+}
+
+.bids {
+    &.horizontal {
+        display: flex;
+        flex: 1;
+        flex-direction: column-reverse;
+    }
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+    font-size: 11px;
+    padding: 2px var(--sp-3);
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    &.ask {
+        color: var(--down);
+    }
+
+    &.bid {
+        color: var(--up);
+    }
+}

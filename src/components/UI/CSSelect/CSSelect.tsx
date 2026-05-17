@@ -1,7 +1,7 @@
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from '@headlessui/react';
 import { useState } from 'react';
 
-import { SelectIcon } from '@/components/Icons';
+import styles from './CSSelect.module.css';
 
 export type SelectProps<T = string> =
     | {
@@ -22,7 +22,7 @@ export type SelectProps<T = string> =
 const SHOW_SEARCH_LIMIT = 16;
 
 const CSSelect = <T = string,>(props: SelectProps<T>) => {
-    const { classes = 'w-20', onChange, options, value, multiple = false } = props;
+    const { classes = '', onChange, options, value, multiple = false } = props;
     const [searchQuery, setSearchQuery] = useState('');
 
     const normalizedOptions = Array.isArray(options)
@@ -34,86 +34,77 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
         ? normalizedOptions.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
         : normalizedOptions;
 
-    const displayValue = () => {
+    const isEmpty = multiple ? Array.isArray(value) && value.length === 0 : value === undefined || value === null;
+
+    const displayText = (() => {
         if (multiple && Array.isArray(value)) {
-            if (value.length === 0) {
-                return <span className="text-slate-400">Select...</span>;
-            }
+            if (value.length === 0) return 'SELECT…';
             if (value.length === 1) {
                 const option = normalizedOptions.find((opt) => opt.value === value[0]);
-                return <span className="text-slate-200 truncate">{option?.label}</span>;
+                return option?.label ?? '';
             }
-            return <span className="text-slate-200 truncate">{value.length} selected</span>;
-        } else {
-            if (value === undefined || value === null) {
-                return <span className="text-slate-400">Select...</span>;
-            }
-            const option = normalizedOptions.find((opt) => opt.value === value);
-            return <span className="text-slate-200 truncate">{option?.label ?? 'Select...'}</span>;
+            return `${value.length} SEL`;
         }
-    };
+        if (value === undefined || value === null) return 'SELECT…';
+        const option = normalizedOptions.find((opt) => opt.value === value);
+        return option?.label ?? 'SELECT…';
+    })();
 
     return (
         <Listbox multiple={multiple} onChange={onChange as (value: T | T[]) => void} value={value}>
             {({ open }) => (
-                <div className={classes}>
-                    <ListboxButton className="w-full rounded-xs border border-slate-500 px-2 h-8 text-left relative focus:outline-none">
-                        <div className="flex items-center pr-3.5">{displayValue()}</div>
-                        <span className="absolute inset-y-0 right-0 flex items-center pr-1 pointer-events-none">
-                            <SelectIcon />
+                <div className={`${styles.select} ${classes}`.trim()}>
+                    <ListboxButton className={[styles.btn, open && styles.open].filter(Boolean).join(' ')}>
+                        <span className={[styles.label, isEmpty && styles.empty].filter(Boolean).join(' ')}>
+                            {displayText}
                         </span>
+                        <span className={styles.caret}>▾</span>
                     </ListboxButton>
 
                     <Transition
                         afterLeave={() => setSearchQuery('')}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
+                        enter="transition ease-out dur-100"
+                        enterFrom="opacity-0 scale-95"
+                        enterTo="opacity-100 scale-100"
+                        leave="transition ease-in dur-75"
+                        leaveFrom="opacity-100 scale-100"
+                        leaveTo="opacity-0 scale-95"
                         show={open}
                     >
                         <div className="relative z-99">
                             <ListboxOptions
-                                className={`bg-slate-800 rounded-xs absolute right-0 w-fit min-w-full px-1 mt-2 border border-slate-600 flex flex-col gap-0.5 max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full focus:outline-none ${showSearch ? 'py-0' : 'py-1'}`}
+                                anchor="bottom end"
+                                className={`${styles.options} ${
+                                    showSearch ? styles.hasSearch : styles.noSearch
+                                } scroll`}
                             >
                                 {showSearch && (
-                                    <div className="px-1 pb-1 pt-1 sticky top-0 bg-slate-800 z-10 -mx-1 -mt-1 mb-0.5">
+                                    <div className={styles.searchWrap}>
                                         <input
-                                            className="w-full px-2 py-1 bg-slate-900 border border-slate-600 rounded-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-slate-500"
+                                            className={styles.search}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            placeholder="Search..."
+                                            placeholder="SEARCH…"
                                             type="text"
                                             value={searchQuery}
                                         />
                                     </div>
                                 )}
                                 {filteredOptions.map((item) => (
-                                    <ListboxOption
-                                        className="cursor-pointer hover:bg-slate-900 rounded-xs gap-2"
-                                        key={String(item.value)}
-                                        value={item.value}
-                                    >
-                                        {({ selected }) => {
-                                            const optionClass = `${selected ? 'bg-slate-900' : ''} px-2 py-0.5 rounded-sm grow`;
-
-                                            return (
-                                                <div className={optionClass}>
-                                                    <div className="flex justify-between items-center">
-                                                        {multiple && (
-                                                            <input
-                                                                checked={selected}
-                                                                className="mr-2 cursor-pointer"
-                                                                readOnly
-                                                                type="checkbox"
-                                                            />
-                                                        )}
-                                                        <span className={`block truncate relative`}>{item.label}</span>
-                                                    </div>
-                                                </div>
-                                            );
-                                        }}
+                                    <ListboxOption key={String(item.value)} value={item.value}>
+                                        {({ selected, focus }) => (
+                                            <div
+                                                className={[
+                                                    styles.option,
+                                                    focus && styles.focus,
+                                                    selected && styles.selected,
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(' ')}
+                                            >
+                                                <span className={styles.check}>{selected ? '✓' : ''}</span>
+                                                <span className="truncate">{item.label}</span>
+                                            </div>
+                                        )}
                                     </ListboxOption>
                                 ))}
                             </ListboxOptions>

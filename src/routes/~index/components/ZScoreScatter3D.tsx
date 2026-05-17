@@ -4,7 +4,7 @@ import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
 import { useBootstrap, useZScoreScatter3D } from '../api';
-import { ExchangeChartConfig, ExchangeInfo } from '../types';
+import { ChartType, ExchangeChartConfig, ExchangeInfo } from '../types';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type Scatter3DProps = {
@@ -79,7 +79,7 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
     );
 
     return (
-        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title="Z Score 3D">
+        <ChartContainer chartType={ChartType.Scatter3D} controls={controls} onRemoveClick={onRemoveClick}>
             <CSScatter3D data={scatterData} xAxis={xAxis} yAxis={yAxis} zAxis={zAxis} />
         </ChartContainer>
     );

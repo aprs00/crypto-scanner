@@ -1,31 +1,37 @@
 import type { EChartsOption } from 'echarts';
 
 import ReactEChartsCore from 'echarts-for-react/lib/core';
-import { maxBy, minBy } from 'lodash-es';
+import { sumBy } from 'lodash-es';
 import { useRef } from 'react';
 
-import { echarts } from '@/lib/echarts';
+import CSPanel from '@/components/Layouts/CSPanel';
+import { echarts, ECHARTS_THEME } from '@/lib/echarts';
+import { treemapColorFor } from '@/lib/theme';
 import { resizeEChart } from '@/utils/chart';
+import { formatUSD } from '@/utils/number';
+
+import type { HeatmapResponseType } from './types';
 
 import { useHeatmapData } from './api';
+import styles from './CSTreemap.module.css';
 
 const CSTreemap = () => {
     const chartRef = useRef<ReactEChartsCore | null>(null);
 
     const treemap = useHeatmapData();
 
-    const children =
-        treemap.data?.map((coin) => {
-            return {
-                ...coin,
-                value: [coin.value, coin.colorValue],
-            };
-        }) || [];
+    const sourceCoins: HeatmapResponseType[] = treemap.data ?? [];
 
-    const lowestPercentage = minBy(children, 'colorValue')?.colorValue ?? -100;
-    const highestPercentage = maxBy(children, 'colorValue')?.colorValue ?? 100;
+    const children = sourceCoins.map((coin) => ({
+        ...coin,
+        itemStyle: { color: treemapColorFor(coin.colorValue ?? 0) },
+        value: [coin.value, coin.colorValue],
+    }));
 
-    const absPercentage = Math.max(Math.abs(lowestPercentage), Math.abs(highestPercentage));
+    const totalCap = sumBy(sourceCoins, (c) => Number(c.value ?? 0));
+    const avgChange = sourceCoins.length > 0 ? sumBy(sourceCoins, 'colorValue') / sourceCoins.length : 0;
+    const greenCount = sourceCoins.filter((c) => (c.colorValue ?? 0) > 0).length;
+    const breadth = sourceCoins.length > 0 ? Math.round((greenCount / sourceCoins.length) * 100) : 0;
 
     const option: EChartsOption = {
         series: [
@@ -33,62 +39,53 @@ const CSTreemap = () => {
                 data: [{ children }],
                 height: '100%',
                 label: {
-                    fontSize: 18,
-                    formatter: (params: any) => {
-                        return `${params.data.name?.toUpperCase()}\n${params.data.colorValue?.toFixed(2)}%`;
-                    },
+                    fontSize: 16,
+                    fontWeight: 600,
+                    formatter: (params: any) =>
+                        `${params.data.name?.toUpperCase()}\n${params.data.colorValue?.toFixed(2)}%`,
                     show: true,
                 },
-                levels: [
-                    {
-                        itemStyle: {
-                            borderColor: '#333',
-                            borderWidth: 1,
-                            gapWidth: 1,
-                        },
-                    },
-                    {
-                        color: [
-                            '#450a0a',
-                            '#7f1d1d',
-                            '#991b1b',
-                            '#b91c1c',
-                            '#dc2626',
-                            '#ef4444',
-                            '#f87171',
-                            '#4ade80',
-                            '#22c55e',
-                            '#16a34a',
-                            '#15803d',
-                            '#166534',
-                            '#14532d',
-                            '#052e16',
-                        ],
-                        colorMappingBy: 'value',
-                        itemStyle: {
-                            gapWidth: 1,
-                        },
-                    },
-                ],
                 type: 'treemap',
-                visualDimension: 1,
-                visualMax: absPercentage,
-                visualMin: -absPercentage,
                 width: '100%',
             },
         ],
     };
 
+    const formattedAvgChange = `${avgChange >= 0 ? '+' : ''}${avgChange.toFixed(2)}%`;
+
+    const summary: { k: string; v: string }[] = [
+        { k: 'TOTAL CAP', v: formatUSD(totalCap) },
+        { k: 'AVG 24H', v: formattedAvgChange },
+        { k: 'BREADTH', v: `${breadth}%` },
+        { k: 'ASSETS', v: String(sourceCoins.length) },
+    ];
+
     return (
-        !treemap.isLoading && (
-            <ReactEChartsCore
-                echarts={echarts}
-                onChartReady={() => resizeEChart(chartRef)}
-                option={option}
-                ref={chartRef}
-                style={{ height: '95%', width: '100%' }}
-            />
-        )
+        <>
+            <div className={styles.summary}>
+                {summary.map((it, i) => (
+                    <div className={styles.item} key={i}>
+                        <span className={styles.k}>{it.k}</span>
+                        <span className={[styles.v, 'num'].join(' ')}>{it.v}</span>
+                    </div>
+                ))}
+            </div>
+
+            <div className="page-body">
+                <CSPanel className="flex-1 min-w-0" title="Market Treemap">
+                    {!treemap.isLoading && (
+                        <ReactEChartsCore
+                            echarts={echarts}
+                            onChartReady={() => resizeEChart(chartRef)}
+                            option={option}
+                            ref={chartRef}
+                            style={{ height: '100%', width: '100%' }}
+                            theme={ECHARTS_THEME}
+                        />
+                    )}
+                </CSPanel>
+            </div>
+        </>
     );
 };
 

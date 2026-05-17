@@ -3,6 +3,7 @@ import { ToastType, useToastStore } from '@/stores/useToastStore';
 
 import { ChartType, ChartTypeDescriptions, ChartTypeLabels } from '../types';
 import useChartStore from '../useChartStore';
+import styles from './ChartDrawer.module.css';
 
 const chartTypes = Object.values(ChartType);
 
@@ -24,19 +25,13 @@ const ChartDrawer = (props: ChartDrawerProps) => {
 
     return (
         <CSDrawer isOpen={isOpen} onClose={onClose} title="Add Chart">
-            <div className="p-4 space-y-2">
+            <div className={styles.bodyPad}>
                 {chartTypes.map((type) => (
-                    <button
-                        className="w-full text-left p-4 rounded-lg bg-slate-700/50 hover:bg-slate-700 transition-colors group"
-                        key={type}
-                        onClick={() => handleSelectChart(type)}
-                        type="button"
-                    >
-                        <div className="font-medium text-white group-hover:text-blue-400 transition-colors">
-                            {ChartTypeLabels[type]}
+                    <button className={styles.card} key={type} onClick={() => handleSelectChart(type)} type="button">
+                        <div className={styles.head}>
+                            <span className={styles.title}>{ChartTypeLabels[type]}</span>
                         </div>
-
-                        <div className="text-sm text-slate-400 mt-1">{ChartTypeDescriptions[type]}</div>
+                        <span className={styles.desc}>{ChartTypeDescriptions[type]}</span>
                     </button>
                 ))}
             </div>

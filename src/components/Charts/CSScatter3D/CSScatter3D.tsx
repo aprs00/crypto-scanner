@@ -3,7 +3,8 @@ import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { capitalize } from 'lodash-es';
 import { useRef } from 'react';
 
-import { echarts } from '@/lib/echarts';
+import { echarts, ECHARTS_THEME } from '@/lib/echarts';
+import { palette, TERMINAL_FONT } from '@/lib/theme';
 import { resizeEChart } from '@/utils/chart';
 
 export type Scatter3DProps = {
@@ -11,6 +12,13 @@ export type Scatter3DProps = {
     xAxis: string;
     yAxis: string;
     zAxis: string;
+};
+
+const axisNameStyle = {
+    color: palette.fg,
+    fontFamily: TERMINAL_FONT,
+    fontSize: 13,
+    fontWeight: 600,
 };
 
 const CSScatter3D = (props: Scatter3DProps) => {
@@ -29,25 +37,11 @@ const CSScatter3D = (props: Scatter3DProps) => {
 
     const option = {
         grid3D: {
-            axisLine: {
-                lineStyle: {
-                    color: '#cbd5e1',
-                },
-            },
-            axisPointer: {
-                lineStyle: {
-                    color: '#ffbd67',
-                },
-            },
-            splitLine: {
-                lineStyle: {
-                    color: '#1e293b',
-                },
-            },
-            viewControl: {
-                autoRotate: false,
-                distance: 200,
-            },
+            axisLine: { lineStyle: { color: palette.bd } },
+            axisLabel: { color: palette.fgDim, fontFamily: TERMINAL_FONT },
+            axisPointer: { lineStyle: { color: palette.ac } },
+            splitLine: { lineStyle: { color: palette.grid } },
+            viewControl: { autoRotate: false, distance: 200 },
         },
         tooltip: {
             show: true,
@@ -61,33 +55,22 @@ const CSScatter3D = (props: Scatter3DProps) => {
                 type: 'scatter3D',
                 symbolSize: 12,
                 data: flattenedData,
-                label: {
-                    show: false,
-                },
+                label: { show: false },
             },
         ],
         xAxis3D: {
-            name: capitalize(xAxis),
-            nameTextStyle: {
-                color: '#cbd5e1',
-                fontSize: 14,
-            },
+            name: capitalize(xAxis).toUpperCase(),
+            nameTextStyle: axisNameStyle,
             type: 'value',
         },
         yAxis3D: {
-            name: capitalize(yAxis),
-            nameTextStyle: {
-                color: '#cbd5e1',
-                fontSize: 14,
-            },
+            name: capitalize(yAxis).toUpperCase(),
+            nameTextStyle: axisNameStyle,
             type: 'value',
         },
         zAxis3D: {
-            name: capitalize(zAxis),
-            nameTextStyle: {
-                color: '#cbd5e1',
-                fontSize: 14,
-            },
+            name: capitalize(zAxis).toUpperCase(),
+            nameTextStyle: axisNameStyle,
             type: 'value',
         },
     };
@@ -99,6 +82,7 @@ const CSScatter3D = (props: Scatter3DProps) => {
             option={option}
             ref={chartRef}
             style={{ height: '100%', width: '100%' }}
+            theme={ECHARTS_THEME}
         />
     );
 };

@@ -3,7 +3,8 @@ import type { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
-import { echarts } from '@/lib/echarts';
+import { echarts, ECHARTS_THEME } from '@/lib/echarts';
+import { heatmapGradient, palette } from '@/lib/theme';
 import { CorrelationHeatmapResponse, GridHeatmapResponse, HeatmapType, type HeatmapResponse } from '@/types/api';
 import { resizeEChart } from '@/utils/chart';
 
@@ -81,13 +82,13 @@ function CSHeatmap(props: HeatmapProps) {
                 xAxisIndex: [0],
             },
         ],
-        grid: { bottom: 110, left: 50, right: 15, top: 20 },
+        grid: { bottom: 110, left: 50, right: 10, top: 20 },
         series: [
             {
                 data: seriesData,
                 emphasis: {
                     itemStyle: {
-                        borderColor: '#000',
+                        borderColor: palette.ac,
                         borderWidth: 1,
                     },
                 },
@@ -103,6 +104,7 @@ function CSHeatmap(props: HeatmapProps) {
                 const yLabel = yAxis[dataPoint[1]];
                 const xLabel = xAxis[dataPoint[0]];
                 const value = dataPoint[2];
+
                 return `${params.marker}${yLabel} - ${xLabel}: <strong>${value}</strong>`;
             },
             position: 'top',
@@ -112,7 +114,7 @@ function CSHeatmap(props: HeatmapProps) {
             bottom: 22,
             calculable: true,
             inRange: {
-                color: ['#67001f', '#a50f15', '#d6604d', '#f4a582', '#ffffff', '#92c5de', '#4393c3', '#2166ac'],
+                color: heatmapGradient,
             },
             max: visualMax ?? 1,
             min: visualMin ?? -1,
@@ -120,9 +122,6 @@ function CSHeatmap(props: HeatmapProps) {
             orient: 'horizontal',
             precision: 2,
             right: '3',
-            textStyle: {
-                color: '#B8A3A5',
-            },
         },
         xAxis: {
             data: axisData.xAxis,
@@ -142,6 +141,7 @@ function CSHeatmap(props: HeatmapProps) {
             opts={{ renderer: 'canvas' }}
             ref={chartRef}
             style={{ height: '100%', width: '100%' }}
+            theme={ECHARTS_THEME}
         />
     );
 }

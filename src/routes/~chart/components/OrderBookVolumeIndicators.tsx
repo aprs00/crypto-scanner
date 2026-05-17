@@ -1,6 +1,7 @@
-import { formatNumber } from '@/utils/number';
+import { formatUSD } from '@/utils/number';
 
 import { OrderBookResponseType } from '../types';
+import styles from './OrderBookVolumeIndicators.module.css';
 
 export type OrderBookVolumeIndicatorsPropsType = {
     groupedOrderBook: {
@@ -35,28 +36,6 @@ const OrderBookVolumeIndicators = ({ groupedOrderBook, orderBook }: OrderBookVol
     const visibleBidPercentage = visibleTotalVolume > 0 ? (visibleBidVolume / visibleTotalVolume) * 100 : 0;
     const visibleAskPercentage = visibleTotalVolume > 0 ? (visibleAskVolume / visibleTotalVolume) * 100 : 0;
 
-    const renderBarSegment = (side: 'bid' | 'ask', percentage: number, volumeUSD?: number) => {
-        const isBid = side === 'bid';
-
-        return (
-            <div
-                className={`bg-gradient-to-r ${isBid ? 'from-emerald-500 to-emerald-400 justify-start rounded-l-lg' : 'from-orange-500 to-orange-400 justify-end rounded-r-lg'} flex items-center gap-1 overflow-visible transition-[width] duration-500 ease-out`}
-                style={{ width: `${percentage}%` }}
-            >
-                <div className={`relative z-10 flex items-center gap-1 whitespace-nowrap ${isBid ? 'pl-4' : 'pr-4'}`}>
-                    <div className={`text-xs font-medium ${isBid ? 'text-emerald-950' : 'text-orange-950'}`}>
-                        {percentage.toFixed(1)}%
-                    </div>
-                    {volumeUSD !== undefined && (
-                        <div className={`text-xs ${isBid ? 'text-emerald-950' : 'text-orange-950'}`}>
-                            ${formatNumber(volumeUSD, { notation: 'compact', maximumFractionDigits: 2 })}
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    };
-
     const renderPercentageIndicator = (
         label: string,
         bidPct: number,
@@ -64,26 +43,39 @@ const OrderBookVolumeIndicators = ({ groupedOrderBook, orderBook }: OrderBookVol
         bidVolumeUSD?: number,
         askVolumeUSD?: number,
     ) => (
-        <div className="space-y-1">
-            <h4 className="text-xs font-bold text-slate-300">{label}</h4>
-            <div className="h-6 bg-gradient-to-r font-medium from-slate-800 to-slate-700 rounded-lg overflow-visible flex shadow-sm">
-                {renderBarSegment('bid', bidPct, bidVolumeUSD)}
-                {renderBarSegment('ask', askPct, askVolumeUSD)}
+        <div className={styles.row}>
+            <span className={styles.label}>{label}</span>
+            <div className={styles.meta}>
+                <div className={styles.pcts}>
+                    <span className={`${styles.side} ${styles.bid}`}>
+                        {bidVolumeUSD !== undefined && <span className={styles.usd}>{formatUSD(bidVolumeUSD)}</span>}
+                        <span className={styles.pct}>{bidPct.toFixed(1)}%</span>
+                    </span>
+                    <span className={`${styles.side} ${styles.ask}`}>
+                        <span className={styles.pct}>{askPct.toFixed(1)}%</span>
+                        {askVolumeUSD !== undefined && <span className={styles.usd}>{formatUSD(askVolumeUSD)}</span>}
+                    </span>
+                </div>
+                <div className={styles.bar}>
+                    <div className={`${styles.seg} ${styles.bid}`} style={{ width: `${bidPct}%` }} />
+                    <div className={`${styles.seg} ${styles.ask}`} style={{ width: `${askPct}%` }} />
+                    <span className={styles.tick} />
+                </div>
             </div>
         </div>
     );
 
     return (
-        <div className="space-y-2 mb-3 px-1">
+        <div className={styles.root}>
             {renderPercentageIndicator(
-                'Total Market',
+                'TOTAL MARKET',
                 bidPercentage,
                 askPercentage,
                 totalBidVolumeUSD,
                 totalAskVolumeUSD,
             )}
             {renderPercentageIndicator(
-                'Visible',
+                'VISIBLE',
                 visibleBidPercentage,
                 visibleAskPercentage,
                 visibleBidVolumeUSD,

@@ -1,0 +1,31 @@
+.summary {
+    display: flex;
+    background: var(--bg);
+    border-bottom: 1px solid var(--bd);
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    padding: var(--sp-2) var(--sp-6);
+    border-right: 1px solid var(--bd);
+
+    &:last-child {
+        border-right: none;
+    }
+}
+
+.k {
+    color: var(--fg-dim);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.v {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--fg);
+}

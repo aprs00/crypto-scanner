@@ -11,6 +11,6 @@ const headerLinks = [
         label: 'Treemap',
         path: '/treemap',
     },
-];
+] as const;
 
 export { headerLinks };

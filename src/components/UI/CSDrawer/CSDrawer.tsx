@@ -5,6 +5,8 @@ import { Fragment, ReactNode } from 'react';
 import { XIcon } from '@/components/Icons';
 import { useDragToClose } from '@/hooks/useDragToClose';
 
+import styles from './CSDrawer.module.css';
+
 interface CSDrawerProps {
     isOpen: boolean;
     onClose: () => void;
@@ -23,61 +25,57 @@ const CSDrawer = (props: CSDrawerProps) => {
     return (
         <Transition appear as={Fragment} show={isOpen}>
             <Dialog className="relative z-50" onClose={onClose}>
-                {/* Backdrop */}
                 <TransitionChild
                     as={Fragment}
-                    enter="ease-out duration-300"
+                    enter="transition ease-out dur-300"
                     enterFrom="opacity-0"
                     enterTo="opacity-100"
-                    leave="ease-in duration-200"
+                    leave="transition ease-in dur-200"
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-black/50" style={backdropStyle} />
+                    <div className={styles.backdrop} style={backdropStyle} />
                 </TransitionChild>
 
-                {/* Panel */}
                 <div className="fixed inset-0 overflow-hidden">
                     <div className={`flex h-full ${isDesktop ? 'justify-end' : 'items-end'}`}>
                         <TransitionChild
                             as={Fragment}
-                            enter="transform transition ease-out duration-300"
+                            enter="transition ease-out dur-300"
                             enterFrom={isDesktop ? 'translate-x-full' : 'translate-y-full'}
                             enterTo={isDesktop ? 'translate-x-0' : 'translate-y-0'}
-                            leave="transform transition ease-in duration-200"
+                            leave="transition ease-in dur-200"
                             leaveFrom={isDesktop ? 'translate-x-0' : 'translate-y-0'}
                             leaveTo={isDesktop ? 'translate-x-full' : 'translate-y-full'}
                         >
                             <DialogPanel
-                                className={`bg-slate-800 flex flex-col overflow-hidden ${
-                                    isDesktop ? 'w-full max-w-md h-full' : 'w-full h-[80vh] rounded-t-2xl'
-                                }`}
+                                className={[styles.panel, isDesktop && styles.desktop].filter(Boolean).join(' ')}
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
                                 onTouchStart={handleTouchStart}
                                 style={panelStyle}
                             >
-                                {/* Drag handle for mobile */}
                                 {!isDesktop && (
-                                    <div className="flex justify-center cursor-grab active:cursor-grabbing touch-none shrink-0">
-                                        <div className="w-16 h-1.5 bg-slate-600 rounded-b-full" />
+                                    <div className={styles.handle}>
+                                        <div className={styles.handleBar} />
                                     </div>
                                 )}
 
-                                {/* Header */}
-                                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
-                                    <h2 className="text-lg font-semibold text-white">{title}</h2>
-                                    <button
-                                        className="p-2 rounded-lg hover:bg-slate-700 transition-colors"
-                                        onClick={onClose}
-                                        type="button"
-                                    >
-                                        <XIcon className="text-slate-400 size-6" />
+                                <div className={styles.head}>
+                                    <div className={styles.headLeft}>
+                                        <span className={styles.grip}>
+                                            <i />
+                                            <i />
+                                            <i />
+                                        </span>
+                                        <h2 className={styles.title}>{title}</h2>
+                                    </div>
+                                    <button className={styles.close} onClick={onClose} type="button">
+                                        <XIcon className="icon-md" />
                                     </button>
                                 </div>
 
-                                {/* Content */}
-                                <div className="flex-1 overflow-y-auto" data-drag-scroll>
+                                <div className={`${styles.body} scroll`} data-drag-scroll>
                                     {children}
                                 </div>
                             </DialogPanel>
