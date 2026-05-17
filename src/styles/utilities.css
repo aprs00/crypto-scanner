@@ -140,19 +140,21 @@
     transform: translate(-50%, -50%);
 }
 
-/* Thin terminal-style scrollbar */
+/* Thin terminal-style scrollbar (desktop only — mobile uses native floating scrollbars) */
 .scroll {
     overflow: auto;
 }
-.scroll::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-.scroll::-webkit-scrollbar-thumb {
-    background: var(--bd-hi);
-}
-.scroll::-webkit-scrollbar-track {
-    background: transparent;
+@media (min-width: 768px) {
+    .scroll::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .scroll::-webkit-scrollbar-thumb {
+        background: var(--bd-hi);
+    }
+    .scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
 }
 
 /* Page chrome — used by CSChart, Stats, CSTreemap */

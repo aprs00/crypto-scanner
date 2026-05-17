@@ -84,4 +84,11 @@
     display: flex;
     justify-content: flex-end;
     flex-shrink: 0;
+
+    @media (max-width: 767px) {
+        & > button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
 }
