@@ -6,11 +6,12 @@ import { useRef } from 'react';
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
-import { echarts } from '@/lib/echarts';
+import { echarts, ECHARTS_THEME } from '@/lib/echarts';
+import { palette } from '@/lib/theme';
 import { resizeEChart } from '@/utils/chart';
 
 import { usePriceChangePercentage } from '../api';
-import { ExchangeChartConfig, ExchangeInfo, TimePeriodType } from '../types';
+import { ChartType, ExchangeChartConfig, ExchangeInfo, TimePeriodType } from '../types';
 
 export type PriceChangePercentageProps = {
     exchange: string;
@@ -48,10 +49,8 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         type: periodType,
     });
 
-    const titleMapper = {
-        day: 'Price change per day of week',
-        hour: 'Price change per hour of day (UTC)',
-    };
+    const chartType =
+        periodType === TimePeriodType.Day ? ChartType.PriceChangePercentageDay : ChartType.PriceChangePercentageHour;
 
     const controls = (
         <>
@@ -74,18 +73,21 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
         </>
     );
 
+    const bars = priceChangePercentageApi.data?.data?.map((bar) => ({
+        value: bar.value,
+        itemStyle: { color: bar.value >= 0 ? palette.up : palette.down },
+    }));
+
     const option: EChartsOption = {
-        grid: { bottom: 60, left: 45, right: 20, top: 20 },
+        grid: { bottom: 40, left: 40, right: 20, top: 20 },
         series: [
             {
-                data: priceChangePercentageApi.data?.data,
+                data: bars,
                 type: 'bar',
             },
         ],
         tooltip: {
-            axisPointer: {
-                type: 'shadow',
-            },
+            axisPointer: { type: 'shadow' },
             formatter: function (params: any) {
                 return `${params[0].marker}${params[0].name}: ${params[0].value}%`;
             },
@@ -96,26 +98,20 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
             type: 'category',
         },
         yAxis: {
-            axisLabel: {
-                formatter: '{value}%',
-            },
-            splitLine: {
-                lineStyle: {
-                    color: '#334155',
-                },
-            },
+            axisLabel: { formatter: '{value}%' },
             type: 'value',
         },
     };
 
     return (
-        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title={titleMapper[periodType]}>
+        <ChartContainer chartType={chartType} controls={controls} onRemoveClick={onRemoveClick}>
             <ReactEChartsCore
                 echarts={echarts}
                 onChartReady={() => resizeEChart(chartRef)}
                 option={option}
                 ref={chartRef}
                 style={{ height: '100%', width: '100%' }}
+                theme={ECHARTS_THEME}
             />
         </ChartContainer>
     );

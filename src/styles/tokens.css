@@ -1,0 +1,36 @@
+/* Bloomberg-terminal palette — must stay in sync with src/lib/theme.ts */
+:root {
+    --bg: #0a0a0a;
+    --bg-alt: #111111;
+    --bg-panel: #0d0d0d;
+    --bg-inset: #070707;
+    --bd: #1f1f1f;
+    --bd-hi: #2a2a2a;
+    --fg: #d4c5a0;
+    --fg-dim: #7a6f56;
+    --fg-mute: #4d4639;
+    --ac: #ff9e1f;
+    --ac2: #ffb84d;
+    --up: #9bca3e;
+    --down: #e8413f;
+    --neu: #7a6f56;
+    --heat-hi: #e8413f;
+    --heat-lo: #3b82c4;
+    --heat-mid: #1a1a1a;
+    --grid: rgba(255, 158, 31, 0.08);
+    --axis: rgba(212, 197, 160, 0.35);
+
+    --row-h: 26px;
+    --row-h-sm: 22px;
+    --control-fs: 12px;
+    --label-ls: 0.12em;
+
+    --sp-1: 4px;
+    --sp-2: 6px;
+    --sp-3: 8px;
+    --sp-4: 10px;
+    --sp-5: 12px;
+    --sp-6: 14px;
+    --sp-7: 16px;
+    --sp-8: 24px;
+}

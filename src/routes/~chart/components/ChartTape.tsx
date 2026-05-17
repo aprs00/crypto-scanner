@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import { formatNumber } from '@/utils/number';
+import CSPanel from '@/components/Layouts/CSPanel';
+import { formatNumber, formatPrice } from '@/utils/number';
 
 import type { TapeStateType } from '../types';
 
 import { useStreamAggTrade } from '../api';
+import styles from './ChartTape.module.css';
 
 const ChartTape = () => {
     const streamAggTrade = useStreamAggTrade('BTCUSDT');
@@ -12,16 +14,12 @@ const ChartTape = () => {
     const [tapeData, setTapeData] = useState<TapeStateType[]>([]);
 
     const tapeTable = tapeData.map((data) => (
-        <div className="flex justify-between text-xs px-1 py-px" key={data.aggregateTradeId}>
-            <div>{formatNumber(parseFloat(data.price), {})}</div>
-            <div
-                style={{
-                    color: data.market ? 'rgba(0, 215, 9, 1)' : 'rgba(215, 6, 6, 1)',
-                }}
-            >
+        <div className={styles.row} key={data.aggregateTradeId}>
+            <span className="num dim">{new Date(data.time).toLocaleTimeString()}</span>
+            <span className={`num ${data.market ? 'up' : 'down'}`}>{formatPrice(parseFloat(data.price))}</span>
+            <span className={`num ${styles.size}`}>
                 {formatNumber(parseFloat(data.size), { maximumFractionDigits: 8 })}
-            </div>
-            <div>{new Date().toLocaleTimeString()}</div>
+            </span>
         </div>
     ));
 
@@ -40,14 +38,14 @@ const ChartTape = () => {
     }, [streamAggTrade.data?.T]);
 
     return (
-        <div className="border-4 border-slate-800 rounded-sm h-full">
-            <div className="flex items-center justify-between px-1 pb-1 bg-slate-800" id="drag-handle">
-                <div>PRICE</div>
-                <div>SIZE</div>
-                <div>Time</div>
+        <CSPanel className="h-full" title="Time & Sales">
+            <div className={styles.head}>
+                <span>TIME</span>
+                <span>PRICE</span>
+                <span className="text-right">SIZE</span>
             </div>
-            <div className="h-full overflow-none">{tapeTable}</div>
-        </div>
+            <div className={`${styles.body} scroll`}>{tapeTable}</div>
+        </CSPanel>
     );
 };
 

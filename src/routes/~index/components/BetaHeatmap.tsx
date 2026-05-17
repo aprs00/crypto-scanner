@@ -6,6 +6,7 @@ import ExchangeSelector from '@/components/UI/ExchangeSelector';
 import type { DataType, ExchangeChartConfig, ExchangeInfo } from '../types';
 
 import { useBetaHeatmapData } from '../api';
+import { ChartType } from '../types';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type BetaHeatmapProps = {
@@ -73,7 +74,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
     );
 
     return (
-        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title="Pearson correlation">
+        <ChartContainer chartType={ChartType.BetaHeatmap} controls={controls} onRemoveClick={onRemoveClick}>
             <CSHeatmap data={betaHeatmap.data} />
         </ChartContainer>
     );

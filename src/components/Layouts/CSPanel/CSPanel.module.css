@@ -1,0 +1,65 @@
+.panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--bd);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+}
+
+.head {
+    display: flex;
+    align-items: center;
+    min-height: 30px;
+    padding: var(--sp-1) var(--sp-4);
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--bd);
+    font-size: var(--control-fs);
+    letter-spacing: var(--label-ls);
+    text-transform: uppercase;
+    color: var(--ac);
+    font-weight: 600;
+    gap: var(--sp-4);
+    flex-wrap: wrap;
+}
+
+.grip {
+    width: 10px;
+    height: 10px;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    opacity: 0.7;
+    cursor: move;
+    flex-shrink: 0;
+
+    i {
+        display: block;
+        width: 10px;
+        height: 1px;
+        background: currentColor;
+    }
+}
+
+.title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--fg);
+}
+
+.ctrl {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    flex-wrap: wrap;
+}
+
+.body {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+}

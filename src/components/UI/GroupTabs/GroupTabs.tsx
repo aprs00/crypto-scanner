@@ -3,6 +3,7 @@ import { KeyboardEvent, useRef, useState } from 'react';
 import { type ChartGroup } from '@/routes/~index/types';
 
 import GroupTab from './GroupTab';
+import styles from './GroupTabs.module.css';
 
 interface GroupTabsProps {
     groups: ChartGroup[];
@@ -47,7 +48,7 @@ const GroupTabs = (props: GroupTabsProps) => {
     };
 
     return (
-        <div className="relative flex items-end gap-1 overflow-x-auto border-b border-slate-700">
+        <div className={styles.tabs}>
             {groups.map((group) => (
                 <GroupTab
                     group={group}
@@ -58,27 +59,22 @@ const GroupTabs = (props: GroupTabsProps) => {
                     onSelect={onSelectGroup}
                 />
             ))}
-            {isCreating ? (
-                <div className="flex items-center gap-1.5 px-3 py-2 text-slate-200">
+            {(isCreating && (
+                <div className={styles.tab}>
                     <input
-                        className="bg-transparent border-none outline-none w-24 min-w-0 text-sm"
+                        className={`${styles.input} ac`}
                         onBlur={handleCreateBlur}
                         onChange={(e) => setNewGroupName(e.target.value)}
                         onKeyDown={handleCreateKeyDown}
-                        placeholder="Group name"
+                        placeholder="GROUP"
                         ref={inputRef}
                         type="text"
                         value={newGroupName}
                     />
                 </div>
-            ) : (
-                <button
-                    className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-slate-200 hover:border-slate-600 transition-colors whitespace-nowrap"
-                    onClick={handleCreateClick}
-                    type="button"
-                >
-                    <span>+</span>
-                    <span>New Group</span>
+            )) || (
+                <button className={styles.add} onClick={handleCreateClick} type="button">
+                    <span>+ NEW GROUP</span>
                 </button>
             )}
         </div>

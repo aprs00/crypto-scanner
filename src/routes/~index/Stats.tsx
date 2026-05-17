@@ -6,6 +6,7 @@ import GroupTabs from '@/components/UI/GroupTabs';
 
 import ChartDrawer from './components/ChartDrawer';
 import ChartWrapper from './components/ChartWrapper';
+import styles from './Stats.module.css';
 import useChartStore, { chartTemplates, CHART_HEIGHT } from './useChartStore';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -42,52 +43,47 @@ const Stats = () => {
         };
     });
 
+    const handleOpenDrawer = () => setIsDrawerOpen(true);
+    const handleCloseDrawer = () => setIsDrawerOpen(false);
+
     return (
         <>
-            <div className="p-4">
-                <GroupTabs
-                    activeGroupId={activeGroupId}
-                    groups={groups}
-                    onCreateGroup={createGroup}
-                    onDeleteGroup={deleteGroup}
-                    onRenameGroup={renameGroup}
-                    onSelectGroup={setActiveGroup}
-                />
+            <GroupTabs
+                activeGroupId={activeGroupId}
+                groups={groups}
+                onCreateGroup={createGroup}
+                onDeleteGroup={deleteGroup}
+                onRenameGroup={renameGroup}
+                onSelectGroup={setActiveGroup}
+            />
+
+            <div className="grid-host scroll">
+                {(filteredChartIds.length && (
+                    <ResponsiveGridLayout
+                        cols={{ lg: 12, md: 12, sm: 12, xs: 12, xxs: 12 }}
+                        draggableHandle="#drag-handle"
+                        onLayoutChange={handleLayoutChange}
+                        rowHeight={30}
+                    >
+                        {gridLayouts.map((grid) => (
+                            <div className="grid-card" data-grid={grid.gridLayout} key={grid.key}>
+                                {grid.component}
+                            </div>
+                        ))}
+                    </ResponsiveGridLayout>
+                )) || (
+                    <div className={styles.empty}>
+                        <p className={styles.emptyMsg}>NO CHARTS IN THIS GROUP</p>
+                        <button className="btn primary" onClick={handleOpenDrawer} type="button">
+                            + ADD FIRST CHART
+                        </button>
+                    </div>
+                )}
             </div>
 
-            {filteredChartIds.length ? (
-                <ResponsiveGridLayout
-                    cols={{ lg: 12, md: 12, sm: 12, xs: 12, xxs: 12 }}
-                    draggableHandle="#drag-handle"
-                    onLayoutChange={handleLayoutChange}
-                    rowHeight={30}
-                >
-                    {gridLayouts.map((grid) => (
-                        <div
-                            className="bg-slate-900 overflow-hidden rounded-sm"
-                            data-grid={grid.gridLayout}
-                            key={grid.key}
-                        >
-                            {grid.component}
-                        </div>
-                    ))}
-                </ResponsiveGridLayout>
-            ) : (
-                <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-                    <p className="text-lg mb-4">No charts in this group</p>
-                    <button
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                        onClick={() => setIsDrawerOpen(true)}
-                        type="button"
-                    >
-                        Add your first chart
-                    </button>
-                </div>
-            )}
+            <CSFloatingButton label="+" onClick={handleOpenDrawer} />
 
-            <CSFloatingButton label="+" onClick={() => setIsDrawerOpen(true)} />
-
-            <ChartDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+            <ChartDrawer isOpen={isDrawerOpen} onClose={handleCloseDrawer} />
         </>
     );
 };

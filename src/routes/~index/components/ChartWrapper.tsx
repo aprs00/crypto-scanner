@@ -18,7 +18,7 @@ import ZScoreHeatmap from './ZScoreHeatmap';
 import Scatter from './ZScoreScatter';
 import Scatter3D from './ZScoreScatter3D';
 
-const DEFAULT_EXCHANGE = 'binance';
+const DEFAULT_EXCHANGE = 'hyperliquid';
 
 const ChartWrapper = ({ chart, savedLayout }: { chart: ChartItem; savedLayout: GridLayout }) => {
     const exchange = savedLayout.exchange || DEFAULT_EXCHANGE;

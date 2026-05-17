@@ -35,9 +35,10 @@ const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({
     toolbar_bg = '#f1f3f6',
     watchlist = undefined,
     width = 980,
-
     withdateranges = true,
-
+    backgroundColor,
+    gridColor,
+    overrides,
     ...props
 }) => {
     return (
@@ -70,6 +71,9 @@ const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({
                         popup_width,
                         show_popup_button,
                     }),
+                    ...(backgroundColor && { backgroundColor }),
+                    ...(gridColor && { gridColor }),
+                    ...(overrides && { overrides }),
                     container_id,
                     disabled_features,
                     enabled_features,
@@ -79,7 +83,8 @@ const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({
                 }}
                 scriptSRC="https://s3.tradingview.com/tv.js"
                 type="Widget"
-            ></Widget>
+            />
+
             <Copyright
                 copyrightStyles={copyrightStyles}
                 href={`https://www.tradingview.com/symbols/${symbol}`}

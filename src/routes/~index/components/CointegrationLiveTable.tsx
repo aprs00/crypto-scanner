@@ -17,6 +17,8 @@ import type {
 } from '../types';
 
 import { useCointegrationLiveTable } from '../api';
+import { ChartType } from '../types';
+import styles from './CointegrationLiveTable.module.css';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type CointegrationLiveTableProps = {
@@ -42,13 +44,10 @@ const sortingEquals = (left: SortingState, right: SortingState) => {
 };
 
 const SortIndicator = ({ state }: { state: false | SortDirection }) => {
-    const upClass = state === 'asc' ? 'text-amber-200' : 'text-slate-500';
-    const downClass = state === 'desc' ? 'text-amber-200' : 'text-slate-500';
-
     return (
-        <span className="flex flex-col text-[9px] leading-none">
-            <span className={upClass}>▲</span>
-            <span className={downClass}>▼</span>
+        <span className={styles.sortInd}>
+            <span className={state === 'asc' ? 'on' : 'off'}>▲</span>
+            <span className={state === 'desc' ? 'on' : 'off'}>▼</span>
         </span>
     );
 };
@@ -65,7 +64,7 @@ const formatTimestamp = (value: string) => {
 
 const getZScoreClass = (value: number) => {
     const absZ = Math.abs(value);
-    return absZ >= 3 ? 'text-amber-300' : absZ >= 2 ? 'text-blue-300' : 'text-slate-200';
+    return absZ >= 3 ? styles.zHi : absZ >= 2 ? styles.zMid : styles.zLo;
 };
 
 const sanitizeSelectedSymbols = (selectedSymbols: string[], options: string[]) => {
@@ -163,7 +162,11 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
     const columns: ColumnDef<CointegrationLiveTableRow>[] = [
         {
             accessorKey: 'pair',
-            cell: ({ row }) => <span className="text-slate-200 font-medium">{row.original.pair}</span>,
+            cell: ({ row }) => (
+                <span className="ac" style={{ fontWeight: 600 }}>
+                    {row.original.pair}
+                </span>
+            ),
             enableSorting: false,
             header: 'Pair',
         },
@@ -180,9 +183,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
         {
             accessorKey: 'half_life',
             cell: ({ row }) => (
-                <span className="text-slate-200">
-                    {formatMetric(row.original.half_life, { maximumFractionDigits: 2 })}
-                </span>
+                <span className={styles.zLo}>{formatMetric(row.original.half_life, { maximumFractionDigits: 2 })}</span>
             ),
             enableSorting: true,
             header: 'Half-life',
@@ -190,7 +191,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
         {
             accessorKey: 'adf_t',
             cell: ({ row }) => (
-                <span className="text-slate-200">{formatMetric(row.original.adf_t, { maximumFractionDigits: 3 })}</span>
+                <span className={styles.zLo}>{formatMetric(row.original.adf_t, { maximumFractionDigits: 3 })}</span>
             ),
             enableSorting: true,
             header: 'ADF t',
@@ -198,7 +199,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
         {
             accessorKey: 'hedge_ratio',
             cell: ({ row }) => (
-                <span className="text-slate-200">
+                <span className={styles.zLo}>
                     {formatMetric(row.original.hedge_ratio, { maximumFractionDigits: 6 })}
                 </span>
             ),
@@ -208,7 +209,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
         {
             accessorKey: 'spread_std',
             cell: ({ row }) => (
-                <span className="text-slate-200">
+                <span className={styles.zLo}>
                     {formatMetric(row.original.spread_std, { maximumFractionDigits: 6 })}
                 </span>
             ),
@@ -220,7 +221,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
                 const timestamp = new Date(row.updated_at).getTime();
                 return Number.isNaN(timestamp) ? 0 : timestamp;
             },
-            cell: ({ row }) => <span className="text-slate-400">{formatTimestamp(row.original.updated_at)}</span>,
+            cell: ({ row }) => <span className="dim">{formatTimestamp(row.original.updated_at)}</span>,
             enableSorting: true,
             header: 'Updated',
             id: 'updated_at',
@@ -281,29 +282,23 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
     );
 
     return (
-        <ChartContainer
-            controls={controls}
-            onRemoveClick={onRemoveClick}
-            title="Cointegration (Pairs / Mean-Reversion)"
-        >
-            <div className="relative h-[calc(100%-40px)]">
+        <ChartContainer chartType={ChartType.CointegrationLiveTable} controls={controls} onRemoveClick={onRemoveClick}>
+            <div className="relative h-body">
                 {cointegration.isLoading && <CSSpinner />}
 
-                <div className="h-full overflow-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full">
+                <div className="h-full overflow-auto scroll">
                     {!cointegration.isError && rows.length === 0 && !cointegration.isLoading && (
-                        <div className="flex items-center justify-center h-full text-sm text-slate-500">
-                            No cointegration data available for this window.
-                        </div>
+                        <div className={styles.emptyRow}>No cointegration data available for this window.</div>
                     )}
 
                     {!cointegration.isError && rows.length > 0 && (
-                        <table className="min-w-full text-xs">
-                            <thead className="sticky top-0 bg-slate-900 z-10 text-slate-400">
+                        <table className={styles.table}>
+                            <thead>
                                 {table.getHeaderGroups().map((headerGroup) => (
-                                    <tr className="border-b border-slate-800" key={headerGroup.id}>
+                                    <tr key={headerGroup.id}>
                                         {headerGroup.headers.map((header) => {
                                             if (header.isPlaceholder) {
-                                                return <th className="px-3 py-2" key={header.id} />;
+                                                return <th key={header.id} />;
                                             }
 
                                             const isRightAligned = rightAlignedColumns.has(header.column.id);
@@ -319,12 +314,14 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
                                             return (
                                                 <th
                                                     aria-sort={canSort ? ariaSort : undefined}
-                                                    className={`px-3 py-2 font-medium ${isRightAligned ? 'text-right' : 'text-left'}`}
+                                                    className={isRightAligned ? styles.right : ''}
                                                     key={header.id}
                                                 >
                                                     {canSort ? (
                                                         <button
-                                                            className={`flex w-full items-center gap-2 text-slate-300 hover:text-slate-100 ${isRightAligned ? 'justify-end' : 'justify-start'} select-none`}
+                                                            className={[styles.sortBtn, isRightAligned && styles.right]
+                                                                .filter(Boolean)
+                                                                .join(' ')}
                                                             onClick={() => handleSortClick(header.column.id)}
                                                             title={`Sort by ${String(header.column.columnDef.header)}`}
                                                             type="button"
@@ -336,7 +333,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
                                                             <SortIndicator state={sortingState} />
                                                         </button>
                                                     ) : (
-                                                        <span className="text-slate-500">
+                                                        <span>
                                                             {flexRender(
                                                                 header.column.columnDef.header,
                                                                 header.getContext(),
@@ -351,14 +348,11 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
                             </thead>
                             <tbody>
                                 {table.getRowModel().rows.map((row) => (
-                                    <tr className="border-b border-slate-800/60 hover:bg-slate-800/60" key={row.id}>
+                                    <tr key={row.id}>
                                         {row.getVisibleCells().map((cell) => {
                                             const isRightAligned = rightAlignedColumns.has(cell.column.id);
                                             return (
-                                                <td
-                                                    className={`px-3 py-2 ${isRightAligned ? 'text-right' : 'text-left'}`}
-                                                    key={cell.id}
-                                                >
+                                                <td className={isRightAligned ? styles.right : ''} key={cell.id}>
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </td>
                                             );

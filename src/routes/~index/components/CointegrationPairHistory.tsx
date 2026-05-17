@@ -9,12 +9,13 @@ import ChartContainer from '@/components/Charts/ChartContainer';
 import CSSelect from '@/components/UI/CSSelect';
 import CSSpinner from '@/components/UI/CSSpinner';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
-import { echarts } from '@/lib/echarts';
+import { echarts, ECHARTS_THEME } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 import { formatNumber } from '@/utils/number';
 
 import { useCointegrationPairHistory } from '../api';
-import { CointegrationMetric, ExchangeChartConfig, ExchangeInfo } from '../types';
+import { ChartType, CointegrationMetric, ExchangeChartConfig, ExchangeInfo } from '../types';
+import styles from './CointegrationPairHistory.module.css';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type CointegrationPairHistoryProps = {
@@ -100,12 +101,8 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
 
     const option: EChartsOption = useMemo(
         () => ({
-            grid: {
-                bottom: '40',
-                left: '55',
-                right: '20',
-                top: '15',
-            },
+            grid: { bottom: '30', left: '30', right: '0', top: '50' },
+            legend: { top: 4, type: 'scroll' },
             series: seriesData.map((data, index) => ({
                 data,
                 smooth: true,
@@ -114,10 +111,7 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
                 name: resolvedComparisonSymbols[index] || `Series ${index + 1}`,
             })),
             tooltip: {
-                axisPointer: {
-                    type: 'line',
-                },
-                trigger: 'axis',
+                axisPointer: { type: 'line' },
                 formatter: (params: TopLevelFormatterParams) => {
                     if (!Array.isArray(params) || !params.length) return '';
                     const date = new Date((params[0].value as number[])?.[0]);
@@ -139,6 +133,7 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
                         });
                     return `${timestamp}<br/>${lines.join('<br/>')}`;
                 },
+                trigger: 'axis',
             },
             xAxis: {
                 axisLabel: {
@@ -149,22 +144,12 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
                         ).padStart(2, '0')}`;
                     },
                 },
-                splitLine: {
-                    lineStyle: {
-                        color: '#1e293b',
-                    },
-                },
                 type: 'time',
             },
             yAxis: {
                 axisLabel: {
                     formatter: (value: number) =>
                         formatNumber(value, { maximumFractionDigits: metricDecimals[resolvedMetric] ?? 3 }),
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#334155',
-                    },
                 },
                 type: 'value',
             },
@@ -225,20 +210,20 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
     );
 
     return (
-        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title="Cointegration Pair History">
-            <div className="relative h-[calc(100%-40px)]">
+        <ChartContainer
+            chartType={ChartType.CointegrationPairHistory}
+            controls={controls}
+            onRemoveClick={onRemoveClick}
+        >
+            <div className="relative h-body">
                 {isReady && cointegrationHistory.isLoading && <CSSpinner />}
 
                 {!isReady && (
-                    <div className="flex items-center justify-center h-full text-sm text-slate-500">
-                        Select a base symbol and comparison symbols to load history.
-                    </div>
+                    <div className={styles.msg}>Select a base symbol and comparison symbols to load history.</div>
                 )}
 
                 {isReady && !cointegrationHistory.isError && !hasSeriesData && !cointegrationHistory.isLoading && (
-                    <div className="flex items-center justify-center h-full text-sm text-slate-500">
-                        No cointegration history available for these pairs.
-                    </div>
+                    <div className={styles.msg}>No cointegration history available for these pairs.</div>
                 )}
 
                 {isReady && !cointegrationHistory.isError && hasSeriesData && (
@@ -249,6 +234,7 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
                         option={option}
                         ref={chartRef}
                         style={{ height: '100%', width: '100%' }}
+                        theme={ECHARTS_THEME}
                     />
                 )}
             </div>

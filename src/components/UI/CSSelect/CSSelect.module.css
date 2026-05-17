@@ -1,0 +1,151 @@
+.select {
+    min-width: 96px;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: var(--row-h);
+    padding: 0 var(--sp-3);
+    background: var(--bg-inset);
+    border: 1px solid var(--bd-hi);
+    color: var(--fg);
+    cursor: pointer;
+    text-align: left;
+    position: relative;
+
+    &:focus {
+        outline: none;
+    }
+
+    &.open {
+        border-color: var(--ac);
+    }
+}
+
+.label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--fg);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding-right: var(--sp-7);
+
+    &.empty {
+        color: var(--fg-dim);
+        font-weight: 400;
+    }
+}
+
+.caret {
+    color: var(--fg-dim);
+    font-size: 9px;
+    margin-left: auto;
+}
+
+.options {
+    background: var(--bg-panel);
+    border: 1px solid var(--bd-hi);
+    outline: none;
+    min-width: var(--button-width, 140px);
+    width: fit-content;
+    max-height: 320px !important;
+    margin-top: var(--sp-1);
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+
+    &.hasSearch {
+        padding: 0;
+    }
+
+    &.noSearch {
+        padding: var(--sp-1);
+    }
+}
+
+.searchWrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-panel);
+    padding: var(--sp-2);
+    border-bottom: 1px solid var(--bd);
+}
+
+.search {
+    width: 100%;
+    background: var(--bg-inset);
+    border: 1px solid var(--bd-hi);
+    color: var(--fg);
+    font-size: 11px;
+    padding: var(--sp-1) var(--sp-2);
+    font-family: inherit;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+
+    &:focus {
+        outline: none;
+        border-color: var(--ac);
+    }
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    width: 100%;
+    padding: 5px var(--sp-4);
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fg);
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover:not(.disabled) {
+        background: var(--bg-inset);
+    }
+
+    &.focus {
+        background: var(--bg-inset);
+    }
+
+    &.selected {
+        background: var(--bg-alt);
+        color: var(--ac);
+        font-weight: 600;
+
+        .check {
+            border-color: var(--ac);
+            background: var(--ac);
+            color: var(--bg);
+            font-size: 9px;
+            font-weight: 700;
+        }
+    }
+
+    &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.check {
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--bd-hi);
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

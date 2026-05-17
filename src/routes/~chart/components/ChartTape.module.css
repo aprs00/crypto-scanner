@@ -1,0 +1,28 @@
+.head {
+    display: grid;
+    grid-template-columns: 70px 1fr 1fr;
+    padding: var(--sp-1) var(--sp-3);
+    border-bottom: 1px solid var(--bd);
+    color: var(--fg-dim);
+    letter-spacing: 0.1em;
+    font-size: 9px;
+    text-transform: uppercase;
+}
+
+.body {
+    height: calc(100% - 26px);
+    overflow: auto;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 70px 1fr 1fr;
+    align-items: center;
+    padding: 1px var(--sp-3);
+    font-size: 10px;
+
+    .size {
+        text-align: right;
+        color: var(--fg);
+    }
+}

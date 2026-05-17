@@ -1,6 +1,6 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
-import { DownIcon, UpIcon } from '@/components/Icons';
+import styles from './NumberInput.module.css';
 
 export type NumberInputPropsType = {
     value: number;
@@ -27,22 +27,15 @@ const NumberInput = (props: NumberInputPropsType) => {
     };
 
     return (
-        <div className="w-20 relative">
-            <input
-                className="w-full border bg-slate-800 rounded-xs border-slate-500 px-2 h-7 text-left relative"
-                onChange={handleInput}
-                placeholder="Ticks"
-                value={value}
-            />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-1">
-                <div className="flex flex-col pr-px">
-                    <button onClick={handleIncrement}>
-                        <UpIcon />
-                    </button>
-                    <button onClick={handleDecrement}>
-                        <DownIcon />
-                    </button>
-                </div>
+        <div className={styles.root}>
+            <input onChange={handleInput} placeholder="TICKS" value={value} />
+            <div className={styles.buttons}>
+                <button className={styles.arrow} onClick={handleIncrement} type="button">
+                    ▲
+                </button>
+                <button className={styles.arrow} onClick={handleDecrement} type="button">
+                    ▼
+                </button>
             </div>
         </div>
     );

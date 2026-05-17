@@ -255,15 +255,15 @@ export interface ChartGroup {
 export const DEFAULT_GROUP_ID = 'default';
 
 export const ChartTypeLabels: Record<ChartType, string> = {
-    [ChartType.BetaHeatmap]: 'Pearson Correlation Heatmap',
-    [ChartType.Scatter]: 'Z-Score Scatter',
-    [ChartType.Scatter3D]: 'Z-Score Scatter 3D',
-    [ChartType.ZScoreHeatmap]: 'Z-Score Heatmap',
-    [ChartType.PriceChangePercentageDay]: 'Price Change % (Day)',
-    [ChartType.PriceChangePercentageHour]: 'Price Change % (Hour)',
+    [ChartType.BetaHeatmap]: 'Pearson Correlation',
+    [ChartType.Scatter]: 'Z·Score Scatter',
+    [ChartType.Scatter3D]: 'Z·Score 3D',
+    [ChartType.ZScoreHeatmap]: 'Z·Score Heatmap',
+    [ChartType.PriceChangePercentageDay]: 'Price Change · Day of Week',
+    [ChartType.PriceChangePercentageHour]: 'Price Change · Hour of Day (UTC)',
     [ChartType.CorrelationPairHistory]: 'Correlation Pair History',
     [ChartType.CointegrationPairHistory]: 'Cointegration Pair History',
-    [ChartType.CointegrationLiveTable]: 'Cointegration Table (Pairs / Mean-Reversion)',
+    [ChartType.CointegrationLiveTable]: 'Cointegration (Pairs / Mean·Reversion)',
 };
 
 export const ChartTypeDescriptions: Record<ChartType, string> = {

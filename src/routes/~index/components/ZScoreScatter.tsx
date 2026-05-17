@@ -1,4 +1,4 @@
-import type { SeriesOption } from 'echarts';
+import { type SeriesOption } from 'echarts';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSScatter from '@/components/Charts/CSScatter';
@@ -6,7 +6,7 @@ import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 
 import { useZScoreScatter } from '../api';
-import { ExchangeChartConfig, ExchangeInfo } from '../types';
+import { ChartType, ExchangeChartConfig, ExchangeInfo } from '../types';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type ScatterProps = {
@@ -75,7 +75,7 @@ const ZScoreScatter = (props: ScatterProps) => {
     );
 
     return (
-        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title="Z Score">
+        <ChartContainer chartType={ChartType.Scatter} controls={controls} onRemoveClick={onRemoveClick}>
             <CSScatter data={scatterData} xAxis={xAxis} yAxis={yAxis} />
         </ChartContainer>
     );

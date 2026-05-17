@@ -46,6 +46,10 @@ export type AdvancedRealTimeChartProps = {
     children?: never;
 
     copyrightStyles?: CopyrightStyles;
+
+    backgroundColor?: string;
+    gridColor?: string;
+    overrides?: Record<string, string>;
 };
 
 export type ColorTheme = 'light' | 'dark';

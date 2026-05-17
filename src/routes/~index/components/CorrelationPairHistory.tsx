@@ -7,11 +7,11 @@ import { useRef } from 'react';
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
-import { echarts } from '@/lib/echarts';
+import { echarts, ECHARTS_THEME } from '@/lib/echarts';
 import { resizeEChart } from '@/utils/chart';
 
 import { useCorrelationPairHistory } from '../api';
-import { DataType, ExchangeChartConfig, ExchangeInfo } from '../types';
+import { ChartType, DataType, ExchangeChartConfig, ExchangeInfo } from '../types';
 import MultiSelectDrawer from './MultiSelectDrawer';
 
 export type CorrelationPairHistoryProps = {
@@ -58,12 +58,8 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     });
 
     const option: EChartsOption = {
-        grid: {
-            bottom: '40',
-            left: '50',
-            right: '20',
-            top: '15',
-        },
+        grid: { bottom: '0', left: '40', right: '0', top: '50' },
+        legend: { top: 4, type: 'scroll' },
         series:
             correlationPairHistory.data?.history.map((data, index) => ({
                 name: comparisonSymbols[index],
@@ -74,10 +70,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 visible: false,
             })) || [],
         tooltip: {
-            axisPointer: {
-                type: 'line',
-            },
-            trigger: 'axis',
+            axisPointer: { type: 'line' },
             formatter: (params: any) => {
                 const date = format(subMinutes(new Date(params[0].value[0]), 1), 'M/d/yyyy h:mm a');
                 const lines = [...params]
@@ -86,6 +79,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                     .join('<br/>');
                 return `${date}<br/>${lines}`;
             },
+            trigger: 'axis',
         },
         xAxis: {
             axisLabel: {
@@ -94,24 +88,9 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                     return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
                 },
             },
-            splitLine: {
-                lineStyle: {
-                    color: '#1e293b',
-                },
-            },
             type: 'time',
         },
-        yAxis: {
-            axisLabel: {},
-            max: 1,
-            min: -1,
-            splitLine: {
-                lineStyle: {
-                    color: '#334155',
-                },
-            },
-            type: 'value',
-        },
+        yAxis: { max: 1, min: -1, type: 'value' },
     };
 
     const controls = (
@@ -155,7 +134,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     );
 
     return (
-        <ChartContainer controls={controls} onRemoveClick={onRemoveClick} title={'Correlation Pair History'}>
+        <ChartContainer chartType={ChartType.CorrelationPairHistory} controls={controls} onRemoveClick={onRemoveClick}>
             <ReactEChartsCore
                 echarts={echarts}
                 notMerge={true}
@@ -163,6 +142,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 option={option}
                 ref={chartRef}
                 style={{ height: '92%', width: '100%' }}
+                theme={ECHARTS_THEME}
             />
         </ChartContainer>
     );

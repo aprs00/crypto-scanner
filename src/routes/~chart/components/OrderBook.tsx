@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import DraggableIcon from '@/assets/svg/draggable.svg?react';
+import CSPanel from '@/components/Layouts/CSPanel';
 import CSSelect from '@/components/UI/CSSelect';
 import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
+import { palette, withAlpha } from '@/lib/theme';
 import BinanceOrderBookService from '@/services/binance/OrderbookService';
-import { formatNumber } from '@/utils/number';
+import { formatNumber, formatPrice } from '@/utils/number';
 
 import { OrderBookResponseType, OrderbookType, TableAlignment } from '../types';
+import styles from './OrderBook.module.css';
 import OrderBookVolumeIndicators from './OrderBookVolumeIndicators';
 
 export type OrderBookTablePropsType = {
-    tableHeight: number;
     symbol: string;
     symbolTickSize: number;
 };
@@ -29,9 +30,10 @@ const linearGradingDegrees = {
     },
 };
 
+// Per-row size bars: down/up at 30% alpha.
 const linearGradingColors = {
-    [OrderbookType.Asks]: 'rgba(198, 6, 6, 0.55)',
-    [OrderbookType.Bids]: 'rgba(0, 185, 9, 0.55)',
+    [OrderbookType.Asks]: withAlpha(palette.down, 0.3),
+    [OrderbookType.Bids]: withAlpha(palette.up, 0.3),
 };
 
 const tableBackgroundStyle = (type: OrderbookType, tableAlignment: TableAlignment, percentage: number) =>
@@ -39,12 +41,10 @@ const tableBackgroundStyle = (type: OrderbookType, tableAlignment: TableAlignmen
         linearGradingColors[type]
     } ${percentage}%, rgba(255, 255, 255, 0) 0%)`;
 
-const ORDERBOOK_ROW_HEIGHT = 24;
-const ORDERBOOK_HEADER_HEIGHT = 152;
-const ORDERBOOK_BODY_MARGIN = 8;
+const ORDERBOOK_ROW_HEIGHT = 18;
 
 const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const { symbolTickSize, tableHeight } = props;
+    const { symbolTickSize } = props;
 
     const [orderBook, setOrderBook] = useState<OrderBookResponseType>({ bids: [], asks: [], lastUpdateId: 0 });
     const [groupedOrderBook, setGroupedOrderBook] = useState<{
@@ -53,7 +53,9 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     }>({ bids: [], asks: [] });
     const [numOfTicks, setNumOfTicks] = useState(100);
     const [tableAlignment, setTableAlignment] = useState<TableAlignment>(TableAlignment.V);
+    const [rowsThatFit, setRowsThatFit] = useState(0);
     const binanceServiceRef = useRef<BinanceOrderBookService | null>(null);
+    const rowsContainerRef = useRef<HTMLDivElement>(null);
 
     const groupByVal = symbolTickSize * numOfTicks;
 
@@ -63,12 +65,18 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         return decimalIndex === -1 ? 0 : tickSizeStr.length - decimalIndex - 1;
     })();
 
-    const availableBodyHeight = Math.max(0, tableHeight - ORDERBOOK_HEADER_HEIGHT - ORDERBOOK_BODY_MARGIN);
-    const rowsThatFit = Math.max(0, Math.floor(availableBodyHeight / ORDERBOOK_ROW_HEIGHT));
-    const calculatedBidRows =
-        tableAlignment === TableAlignment.V ? Math.max(0, Math.floor(rowsThatFit / 2)) : rowsThatFit;
-    const calculatedAskRows =
-        tableAlignment === TableAlignment.V ? Math.max(0, rowsThatFit - calculatedBidRows) : rowsThatFit;
+    const calculatedBidRows = tableAlignment === TableAlignment.V ? Math.floor(rowsThatFit / 2) : rowsThatFit;
+    const calculatedAskRows = tableAlignment === TableAlignment.V ? rowsThatFit - calculatedBidRows : rowsThatFit;
+
+    useLayoutEffect(() => {
+        const el = rowsContainerRef.current;
+        if (!el) return;
+        const measure = () => setRowsThatFit(Math.max(0, Math.floor(el.clientHeight / ORDERBOOK_ROW_HEIGHT)));
+        measure();
+        const observer = new ResizeObserver(measure);
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     const maxQuantity = (() => {
         const bidsAndAsks = groupedOrderBook.asks?.concat(groupedOrderBook.bids) || [];
@@ -78,8 +86,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
     const orderBookTable = (groupedGetter: [number, number][], type: OrderbookType) => {
         const rows = [];
         const isTableAlignmentHorizontal = tableAlignment === TableAlignment.H && type === OrderbookType.Bids;
-        const tableAlignmentClassContainer = isTableAlignmentHorizontal ? 'text-right' : '';
-        const tableAlignmentClassRow = isTableAlignmentHorizontal ? 'order-1' : '';
+        const tableAlignmentClassRow = isTableAlignmentHorizontal ? 'text-right' : '';
 
         const cumulativeQuantities: number[] = [];
         let cumulative = 0;
@@ -92,9 +99,11 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         const maxCumulative = cumulativeQuantities[cumulativeQuantities.length - 1] || 0;
 
         const cumulativeColors = {
-            [OrderbookType.Asks]: 'rgba(198, 6, 6, 0.15)',
-            [OrderbookType.Bids]: 'rgba(0, 185, 9, 0.15)',
+            [OrderbookType.Asks]: withAlpha(palette.down, 0.1),
+            [OrderbookType.Bids]: withAlpha(palette.up, 0.1),
         };
+
+        const isAsk = type === OrderbookType.Asks;
 
         let cumulativeIndex = 0;
         for (let i = 0; i < groupedGetter?.length; i++) {
@@ -102,16 +111,24 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
             const [price, quantity] = groupedGetter[i];
             const percentage = (quantity / maxQuantity) * 100;
             const cumulativePercentage = (cumulativeQuantities[cumulativeIndex] / maxCumulative) * 100;
-            const formattedPrice = formatNumber(price, { maximumFractionDigits: tickSizeDecimalPlaces });
+            const formattedPrice = formatPrice(price, tickSizeDecimalPlaces);
             const formattedQuantity = formatNumber(quantity, { maximumFractionDigits: 6 });
 
             const gradientDir = linearGradingDegrees[type][tableAlignment];
             const cumulativeBackground = `linear-gradient(${gradientDir}, ${cumulativeColors[type]} ${cumulativePercentage}%, rgba(255, 255, 255, 0) 0%)`;
 
             rows.push(
-                <div className="h-6" key={price} style={{ background: cumulativeBackground }}>
+                <div
+                    key={price}
+                    style={{
+                        height: ORDERBOOK_ROW_HEIGHT,
+                        background: cumulativeBackground,
+                    }}
+                >
                     <div
-                        className={`grid grid-cols-2 text-slate-200 text-sm p-0.5 ${tableAlignmentClassContainer}`}
+                        className={[styles.row, isAsk ? styles.ask : styles.bid, tableAlignmentClassRow || undefined]
+                            .filter(Boolean)
+                            .join(' ')}
                         style={{ background: tableBackgroundStyle(type, tableAlignment, percentage) }}
                     >
                         <div className={tableAlignmentClassRow}>{formattedPrice}</div>
@@ -148,39 +165,38 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         };
     }, []);
 
-    const orderbookContainerClasses = `m-1 ${tableAlignment === TableAlignment.H ? 'flex flex-row-reverse' : ''}`;
-    const bidsContainerClasses = tableAlignment === TableAlignment.H ? 'flex flex-col-reverse flex-1' : '';
+    const isHorizontal = tableAlignment === TableAlignment.H;
 
     return (
         <>
             {!groupedOrderBook.asks.length && <CSSpinner />}
 
-            <div className="border-4 border-slate-800 rounded-sm h-full z-50">
-                <div className="bg-slate-800 pb-1">
-                    <div className="flex items-center justify-between px-1">
-                        <DraggableIcon id="drag-handle" />
-                        <div className="flex items-center gap-2">
-                            <CSSelect<TableAlignment>
-                                onChange={setTableAlignment}
-                                options={tableAlignmentOptions}
-                                value={tableAlignment}
-                            />
-                            <NumberInput onChange={(e) => setNumOfTicks(e)} value={numOfTicks} />
-                        </div>
-                    </div>
-                    <div className="pt-2">
-                        <OrderBookVolumeIndicators groupedOrderBook={groupedOrderBook} orderBook={orderBook} />
-                    </div>
-                </div>
-                <div className={orderbookContainerClasses}>
-                    <div className="flex flex-1 flex-col-reverse">
-                        {orderBookTable(groupedOrderBook.asks, OrderbookType.Asks)}
-                    </div>
-                    <div className={bidsContainerClasses}>
+            <CSPanel
+                bodyClassName={styles.panelBody}
+                className="h-full"
+                controls={
+                    <>
+                        <CSSelect<TableAlignment>
+                            onChange={setTableAlignment}
+                            options={tableAlignmentOptions}
+                            value={tableAlignment}
+                        />
+                        <NumberInput onChange={(e) => setNumOfTicks(e)} value={numOfTicks} />
+                    </>
+                }
+                title="Order Book"
+            >
+                <OrderBookVolumeIndicators groupedOrderBook={groupedOrderBook} orderBook={orderBook} />
+                <div
+                    className={[styles.container, isHorizontal && styles.horizontal].filter(Boolean).join(' ')}
+                    ref={rowsContainerRef}
+                >
+                    <div className={styles.asks}>{orderBookTable(groupedOrderBook.asks, OrderbookType.Asks)}</div>
+                    <div className={[styles.bids, isHorizontal && styles.horizontal].filter(Boolean).join(' ')}>
                         {orderBookTable(groupedOrderBook.bids, OrderbookType.Bids)}
                     </div>
                 </div>
-            </div>
+            </CSPanel>
         </>
     );
 };
