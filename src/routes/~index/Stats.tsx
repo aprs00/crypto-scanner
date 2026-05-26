@@ -61,6 +61,7 @@ const Stats = () => {
                 {(filteredChartIds.length && (
                     <ResponsiveGridLayout
                         cols={{ lg: 12, md: 12, sm: 12, xs: 12, xxs: 12 }}
+                        draggableCancel=".cs-no-drag"
                         draggableHandle="#drag-handle"
                         onLayoutChange={handleLayoutChange}
                         rowHeight={30}

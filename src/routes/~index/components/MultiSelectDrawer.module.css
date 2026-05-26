@@ -39,10 +39,18 @@
     background: var(--bg-alt);
 }
 
-.count {
-    font-size: 11px;
-    letter-spacing: 0.06em;
+.actionsLeft {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    min-width: 0;
+}
+
+.maxFlag {
+    font-size: 10px;
+    letter-spacing: 0.10em;
     text-transform: uppercase;
+    color: var(--fg-dim);
 }
 
 .actionButtons {
@@ -58,14 +66,6 @@
 
 .group {
     padding: var(--sp-2) var(--sp-1);
-}
-
-.section {
-    padding: var(--sp-1) var(--sp-4);
-    font-size: 10px;
-    color: var(--fg-mute);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
 }
 
 .empty {

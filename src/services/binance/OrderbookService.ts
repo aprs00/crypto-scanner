@@ -1,205 +1,241 @@
 import { binanceInstance } from '@/lib/api';
-import { OrderBookResponseType, StreamTickerResponseType } from '@/routes/~chart/types';
+import { LocalOrderBook, OrderBookLevel, OrderBookResponseType, StreamTickerResponseType } from '@/routes/~chart/types';
 
-export default class BinanceOrderBookService {
-    private ws: WebSocket | null = null;
-    private eventBuffer: StreamTickerResponseType[] = [];
-    private firstEventU: number | null = null;
-    private orderBook: OrderBookResponseType = { bids: [], asks: [], lastUpdateId: 0 };
-    private symbol: string;
-    private onOrderBookUpdate: (orderBook: OrderBookResponseType) => void;
+type Subscriber = (orderBook: LocalOrderBook) => void;
 
-    constructor(symbol: string, onOrderBookUpdate: (orderBook: OrderBookResponseType) => void) {
-        this.symbol = symbol.toLowerCase();
-        this.onOrderBookUpdate = onOrderBookUpdate;
+const SNAPSHOT_LIMIT = 5000;
+const RESYNC_DELAY_MS = 1000;
+const EMPTY_BOOK: LocalOrderBook = { bids: [], asks: [], lastUpdateId: 0 };
+
+class OrderBookStream {
+    private static streams = new Map<string, OrderBookStream>();
+
+    static getOrCreate(symbol: string): OrderBookStream {
+        const key = symbol.toLowerCase();
+        let stream = OrderBookStream.streams.get(key);
+        if (!stream) {
+            stream = new OrderBookStream(key);
+            OrderBookStream.streams.set(key, stream);
+        }
+        return stream;
     }
 
-    public initialize(): void {
-        this.eventBuffer = [];
-        this.firstEventU = null;
-        this.orderBook = { bids: [], asks: [], lastUpdateId: 0 };
+    private readonly symbol: string;
+    private ws: WebSocket | null = null;
 
-        if (this.ws) {
-            this.ws.close();
+    // Book kept as price -> quantity maps; sorted arrays are derived on emit.
+    private bids = new Map<number, number>();
+    private asks = new Map<number, number>();
+    private lastUpdateId = 0;
+
+    // Snapshot/diff handshake state.
+    private buffer: StreamTickerResponseType[] = [];
+    private synced = false;
+    private snapshotPending = false;
+    // Bumped on every (re)connect so messages from a stale socket and resolved
+    // snapshot fetches from a previous generation are ignored — this is what
+    // makes concurrent resyncs safe.
+    private generation = 0;
+    private resyncScheduled = false;
+
+    private book: LocalOrderBook = EMPTY_BOOK;
+    private subscribers = new Set<Subscriber>();
+
+    private constructor(symbol: string) {
+        this.symbol = symbol;
+    }
+
+    subscribe(cb: Subscriber): void {
+        this.subscribers.add(cb);
+        if (this.synced) cb(this.book);
+        if (this.subscribers.size === 1) this.connect();
+    }
+
+    unsubscribe(cb: Subscriber): void {
+        this.subscribers.delete(cb);
+        if (this.subscribers.size === 0) {
+            this.disconnect();
+            OrderBookStream.streams.delete(this.symbol);
         }
+    }
 
-        this.ws = new WebSocket(`wss://stream.binance.com:9443/ws/${this.symbol}@depth@100ms`);
+    private connect(): void {
+        const generation = ++this.generation;
+        this.buffer = [];
+        this.synced = false;
+        this.snapshotPending = false;
+        this.bids.clear();
+        this.asks.clear();
+        this.lastUpdateId = 0;
 
-        this.ws.onopen = () => {};
-        this.ws.onclose = () => {};
-        this.ws.onerror = () => {};
+        const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${this.symbol}@depth@100ms`);
+        this.ws = ws;
 
-        this.ws.onmessage = (event) => {
-            const data: StreamTickerResponseType = JSON.parse(event.data);
+        ws.onmessage = (event) => {
+            if (generation !== this.generation) return; // socket from a superseded connect()
+            const diff: StreamTickerResponseType = JSON.parse(event.data);
 
-            if (this.firstEventU === null && data.U) {
-                this.firstEventU = data.U;
-                this.fetchSnapshot();
-            } else if (this.orderBook.lastUpdateId === 0) {
-                this.eventBuffer.push(data);
+            if (!this.snapshotPending && !this.synced) {
+                // First diff: start buffering and kick off the snapshot fetch.
+                this.snapshotPending = true;
+                this.buffer.push(diff);
+                this.fetchSnapshot(generation);
+            } else if (!this.synced) {
+                this.buffer.push(diff);
             } else {
-                this.processEvent(data);
+                this.applyLive(diff);
             }
         };
     }
 
-    public groupOrders = (
-        orderBook: OrderBookResponseType,
-        groupByVal: number,
-        numOfRows: number | { bids: number; asks: number },
-    ) => {
-        const bidsRows = typeof numOfRows === 'number' ? numOfRows : numOfRows.bids;
-        const asksRows = typeof numOfRows === 'number' ? numOfRows : numOfRows.asks;
-        return {
-            bids: this.groupOrdersByPrice(orderBook.bids, groupByVal, false, bidsRows),
-            asks: this.groupOrdersByPrice(orderBook.asks, groupByVal, true, asksRows),
-        };
-    };
-
-    public close(): void {
+    private disconnect(): void {
+        this.generation++; // invalidate the live socket and any in-flight snapshot fetch
         if (this.ws) {
+            this.ws.onmessage = null;
             this.ws.close();
             this.ws = null;
         }
+        this.buffer = [];
+        this.synced = false;
+        this.snapshotPending = false;
     }
 
-    private async fetchSnapshot(): Promise<void> {
-        const { data } = await binanceInstance.get<OrderBookResponseType>(
-            `api/v3/depth?symbol=${this.symbol.toUpperCase()}&limit=5000`,
-        );
+    private scheduleResync(): void {
+        if (this.resyncScheduled) return; // collapse bursts of gaps into one reconnect
+        this.resyncScheduled = true;
+        setTimeout(() => {
+            this.resyncScheduled = false;
+            if (this.subscribers.size === 0) return;
+            this.disconnect();
+            this.connect();
+        }, RESYNC_DELAY_MS);
+    }
 
-        if (data.lastUpdateId < (this.firstEventU ?? 0)) {
-            this.fetchSnapshot();
+    private async fetchSnapshot(generation: number): Promise<void> {
+        let snapshot: OrderBookResponseType;
+        try {
+            const { data } = await binanceInstance.get<OrderBookResponseType>(
+                `api/v3/depth?symbol=${this.symbol.toUpperCase()}&limit=${SNAPSHOT_LIMIT}`,
+            );
+            snapshot = data;
+        } catch {
+            if (generation === this.generation) this.scheduleResync();
+            return;
+        }
+        if (generation !== this.generation) return; // a newer connect() superseded this fetch
+        this.syncFromSnapshot(snapshot, generation);
+    }
+
+    private syncFromSnapshot(snapshot: OrderBookResponseType, generation: number): void {
+        // Keep only buffered diffs newer than the snapshot.
+        const events = this.buffer.filter((event) => event.u > snapshot.lastUpdateId);
+
+        // The first kept diff must bridge the snapshot (U <= lastUpdateId + 1 <= u).
+        // If it starts after that, the snapshot predates our buffer — fetch a fresher one.
+        if (events.length > 0 && events[0].U > snapshot.lastUpdateId + 1) {
+            setTimeout(() => {
+                if (generation === this.generation) this.fetchSnapshot(generation);
+            }, RESYNC_DELAY_MS);
             return;
         }
 
-        this.processSnapshot(data);
+        this.loadSnapshot(snapshot);
+        for (const event of events) this.applyDiff(event);
+
+        this.buffer = [];
+        this.synced = true;
+        this.emit();
     }
 
-    private processSnapshot(snapshot: OrderBookResponseType): void {
-        const newOrderBook = {
-            bids: snapshot.bids,
-            asks: snapshot.asks,
-            lastUpdateId: snapshot.lastUpdateId,
+    private applyLive(diff: StreamTickerResponseType): void {
+        if (diff.u <= this.lastUpdateId) return; // already covered by the snapshot/prior diffs
+        if (diff.U > this.lastUpdateId + 1) {
+            // Sequence gap: a diff was missed, so the book can no longer be trusted.
+            // Discard and resync instead of applying out-of-order data (which is what
+            // makes top-of-book — and the derived mid price — jump erratically).
+            this.scheduleResync();
+            return;
+        }
+        this.applyDiff(diff);
+        this.emit();
+    }
+
+    private loadSnapshot(snapshot: OrderBookResponseType): void {
+        this.bids.clear();
+        this.asks.clear();
+        for (const [price, qty] of snapshot.bids) this.bids.set(+price, +qty);
+        for (const [price, qty] of snapshot.asks) this.asks.set(+price, +qty);
+        this.lastUpdateId = snapshot.lastUpdateId;
+    }
+
+    private applyDiff(diff: StreamTickerResponseType): void {
+        applySide(this.bids, diff.b);
+        applySide(this.asks, diff.a);
+        this.lastUpdateId = diff.u;
+    }
+
+    private emit(): void {
+        this.book = {
+            bids: [...this.bids].sort((a, b) => b[0] - a[0]),
+            asks: [...this.asks].sort((a, b) => a[0] - b[0]),
+            lastUpdateId: this.lastUpdateId,
         };
-
-        const validEvents = this.eventBuffer.filter((event) => event.u > snapshot.lastUpdateId);
-
-        if (validEvents.length > 0) {
-            const firstEvent: StreamTickerResponseType = validEvents[0];
-
-            if (firstEvent.U <= snapshot.lastUpdateId && firstEvent.u >= snapshot.lastUpdateId) {
-                let currentBook = { ...newOrderBook };
-
-                validEvents.forEach((event) => {
-                    currentBook = this.applyEvent(currentBook, event);
-                });
-
-                this.orderBook = currentBook;
-                this.onOrderBookUpdate(currentBook);
-                this.eventBuffer = [];
-            } else {
-                setTimeout(() => this.initialize(), 500);
-                this.orderBook = newOrderBook;
-                this.onOrderBookUpdate(newOrderBook);
-            }
-        } else {
-            this.orderBook = newOrderBook;
-            this.onOrderBookUpdate(newOrderBook);
-        }
+        for (const cb of this.subscribers) cb(this.book);
     }
-
-    private processEvent(event: StreamTickerResponseType): void {
-        const updatedBook = this.applyEvent(this.orderBook, event);
-
-        if (updatedBook.lastUpdateId !== this.orderBook.lastUpdateId) {
-            this.orderBook = updatedBook;
-            this.onOrderBookUpdate(updatedBook);
-        }
-    }
-
-    private applyEvent(book: OrderBookResponseType, event: StreamTickerResponseType): OrderBookResponseType {
-        if (event.u < book.lastUpdateId) {
-            return book;
-        }
-
-        if (event.U > book.lastUpdateId + 1) {
-            setTimeout(() => this.initialize(), 500);
-        }
-
-        const updatedAsks = this.updateOrderBook(book.asks, event.a, true);
-        const updatedBids = this.updateOrderBook(book.bids, event.b, false);
-
-        return {
-            asks: updatedAsks,
-            bids: updatedBids,
-            lastUpdateId: event.u,
-        };
-    }
-
-    private updateOrderBook = (getter: [string, string][], stream: [string, string][], ascending: boolean) => {
-        for (const [price, quantity] of stream) {
-            const { exactMatch, index } = this.findTargetPriceIndex(getter, price, ascending);
-            if (quantity === '0.00000000') {
-                if (exactMatch) getter.splice(index, 1);
-            } else {
-                if (exactMatch) getter[index][1] = quantity;
-                else getter.splice(index, 0, [price, quantity]);
-            }
-        }
-
-        return getter;
-    };
-
-    private groupOrdersByPrice = (
-        getter: [string, string][],
-        groupByVal: number,
-        isBid: boolean,
-        numOfRows: number,
-    ) => {
-        const groupedGetter = new Map();
-
-        const makeCalculateRoundedPrice = (isBid: boolean) =>
-            isBid
-                ? (orderPrice: number) => Math.ceil(orderPrice / groupByVal) * groupByVal
-                : (orderPrice: number) => Math.floor(orderPrice / groupByVal) * groupByVal;
-
-        const calculateRoundedPrice = makeCalculateRoundedPrice(isBid);
-
-        for (let i = 0; i < getter.length; i++) {
-            const [priceStr, quantityStr] = getter[i];
-            const orderPrice = parseFloat(priceStr);
-            const quantity = parseFloat(quantityStr);
-            const roundedPrice = calculateRoundedPrice(orderPrice);
-
-            if (groupedGetter.has(roundedPrice))
-                groupedGetter.set(roundedPrice, groupedGetter.get(roundedPrice) + quantity);
-            else groupedGetter.set(roundedPrice, quantity);
-        }
-
-        const roundedGetter = [];
-
-        for (let i = 0; i < numOfRows; i++) {
-            roundedGetter.push(Array.from(groupedGetter)[i]);
-        }
-
-        return roundedGetter;
-    };
-
-    private findTargetPriceIndex = (bids: [string, string][], price: string, ascending: boolean) => {
-        let low = 0;
-        let high = bids.length - 1;
-        const parsedPrice = parseFloat(price);
-
-        while (low <= high) {
-            const mid = Math.floor((low + high) / 2);
-            const midPrice = parseFloat(bids[mid][0]);
-
-            if (midPrice === parsedPrice) return { exactMatch: true, index: mid };
-            else if ((ascending && midPrice < parsedPrice) || (!ascending && midPrice > parsedPrice)) low = mid + 1;
-            else high = mid - 1;
-        }
-
-        return { exactMatch: false, index: low };
-    };
 }
+
+const applySide = (side: Map<number, number>, levels: [string, string][]): void => {
+    for (const [priceStr, qtyStr] of levels) {
+        const price = +priceStr;
+        const qty = +qtyStr;
+        if (qty === 0) side.delete(price);
+        else side.set(price, qty);
+    }
+};
+
+// Thin per-consumer handle. Routes through the shared per-symbol stream so N consumers share one WebSocket.
+export default class BinanceOrderBookService {
+    private stream: OrderBookStream;
+    private callback: Subscriber;
+
+    constructor(symbol: string, onOrderBookUpdate: Subscriber) {
+        this.stream = OrderBookStream.getOrCreate(symbol);
+        this.callback = onOrderBookUpdate;
+    }
+
+    public initialize(): void {
+        this.stream.subscribe(this.callback);
+    }
+
+    public close(): void {
+        this.stream.unsubscribe(this.callback);
+    }
+}
+
+type RowCount = number | { bids: number; asks: number };
+
+export const groupOrders = (book: LocalOrderBook, groupByVal: number, rows: RowCount) => ({
+    bids: groupSide(book.bids, groupByVal, false, typeof rows === 'number' ? rows : rows.bids),
+    asks: groupSide(book.asks, groupByVal, true, typeof rows === 'number' ? rows : rows.asks),
+});
+
+// Levels arrive best-first and sorted, so rounded buckets appear in order: once
+// `rows` buckets are collected, every remaining level sits further from the
+// touch and would only open later buckets, so we can stop early.
+const groupSide = (levels: OrderBookLevel[], groupByVal: number, isAsk: boolean, rows: number): OrderBookLevel[] => {
+    if (rows <= 0 || !(groupByVal > 0)) return [];
+    const grouped = new Map<number, number>();
+
+    for (const [price, qty] of levels) {
+        const bucket = isAsk ? Math.floor(price / groupByVal) * groupByVal : Math.ceil(price / groupByVal) * groupByVal;
+        const existing = grouped.get(bucket);
+        if (existing === undefined) {
+            if (grouped.size === rows) break;
+            grouped.set(bucket, qty);
+        } else {
+            grouped.set(bucket, existing + qty);
+        }
+    }
+
+    return [...grouped];
+};

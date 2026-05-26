@@ -1,0 +1,17 @@
+.wrap {
+    display: flex;
+    /* Wrap the two selects independently when the panel header is tight,
+       so the source picker can't overflow its container and cover the grip. */
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--sp-2);
+}
+
+.exchange {
+    width: 7.5rem;
+}
+
+.symbol {
+    width: 6.5rem;
+}

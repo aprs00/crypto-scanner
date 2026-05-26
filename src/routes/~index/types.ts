@@ -263,7 +263,7 @@ export const ChartTypeLabels: Record<ChartType, string> = {
     [ChartType.PriceChangePercentageHour]: 'Price Change · Hour of Day (UTC)',
     [ChartType.CorrelationPairHistory]: 'Correlation Pair History',
     [ChartType.CointegrationPairHistory]: 'Cointegration Pair History',
-    [ChartType.CointegrationLiveTable]: 'Cointegration (Pairs / Mean·Reversion)',
+    [ChartType.CointegrationLiveTable]: 'Cointegration',
 };
 
 export const ChartTypeDescriptions: Record<ChartType, string> = {

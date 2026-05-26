@@ -1,0 +1,47 @@
+.group {
+    display: inline-flex;
+    border: 1px solid var(--bd-hi);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 16px;
+    padding: 0 4px;
+    background: var(--bg-inset);
+    border: 0;
+    color: var(--fg-dim);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+
+    & + & {
+        border-left: 1px solid var(--bd-hi);
+    }
+
+    &:hover {
+        color: var(--ac);
+    }
+}
+
+/* md: matches CSSelect height (var(--row-h)) so they line up in panel headers. */
+.btnMd {
+    height: var(--row-h);
+    min-width: 22px;
+    padding: 0 var(--sp-3);
+}
+
+.active {
+    background: var(--ac);
+    color: var(--bg);
+    cursor: default;
+
+    &:hover {
+        color: var(--bg);
+        filter: brightness(1.08);
+    }
+}

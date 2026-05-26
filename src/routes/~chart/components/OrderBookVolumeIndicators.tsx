@@ -1,6 +1,6 @@
 import { formatUSD } from '@/utils/number';
 
-import { OrderBookResponseType } from '../types';
+import { LocalOrderBook } from '../types';
 import styles from './OrderBookVolumeIndicators.module.css';
 
 export type OrderBookVolumeIndicatorsPropsType = {
@@ -8,16 +8,16 @@ export type OrderBookVolumeIndicatorsPropsType = {
         bids: [number, number][];
         asks: [number, number][];
     };
-    orderBook: OrderBookResponseType;
+    orderBook: LocalOrderBook;
 };
 
 const OrderBookVolumeIndicators = ({ groupedOrderBook, orderBook }: OrderBookVolumeIndicatorsPropsType) => {
-    const bestBidPrice = orderBook.bids.length > 0 ? parseFloat(orderBook.bids[0][0]) : 0;
-    const bestAskPrice = orderBook.asks.length > 0 ? parseFloat(orderBook.asks[0][0]) : 0;
+    const bestBidPrice = orderBook.bids.length > 0 ? orderBook.bids[0][0] : 0;
+    const bestAskPrice = orderBook.asks.length > 0 ? orderBook.asks[0][0] : 0;
     const midPrice = (bestBidPrice + bestAskPrice) / 2;
 
-    const totalAskVolume = orderBook.asks.reduce((sum, ask) => sum + (ask?.[1] ? parseFloat(ask[1]) : 0), 0);
-    const totalBidVolume = orderBook.bids.reduce((sum, bid) => sum + (bid?.[1] ? parseFloat(bid[1]) : 0), 0);
+    const totalAskVolume = orderBook.asks.reduce((sum, ask) => sum + (ask?.[1] ?? 0), 0);
+    const totalBidVolume = orderBook.bids.reduce((sum, bid) => sum + (bid?.[1] ?? 0), 0);
     const totalVolume = totalBidVolume + totalAskVolume;
 
     const totalAskVolumeUSD = totalAskVolume * midPrice;

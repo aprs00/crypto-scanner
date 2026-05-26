@@ -16,14 +16,17 @@ const CSPanel = ({ children, title, controls, className = '', bodyClassName = ''
         <div className={`${styles.panel} ${className}`.trim()}>
             <div className={styles.head}>
                 {showGrip && (
-                    <span className={styles.grip} id="drag-handle">
+                    <span aria-hidden className={styles.grip} id="drag-handle" title="Drag to reposition">
+                        <i />
+                        <i />
+                        <i />
                         <i />
                         <i />
                         <i />
                     </span>
                 )}
                 {title && <span className={styles.title}>{title}</span>}
-                {controls && <span className={styles.ctrl}>{controls}</span>}
+                {controls && <span className={`${styles.ctrl} cs-no-drag`}>{controls}</span>}
             </div>
             <div className={`${styles.body} ${bodyClassName}`.trim()}>{children}</div>
         </div>

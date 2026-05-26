@@ -2,9 +2,13 @@ import { useState } from 'react';
 
 import { XIcon } from '@/components/Icons';
 import CSDrawer from '@/components/UI/CSDrawer';
+import CSSegmented from '@/components/UI/CSSegmented';
 import selectStyles from '@/components/UI/CSSelect/CSSelect.module.css';
 
 import styles from './MultiSelectDrawer.module.css';
+
+type FilterMode = 'ALL' | 'SELECTED';
+const FILTER_OPTIONS: readonly FilterMode[] = ['ALL', 'SELECTED'] as const;
 
 type OptionItemProps = {
     option: string;
@@ -27,8 +31,6 @@ const OptionItem = ({ option, selected, disabled, onToggle }: OptionItemProps) =
     </button>
 );
 
-const SectionLabel = ({ label }: { label: string }) => <div className={styles.section}>{label}</div>;
-
 export type MultiSelectDrawerProps<T = string> = {
     options: T[];
     value: T[];
@@ -44,6 +46,7 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
 
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [filterMode, setFilterMode] = useState<FilterMode>('ALL');
 
     const filteredOptions = searchQuery
         ? options.filter((option) => String(option).toLowerCase().includes(searchQuery.toLowerCase()))
@@ -52,6 +55,7 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
     const selectedSet = new Set(value);
     const filteredSelected = filteredOptions.filter((opt) => selectedSet.has(opt));
     const filteredUnselected = filteredOptions.filter((opt) => !selectedSet.has(opt));
+    const visibleOptions = filterMode === 'SELECTED' ? filteredSelected : filteredOptions;
     const isAtMax = maxSelected !== undefined && value.length >= maxSelected;
 
     const handleToggle = (option: T) => {
@@ -81,6 +85,7 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
     const handleClose = () => {
         setIsOpen(false);
         setSearchQuery('');
+        setFilterMode('ALL');
     };
 
     const handleClearSearch = () => setSearchQuery('');
@@ -117,11 +122,16 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
                     </div>
 
                     <div className={styles.actions}>
-                        <span className={styles.count}>
-                            <span className="num">{value.length}</span>
-                            <span className="dim">{maxSelected ? `/${maxSelected}` : ` / ${options.length}`}</span>
-                            {isAtMax && <span className="ac"> · MAX</span>}
-                        </span>
+                        <div className={styles.actionsLeft}>
+                            <CSSegmented onChange={setFilterMode} options={FILTER_OPTIONS} value={filterMode} />
+
+                            {maxSelected !== undefined && (
+                                <span className={styles.maxFlag}>
+                                    <span className="num">{value.length}</span>
+                                    <span className="dim">/{maxSelected}</span>
+                                </span>
+                            )}
+                        </div>
                         <div className={styles.actionButtons}>
                             {defaultValue && (
                                 <button className="btn" onClick={handleResetToDefaults} type="button">
@@ -140,36 +150,25 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
                     </div>
 
                     <div className={`${styles.list} scroll`} data-drag-scroll>
-                        {filteredSelected.length > 0 && (
+                        {visibleOptions.length > 0 ? (
                             <div className={styles.group}>
-                                <SectionLabel label="Selected" />
-                                {filteredSelected.map((option) => (
-                                    <OptionItem
-                                        key={option}
-                                        onToggle={() => handleToggle(option)}
-                                        option={option}
-                                        selected
-                                    />
-                                ))}
-                            </div>
-                        )}
+                                {visibleOptions.map((option) => {
+                                    const selected = selectedSet.has(option);
 
-                        {filteredUnselected.length > 0 && (
-                            <div className={styles.group}>
-                                <SectionLabel label="Available" />
-                                {filteredUnselected.map((option) => (
-                                    <OptionItem
-                                        disabled={isAtMax}
-                                        key={option}
-                                        onToggle={() => handleToggle(option)}
-                                        option={option}
-                                        selected={false}
-                                    />
-                                ))}
+                                    return (
+                                        <OptionItem
+                                            disabled={!selected && isAtMax}
+                                            key={option}
+                                            onToggle={() => handleToggle(option)}
+                                            option={option}
+                                            selected={selected}
+                                        />
+                                    );
+                                })}
                             </div>
+                        ) : (
+                            <div className={styles.empty}>No matches found</div>
                         )}
-
-                        {filteredOptions.length === 0 && <div className={styles.empty}>No matches found</div>}
                     </div>
 
                     <div className={styles.foot}>

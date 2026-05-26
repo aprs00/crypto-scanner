@@ -1,32 +1,31 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 
 import CSPanel from '@/components/Layouts/CSPanel';
-import CSSelect from '@/components/UI/CSSelect';
+import IconButton from '@/components/UI/CSIconButton';
+import CSSegmented from '@/components/UI/CSSegmented';
 import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
 import { palette, withAlpha } from '@/lib/theme';
-import BinanceOrderBookService from '@/services/binance/OrderbookService';
+import { groupOrders } from '@/services/binance/OrderbookService';
+import { useOrderBook } from '@/services/exchanges/hooks';
 import { formatNumber, formatPrice } from '@/utils/number';
 
-import { OrderBookResponseType, OrderbookType, TableAlignment } from '../types';
+import { OrderbookType, Orientation, PanelType } from '../types';
+import useResolvedSource from '../useResolvedSource';
 import styles from './OrderBook.module.css';
 import OrderBookVolumeIndicators from './OrderBookVolumeIndicators';
+import PanelSource from './PanelSource';
 
-export type OrderBookTablePropsType = {
-    symbol: string;
-    symbolTickSize: number;
-};
-
-const tableAlignmentOptions = Object.values(TableAlignment);
+const orientationOptions = Object.values(Orientation);
 
 const linearGradingDegrees = {
     [OrderbookType.Asks]: {
-        [TableAlignment.H]: '90deg',
-        [TableAlignment.V]: '90deg',
+        [Orientation.H]: '90deg',
+        [Orientation.V]: '90deg',
     },
     [OrderbookType.Bids]: {
-        [TableAlignment.H]: '270deg',
-        [TableAlignment.V]: '90deg',
+        [Orientation.H]: '270deg',
+        [Orientation.V]: '90deg',
     },
 };
 
@@ -36,25 +35,22 @@ const linearGradingColors = {
     [OrderbookType.Bids]: withAlpha(palette.up, 0.3),
 };
 
-const tableBackgroundStyle = (type: OrderbookType, tableAlignment: TableAlignment, percentage: number) =>
-    `linear-gradient(${linearGradingDegrees[type][tableAlignment]}, ${
+const tableBackgroundStyle = (type: OrderbookType, orientation: Orientation, percentage: number) =>
+    `linear-gradient(${linearGradingDegrees[type][orientation]}, ${
         linearGradingColors[type]
     } ${percentage}%, rgba(255, 255, 255, 0) 0%)`;
 
 const ORDERBOOK_ROW_HEIGHT = 18;
 
-const OrderBookTable = (props: OrderBookTablePropsType) => {
-    const { symbolTickSize } = props;
+type Props = { panelId: string; onRemove: () => void };
 
-    const [orderBook, setOrderBook] = useState<OrderBookResponseType>({ bids: [], asks: [], lastUpdateId: 0 });
-    const [groupedOrderBook, setGroupedOrderBook] = useState<{
-        bids: [number, number][];
-        asks: [number, number][];
-    }>({ bids: [], asks: [] });
+const OrderBookTable = ({ panelId, onRemove }: Props) => {
+    const { exchange, symbol, tickSize: symbolTickSize } = useResolvedSource(panelId, PanelType.OrderBook);
+    const orderBook = useOrderBook(exchange, symbol);
+
     const [numOfTicks, setNumOfTicks] = useState(100);
-    const [tableAlignment, setTableAlignment] = useState<TableAlignment>(TableAlignment.V);
+    const [orientation, setOrientation] = useState<Orientation>(Orientation.V);
     const [rowsThatFit, setRowsThatFit] = useState(0);
-    const binanceServiceRef = useRef<BinanceOrderBookService | null>(null);
     const rowsContainerRef = useRef<HTMLDivElement>(null);
 
     const groupByVal = symbolTickSize * numOfTicks;
@@ -65,8 +61,10 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         return decimalIndex === -1 ? 0 : tickSizeStr.length - decimalIndex - 1;
     })();
 
-    const calculatedBidRows = tableAlignment === TableAlignment.V ? Math.floor(rowsThatFit / 2) : rowsThatFit;
-    const calculatedAskRows = tableAlignment === TableAlignment.V ? rowsThatFit - calculatedBidRows : rowsThatFit;
+    const calculatedBidRows = orientation === Orientation.V ? Math.floor(rowsThatFit / 2) : rowsThatFit;
+    const calculatedAskRows = orientation === Orientation.V ? rowsThatFit - calculatedBidRows : rowsThatFit;
+
+    const groupedOrderBook = groupOrders(orderBook, groupByVal, { asks: calculatedAskRows, bids: calculatedBidRows });
 
     useLayoutEffect(() => {
         const el = rowsContainerRef.current;
@@ -85,8 +83,8 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
 
     const orderBookTable = (groupedGetter: [number, number][], type: OrderbookType) => {
         const rows = [];
-        const isTableAlignmentHorizontal = tableAlignment === TableAlignment.H && type === OrderbookType.Bids;
-        const tableAlignmentClassRow = isTableAlignmentHorizontal ? 'text-right' : '';
+        const isOrientationHorizontal = orientation === Orientation.H && type === OrderbookType.Bids;
+        const orientationClassRow = isOrientationHorizontal ? 'text-right' : '';
 
         const cumulativeQuantities: number[] = [];
         let cumulative = 0;
@@ -114,7 +112,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
             const formattedPrice = formatPrice(price, tickSizeDecimalPlaces);
             const formattedQuantity = formatNumber(quantity, { maximumFractionDigits: 6 });
 
-            const gradientDir = linearGradingDegrees[type][tableAlignment];
+            const gradientDir = linearGradingDegrees[type][orientation];
             const cumulativeBackground = `linear-gradient(${gradientDir}, ${cumulativeColors[type]} ${cumulativePercentage}%, rgba(255, 255, 255, 0) 0%)`;
 
             rows.push(
@@ -126,12 +124,12 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                     }}
                 >
                     <div
-                        className={[styles.row, isAsk ? styles.ask : styles.bid, tableAlignmentClassRow || undefined]
+                        className={[styles.row, isAsk ? styles.ask : styles.bid, orientationClassRow || undefined]
                             .filter(Boolean)
                             .join(' ')}
-                        style={{ background: tableBackgroundStyle(type, tableAlignment, percentage) }}
+                        style={{ background: tableBackgroundStyle(type, orientation, percentage) }}
                     >
-                        <div className={tableAlignmentClassRow}>{formattedPrice}</div>
+                        <div className={orientationClassRow}>{formattedPrice}</div>
                         <div>{formattedQuantity}</div>
                     </div>
                 </div>,
@@ -143,29 +141,7 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
         return rows;
     };
 
-    useEffect(() => {
-        if (!symbolTickSize || !orderBook.asks || !binanceServiceRef.current) return;
-
-        setGroupedOrderBook(
-            binanceServiceRef.current.groupOrders(orderBook, groupByVal, {
-                asks: calculatedAskRows,
-                bids: calculatedBidRows,
-            }),
-        );
-    }, [numOfTicks, calculatedAskRows, calculatedBidRows, orderBook, groupByVal, symbolTickSize]);
-
-    useEffect(() => {
-        binanceServiceRef.current = new BinanceOrderBookService('btcusdt', setOrderBook);
-        binanceServiceRef.current.initialize();
-
-        return () => {
-            if (binanceServiceRef.current) {
-                binanceServiceRef.current.close();
-            }
-        };
-    }, []);
-
-    const isHorizontal = tableAlignment === TableAlignment.H;
+    const isHorizontal = orientation === Orientation.H;
 
     return (
         <>
@@ -176,15 +152,17 @@ const OrderBookTable = (props: OrderBookTablePropsType) => {
                 className="h-full"
                 controls={
                     <>
-                        <CSSelect<TableAlignment>
-                            onChange={setTableAlignment}
-                            options={tableAlignmentOptions}
-                            value={tableAlignment}
-                        />
+                        <PanelSource panelId={panelId} panelType={PanelType.OrderBook} />
                         <NumberInput onChange={(e) => setNumOfTicks(e)} value={numOfTicks} />
+                        <CSSegmented<Orientation>
+                            onChange={setOrientation}
+                            options={orientationOptions}
+                            size="md"
+                            value={orientation}
+                        />
+                        <IconButton label="-" onClick={onRemove} />
                     </>
                 }
-                title="Order Book"
             >
                 <OrderBookVolumeIndicators groupedOrderBook={groupedOrderBook} orderBook={orderBook} />
                 <div
