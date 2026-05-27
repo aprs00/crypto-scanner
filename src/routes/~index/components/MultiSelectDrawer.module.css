@@ -32,6 +32,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: var(--sp-3);
     padding: var(--sp-3) var(--sp-5);
     border-bottom: 1px solid var(--bd);
@@ -42,6 +43,7 @@
 .actionsLeft {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--sp-3);
     min-width: 0;
 }
@@ -55,6 +57,7 @@
 
 .actionButtons {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--sp-2);
 }
 

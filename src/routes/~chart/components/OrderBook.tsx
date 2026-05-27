@@ -6,7 +6,7 @@ import CSSegmented from '@/components/UI/CSSegmented';
 import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
 import { palette, withAlpha } from '@/lib/theme';
-import { groupOrders } from '@/services/binance/OrderbookService';
+import { groupOrders } from '@/services/exchanges/_shared/grouping';
 import { useOrderBook } from '@/services/exchanges/hooks';
 import { formatNumber, formatPrice } from '@/utils/number';
 
@@ -157,7 +157,6 @@ const OrderBookTable = ({ panelId, onRemove }: Props) => {
                         <CSSegmented<Orientation>
                             onChange={setOrientation}
                             options={orientationOptions}
-                            size="md"
                             value={orientation}
                         />
                         <IconButton label="-" onClick={onRemove} />

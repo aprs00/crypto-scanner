@@ -8,7 +8,6 @@ export type CSSegmentedProps<T> = {
     onChange: (value: T) => void;
     renderLabel?: (value: T) => ReactNode;
     className?: string;
-    size?: 'sm' | 'md';
 };
 
 const CSSegmented = <T extends string | number>({
@@ -17,7 +16,6 @@ const CSSegmented = <T extends string | number>({
     onChange,
     renderLabel,
     className = '',
-    size = 'sm',
 }: CSSegmentedProps<T>) => {
     return (
         <span className={[styles.group, className].filter(Boolean).join(' ')}>
@@ -25,9 +23,7 @@ const CSSegmented = <T extends string | number>({
                 const isActive = opt === value;
                 return (
                     <button
-                        className={[styles.btn, size === 'md' && styles.btnMd, isActive && styles.active]
-                            .filter(Boolean)
-                            .join(' ')}
+                        className={[styles.btn, isActive && styles.active].filter(Boolean).join(' ')}
                         key={String(opt)}
                         onClick={() => !isActive && onChange(opt)}
                         type="button"

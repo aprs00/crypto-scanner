@@ -334,7 +334,7 @@ const DepthChart = ({ panelId, onRemove }: Props) => {
                     <PanelSource panelId={panelId} panelType={PanelType.Depth} />
                     <span className={styles.controls}>
                         <span className={styles.zoom}>±{rangeLabel}%</span>
-                        <CSSegmented onChange={setOrientation} options={ORIENTATIONS} size="md" value={orientation} />
+                        <CSSegmented onChange={setOrientation} options={ORIENTATIONS} value={orientation} />
                     </span>
                     <IconButton label="-" onClick={onRemove} />
                 </>
