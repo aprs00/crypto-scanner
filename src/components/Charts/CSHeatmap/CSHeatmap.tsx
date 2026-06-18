@@ -1,9 +1,9 @@
 import type { EChartsOption } from 'echarts';
 
-import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
 import { echarts, ECHARTS_THEME } from '@/lib/echarts';
+import { ReactEChartsCore } from '@/lib/ReactECharts';
 import { heatmapGradient, palette } from '@/lib/theme';
 import { CorrelationHeatmapResponse, GridHeatmapResponse, HeatmapType, type HeatmapResponse } from '@/types/api';
 import { resizeEChart } from '@/utils/chart';

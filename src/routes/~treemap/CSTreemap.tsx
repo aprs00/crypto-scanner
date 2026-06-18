@@ -1,24 +1,25 @@
 import type { EChartsOption } from 'echarts';
 
-import ReactEChartsCore from 'echarts-for-react/lib/core';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { sumBy } from 'lodash-es';
 import { useRef } from 'react';
 
 import CSPanel from '@/components/Layouts/CSPanel';
 import { echarts, ECHARTS_THEME } from '@/lib/echarts';
+import { ReactEChartsCore } from '@/lib/ReactECharts';
 import { treemapColorFor } from '@/lib/theme';
 import { resizeEChart } from '@/utils/chart';
 import { formatUSD } from '@/utils/number';
 
 import type { HeatmapResponseType } from './types';
 
-import { useHeatmapData } from './api';
+import { heatmapQueryOptions } from './api';
 import styles from './CSTreemap.module.css';
 
 const CSTreemap = () => {
     const chartRef = useRef<ReactEChartsCore | null>(null);
 
-    const treemap = useHeatmapData();
+    const treemap = useSuspenseQuery(heatmapQueryOptions());
 
     const sourceCoins: HeatmapResponseType[] = treemap.data ?? [];
 
@@ -73,16 +74,14 @@ const CSTreemap = () => {
 
             <div className="page-body">
                 <CSPanel className="flex-1 min-w-0" title="Market Treemap">
-                    {!treemap.isLoading && (
-                        <ReactEChartsCore
-                            echarts={echarts}
-                            onChartReady={() => resizeEChart(chartRef)}
-                            option={option}
-                            ref={chartRef}
-                            style={{ height: '100%', width: '100%' }}
-                            theme={ECHARTS_THEME}
-                        />
-                    )}
+                    <ReactEChartsCore
+                        echarts={echarts}
+                        onChartReady={() => resizeEChart(chartRef)}
+                        option={option}
+                        ref={chartRef}
+                        style={{ height: '100%', width: '100%' }}
+                        theme={ECHARTS_THEME}
+                    />
                 </CSPanel>
             </div>
         </>

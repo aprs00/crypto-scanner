@@ -2,6 +2,8 @@ import { type Layout } from 'react-grid-layout';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+import { safeJSONStorage } from '@/lib/safeStorage';
+
 import { PanelType, type PanelItem } from './types';
 
 export type SavedLayout = Pick<Layout, 'x' | 'y' | 'w' | 'h' | 'i'>;
@@ -65,6 +67,7 @@ const useChartLayoutStore = create<ChartLayoutStore>()(
         {
             name: 'chart-page-layout',
             version: 2,
+            storage: safeJSONStorage(),
         },
     ),
 );

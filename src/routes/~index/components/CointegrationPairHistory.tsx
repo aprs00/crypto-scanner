@@ -2,7 +2,6 @@ import type { EChartsOption } from 'echarts';
 import type { CallbackDataParams, TopLevelFormatterParams } from 'echarts/types/dist/shared';
 
 import { format } from 'date-fns';
-import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useMemo, useRef } from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
@@ -10,6 +9,7 @@ import CSSelect from '@/components/UI/CSSelect';
 import CSSpinner from '@/components/UI/CSSpinner';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 import { echarts, ECHARTS_THEME } from '@/lib/echarts';
+import { ReactEChartsCore } from '@/lib/ReactECharts';
 import { resizeEChart } from '@/utils/chart';
 import { formatNumber } from '@/utils/number';
 

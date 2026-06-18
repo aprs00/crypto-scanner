@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware';
 
 import type { ExchangeId } from '@/services/exchanges/types';
 
+import { safeJSONStorage } from '@/lib/safeStorage';
+
 // `base` is the coin (e.g. "BTC"); it carries the selection across an exchange
 // switch even though the native `symbol` differs ("BTCUSDT" vs "BTC").
 export type PanelSource = { exchange: ExchangeId; symbol: string; base: string };
@@ -41,6 +43,7 @@ const useChartSourceStore = create<ChartSourceStore>()(
         {
             name: 'chart-sources',
             version: 2,
+            storage: safeJSONStorage(),
         },
     ),
 );

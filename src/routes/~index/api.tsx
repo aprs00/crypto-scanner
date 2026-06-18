@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query';
 
 import type {
     CorrelationHeatmapResponse,
@@ -25,8 +25,8 @@ import {
     CointegrationLiveTableResponse,
 } from './types';
 
-const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
-    useQuery({
+const priceChangePercentageQueryOptions = (params: AveragePriceChangeParams) =>
+    queryOptions({
         gcTime: 60_000,
         placeholderData: keepPreviousData,
         queryFn: async () => (await api.get<AveragePriceChangeResponse>('average-prices', { params })).data,
@@ -35,49 +35,49 @@ const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
         staleTime: 60_000,
     });
 
-const useBetaHeatmapData = (params: HeatmapParams) =>
-    useQuery({
+const betaHeatmapQueryOptions = (params: HeatmapParams) =>
+    queryOptions({
         placeholderData: keepPreviousData,
         queryFn: async () => (await api.post<CorrelationHeatmapResponse>('pearson-correlation', params)).data,
         queryKey: ['pearson-correlation', params],
     });
 
-const useZScoreScatter = (params: ZScoreScatterParams) =>
-    useQuery({
+const zScoreScatterQueryOptions = (params: ZScoreScatterParams) =>
+    queryOptions({
         placeholderData: keepPreviousData,
         queryFn: async () => (await api.post<ZScoreScatterResponse[]>('z-score-matrix', params)).data,
         queryKey: ['z-score-matrix', params],
     });
 
-const useZScoreScatter3D = (params: ZScoreScatter3DParams) =>
-    useQuery({
+const zScoreScatter3DQueryOptions = (params: ZScoreScatter3DParams) =>
+    queryOptions({
         placeholderData: keepPreviousData,
         queryFn: async () => (await api.post<ZScoreScatter3DResponse[]>('z-score-matrix', params)).data,
         queryKey: ['z-score-matrix-3d', params],
     });
 
-const useZScoreHeatmap = (params: ZScoreHeatmapParams) =>
-    useQuery({
+const zScoreHeatmapQueryOptions = (params: ZScoreHeatmapParams) =>
+    queryOptions({
         placeholderData: keepPreviousData,
         queryFn: async () => (await api.post<GridHeatmapResponse>('z-score-heatmap', params)).data,
         queryKey: ['z-score-heatmap', params],
     });
 
-const useBootstrap = () =>
-    useQuery({
+const bootstrapQueryOptions = () =>
+    queryOptions({
         queryFn: async () => (await api.get<BootstrapResponse>('bootstrap')).data,
         queryKey: ['bootstrap'],
     });
 
-const useCorrelationPairHistory = (params: CorrelationPairHistoryParams) =>
-    useQuery({
+const correlationPairHistoryQueryOptions = (params: CorrelationPairHistoryParams) =>
+    queryOptions({
         placeholderData: keepPreviousData,
         queryFn: async () => (await api.post<CorrelationPairHistoryResponse>('correlation-pair-history', params)).data,
         queryKey: ['correlation-pair-history', params],
     });
 
-const useCointegrationPairHistory = (params: CointegrationPairHistoryParams) =>
-    useQuery({
+const cointegrationPairHistoryQueryOptions = (params: CointegrationPairHistoryParams) =>
+    queryOptions({
         enabled: Boolean(
             params.exchange &&
                 params.baseSymbol &&
@@ -94,8 +94,8 @@ const useCointegrationPairHistory = (params: CointegrationPairHistoryParams) =>
         staleTime: 60_000,
     });
 
-const useCointegrationLiveTable = (params: CointegrationLiveTableParams) =>
-    useQuery({
+const cointegrationLiveTableQueryOptions = (params: CointegrationLiveTableParams) =>
+    queryOptions({
         gcTime: 60_000,
         placeholderData: keepPreviousData,
         queryFn: async () => (await api.post<CointegrationLiveTableResponse>('cointegration-live-table', params)).data,
@@ -104,14 +104,45 @@ const useCointegrationLiveTable = (params: CointegrationLiveTableParams) =>
         staleTime: 60_000,
     });
 
+const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
+    useQuery(priceChangePercentageQueryOptions(params));
+
+const useBetaHeatmapData = (params: HeatmapParams) => useQuery(betaHeatmapQueryOptions(params));
+
+const useZScoreScatter = (params: ZScoreScatterParams) => useQuery(zScoreScatterQueryOptions(params));
+
+const useZScoreScatter3D = (params: ZScoreScatter3DParams) => useQuery(zScoreScatter3DQueryOptions(params));
+
+const useZScoreHeatmap = (params: ZScoreHeatmapParams) => useQuery(zScoreHeatmapQueryOptions(params));
+
+const useBootstrap = () => useQuery(bootstrapQueryOptions());
+
+const useCorrelationPairHistory = (params: CorrelationPairHistoryParams) =>
+    useQuery(correlationPairHistoryQueryOptions(params));
+
+const useCointegrationPairHistory = (params: CointegrationPairHistoryParams) =>
+    useQuery(cointegrationPairHistoryQueryOptions(params));
+
+const useCointegrationLiveTable = (params: CointegrationLiveTableParams) =>
+    useQuery(cointegrationLiveTableQueryOptions(params));
+
 export {
+    betaHeatmapQueryOptions,
+    bootstrapQueryOptions,
+    cointegrationLiveTableQueryOptions,
+    cointegrationPairHistoryQueryOptions,
+    correlationPairHistoryQueryOptions,
+    priceChangePercentageQueryOptions,
     useBetaHeatmapData,
+    useBootstrap,
+    useCointegrationLiveTable,
+    useCointegrationPairHistory,
+    useCorrelationPairHistory,
     usePriceChangePercentage,
     useZScoreHeatmap,
     useZScoreScatter,
     useZScoreScatter3D,
-    useBootstrap,
-    useCorrelationPairHistory,
-    useCointegrationPairHistory,
-    useCointegrationLiveTable,
+    zScoreHeatmapQueryOptions,
+    zScoreScatterQueryOptions,
+    zScoreScatter3DQueryOptions,
 };
