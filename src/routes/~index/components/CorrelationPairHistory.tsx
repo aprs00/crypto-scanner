@@ -1,13 +1,13 @@
 import type { EChartsOption } from 'echarts';
 
 import { format, subMinutes } from 'date-fns';
-import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { useRef } from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSSelect from '@/components/UI/CSSelect';
 import ExchangeSelector from '@/components/UI/ExchangeSelector';
 import { echarts, ECHARTS_THEME } from '@/lib/echarts';
+import { ReactEChartsCore } from '@/lib/ReactECharts';
 import { resizeEChart } from '@/utils/chart';
 
 import { useCorrelationPairHistory } from '../api';

@@ -1,10 +1,10 @@
 import type { EChartsOption, SeriesOption } from 'echarts';
 
-import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { capitalize } from 'lodash-es';
 import { useRef } from 'react';
 
 import { echarts, ECHARTS_THEME } from '@/lib/echarts';
+import { ReactEChartsCore } from '@/lib/ReactECharts';
 import { palette, TERMINAL_FONT } from '@/lib/theme';
 import { resizeEChart } from '@/utils/chart';
 

@@ -8,47 +8,42 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { Route as rootRouteImport } from './routes/~__root'
+import { Route as TreemapRouteRouteImport } from './routes/~treemap/~route'
+import { Route as ChartRouteRouteImport } from './routes/~chart/~route'
 import { Route as IndexRouteRouteImport } from './routes/~index/~route'
 
-const TreemapRouteLazyRouteImport = createFileRoute('/treemap')()
-const ChartRouteLazyRouteImport = createFileRoute('/chart')()
-
-const TreemapRouteLazyRoute = TreemapRouteLazyRouteImport.update({
+const TreemapRouteRoute = TreemapRouteRouteImport.update({
   id: '/treemap',
   path: '/treemap',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/~treemap/~route.lazy').then((d) => d.Route),
-)
-const ChartRouteLazyRoute = ChartRouteLazyRouteImport.update({
+} as any)
+const ChartRouteRoute = ChartRouteRouteImport.update({
   id: '/chart',
   path: '/chart',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/~chart/~route.lazy').then((d) => d.Route))
+} as any)
 const IndexRouteRoute = IndexRouteRouteImport.update({
   id: '/',
-  path: '/',
+  path: '',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRouteRoute
-  '/chart': typeof ChartRouteLazyRoute
-  '/treemap': typeof TreemapRouteLazyRoute
+  '/chart': typeof ChartRouteRoute
+  '/treemap': typeof TreemapRouteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRouteRoute
-  '/chart': typeof ChartRouteLazyRoute
-  '/treemap': typeof TreemapRouteLazyRoute
+  '/chart': typeof ChartRouteRoute
+  '/treemap': typeof TreemapRouteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRouteRoute
-  '/chart': typeof ChartRouteLazyRoute
-  '/treemap': typeof TreemapRouteLazyRoute
+  '/chart': typeof ChartRouteRoute
+  '/treemap': typeof TreemapRouteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -60,8 +55,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRouteRoute: typeof IndexRouteRoute
-  ChartRouteLazyRoute: typeof ChartRouteLazyRoute
-  TreemapRouteLazyRoute: typeof TreemapRouteLazyRoute
+  ChartRouteRoute: typeof ChartRouteRoute
+  TreemapRouteRoute: typeof TreemapRouteRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -70,19 +65,19 @@ declare module '@tanstack/react-router' {
       id: '/treemap'
       path: '/treemap'
       fullPath: '/treemap'
-      preLoaderRoute: typeof TreemapRouteLazyRouteImport
+      preLoaderRoute: typeof TreemapRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chart': {
       id: '/chart'
       path: '/chart'
       fullPath: '/chart'
-      preLoaderRoute: typeof ChartRouteLazyRouteImport
+      preLoaderRoute: typeof ChartRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
       id: '/'
-      path: '/'
+      path: ''
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteRouteImport
       parentRoute: typeof rootRouteImport
@@ -92,9 +87,18 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRouteRoute: IndexRouteRoute,
-  ChartRouteLazyRoute: ChartRouteLazyRoute,
-  TreemapRouteLazyRoute: TreemapRouteLazyRoute,
+  ChartRouteRoute: ChartRouteRoute,
+  TreemapRouteRoute: TreemapRouteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

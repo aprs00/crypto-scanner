@@ -1,5 +1,6 @@
-import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { RefObject } from 'react';
+
+import type { ReactEChartsCore } from '@/lib/ReactECharts';
 
 const resizeEChart = (chartRef: RefObject<ReactEChartsCore | null>): void => {
     setTimeout(() => {

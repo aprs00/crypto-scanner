@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import type { LocalOrderBook } from '@/routes/~chart/types';
@@ -9,12 +9,14 @@ import { getExchange } from './registry';
 
 const EMPTY_BOOK: LocalOrderBook = { asks: [], bids: [], lastUpdateId: 0 };
 
-export const useExchangeSymbols = (id: ExchangeId) =>
-    useQuery({
+export const exchangeSymbolsQueryOptions = (id: ExchangeId) =>
+    queryOptions({
         queryFn: () => getExchange(id).fetchSymbols(),
         queryKey: ['exchange-symbols', id],
         staleTime: Infinity,
     });
+
+export const useExchangeSymbols = (id: ExchangeId) => useQuery(exchangeSymbolsQueryOptions(id));
 
 export const useOrderBook = (exchange: ExchangeId, symbol: string): LocalOrderBook => {
     const [book, setBook] = useState<LocalOrderBook>(EMPTY_BOOK);

@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { coingeckoInstance } from '@/lib/api';
 
 import type { HeatmapResponseType } from './types';
 
-const useHeatmapData = () =>
-    useQuery({
+const heatmapQueryOptions = () =>
+    queryOptions({
         gcTime: 30_000,
         queryFn: async () =>
             (await coingeckoInstance.get<HeatmapResponseType[]>('api/v3/global/tree_map_chart_data')).data,
@@ -13,4 +13,6 @@ const useHeatmapData = () =>
         staleTime: 30_000,
     });
 
-export { useHeatmapData };
+const useHeatmapData = () => useQuery(heatmapQueryOptions());
+
+export { heatmapQueryOptions, useHeatmapData };

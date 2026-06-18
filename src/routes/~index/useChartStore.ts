@@ -2,6 +2,8 @@ import { type Layout } from 'react-grid-layout';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+import { safeJSONStorage } from '@/lib/safeStorage';
+
 import {
     ChartType,
     DEFAULT_GROUP_ID,
@@ -229,6 +231,7 @@ const useChartStore = create<ChartStore>()(
         {
             name: 'chart-layout',
             version: 4,
+            storage: safeJSONStorage(),
         },
     ),
 );
