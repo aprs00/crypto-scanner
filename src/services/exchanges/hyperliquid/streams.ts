@@ -34,8 +34,8 @@ const socket = new MultiplexedSocket<HlSub>({
     url: WS_URL,
 });
 
-// l2Book pushes full snapshots (levels[0] = bids high→low, levels[1] = asks
-// low→high), so we just map each message — no diff/resync handshake needed.
+// l2Book pushes full snapshots (levels[0] = bids, levels[1] = asks), so each
+// message maps directly — no diff/resync handshake.
 export const subscribeOrderBook = (symbol: string, cb: OrderBookSubscriber): (() => void) =>
     socket.subscribe<HlBook>({ coin: symbol, type: 'l2Book' }, (book) => {
         const localBook: LocalOrderBook = {

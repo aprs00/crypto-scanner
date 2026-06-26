@@ -1,35 +1,17 @@
-import type { BootstrapResponse } from '@/routes/~index/types';
+import type { ExchangeAdapter } from '../types';
 
-import api from '@/lib/api';
-
-import type { ExchangeAdapter, ExchangeSymbol } from '../types';
-
-const STREAMING_NOT_SUPPORTED = 'Bybit streaming is not implemented; this adapter only powers the TradingView panel.';
-
-const baseFromSymbol = (s: string): string => (s.endsWith('USDT') ? s.slice(0, -4) : s);
+import { subscribeOrderBook, subscribeTrades } from './streams';
+import { fetchBybitSymbols } from './symbols';
 
 const bybit: ExchangeAdapter = {
     id: 'bybit',
     label: 'BYBIT',
 
-    fetchSymbols: async (): Promise<ExchangeSymbol[]> => {
-        const { data } = await api.get<BootstrapResponse>('bootstrap');
-        const symbols = data.exchange_data?.bybit?.symbols ?? [];
-        return symbols.map((symbol) => ({
-            base: baseFromSymbol(symbol),
-            label: symbol,
-            symbol,
-            tickSize: 0,
-        }));
-    },
+    fetchSymbols: fetchBybitSymbols,
 
-    subscribeOrderBook: () => {
-        throw new Error(STREAMING_NOT_SUPPORTED);
-    },
+    subscribeOrderBook,
 
-    subscribeTrades: () => {
-        throw new Error(STREAMING_NOT_SUPPORTED);
-    },
+    subscribeTrades,
 
     // Bybit linear perpetuals on TradingView use the `.P` suffix.
     toTradingViewSymbol: (symbol: string): string => `BYBIT:${symbol}.P`,

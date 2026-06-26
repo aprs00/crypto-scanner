@@ -7,9 +7,8 @@ export const groupOrders = (book: LocalOrderBook, groupByVal: number, rows: RowC
     bids: groupSide(book.bids, groupByVal, false, typeof rows === 'number' ? rows : rows.bids),
 });
 
-// Levels arrive best-first and sorted, so rounded buckets appear in order: once
-// `rows` buckets are collected, every remaining level sits further from the
-// touch and would only open later buckets, so we can stop early.
+// Levels arrive best-first, so buckets fill in order: once `rows` buckets exist,
+// remaining levels only open later buckets and we can stop early.
 const groupSide = (levels: OrderBookLevel[], groupByVal: number, isAsk: boolean, rows: number): OrderBookLevel[] => {
     if (rows <= 0 || !(groupByVal > 0)) return [];
     const grouped = new Map<number, number>();

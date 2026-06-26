@@ -2,15 +2,11 @@ type Handler = (data: unknown) => void;
 
 export interface MultiplexedSocketConfig<TSub> {
     url: string;
-    // Frame builders for subscribe / unsubscribe. Receive the caller's
-    // subscription object as-is; return whatever the wire format wants.
     subscribeFrame: (sub: TSub) => unknown;
     unsubscribeFrame: (sub: TSub) => unknown;
-    // Stable string key for dedup + dispatch. Two subscriptions with the same
-    // key share one wire subscription and broadcast to all their handlers.
+    // Stable key for dedup + dispatch; subscriptions sharing a key share one wire sub.
     keyOf: (sub: TSub) => string;
-    // Maps one raw message to the (key, payload) pairs it should fan out to.
-    // Empty array = ack / heartbeat / not for us.
+    // (key, payload) pairs to fan a message out to; empty = ack / heartbeat / not ours.
     route: (msg: unknown) => { key: string; data: unknown }[];
     pingFrame?: unknown;
     pingIntervalMs?: number;
@@ -19,10 +15,8 @@ export interface MultiplexedSocketConfig<TSub> {
 
 const DEFAULT_RECONNECT_DELAY_MS = 2_000;
 
-// One WebSocket per instance, ref-counted multiplexed subscriptions.
-// First handler for a key sends a subscribe frame; last to leave sends
-// unsubscribe. The last key closes the socket. On reconnect every active
-// subscription is replayed, so consumers don't observe the drop.
+// One ref-counted WebSocket: first handler for a key subscribes, last to leave
+// unsubscribes, last key closes the socket. Active subs are replayed on reconnect.
 class MultiplexedSocket<TSub> {
     private readonly cfg: MultiplexedSocketConfig<TSub>;
     private ws: WebSocket | null = null;

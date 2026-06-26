@@ -30,5 +30,10 @@ const hyperliquidInstance = axios.create({
     ...commonOptions,
 });
 
-export { binanceInstance, coingeckoInstance, hyperliquidInstance };
+const bybitInstance = axios.create({
+    baseURL: env.bybitAPI,
+    ...commonOptions,
+});
+
+export { binanceInstance, bybitInstance, coingeckoInstance, hyperliquidInstance };
 export default baseInstance;

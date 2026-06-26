@@ -15,15 +15,13 @@ import MultiplexedSocket from '../_shared/multiplexed-socket';
 const WS_URL = 'wss://stream.binance.com:9443/stream';
 const SNAPSHOT_LIMIT = 5_000;
 
-// Stream names ARE the subscription/dispatch keys for the combined-stream
-// endpoint, so TSub = string keeps the wiring trivial.
 let msgId = 0;
 
 const socket = new MultiplexedSocket<string>({
     keyOf: (key) => key,
     route: (msg: any) => {
-        // Combined-stream wraps payloads as { stream, data }. Subscribe acks
-        // arrive as { result, id } and are ignored by returning [].
+        // Combined-stream wraps payloads as { stream, data }; acks have no stream
+        // and fall through to [].
         if (typeof msg?.stream === 'string' && msg.data) {
             return [{ data: msg.data, key: msg.stream }];
         }
@@ -34,14 +32,10 @@ const socket = new MultiplexedSocket<string>({
     url: WS_URL,
 });
 
-// --- Order book ---------------------------------------------------------
-
 const orderBookStreams = new Map<string, BinanceOrderBookStream>();
 
 const orderBookKey = (symbol: string): string => `${symbol.toLowerCase()}@depth@100ms`;
 
-// One per active symbol: owns the BookSyncer (state machine) and the upstream
-// socket subscription, fans the resulting LocalOrderBook out to all consumers.
 class BinanceOrderBookStream {
     private readonly streamKey: string;
     private readonly snapshotUrl: string;
@@ -105,8 +99,8 @@ class BinanceOrderBookStream {
         orderBookStreams.delete(this.streamKey);
     }
 
-    // Drops the upstream subscription and restarts the state machine. Triggered
-    // by BookSyncer when a sequence gap makes the local book untrustworthy.
+    // BookSyncer signals a sequence gap: drop the upstream subscription and
+    // restart the state machine.
     private resync(): void {
         if (this.subscribers.size === 0) return;
         this.socketUnsub?.();
@@ -127,8 +121,6 @@ export const subscribeOrderBook = (symbol: string, cb: OrderBookSubscriber): (()
     }
     return stream.subscribe(cb);
 };
-
-// --- Trades --------------------------------------------------------------
 
 export const subscribeTrades = (symbol: string, cb: TradeSubscriber): (() => void) =>
     socket.subscribe<StreamAggTradeResponseType>(`${symbol.toLowerCase()}@aggTrade`, (t) => {

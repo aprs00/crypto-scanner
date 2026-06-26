@@ -30,8 +30,7 @@ export const useOrderBook = (exchange: ExchangeId, symbol: string): LocalOrderBo
     return book;
 };
 
-// Accumulates the most recent `limit` trades (newest first). Buffering here keeps
-// the subscription callback stable and avoids dropping trades during bursts.
+// Accumulates the most recent `limit` trades, newest first.
 export const useTrades = (exchange: ExchangeId, symbol: string, limit = 100): NormalizedTrade[] => {
     const [trades, setTrades] = useState<NormalizedTrade[]>([]);
 

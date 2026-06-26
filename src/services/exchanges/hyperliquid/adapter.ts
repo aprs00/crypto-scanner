@@ -13,9 +13,7 @@ const hyperliquid: ExchangeAdapter = {
 
     subscribeTrades,
 
-    // TradingView's public widget has no Hyperliquid feed; HL is excluded from
-    // the TradingView panel via TRADINGVIEW_EXCHANGES. This stays only to satisfy
-    // the interface contract and is never called.
+    // HL has no TradingView feed (excluded via TRADINGVIEW_EXCHANGES); never called.
     toTradingViewSymbol: (symbol: string): string => `BINANCE:${symbol}USDT`,
 };
 

@@ -17,11 +17,9 @@ export interface BookSyncerConfig<TDiff, TSnap> {
 
 const DEFAULT_RESYNC_DELAY_MS = 1_000;
 
-// Pure state machine for snapshot+diff orderbooks. No WebSocket concerns —
-// the caller pumps diffs via onDiff() and tells us about lifecycle via
-// onConnect()/onDisconnect(). We emit a fully-formed LocalOrderBook via
-// cfg.onChange whenever the book changes, and call cfg.onGap() when the only
-// recovery is to drop the upstream subscription and restart.
+// Pure state machine for snapshot+diff order books: the caller pumps diffs via
+// onDiff() and lifecycle via onConnect()/onDisconnect(); we emit via onChange,
+// and call onGap() when recovery needs the upstream subscription dropped.
 class BookSyncer<TDiff, TSnap> {
     private readonly cfg: BookSyncerConfig<TDiff, TSnap>;
     private readonly bids = new Map<number, number>();
@@ -60,7 +58,6 @@ class BookSyncer<TDiff, TSnap> {
 
     onDiff(diff: TDiff): void {
         if (!this.snapshotPending && !this.synced) {
-            // First diff: start buffering and kick off the snapshot fetch.
             this.snapshotPending = true;
             this.buffer.push(diff);
             void this.fetchSnapshot(this.generation);
@@ -144,7 +141,6 @@ class BookSyncer<TDiff, TSnap> {
     }
 }
 
-// Helper for the common "[priceStr, qtyStr][]" diff side payload.
 export const applyLevelDeltas = (side: Map<number, number>, levels: [string, string][]): void => {
     for (const [priceStr, qtyStr] of levels) {
         const price = +priceStr;
