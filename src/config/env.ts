@@ -1,10 +1,17 @@
-const { VITE_API_URL, VITE_API_WS_URL, VITE_BINANCE_API_URL, VITE_COINGECKO_API_URL, VITE_HYPERLIQUID_API_URL } =
-    import.meta.env;
+const {
+    VITE_API_URL,
+    VITE_API_WS_URL,
+    VITE_BINANCE_API_URL,
+    VITE_BYBIT_API_URL,
+    VITE_COINGECKO_API_URL,
+    VITE_HYPERLIQUID_API_URL,
+} = import.meta.env;
 
 const env = {
     baseAPI: VITE_API_URL,
     baseWS: VITE_API_WS_URL,
     binanceAPI: VITE_BINANCE_API_URL,
+    bybitAPI: VITE_BYBIT_API_URL,
     coingeckoAPI: VITE_COINGECKO_API_URL,
     hyperliquidAPI: VITE_HYPERLIQUID_API_URL,
 };

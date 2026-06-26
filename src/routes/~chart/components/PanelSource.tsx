@@ -8,8 +8,8 @@ import useChartSourceStore from '../useChartSourceStore';
 import useResolvedSource from '../useResolvedSource';
 import styles from './PanelSource.module.css';
 
-// TradingView has Binance/Bybit/OKX feeds but no Hyperliquid; other panels need
-// WS streaming, which only Binance and Hyperliquid implement.
+// TradingView has Binance/Bybit feeds but no Hyperliquid; other panels need WS
+// streaming (order book + trades), which Binance, Hyperliquid and Bybit implement.
 export const allowedExchanges = (panelType: PanelType): ExchangeId[] =>
     panelType === PanelType.TradingView ? TRADINGVIEW_EXCHANGES : STREAMING_EXCHANGES;
 

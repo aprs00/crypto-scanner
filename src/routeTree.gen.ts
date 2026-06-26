@@ -28,7 +28,7 @@ const ChartRouteLazyRoute = ChartRouteLazyRouteImport.update({
 } as any).lazy(() => import('./routes/~chart/~route.lazy').then((d) => d.Route));
 const IndexRouteRoute = IndexRouteRouteImport.update({
     id: '/',
-    path: '',
+    path: '/',
     getParentRoute: () => rootRouteImport,
 } as any);
 
@@ -80,7 +80,7 @@ declare module '@tanstack/react-router' {
         };
         '/': {
             id: '/';
-            path: '';
+            path: '/';
             fullPath: '/';
             preLoaderRoute: typeof IndexRouteRouteImport;
             parentRoute: typeof rootRouteImport;
@@ -94,12 +94,3 @@ const rootRouteChildren: RootRouteChildren = {
     TreemapRouteLazyRoute: TreemapRouteLazyRoute,
 };
 export const routeTree = rootRouteImport._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
-
-import type { getRouter } from './router.tsx';
-import type { createStart } from '@tanstack/react-start';
-declare module '@tanstack/react-start' {
-    interface Register {
-        ssr: true;
-        router: Awaited<ReturnType<typeof getRouter>>;
-    }
-}

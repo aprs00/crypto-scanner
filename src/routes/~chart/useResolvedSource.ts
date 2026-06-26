@@ -20,7 +20,7 @@ export type ResolvedSource = {
 const useResolvedSource = (panelId: string, panelType: PanelType): ResolvedSource => {
     const stored = useChartSourceStore((state) => state.sources[panelId]) ?? defaultPanelSource;
     // If the persisted exchange isn't valid for this panel type (e.g. HL was set
-    // before TradingView added bybit/okx, or okx is left over from a TV panel
+    // before TradingView added bybit, or an exchange is left over from a TV panel
     // that was switched to OrderBook), fall back to the first allowed option.
     const allowed = allowedExchanges(panelType);
     const source = allowed.includes(stored.exchange) ? stored : { ...stored, exchange: allowed[0] };
