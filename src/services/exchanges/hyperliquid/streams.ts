@@ -7,7 +7,7 @@ import MultiplexedSocket from '../_shared/multiplexed-socket';
 const WS_URL = 'wss://api.hyperliquid.xyz/ws';
 const PING_INTERVAL_MS = 30_000; // server drops idle sockets ~60s
 
-type HlSub = { type: 'l2Book' | 'trades'; coin: string };
+type HlSub = { type: 'l2Book' | 'trades'; coin: string; fast?: boolean };
 type HlLevel = { px: string; sz: string; n: number };
 type HlBook = { coin: string; time: number; levels: [HlLevel[], HlLevel[]] };
 type HlTrade = { coin: string; side: string; px: string; sz: string; time: number; tid: number };
@@ -35,9 +35,10 @@ const socket = new MultiplexedSocket<HlSub>({
 });
 
 // l2Book pushes full snapshots (levels[0] = bids, levels[1] = asks), so each
-// message maps directly — no diff/resync handshake.
+// message maps directly — no diff/resync handshake. `fast: true` lifts the
+// default ~3-5s throttle to ~2 updates/sec (same payload shape).
 export const subscribeOrderBook = (symbol: string, cb: OrderBookSubscriber): (() => void) =>
-    socket.subscribe<HlBook>({ coin: symbol, type: 'l2Book' }, (book) => {
+    socket.subscribe<HlBook>({ coin: symbol, fast: true, type: 'l2Book' }, (book) => {
         const localBook: LocalOrderBook = {
             asks: toLevels(book.levels[1]),
             bids: toLevels(book.levels[0]),
