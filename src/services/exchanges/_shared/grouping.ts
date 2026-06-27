@@ -14,7 +14,7 @@ const groupSide = (levels: OrderBookLevel[], groupByVal: number, isAsk: boolean,
     const grouped = new Map<number, number>();
 
     for (const [price, qty] of levels) {
-        const bucket = isAsk ? Math.floor(price / groupByVal) * groupByVal : Math.ceil(price / groupByVal) * groupByVal;
+        const bucket = isAsk ? Math.ceil(price / groupByVal) * groupByVal : Math.floor(price / groupByVal) * groupByVal;
         const existing = grouped.get(bucket);
         if (existing === undefined) {
             if (grouped.size === rows) break;
