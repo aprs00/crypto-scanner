@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-const TICKER_SYMBOLS = ['BTCUSDT', 'ETHUSDT'] as const;
+const TICKER_SYMBOLS = ['BTCUSDT'] as const;
 
 type BinanceMiniTicker = {
     s: string; // symbol
@@ -11,7 +11,11 @@ type BinanceMiniTicker = {
 };
 
 type FearGreedResponse = {
-    data: { value: string; value_classification: string; timestamp: string }[];
+    data: {
+        value: string;
+        value_classification: string;
+        timestamp: string;
+    }[];
 };
 
 export type TopBarPrice = {
@@ -21,8 +25,7 @@ export type TopBarPrice = {
 
 export type TopBarTicker = {
     btc?: TopBarPrice;
-    eth?: TopBarPrice;
-    fearGreed?: { value: number; classification: string };
+    fearGreed?: { value: number };
 };
 
 const buildStreamUrl = () => {
@@ -65,7 +68,6 @@ const useFearGreed = () =>
             if (!latest) return null;
             return {
                 value: Number(latest.value),
-                classification: latest.value_classification,
             };
         },
         refetchInterval: 5 * 60_000,
@@ -78,7 +80,6 @@ const useTopBarTicker = (): TopBarTicker => {
 
     return {
         btc: prices.BTCUSDT,
-        eth: prices.ETHUSDT,
         fearGreed: fg.data ?? undefined,
     };
 };

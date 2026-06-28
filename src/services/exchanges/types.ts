@@ -1,6 +1,11 @@
 import type { LocalOrderBook } from '@/routes/~chart/types';
 
-export type ExchangeId = 'binance' | 'hyperliquid' | 'bybit';
+export const ExchangeId = {
+    Binance: 'binance',
+    Hyperliquid: 'hyperliquid',
+    Bybit: 'bybit',
+} as const;
+export type ExchangeId = (typeof ExchangeId)[keyof typeof ExchangeId];
 
 export type ExchangeSymbol = {
     symbol: string; // native subscription symbol: "BTCUSDT" (binance) | "BTC" (hyperliquid)
@@ -23,10 +28,18 @@ export type OrderBookSubscriber = (book: LocalOrderBook) => void;
 
 export type TradeSubscriber = (trade: NormalizedTrade) => void;
 
+// Best bid/offer — real-time top-of-book from each exchange's bookTicker-style
+// feed. Lighter than the full book and updated on every change; used by the tick
+// chart so its bid/ask line tracks trades.
+export type Bbo = { bid: number; ask: number; time: number };
+
+export type BboSubscriber = (bbo: Bbo) => void;
+
 export interface ExchangeAdapter {
     id: ExchangeId;
     label: string; // uppercase for the segmented control, e.g. "BINANCE"
     subscribeOrderBook(symbol: string, cb: OrderBookSubscriber): () => void; // returns unsubscribe
+    subscribeBbo(symbol: string, cb: BboSubscriber): () => void; // returns unsubscribe
     subscribeTrades(symbol: string, cb: TradeSubscriber): () => void; // returns unsubscribe
     fetchSymbols(): Promise<ExchangeSymbol[]>;
     toTradingViewSymbol(symbol: string): string;

@@ -59,15 +59,9 @@ const CSNavigation = () => {
             </div>
             <div className={styles.right}>
                 <PriceCell data={ticker.btc} label="BTC" />
-                <PriceCell data={ticker.eth} label="ETH" />
                 <span>
                     <span className="dim">FEAR/GREED</span>{' '}
-                    <span className={`num ${styles.value}`}>{ticker.fearGreed ? ticker.fearGreed.value : '—'}</span>{' '}
-                    {ticker.fearGreed && (
-                        <span className={`dim ${styles.classification}`}>
-                            {ticker.fearGreed.classification.toUpperCase()}
-                        </span>
-                    )}
+                    <span className={`num ${styles.value}`}>{ticker.fearGreed ? ticker.fearGreed.value : '—'}</span>
                 </span>
                 <span className="num">
                     {clock}

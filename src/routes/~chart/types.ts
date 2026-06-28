@@ -119,6 +119,7 @@ export const PanelType = {
     OrderBook: 'orderbook',
     Depth: 'depth',
     Tape: 'tape',
+    Tick: 'tick',
 } as const;
 
 export type PanelType = (typeof PanelType)[keyof typeof PanelType];
@@ -133,6 +134,7 @@ export const PanelTypeLabels: Record<PanelType, string> = {
     [PanelType.OrderBook]: 'Order Book',
     [PanelType.Depth]: 'Depth Chart',
     [PanelType.Tape]: 'Tape',
+    [PanelType.Tick]: 'Tick Chart',
 };
 
 export const PanelTypeDescriptions: Record<PanelType, string> = {
@@ -140,4 +142,5 @@ export const PanelTypeDescriptions: Record<PanelType, string> = {
     [PanelType.OrderBook]: 'Live bid/ask ladder grouped by tick size',
     [PanelType.Depth]: 'Cumulative bid/ask depth around mid price',
     [PanelType.Tape]: 'Live trade tape with side coloring',
+    [PanelType.Tick]: 'Live bid/ask step chart with spread & trade volume',
 };

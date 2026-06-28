@@ -1,6 +1,6 @@
 import type { LocalOrderBook } from '@/routes/~chart/types';
 
-import type { NormalizedTrade, OrderBookSubscriber, TradeSubscriber } from '../types';
+import type { BboSubscriber, NormalizedTrade, OrderBookSubscriber, TradeSubscriber } from '../types';
 
 import { applyLevelDeltas } from '../_shared/book-syncer';
 import MultiplexedSocket from '../_shared/multiplexed-socket';
@@ -120,6 +120,28 @@ export const subscribeOrderBook = (symbol: string, cb: OrderBookSubscriber): (()
         orderBookStreams.set(key, stream);
     }
     return stream.subscribe(cb);
+};
+
+// Real-time top-of-book via the level-1 book (~10ms on linear). Same snapshot+delta
+// shape as the depth book, just one level — maintain best bid/ask and emit on change.
+export const subscribeBbo = (symbol: string, cb: BboSubscriber): (() => void) => {
+    const bids = new Map<number, number>();
+    const asks = new Map<number, number>();
+    return socket.subscribe<BybitMessage>(`orderbook.1.${symbol}`, (msg) => {
+        const data = msg.data as BybitOrderBookData | undefined;
+        if (!data) return;
+        if (msg.type === 'snapshot' || data.u === 1) {
+            bids.clear();
+            asks.clear();
+        }
+        applyLevelDeltas(bids, data.b);
+        applyLevelDeltas(asks, data.a);
+        let bid = -Infinity;
+        for (const px of bids.keys()) if (px > bid) bid = px;
+        let ask = Infinity;
+        for (const px of asks.keys()) if (px < ask) ask = px;
+        if (bid > -Infinity && ask < Infinity) cb({ ask, bid, time: Date.now() });
+    });
 };
 
 export const subscribeTrades = (symbol: string, cb: TradeSubscriber): (() => void) =>

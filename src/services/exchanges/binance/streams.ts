@@ -7,7 +7,7 @@ import type {
 
 import { binanceInstance } from '@/lib/api';
 
-import type { NormalizedTrade, OrderBookSubscriber, TradeSubscriber } from '../types';
+import type { BboSubscriber, NormalizedTrade, OrderBookSubscriber, TradeSubscriber } from '../types';
 
 import BookSyncer, { applyLevelDeltas } from '../_shared/book-syncer';
 import MultiplexedSocket from '../_shared/multiplexed-socket';
@@ -121,6 +121,15 @@ export const subscribeOrderBook = (symbol: string, cb: OrderBookSubscriber): (()
     }
     return stream.subscribe(cb);
 };
+
+// Real-time best bid/ask: pushed on every top-of-book change (no 100ms throttle,
+// unlike @depth). { b, a } are best bid/ask price; { B, A } their quantities.
+type BinanceBookTicker = { u: number; s: string; b: string; B: string; a: string; A: string };
+
+export const subscribeBbo = (symbol: string, cb: BboSubscriber): (() => void) =>
+    socket.subscribe<BinanceBookTicker>(`${symbol.toLowerCase()}@bookTicker`, (d) => {
+        cb({ ask: +d.a, bid: +d.b, time: Date.now() });
+    });
 
 export const subscribeTrades = (symbol: string, cb: TradeSubscriber): (() => void) =>
     socket.subscribe<StreamAggTradeResponseType>(`${symbol.toLowerCase()}@aggTrade`, (t) => {

@@ -1,6 +1,6 @@
 import type { ExchangeAdapter } from '../types';
 
-import { subscribeOrderBook, subscribeTrades } from './streams';
+import { subscribeBbo, subscribeOrderBook, subscribeTrades } from './streams';
 import { fetchBybitSymbols } from './symbols';
 
 const bybit: ExchangeAdapter = {
@@ -8,6 +8,8 @@ const bybit: ExchangeAdapter = {
     label: 'BYBIT',
 
     fetchSymbols: fetchBybitSymbols,
+
+    subscribeBbo,
 
     subscribeOrderBook,
 

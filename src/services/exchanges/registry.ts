@@ -1,8 +1,9 @@
-import type { ExchangeAdapter, ExchangeId } from './types';
+import type { ExchangeAdapter } from './types';
 
 import binance from './binance/adapter';
 import bybit from './bybit/adapter';
 import hyperliquid from './hyperliquid/adapter';
+import { ExchangeId } from './types';
 
 export const exchanges: Record<ExchangeId, ExchangeAdapter> = {
     binance,
@@ -13,7 +14,7 @@ export const exchanges: Record<ExchangeId, ExchangeAdapter> = {
 export const getExchange = (id: ExchangeId): ExchangeAdapter => exchanges[id];
 
 // WS streaming (order book + trades); used by OrderBook, Depth and Tape panels.
-export const STREAMING_EXCHANGES: ExchangeId[] = ['binance', 'hyperliquid', 'bybit'];
+export const STREAMING_EXCHANGES: ExchangeId[] = [ExchangeId.Binance, ExchangeId.Hyperliquid, ExchangeId.Bybit];
 
 // TradingView-renderable exchanges; Hyperliquid has no TV feed.
-export const TRADINGVIEW_EXCHANGES: ExchangeId[] = ['binance', 'bybit'];
+export const TRADINGVIEW_EXCHANGES: ExchangeId[] = [ExchangeId.Binance, ExchangeId.Bybit];

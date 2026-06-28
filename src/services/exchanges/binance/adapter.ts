@@ -1,6 +1,6 @@
 import type { ExchangeAdapter } from '../types';
 
-import { subscribeOrderBook, subscribeTrades } from './streams';
+import { subscribeBbo, subscribeOrderBook, subscribeTrades } from './streams';
 import { fetchBinanceSymbols } from './symbols';
 
 const binance: ExchangeAdapter = {
@@ -8,6 +8,8 @@ const binance: ExchangeAdapter = {
     label: 'BINANCE',
 
     fetchSymbols: fetchBinanceSymbols,
+
+    subscribeBbo,
 
     subscribeOrderBook,
 
