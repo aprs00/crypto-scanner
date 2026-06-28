@@ -1,15 +1,23 @@
 import type { LocalOrderBook, OrderBookLevel } from '@/routes/~chart/types';
 
-import type { NormalizedTrade, OrderBookSubscriber, TradeSubscriber } from '../types';
+import type { BboSubscriber, NormalizedTrade, OrderBookSubscriber, TradeSubscriber } from '../types';
 
 import MultiplexedSocket from '../_shared/multiplexed-socket';
 
 const WS_URL = 'wss://api.hyperliquid.xyz/ws';
 const PING_INTERVAL_MS = 30_000; // server drops idle sockets ~60s
 
-type HlSub = { type: 'l2Book' | 'trades'; coin: string; fast?: boolean };
+export const HlChannel = {
+    L2Book: 'l2Book',
+    Trades: 'trades',
+    Bbo: 'bbo',
+} as const;
+export type HlChannel = (typeof HlChannel)[keyof typeof HlChannel];
+
+type HlSub = { type: HlChannel; coin: string; fast?: boolean };
 type HlLevel = { px: string; sz: string; n: number };
 type HlBook = { coin: string; time: number; levels: [HlLevel[], HlLevel[]] };
+type HlBbo = { coin: string; time: number; bbo: [HlLevel | null, HlLevel | null] };
 type HlTrade = { coin: string; side: string; px: string; sz: string; time: number; tid: number };
 
 const toLevels = (levels: HlLevel[]): OrderBookLevel[] => levels.map((level) => [+level.px, +level.sz]);
@@ -19,17 +27,20 @@ const toLevels = (levels: HlLevel[]): OrderBookLevel[] => levels.map((level) => 
 const bookKey = (coin: string, fast: boolean | undefined) => `l2Book${fast ? '-fast' : ''}:${coin}`;
 
 const socket = new MultiplexedSocket<HlSub>({
-    keyOf: (sub) => (sub.type === 'l2Book' ? bookKey(sub.coin, sub.fast) : `${sub.type}:${sub.coin}`),
+    keyOf: (sub) => (sub.type === HlChannel.L2Book ? bookKey(sub.coin, sub.fast) : `${sub.type}:${sub.coin}`),
     pingFrame: { method: 'ping' },
     pingIntervalMs: PING_INTERVAL_MS,
     route: (msg: any) => {
-        if (msg?.channel === 'l2Book' && msg.data?.coin) {
+        if (msg?.channel === HlChannel.L2Book && msg.data?.coin) {
             return [{ data: msg.data, key: bookKey(msg.data.coin, msg.data.fast) }];
         }
-        if (msg?.channel === 'trades') {
+        if (msg?.channel === HlChannel.Trades) {
             // trades payload is an array; route by the coin of the first trade.
             const coin = msg.data?.[0]?.coin;
-            if (coin) return [{ data: msg.data, key: `trades:${coin}` }];
+            if (coin) return [{ data: msg.data, key: `${HlChannel.Trades}:${coin}` }];
+        }
+        if (msg?.channel === HlChannel.Bbo && msg.data?.coin) {
+            return [{ data: msg.data, key: `${HlChannel.Bbo}:${msg.data.coin}` }];
         }
         return [];
     },
@@ -71,11 +82,11 @@ export const subscribeOrderBook = (symbol: string, cb: OrderBookSubscriber): (()
         if (merged) cb(merged);
     };
 
-    const offFast = socket.subscribe<HlBook>({ coin: symbol, fast: true, type: 'l2Book' }, (book) => {
+    const offFast = socket.subscribe<HlBook>({ coin: symbol, fast: true, type: HlChannel.L2Book }, (book) => {
         fast = book;
         emit();
     });
-    const offSlow = socket.subscribe<HlBook>({ coin: symbol, type: 'l2Book' }, (book) => {
+    const offSlow = socket.subscribe<HlBook>({ coin: symbol, type: HlChannel.L2Book }, (book) => {
         slow = book;
         emit();
     });
@@ -86,12 +97,22 @@ export const subscribeOrderBook = (symbol: string, cb: OrderBookSubscriber): (()
     };
 };
 
+// Real-time best bid/offer: pushed whenever the BBO changes on a block — far
+// fresher than the ~2/s l2Book, so the tick chart line tracks trades. `bbo` is
+// [bid, ask]; either side can be null when that side is empty.
+export const subscribeBbo = (symbol: string, cb: BboSubscriber): (() => void) =>
+    socket.subscribe<HlBbo>({ coin: symbol, type: HlChannel.Bbo }, (data) => {
+        const bid = data.bbo[0];
+        const ask = data.bbo[1];
+        if (bid && ask) cb({ ask: +ask.px, bid: +bid.px, time: Date.now() });
+    });
+
 export const subscribeTrades = (symbol: string, cb: TradeSubscriber): (() => void) =>
-    socket.subscribe<HlTrade[]>({ coin: symbol, type: 'trades' }, (trades) => {
+    socket.subscribe<HlTrade[]>({ coin: symbol, type: HlChannel.Trades }, (trades) => {
         for (const t of trades) {
             const trade: NormalizedTrade = {
                 id: t.tid,
-                // HL `side` is the aggressor side; "A" (hit the ask) ≈ Binance buyer-is-maker.
+                // HL `side` is the aggressor side; "A" (sold / hit the bid) ≈ Binance buyer-is-maker.
                 isBuyerMaker: t.side === 'A',
                 price: +t.px,
                 size: +t.sz,

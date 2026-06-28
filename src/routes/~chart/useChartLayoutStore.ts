@@ -17,6 +17,7 @@ export const panelTemplates: Record<PanelType, PanelTemplate> = {
     [PanelType.OrderBook]: { layout: { h: 14, w: 5, x: 0, y: 16 } },
     [PanelType.Depth]: { layout: { h: 14, w: 4, x: 5, y: 16 } },
     [PanelType.Tape]: { layout: { h: 14, w: 3, x: 9, y: 16 } },
+    [PanelType.Tick]: { layout: { h: 16, w: 7, x: 0, y: 30 } },
 };
 
 const makeDefaults = (): PanelItem[] => [

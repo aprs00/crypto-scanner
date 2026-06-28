@@ -7,6 +7,7 @@ import ChartTape from './components/ChartTape';
 import DepthChart from './components/DepthChart';
 import Table from './components/OrderBook';
 import PanelDrawer from './components/PanelDrawer';
+import TickChart from './components/TickChart';
 import TradingViewPanel from './components/TradingViewPanel';
 import { PanelType, type PanelItem } from './types';
 import useChartLayoutStore, { panelTemplates } from './useChartLayoutStore';
@@ -27,6 +28,8 @@ const renderPanel = (panel: PanelItem, onRemove: () => void) => {
             return <DepthChart onRemove={onRemove} panelId={panel.id} />;
         case PanelType.Tape:
             return <ChartTape onRemove={onRemove} panelId={panel.id} />;
+        case PanelType.Tick:
+            return <TickChart onRemove={onRemove} panelId={panel.id} />;
     }
 };
 

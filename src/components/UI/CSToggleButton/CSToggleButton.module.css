@@ -1,0 +1,18 @@
+.toggle {
+    display: inline-flex;
+    align-items: center;
+    height: var(--row-h);
+    padding: 0 6px;
+    border: 1px solid var(--bd-hi);
+    background: transparent;
+    color: var(--fg-dim);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+
+    &.on {
+        border-color: var(--ac);
+        background: var(--ac);
+        color: var(--bg);
+    }
+}

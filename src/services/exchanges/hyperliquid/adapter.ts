@@ -1,6 +1,6 @@
 import type { ExchangeAdapter } from '../types';
 
-import { subscribeOrderBook, subscribeTrades } from './streams';
+import { subscribeBbo, subscribeOrderBook, subscribeTrades } from './streams';
 import { fetchHyperliquidSymbols } from './symbols';
 
 const hyperliquid: ExchangeAdapter = {
@@ -8,6 +8,8 @@ const hyperliquid: ExchangeAdapter = {
     label: 'HYPERLIQUID',
 
     fetchSymbols: fetchHyperliquidSymbols,
+
+    subscribeBbo,
 
     subscribeOrderBook,
 
