@@ -17,14 +17,17 @@ export const panelTemplates: Record<PanelType, PanelTemplate> = {
     [PanelType.OrderBook]: { layout: { h: 14, w: 5, x: 0, y: 16 } },
     [PanelType.Depth]: { layout: { h: 14, w: 4, x: 5, y: 16 } },
     [PanelType.Tape]: { layout: { h: 14, w: 3, x: 9, y: 16 } },
-    [PanelType.Tick]: { layout: { h: 16, w: 7, x: 0, y: 30 } },
+    [PanelType.Tick]: { layout: { h: 16, w: 12, x: 0, y: 30 } },
 };
 
+const makePanel = (type: PanelType): PanelItem => ({ id: crypto.randomUUID(), type });
+
 const makeDefaults = (): PanelItem[] => [
-    { id: crypto.randomUUID(), type: PanelType.TradingView },
-    { id: crypto.randomUUID(), type: PanelType.OrderBook },
-    { id: crypto.randomUUID(), type: PanelType.Depth },
-    { id: crypto.randomUUID(), type: PanelType.Tape },
+    makePanel(PanelType.TradingView),
+    makePanel(PanelType.OrderBook),
+    makePanel(PanelType.Depth),
+    makePanel(PanelType.Tape),
+    makePanel(PanelType.Tick),
 ];
 
 export interface ChartLayoutStore {
@@ -41,9 +44,9 @@ const useChartLayoutStore = create<ChartLayoutStore>()(
             panels: makeDefaults(),
             savedGridLayouts: {},
             addPanel: (type) => {
-                const id = crypto.randomUUID();
-                set((state) => ({ panels: [...state.panels, { id, type }] }));
-                return id;
+                const panel = makePanel(type);
+                set((state) => ({ panels: [...state.panels, panel] }));
+                return panel.id;
             },
             removePanel: (id) => {
                 set((state) => {
@@ -67,8 +70,17 @@ const useChartLayoutStore = create<ChartLayoutStore>()(
         }),
         {
             name: 'chart-page-layout',
-            version: 2,
+            version: 3,
             storage: safeJSONStorage(),
+            // v3 added a full-row tick chart to the defaults — backfill it for
+            // existing users whose persisted layout predates it.
+            migrate: (persisted, version) => {
+                const state = persisted as ChartLayoutStore;
+                if (version < 3 && !state.panels?.some((p) => p.type === PanelType.Tick)) {
+                    state.panels = [...(state.panels ?? []), makePanel(PanelType.Tick)];
+                }
+                return state;
+            },
         },
     ),
 );

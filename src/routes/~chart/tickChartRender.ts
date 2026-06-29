@@ -13,6 +13,7 @@ import {
     type TickView,
     type TradeMark,
     decimalsForRange,
+    fmtSpan,
     lowerBoundT,
     maxVolume,
     niceTicks,
@@ -218,13 +219,13 @@ const drawLegend = (
 
     const row = (top: number, caption: string, values: LegendSeg[]) => {
         const segs: LegendSeg[] = [{ color: palette.fgDim, text: caption }, ...values];
-        ctx.font = fontPx(9);
+        ctx.font = fontPx(10);
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
         let width = 0;
         for (const s of segs) width += ctx.measureText(s.text).width + 8;
         ctx.fillStyle = withAlpha(palette.bg, 0.55);
-        ctx.fillRect(L.padL + 1, top + 1, width, 12);
+        ctx.fillRect(L.padL + 1, top + 1, width, 15);
         let x = L.padL + 3;
         for (const s of segs) {
             ctx.fillStyle = s.color;
@@ -233,16 +234,15 @@ const drawLegend = (
         }
     };
 
-    row(
-        L.mainTop,
-        'TICKS',
-        point
+    row(L.mainTop, 'TICKS', [
+        { color: palette.fgDim, text: fmtSpan(view.spanMs) },
+        ...(point
             ? [
                   { color: palette.up, text: `bid ${formatPrice(point.bid, priceDec)}` },
                   { color: palette.down, text: `ask ${formatPrice(point.ask, priceDec)}` },
               ]
-            : [],
-    );
+            : []),
+    ]);
     row(
         L.spreadTop,
         'SPREAD',

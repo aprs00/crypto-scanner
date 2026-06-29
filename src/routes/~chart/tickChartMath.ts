@@ -22,6 +22,13 @@ const PRICE_PAD = 0.06; // headroom above/below the price extent so lines don't 
 
 export const clampSpan = (span: number) => Math.max(SPAN_MIN, Math.min(SPAN_MAX, span));
 
+// Human-readable visible window: seconds below a minute, otherwise minutes.
+export const fmtSpan = (ms: number): string => {
+    if (ms < 60_000) return `${Math.round(ms / 1000)}s`;
+    const m = ms / 60_000;
+    return Number.isInteger(m) ? `${m}m` : `${m.toFixed(1)}m`;
+};
+
 // First index whose `t` is >= target, over a time-sorted array. Lets us scan only
 // the visible slice instead of the whole (up to 20k-element) buffer each frame.
 export const lowerBoundT = (arr: { t: number }[], t: number): number => {
