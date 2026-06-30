@@ -13,12 +13,11 @@
 .controls {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--sp-3);
 }
 
 .zoom {
     color: var(--fg-dim);
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 9px;
-    letter-spacing: 0.1em;
+    font-size: var(--fs-xs);
+    letter-spacing: var(--ls-label);
 }

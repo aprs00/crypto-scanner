@@ -32,8 +32,8 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.01em;
-    font-size: 11px;
+    letter-spacing: var(--ls-tight);
+    font-size: var(--fs-base);
     padding: 2px var(--sp-3);
     height: 100%;
     box-sizing: border-box;

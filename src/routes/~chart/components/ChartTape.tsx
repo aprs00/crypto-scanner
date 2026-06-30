@@ -1,5 +1,5 @@
 import CSPanel from '@/components/Layouts/CSPanel';
-import IconButton from '@/components/UI/CSIconButton';
+import CSButton from '@/components/UI/CSButton';
 import { useTrades } from '@/services/exchanges/hooks';
 import { formatNumber, formatPrice } from '@/utils/number';
 
@@ -28,7 +28,9 @@ const ChartTape = ({ panelId, onRemove }: Props) => {
             controls={
                 <>
                     <PanelSource panelId={panelId} panelType={PanelType.Tape} />
-                    <IconButton label="-" onClick={onRemove} />
+                    <CSButton onClick={onRemove} square>
+                        -
+                    </CSButton>
                 </>
             }
         >

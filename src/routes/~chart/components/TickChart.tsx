@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 
 import CSPanel from '@/components/Layouts/CSPanel';
-import IconButton from '@/components/UI/CSIconButton';
+import CSButton from '@/components/UI/CSButton';
 import CSToggleButton from '@/components/UI/CSToggleButton';
 
 import { SPAN_DEFAULT, type TickView, clampSpan, clampView } from '../tickChartMath';
-import { PAD_L, RIGHT_GUTTER, type Hover, renderTickChart } from '../tickChartRender';
+import { BOOK_W, PAD_L, RIGHT_GUTTER, type Hover, renderTickChart } from '../tickChartRender';
 import { PanelType } from '../types';
+import useChartSeriesStore, { defaultSeriesVisibility } from '../useChartSeriesStore';
+import useOrderBookRef from '../useOrderBookRef';
 import useResolvedSource from '../useResolvedSource';
 import useTickHistory from '../useTickHistory';
 import PanelSource from './PanelSource';
@@ -30,11 +32,38 @@ const TickChart = ({ panelId, onRemove }: Props) => {
     const tickSizeRef = useRef(tickSize);
     tickSizeRef.current = tickSize;
 
+    // Latest order book in a ref; mark dirty on each update so the depth column keeps
+    // repainting even when the view is paused (the loop otherwise only repaints live).
+    const bookRef = useOrderBookRef(exchange, symbol, () => {
+        dirtyRef.current = true;
+    });
+
     const [live, setLive] = useState(true);
+    const [centered, setCentered] = useState(false);
+    const centeredRef = useRef(centered);
+    centeredRef.current = centered;
+
+    // Which sub-series are shown (persisted per panel). Mirrored to a ref so the RAF
+    // loop reads the latest without re-subscribing; a change marks the canvas dirty.
+    const visibility = useChartSeriesStore((s) => s.visibility[panelId] ?? defaultSeriesVisibility);
+    const toggleSeries = useChartSeriesStore((s) => s.toggleSeries);
+    const visibleRef = useRef(visibility);
+    visibleRef.current = visibility;
+    useEffect(() => {
+        dirtyRef.current = true;
+    }, [visibility]);
 
     const goLive = () => {
         viewRef.current = { endT: Date.now(), follow: true, spanMs: SPAN_DEFAULT };
         setLive(true);
+        dirtyRef.current = true;
+    };
+
+    // Keep the latest price vertically centered so the book has room on both sides.
+    // The ref is set eagerly so the RAF loop picks it up before React re-renders.
+    const toggleCentered = () => {
+        centeredRef.current = !centeredRef.current;
+        setCentered(centeredRef.current);
         dirtyRef.current = true;
     };
 
@@ -79,7 +108,8 @@ const TickChart = ({ panelId, onRemove }: Props) => {
             const newSpan = clampSpan(v.spanMs * (e.deltaY > 0 ? 1 / ZOOM_STEP : ZOOM_STEP));
             if (!v.follow) {
                 const r = el.getBoundingClientRect();
-                const plotW = sizeRef.current.w - PAD_L - RIGHT_GUTTER;
+                const bookW = visibleRef.current.book ? BOOK_W : 0;
+                const plotW = sizeRef.current.w - PAD_L - bookW - RIGHT_GUTTER;
                 const frac = plotW > 0 ? Math.min(1, Math.max(0, (e.clientX - r.left - PAD_L) / plotW)) : 1;
                 const anchorT = v.endT - v.spanMs + frac * v.spanMs;
                 v.endT = anchorT + (1 - frac) * newSpan;
@@ -107,7 +137,8 @@ const TickChart = ({ panelId, onRemove }: Props) => {
                 v.follow = false;
                 setLive(false);
             }
-            const plotW = sizeRef.current.w - PAD_L - RIGHT_GUTTER;
+            const bookW = visibleRef.current.book ? BOOK_W : 0;
+            const plotW = sizeRef.current.w - PAD_L - bookW - RIGHT_GUTTER;
             if (plotW > 0) v.endT -= dx * (v.spanMs / plotW);
         };
 
@@ -174,23 +205,47 @@ const TickChart = ({ panelId, onRemove }: Props) => {
             if (w <= 0 || h <= 0) return;
             const dpr = window.devicePixelRatio || 1;
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            renderTickChart(ctx, history, v, { h, w }, tickSizeRef.current, hoverRef.current);
+            renderTickChart(
+                ctx,
+                history,
+                v,
+                { h, w },
+                tickSizeRef.current,
+                hoverRef.current,
+                bookRef.current,
+                centeredRef.current,
+                visibleRef.current,
+            );
         };
         raf = requestAnimationFrame(draw);
         return () => cancelAnimationFrame(raf);
-    }, [historyRef]);
+    }, [historyRef, bookRef]);
 
     return (
         <CSPanel
             className="h-full"
             controls={
-                <span className={styles.controls}>
+                <>
                     <PanelSource panelId={panelId} panelType={PanelType.Tick} />
+                    <CSToggleButton active={visibility.spread} onClick={() => toggleSeries(panelId, 'spread')}>
+                        SPREAD
+                    </CSToggleButton>
+                    <CSToggleButton active={visibility.volume} onClick={() => toggleSeries(panelId, 'volume')}>
+                        VOL
+                    </CSToggleButton>
+                    <CSToggleButton active={visibility.book} onClick={() => toggleSeries(panelId, 'book')}>
+                        BOOK
+                    </CSToggleButton>
+                    <CSToggleButton active={centered} onClick={toggleCentered}>
+                        CENTER
+                    </CSToggleButton>
                     <CSToggleButton active={live} onClick={goLive}>
                         ● LIVE
                     </CSToggleButton>
-                    <IconButton label="-" onClick={onRemove} />
-                </span>
+                    <CSButton onClick={onRemove} square>
+                        -
+                    </CSButton>
+                </>
             }
         >
             <div className={`${styles.body} cs-no-drag`} ref={wrapRef}>

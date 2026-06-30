@@ -27,6 +27,18 @@ export const TERMINAL_FONT = "'JetBrains Mono', ui-monospace, monospace";
 
 export const spacing = { 1: 4, 2: 6, 3: 8, 4: 10, 5: 12, 6: 14, 7: 16, 8: 24 } as const;
 
+// Mirrors the --fs-* scale in src/styles/tokens.css.
+export const fontSize = { '2xs': 8, xs: 9, sm: 10, base: 11, md: 12, lg: 13, xl: 16 } as const;
+
+// Mirrors --row-h / --row-h-sm / --row-h-xs in src/styles/tokens.css.
+export const rowHeight = { xs: 18, sm: 22, md: 26 } as const;
+
+// Mirrors --fw-semibold in src/styles/tokens.css.
+export const fontWeightSemibold = 600;
+
+// Extra echarts series colors beyond the 5 semantic palette entries (ac, up, heatLo, down, ac2).
+export const seriesExtra = ['#a4d4ff', '#7ee0a4', '#5eb5ff'] as const;
+
 const rgb = (hex: string) => {
     const h = hex.replace('#', '');
     const v =

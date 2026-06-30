@@ -13,7 +13,7 @@
 
 .clear {
     position: absolute;
-    right: 18px;
+    right: var(--sp-7);
     top: 50%;
     transform: translateY(-50%);
     background: transparent;
@@ -49,8 +49,8 @@
 }
 
 .maxFlag {
-    font-size: 10px;
-    letter-spacing: 0.10em;
+    font-size: var(--fs-sm);
+    letter-spacing: var(--ls-label);
     text-transform: uppercase;
     color: var(--fg-dim);
 }
@@ -75,8 +75,8 @@
     padding: 32px;
     text-align: center;
     color: var(--fg-mute);
-    font-size: 11px;
-    letter-spacing: 0.06em;
+    font-size: var(--fs-base);
+    letter-spacing: var(--ls-wide);
     text-transform: uppercase;
 }
 

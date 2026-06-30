@@ -19,6 +19,10 @@
         outline: none;
     }
 
+    &:hover {
+        border-color: var(--ac);
+    }
+
     &.open {
         border-color: var(--ac);
     }
@@ -31,9 +35,8 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--fg);
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 11px;
-    letter-spacing: 0.04em;
+    font-size: var(--fs-base);
+    letter-spacing: var(--ls-base);
     text-transform: uppercase;
     font-weight: 500;
     padding-right: var(--sp-7);
@@ -46,7 +49,7 @@
 
 .caret {
     color: var(--fg-dim);
-    font-size: 9px;
+    font-size: var(--fs-xs);
     margin-left: auto;
 }
 
@@ -59,7 +62,6 @@
     max-height: 320px !important;
     margin-top: var(--sp-1);
     overflow-y: auto;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
 
     &.hasSearch {
         padding: 0;
@@ -84,10 +86,9 @@
     background: var(--bg-inset);
     border: 1px solid var(--bd-hi);
     color: var(--fg);
-    font-size: 11px;
+    font-size: var(--fs-base);
     padding: var(--sp-1) var(--sp-2);
-    font-family: inherit;
-    letter-spacing: 0.04em;
+    letter-spacing: var(--ls-base);
     text-transform: uppercase;
 
     &:focus {
@@ -102,9 +103,8 @@
     gap: var(--sp-3);
     width: 100%;
     padding: 5px var(--sp-4);
-    font-family: inherit;
-    font-size: 11px;
-    letter-spacing: 0.04em;
+    font-size: var(--fs-base);
+    letter-spacing: var(--ls-base);
     text-transform: uppercase;
     color: var(--fg);
     background: transparent;
@@ -123,13 +123,13 @@
     &.selected {
         background: var(--bg-alt);
         color: var(--ac);
-        font-weight: 600;
+        font-weight: var(--fw-semibold);
 
         .check {
             border-color: var(--ac);
             background: var(--ac);
             color: var(--bg);
-            font-size: 9px;
+            font-size: var(--fs-xs);
             font-weight: 700;
         }
     }

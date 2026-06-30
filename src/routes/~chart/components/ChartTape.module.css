@@ -4,8 +4,8 @@
     padding: var(--sp-1) var(--sp-3);
     border-bottom: 1px solid var(--bd);
     color: var(--fg-dim);
-    letter-spacing: 0.1em;
-    font-size: 9px;
+    letter-spacing: var(--ls-label);
+    font-size: var(--fs-xs);
     text-transform: uppercase;
 }
 
@@ -19,7 +19,7 @@
     grid-template-columns: 70px 1fr 1fr;
     align-items: center;
     padding: 1px var(--sp-3);
-    font-size: 10px;
+    font-size: var(--fs-sm);
 
     .size {
         text-align: right;

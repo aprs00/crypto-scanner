@@ -1,21 +1,28 @@
 // Canvas drawing for the tick chart. Pure rendering: every function takes the 2D
 // context plus already-computed data/view and paints — no React, no DOM state.
-// Three stacked regions share one time axis: price (bid/ask + trades), spread, volume.
+// Up to three stacked regions share one time axis: price (bid/ask + trades), spread,
+// volume. The always-on price band also hosts the order-book depth column; spread,
+// volume and the book each toggle off via SeriesVisibility and the layout reflows.
 
 import { format } from 'date-fns';
 
 import { TERMINAL_FONT, palette, withAlpha } from '@/lib/theme';
+import { groupOrders } from '@/services/exchanges/_shared/grouping';
 import { formatNumber, formatPrice } from '@/utils/number';
+
+import type { LocalOrderBook, OrderBookLevel, SeriesVisibility } from './types';
 
 import {
     type Range,
     type TickPoint,
     type TickView,
     type TradeMark,
+    centerRange,
     decimalsForRange,
     fmtSpan,
     lowerBoundT,
     maxVolume,
+    niceBucket,
     niceTicks,
     priceRange,
     spreadRange,
@@ -25,6 +32,9 @@ export type TickData = { points: TickPoint[]; trades: TradeMark[] };
 export type Hover = { x: number; y: number } | null;
 
 type Layout = {
+    axisLeft: number;
+    bookLeft: number;
+    bottomY: number;
     h: number;
     mainH: number;
     mainTop: number;
@@ -40,9 +50,11 @@ type Layout = {
 };
 
 export const RIGHT_GUTTER = 54; // value-axis labels live here
+export const BOOK_W = 64; // order-book depth column, between the plot and the axis gutter
 export const PAD_L = 6; // plot left inset
 const BOTTOM = 16; // time-axis strip
 const GAP = 10; // vertical gap between the three regions
+const BOOK_ROW_PX = 3; // target order-book row height; drives adaptive grouping
 
 const fontPx = (px: number) => `${px}px ${TERMINAL_FONT}`;
 
@@ -52,22 +64,59 @@ const fmtVol = (n: number) =>
 const TIME_STEPS = [1e3, 2e3, 5e3, 10e3, 15e3, 30e3, 60e3, 120e3, 300e3, 600e3, 900e3, 1.8e6, 3.6e6];
 const pickTimeStep = (span: number) => TIME_STEPS.find((s) => span / s <= 8) ?? TIME_STEPS[TIME_STEPS.length - 1];
 
-const computeLayout = (w: number, h: number): Layout => {
-    const usableH = h - BOTTOM - GAP * 2;
-    const mainH = usableH * 0.62;
-    const spreadH = usableH * 0.19;
-    const volH = usableH * 0.19;
+// Base height weights for the stacked regions; only the visible ones share usableH.
+const MAIN_WEIGHT = 0.62;
+const SPREAD_WEIGHT = 0.19;
+const VOL_WEIGHT = 0.19;
+
+const computeLayout = (w: number, h: number, visible: SeriesVisibility): Layout => {
+    const bookW = visible.book ? BOOK_W : 0;
+
+    // Sum only the visible region weights; one GAP precedes each sub-region after main.
+    let totalWeight = MAIN_WEIGHT;
+    let gaps = 0;
+    if (visible.spread) {
+        totalWeight += SPREAD_WEIGHT;
+        gaps++;
+    }
+    if (visible.volume) {
+        totalWeight += VOL_WEIGHT;
+        gaps++;
+    }
+
+    const usableH = h - BOTTOM - GAP * gaps;
+    const mainH = usableH * (MAIN_WEIGHT / totalWeight);
+    const spreadH = visible.spread ? usableH * (SPREAD_WEIGHT / totalWeight) : 0;
+    const volH = visible.volume ? usableH * (VOL_WEIGHT / totalWeight) : 0;
+
+    // Stack the visible regions top-down; a hidden one keeps a placeholder top but
+    // zero height and is never drawn, so bottomY tracks the lowest visible region.
     const mainTop = 0;
-    const spreadTop = mainTop + mainH + GAP;
-    const volTop = spreadTop + spreadH + GAP;
+    let cursor = mainTop + mainH;
+    let spreadTop = cursor + GAP;
+    if (visible.spread) {
+        cursor += GAP;
+        spreadTop = cursor;
+        cursor += spreadH;
+    }
+    let volTop = cursor + GAP;
+    if (visible.volume) {
+        cursor += GAP;
+        volTop = cursor;
+        cursor += volH;
+    }
+
     return {
+        axisLeft: w - RIGHT_GUTTER,
+        bookLeft: w - RIGHT_GUTTER - bookW,
+        bottomY: cursor,
         h,
         mainH,
         mainTop,
         padB: BOTTOM,
         padL: PAD_L,
-        padR: RIGHT_GUTTER,
-        plotW: w - PAD_L - RIGHT_GUTTER,
+        padR: bookW + RIGHT_GUTTER,
+        plotW: w - PAD_L - bookW - RIGHT_GUTTER,
         spreadH,
         spreadTop,
         volH,
@@ -146,7 +195,7 @@ const drawAxisLabel = (ctx: CanvasRenderingContext2D, L: Layout, y: number, text
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = color;
-    ctx.fillText(text, L.w - L.padR + 4, y);
+    ctx.fillText(text, L.axisLeft + 4, y);
 };
 
 // Filled chip in the right gutter — used for current bid/ask and the crosshair readout.
@@ -162,22 +211,25 @@ const drawTag = (
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = bg;
-    ctx.fillRect(L.w - L.padR, y - 7, L.padR - 1, 14);
+    ctx.fillRect(L.axisLeft, y - 7, RIGHT_GUTTER - 1, 14);
     ctx.fillStyle = fg;
-    ctx.fillText(text, L.w - L.padR + 4, y);
+    ctx.fillText(text, L.axisLeft + 4, y);
 };
 
-const drawFrame = (ctx: CanvasRenderingContext2D, L: Layout) => {
+const drawFrame = (ctx: CanvasRenderingContext2D, L: Layout, visible: SeriesVisibility) => {
     ctx.lineWidth = 1;
     const xR = L.w - L.padR + 0.5;
     ctx.strokeStyle = palette.bd;
     ctx.beginPath();
     ctx.moveTo(xR, L.mainTop);
-    ctx.lineTo(xR, L.volTop + L.volH);
+    ctx.lineTo(xR, L.bottomY);
     ctx.stroke();
-    // Brighter dividers so the three regions read as distinct panels.
+    // Brighter dividers so the visible regions read as distinct panels.
     ctx.strokeStyle = palette.bdHi;
-    for (const yy of [L.spreadTop - GAP / 2, L.volTop - GAP / 2]) {
+    const dividers: number[] = [];
+    if (visible.spread) dividers.push(L.spreadTop - GAP / 2);
+    if (visible.volume) dividers.push(L.volTop - GAP / 2);
+    for (const yy of dividers) {
         const y = Math.round(yy) + 0.5;
         ctx.beginPath();
         ctx.moveTo(L.padL, y);
@@ -201,6 +253,7 @@ const drawLegend = (
     tickSize: number,
     pr: Range | null,
     sr: Range | null,
+    visible: SeriesVisibility,
 ) => {
     const plotRight = L.w - L.padR;
     let point: TickPoint | null = null;
@@ -243,21 +296,23 @@ const drawLegend = (
               ]
             : []),
     ]);
-    row(
-        L.spreadTop,
-        'SPREAD',
-        point ? [{ color: palette.heatLo, text: formatPrice(point.ask - point.bid, spreadDec) }] : [],
-    );
-    row(
-        L.volTop,
-        'VOLUME',
-        trade ? [{ color: trade.buy ? palette.up : palette.down, text: fmtVol(trade.size * trade.price) }] : [],
-    );
+    if (visible.spread)
+        row(
+            L.spreadTop,
+            'SPREAD',
+            point ? [{ color: palette.heatLo, text: formatPrice(point.ask - point.bid, spreadDec) }] : [],
+        );
+    if (visible.volume)
+        row(
+            L.volTop,
+            'VOLUME',
+            trade ? [{ color: trade.buy ? palette.up : palette.down, text: fmtVol(trade.size * trade.price) }] : [],
+        );
 };
 
 const drawTimeGrid = (ctx: CanvasRenderingContext2D, L: Layout, startT: number, endT: number, xFor: Scale) => {
     const step = pickTimeStep(endT - startT);
-    const bottom = L.volTop + L.volH;
+    const bottom = L.bottomY;
     ctx.font = fontPx(9);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -327,6 +382,50 @@ const drawMain = (
     }
 };
 
+// Resting order-book depth as horizontal bars in the column right of the plot, on the
+// same price axis as drawMain. Grouping is derived from the visible price range so the
+// rows stay ~BOOK_ROW_PX tall at any zoom, and only buckets inside [pr.lo, pr.hi] are
+// drawn — zooming in narrows the column to the levels around the spread.
+const drawBook = (
+    ctx: CanvasRenderingContext2D,
+    L: Layout,
+    book: LocalOrderBook,
+    pr: Range | null,
+    tickSize: number,
+) => {
+    if (!pr || (book.bids.length === 0 && book.asks.length === 0)) return;
+    const span = pr.hi - pr.lo || 1;
+    const yFor: Scale = (v) => L.mainTop + (1 - (v - pr.lo) / span) * L.mainH;
+
+    const rows = Math.max(1, Math.floor(L.mainH / BOOK_ROW_PX));
+    const groupByVal = niceBucket(span / rows, tickSize);
+    const rowsPerSide = Math.ceil(span / groupByVal) + 2;
+    const grouped = groupOrders(book, groupByVal, rowsPerSide);
+
+    const inRange = ([price]: OrderBookLevel) => price >= pr.lo && price <= pr.hi;
+    const asks = grouped.asks.filter(inRange);
+    const bids = grouped.bids.filter(inRange);
+    if (asks.length === 0 && bids.length === 0) return;
+
+    let maxSize = 0;
+    for (const [, qty] of asks) if (qty > maxSize) maxSize = qty;
+    for (const [, qty] of bids) if (qty > maxSize) maxSize = qty;
+    if (maxSize <= 0) return;
+
+    const rowH = Math.max(1, (groupByVal / span) * L.mainH - 1);
+    const drawSide = (levels: OrderBookLevel[], color: string) => {
+        ctx.fillStyle = color;
+        for (const [price, qty] of levels) {
+            // Square-root scale: keeps smaller levels visible instead of a single
+            // dominant wall squashing the rest of the column toward zero width.
+            const barLen = Math.sqrt(qty / maxSize) * BOOK_W;
+            ctx.fillRect(L.axisLeft - barLen, yFor(price) - rowH / 2, barLen, rowH);
+        }
+    };
+    drawSide(asks, withAlpha(palette.down, 0.6));
+    drawSide(bids, withAlpha(palette.up, 0.6));
+};
+
 const drawSpread = (
     ctx: CanvasRenderingContext2D,
     L: Layout,
@@ -384,7 +483,7 @@ const drawCrosshair = (
     pr: Range | null,
 ) => {
     const plotRight = L.w - L.padR;
-    const plotBottom = L.volTop + L.volH;
+    const plotBottom = L.bottomY;
     const { x, y } = hover;
     if (x < L.padL || x > plotRight || y < L.mainTop || y > plotBottom) return;
 
@@ -434,8 +533,11 @@ export const renderTickChart = (
     size: { w: number; h: number },
     tickSize: number,
     hover: Hover,
+    book: LocalOrderBook,
+    centered: boolean,
+    visible: SeriesVisibility,
 ) => {
-    const L = computeLayout(size.w, size.h);
+    const L = computeLayout(size.w, size.h, visible);
     ctx.clearRect(0, 0, size.w, size.h);
     if (L.plotW <= 0 || L.mainH <= 0) return;
 
@@ -443,7 +545,7 @@ export const renderTickChart = (
     const endT = view.endT;
     const xFor: Scale = (t) => L.padL + ((t - startT) / view.spanMs) * L.plotW;
 
-    drawFrame(ctx, L);
+    drawFrame(ctx, L, visible);
 
     if (data.points.length === 0) {
         ctx.font = fontPx(11);
@@ -455,14 +557,21 @@ export const renderTickChart = (
     }
 
     // Computed once per frame and threaded through; the price/spread sub-charts,
-    // the legend and the crosshair all read the same ranges.
-    const pr = priceRange(data.points, data.trades, startT, endT);
+    // the legend and the crosshair all read the same ranges. In centered mode the
+    // price range is re-centered on the latest visible mid so the current price sits
+    // in the middle and the book has symmetric room above and below.
+    let pr = priceRange(data.points, data.trades, startT, endT);
     const sr = spreadRange(data.points, startT, endT);
+    if (centered && pr) {
+        const ref = data.points[Math.max(0, lowerBoundT(data.points, endT) - 1)];
+        if (ref) pr = centerRange(pr, (ref.bid + ref.ask) / 2);
+    }
 
     drawTimeGrid(ctx, L, startT, endT, xFor);
     drawMain(ctx, L, data, startT, endT, xFor, tickSize, pr);
-    drawSpread(ctx, L, data, startT, endT, xFor, tickSize, sr);
-    drawVolume(ctx, L, data, startT, endT, xFor);
-    drawLegend(ctx, L, data, view, startT, hover, tickSize, pr, sr);
+    if (visible.book) drawBook(ctx, L, book, pr, tickSize);
+    if (visible.spread) drawSpread(ctx, L, data, startT, endT, xFor, tickSize, sr);
+    if (visible.volume) drawVolume(ctx, L, data, startT, endT, xFor);
+    drawLegend(ctx, L, data, view, startT, hover, tickSize, pr, sr, visible);
     if (hover) drawCrosshair(ctx, L, view, startT, hover, tickSize, pr);
 };

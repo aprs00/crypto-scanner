@@ -8,8 +8,8 @@
 }
 
 .emptyMsg {
-    font-size: 12px;
-    letter-spacing: 0.18em;
+    font-size: var(--control-fs);
+    letter-spacing: var(--ls-widest);
     text-transform: uppercase;
     margin-bottom: var(--sp-5);
 }

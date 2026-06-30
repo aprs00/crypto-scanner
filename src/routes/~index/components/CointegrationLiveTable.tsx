@@ -162,11 +162,7 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
     const columns: ColumnDef<CointegrationLiveTableRow>[] = [
         {
             accessorKey: 'pair',
-            cell: ({ row }) => (
-                <span className="ac" style={{ fontWeight: 600 }}>
-                    {row.original.pair}
-                </span>
-            ),
+            cell: ({ row }) => <span className={styles.pair}>{row.original.pair}</span>,
             enableSorting: false,
             header: 'Pair',
         },

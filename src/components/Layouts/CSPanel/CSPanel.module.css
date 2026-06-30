@@ -18,10 +18,10 @@
     background: var(--bg-alt);
     border-bottom: 1px solid var(--bd);
     font-size: var(--control-fs);
-    letter-spacing: var(--label-ls);
+    letter-spacing: var(--ls-label);
     text-transform: uppercase;
     color: var(--ac);
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
     gap: var(--sp-4);
     /* Head itself does not wrap — title and controls share row 1; controls
        wrap their own children when space runs out. */

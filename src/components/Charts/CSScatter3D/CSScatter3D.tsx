@@ -4,7 +4,7 @@ import { useRef } from 'react';
 
 import { echarts, ECHARTS_THEME } from '@/lib/echarts';
 import { ReactEChartsCore } from '@/lib/ReactECharts';
-import { palette, TERMINAL_FONT } from '@/lib/theme';
+import { fontSize, fontWeightSemibold, palette, TERMINAL_FONT } from '@/lib/theme';
 import { resizeEChart } from '@/utils/chart';
 
 export type Scatter3DProps = {
@@ -17,8 +17,8 @@ export type Scatter3DProps = {
 const axisNameStyle = {
     color: palette.fg,
     fontFamily: TERMINAL_FONT,
-    fontSize: 13,
-    fontWeight: 600,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeightSemibold,
 };
 
 const CSScatter3D = (props: Scatter3DProps) => {
