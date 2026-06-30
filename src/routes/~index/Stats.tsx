@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 
+import CSButton, { CSButtonVariant } from '@/components/UI/CSButton';
 import CSFloatingButton from '@/components/UI/CSFloatingButton';
 import GroupTabs from '@/components/UI/GroupTabs';
 
@@ -75,9 +76,9 @@ const Stats = () => {
                 )) || (
                     <div className={styles.empty}>
                         <p className={styles.emptyMsg}>NO CHARTS IN THIS GROUP</p>
-                        <button className="btn primary" onClick={handleOpenDrawer} type="button">
+                        <CSButton onClick={handleOpenDrawer} variant={CSButtonVariant.Primary}>
                             + ADD FIRST CHART
-                        </button>
+                        </CSButton>
                     </div>
                 )}
             </div>

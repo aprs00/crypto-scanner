@@ -19,6 +19,10 @@
         outline: none;
     }
 
+    &:hover {
+        border-color: var(--ac);
+    }
+
     &.open {
         border-color: var(--ac);
     }

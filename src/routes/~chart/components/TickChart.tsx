@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import CSPanel from '@/components/Layouts/CSPanel';
-import IconButton from '@/components/UI/CSIconButton';
+import CSButton from '@/components/UI/CSButton';
 import CSToggleButton from '@/components/UI/CSToggleButton';
 
 import { SPAN_DEFAULT, type TickView, clampSpan, clampView } from '../tickChartMath';
@@ -242,7 +242,9 @@ const TickChart = ({ panelId, onRemove }: Props) => {
                     <CSToggleButton active={live} onClick={goLive}>
                         ● LIVE
                     </CSToggleButton>
-                    <IconButton label="-" onClick={onRemove} />
+                    <CSButton onClick={onRemove} square>
+                        -
+                    </CSButton>
                 </>
             }
         >

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 import CSPanel from '@/components/Layouts/CSPanel';
-import IconButton from '@/components/UI/CSIconButton';
+import CSButton from '@/components/UI/CSButton';
 import { ChartType, ChartTypeLabels } from '@/routes/~index/types';
 
 export type ChartContainerProps = {
@@ -20,7 +20,9 @@ const ChartContainer = (props: ChartContainerProps) => {
             controls={
                 <>
                     {controls}
-                    <IconButton label="-" onClick={onRemoveClick} />
+                    <CSButton onClick={onRemoveClick} square>
+                        -
+                    </CSButton>
                 </>
             }
             title={ChartTypeLabels[chartType]}

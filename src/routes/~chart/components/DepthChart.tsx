@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import CSPanel from '@/components/Layouts/CSPanel';
-import IconButton from '@/components/UI/CSIconButton';
+import CSButton from '@/components/UI/CSButton';
 import CSSegmented from '@/components/UI/CSSegmented';
 import { palette, withAlpha } from '@/lib/theme';
 import { useOrderBook } from '@/services/exchanges/hooks';
@@ -336,7 +336,9 @@ const DepthChart = ({ panelId, onRemove }: Props) => {
                         <span className={styles.zoom}>±{rangeLabel}%</span>
                         <CSSegmented onChange={setOrientation} options={ORIENTATIONS} value={orientation} />
                     </span>
-                    <IconButton label="-" onClick={onRemove} />
+                    <CSButton onClick={onRemove} square>
+                        -
+                    </CSButton>
                 </>
             }
         >

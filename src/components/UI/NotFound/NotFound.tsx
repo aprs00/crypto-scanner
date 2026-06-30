@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router';
+import CSButton, { CSButtonAs } from '@/components/UI/CSButton';
 
 import styles from './NotFound.module.css';
 
@@ -6,9 +6,9 @@ const NotFound = () => {
     return (
         <div className={styles.wrap}>
             <div className={styles.code}>404 — NOT FOUND</div>
-            <Link className="btn" to="/">
+            <CSButton as={CSButtonAs.Link} to="/">
                 RETURN TO TERMINAL
-            </Link>
+            </CSButton>
         </div>
     );
 };

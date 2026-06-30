@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { XIcon } from '@/components/Icons';
+import CSButton, { CSButtonVariant } from '@/components/UI/CSButton';
 import CSDrawer from '@/components/UI/CSDrawer';
 import CSSegmented from '@/components/UI/CSSegmented';
 import selectStyles from '@/components/UI/CSSelect/CSSelect.module.css';
@@ -133,19 +134,9 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
                             )}
                         </div>
                         <div className={styles.actionButtons}>
-                            {defaultValue && (
-                                <button className="btn" onClick={handleResetToDefaults} type="button">
-                                    Defaults
-                                </button>
-                            )}
-                            {!maxSelected && (
-                                <button className="btn" onClick={handleSelectAll} type="button">
-                                    Select all
-                                </button>
-                            )}
-                            <button className="btn" onClick={handleDeselectAll} type="button">
-                                Clear
-                            </button>
+                            {defaultValue && <CSButton onClick={handleResetToDefaults}>Defaults</CSButton>}
+                            {!maxSelected && <CSButton onClick={handleSelectAll}>Select all</CSButton>}
+                            <CSButton onClick={handleDeselectAll}>Clear</CSButton>
                         </div>
                     </div>
 
@@ -172,9 +163,9 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
                     </div>
 
                     <div className={styles.foot}>
-                        <button className="btn primary" onClick={handleClose} type="button">
+                        <CSButton onClick={handleClose} variant={CSButtonVariant.Primary}>
                             Done
-                        </button>
+                        </CSButton>
                     </div>
                 </div>
             </CSDrawer>

@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 
 import CSPanel from '@/components/Layouts/CSPanel';
-import IconButton from '@/components/UI/CSIconButton';
+import CSButton from '@/components/UI/CSButton';
 import CSSegmented from '@/components/UI/CSSegmented';
 import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
@@ -159,7 +159,9 @@ const OrderBookTable = ({ panelId, onRemove }: Props) => {
                             options={orientationOptions}
                             value={orientation}
                         />
-                        <IconButton label="-" onClick={onRemove} />
+                        <CSButton onClick={onRemove} square>
+                            -
+                        </CSButton>
                     </>
                 }
             >

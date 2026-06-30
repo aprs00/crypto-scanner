@@ -11,9 +11,19 @@
     letter-spacing: 0.1em;
     cursor: pointer;
 
+    &:hover {
+        border-color: var(--ac);
+        color: var(--ac);
+    }
+
     &.on {
         border-color: var(--ac);
         background: var(--ac);
         color: var(--bg);
+
+        &:hover {
+            color: var(--bg);
+            filter: brightness(1.08);
+        }
     }
 }

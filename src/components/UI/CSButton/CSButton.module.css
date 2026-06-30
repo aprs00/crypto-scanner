@@ -1,6 +1,3 @@
-/* Shared button primitive — used by CSIconButton and ad-hoc <button>s
-   that need the terminal-style cap-shaped button. */
-
 .btn {
     display: inline-flex;
     align-items: center;
