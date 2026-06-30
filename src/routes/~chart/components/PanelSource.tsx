@@ -6,7 +6,6 @@ import { STREAMING_EXCHANGES, TRADINGVIEW_EXCHANGES, getExchange } from '@/servi
 import { PanelType } from '../types';
 import useChartSourceStore from '../useChartSourceStore';
 import useResolvedSource from '../useResolvedSource';
-import styles from './PanelSource.module.css';
 
 // TradingView has Binance/Bybit feeds but no Hyperliquid; other panels need WS
 // streaming (order book + trades), which Binance, Hyperliquid and Bybit implement.
@@ -29,20 +28,14 @@ const PanelSource = ({ panelId, panelType }: { panelId: string; panelType: Panel
     };
 
     return (
-        <span className={styles.wrap}>
+        <>
             <CSSelect<ExchangeId>
-                classes={styles.exchange}
                 onChange={(ex) => setExchange(panelId, ex)}
                 options={exchangeOptions}
                 value={exchange}
             />
-            <CSSelect<string>
-                classes={styles.symbol}
-                onChange={handleSymbol}
-                options={symbolOptions}
-                value={symbol || undefined}
-            />
-        </span>
+            <CSSelect<string> onChange={handleSymbol} options={symbolOptions} value={symbol || undefined} />
+        </>
     );
 };
 

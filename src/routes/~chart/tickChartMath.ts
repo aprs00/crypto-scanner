@@ -70,6 +70,13 @@ export const priceRange = (points: TickPoint[], trades: TradeMark[], t0: number,
     return { hi: hi + pad, lo: lo - pad };
 };
 
+// Re-center a range on `c`, growing the smaller half to match the larger so the
+// whole original range stays visible with `c` at the vertical middle.
+export const centerRange = (r: Range, c: number): Range => {
+    const half = Math.max(r.hi - c, c - r.lo);
+    return { hi: c + half, lo: c - half };
+};
+
 // Spread (ask - bid) extent, floored at 0 so the baseline is always zero.
 export const spreadRange = (points: TickPoint[], t0: number, t1: number): Range | null => {
     let hi = -Infinity;
@@ -105,6 +112,18 @@ export const niceTicks = (min: number, max: number, count = 5): number[] => {
     const ticks: number[] = [];
     for (let v = Math.ceil(min / step) * step; v <= max + step * 1e-3; v += step) ticks.push(v);
     return ticks;
+};
+
+// Smallest "nice" price bucket (1/2/5 * 10^n ticks, never below one tick) that is at
+// least `target` wide. Used to size the order-book rows adaptively from the visible
+// price range so they stay a readable height and don't jitter as zoom changes.
+export const niceBucket = (target: number, tickSize: number): number => {
+    const unit = tickSize > 0 ? tickSize : 1;
+    const ticks = Math.max(1, target / unit); // ideal ticks-per-bucket, floored at 1
+    const mag = Math.pow(10, Math.floor(Math.log10(ticks)));
+    const norm = ticks / mag;
+    const mult = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+    return mult * mag * unit;
 };
 
 // Decimal places for price labels: enough to honor the instrument's tick size and

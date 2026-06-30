@@ -11,6 +11,7 @@ import TickChart from './components/TickChart';
 import TradingViewPanel from './components/TradingViewPanel';
 import { PanelType, type PanelItem } from './types';
 import useChartLayoutStore, { panelTemplates } from './useChartLayoutStore';
+import useChartSeriesStore from './useChartSeriesStore';
 import useChartSourceStore from './useChartSourceStore';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -39,12 +40,14 @@ const CSChart = () => {
     const handleLayoutChange = useChartLayoutStore((state) => state.handleLayoutChange);
     const removePanel = useChartLayoutStore((state) => state.removePanel);
     const removeSource = useChartSourceStore((state) => state.removeSource);
+    const removeSeries = useChartSeriesStore((state) => state.removeSeries);
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const handleRemove = (id: string) => {
         removePanel(id);
         removeSource(id);
+        removeSeries(id);
     };
 
     const layoutFor = (panel: PanelItem) => ({
