@@ -8,16 +8,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 22px;
+    min-width: var(--row-h-sm);
     height: var(--row-h);
     padding: 0 var(--sp-3);
     background: var(--bg-inset);
     border: 0;
     color: var(--fg-dim);
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-base);
     cursor: pointer;
 
     & + & {

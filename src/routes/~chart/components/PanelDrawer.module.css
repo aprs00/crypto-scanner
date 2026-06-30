@@ -27,15 +27,14 @@
 }
 
 .title {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-base);
     color: var(--fg);
 }
 
 .desc {
     color: var(--fg-dim);
-    font-size: 11px;
+    font-size: var(--fs-base);
     line-height: 1.5;
-    font-family: 'Inter', system-ui, sans-serif;
 }

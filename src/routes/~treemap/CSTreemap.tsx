@@ -7,7 +7,7 @@ import { useRef } from 'react';
 import CSPanel from '@/components/Layouts/CSPanel';
 import { echarts, ECHARTS_THEME } from '@/lib/echarts';
 import { ReactEChartsCore } from '@/lib/ReactECharts';
-import { treemapColorFor } from '@/lib/theme';
+import { fontSize, fontWeightSemibold, treemapColorFor } from '@/lib/theme';
 import { resizeEChart } from '@/utils/chart';
 import { formatUSD } from '@/utils/number';
 
@@ -40,8 +40,8 @@ const CSTreemap = () => {
                 data: [{ children }],
                 height: '100%',
                 label: {
-                    fontSize: 16,
-                    fontWeight: 600,
+                    fontSize: fontSize.xl,
+                    fontWeight: fontWeightSemibold,
                     formatter: (params: any) =>
                         `${params.data.name?.toUpperCase()}\n${params.data.colorValue?.toFixed(2)}%`,
                     show: true,

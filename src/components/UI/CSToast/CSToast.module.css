@@ -11,8 +11,8 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
     padding: var(--sp-5) var(--sp-6);
     color: var(--fg);
-    font-size: 12px;
-    letter-spacing: 0.04em;
+    font-size: var(--control-fs);
+    letter-spacing: var(--ls-base);
 }
 
 .icon {

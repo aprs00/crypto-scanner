@@ -1,7 +1,6 @@
 .table {
     min-width: 100%;
-    font-size: 11px;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: var(--fs-base);
     border-collapse: collapse;
 
     thead {
@@ -18,10 +17,10 @@
 
     th {
         padding: var(--sp-2) var(--sp-5);
-        font-weight: 600;
-        letter-spacing: 0.08em;
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--ls-wide);
         text-transform: uppercase;
-        font-size: 10px;
+        font-size: var(--fs-sm);
         text-align: left;
 
         &.right {
@@ -74,7 +73,7 @@
 .sortInd {
     display: inline-flex;
     flex-direction: column;
-    font-size: 9px;
+    font-size: var(--fs-xs);
     line-height: 1;
 
     .on {
@@ -86,14 +85,19 @@
     }
 }
 
+.pair {
+    color: var(--ac);
+    font-weight: var(--fw-semibold);
+}
+
 .zHi {
     color: var(--ac);
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
 }
 
 .zMid {
     color: var(--heat-lo);
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
 }
 
 .zLo {
@@ -106,7 +110,7 @@
     justify-content: center;
     height: 100%;
     color: var(--fg-mute);
-    font-size: 11px;
-    letter-spacing: 0.06em;
+    font-size: var(--fs-base);
+    letter-spacing: var(--ls-wide);
     text-transform: uppercase;
 }

@@ -18,8 +18,8 @@
     padding: 0 var(--sp-7);
     height: 100%;
     font-size: var(--control-fs);
-    font-weight: 600;
-    letter-spacing: var(--label-ls);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-label);
     color: var(--fg);
     text-transform: uppercase;
     cursor: pointer;
@@ -41,10 +41,10 @@
     margin-left: auto;
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: var(--sp-7);
     color: var(--fg);
     font-size: var(--control-fs);
-    letter-spacing: 0.04em;
+    letter-spacing: var(--ls-base);
 
     @media (max-width: 767px) {
         display: none;
@@ -53,5 +53,5 @@
 
 .value {
     color: var(--fg);
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
 }

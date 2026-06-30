@@ -51,8 +51,8 @@
     border-bottom: 1px solid var(--bd);
     color: var(--ac);
     text-transform: uppercase;
-    letter-spacing: var(--label-ls);
-    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    font-weight: var(--fw-semibold);
 }
 
 .headLeft {
@@ -81,9 +81,9 @@
 
 .title {
     color: var(--fg);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: var(--label-ls);
+    font-size: var(--control-fs);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-label);
     text-transform: uppercase;
     margin: 0;
     overflow: hidden;

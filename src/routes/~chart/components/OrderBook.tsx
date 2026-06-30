@@ -5,7 +5,7 @@ import CSButton from '@/components/UI/CSButton';
 import CSSegmented from '@/components/UI/CSSegmented';
 import CSSpinner from '@/components/UI/CSSpinner';
 import NumberInput from '@/components/UI/NumberInput';
-import { palette, withAlpha } from '@/lib/theme';
+import { palette, rowHeight, withAlpha } from '@/lib/theme';
 import { groupOrders } from '@/services/exchanges/_shared/grouping';
 import { useOrderBook } from '@/services/exchanges/hooks';
 import { formatNumber, formatPrice } from '@/utils/number';
@@ -38,9 +38,9 @@ const linearGradingColors = {
 const tableBackgroundStyle = (type: OrderbookType, orientation: Orientation, percentage: number) =>
     `linear-gradient(${linearGradingDegrees[type][orientation]}, ${
         linearGradingColors[type]
-    } ${percentage}%, rgba(255, 255, 255, 0) 0%)`;
+    } ${percentage}%, transparent 0%)`;
 
-const ORDERBOOK_ROW_HEIGHT = 18;
+const ORDERBOOK_ROW_HEIGHT = rowHeight.xs;
 
 type Props = { panelId: string; onRemove: () => void };
 
@@ -113,7 +113,7 @@ const OrderBookTable = ({ panelId, onRemove }: Props) => {
             const formattedQuantity = formatNumber(quantity, { maximumFractionDigits: 6 });
 
             const gradientDir = linearGradingDegrees[type][orientation];
-            const cumulativeBackground = `linear-gradient(${gradientDir}, ${cumulativeColors[type]} ${cumulativePercentage}%, rgba(255, 255, 255, 0) 0%)`;
+            const cumulativeBackground = `linear-gradient(${gradientDir}, ${cumulativeColors[type]} ${cumulativePercentage}%, transparent 0%)`;
 
             rows.push(
                 <div
