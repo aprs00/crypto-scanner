@@ -13,6 +13,16 @@ export type TickView = { spanMs: number; endT: number; follow: boolean };
 
 export type Range = { lo: number; hi: number };
 
+export type TickWindow = {
+    pointEnd: number;
+    pointStart: number;
+    priceRange: Range | null;
+    spreadRange: Range | null;
+    tradeEnd: number;
+    tradeStart: number;
+    volumeMax: number;
+};
+
 // Zoom limits: from a 2s firehose view out to a 30m overview.
 export const SPAN_MIN = 2_000;
 export const SPAN_MAX = 30 * 60_000;
@@ -44,31 +54,7 @@ export const lowerBoundT = (arr: { t: number }[], t: number): number => {
     return lo;
 };
 
-// Min/max price across the visible window, including the one point straddling the
-// left edge (its value holds into view) plus any trades. `null` when nothing visible.
-export const priceRange = (
-    points: TickPoint[],
-    trades: TradeMark[],
-    t0: number,
-    t1: number,
-    tickSize: number,
-): Range | null => {
-    let lo = Infinity;
-    let hi = -Infinity;
-
-    for (let i = Math.max(0, lowerBoundT(points, t0) - 1); i < points.length; i++) {
-        const p = points[i];
-        if (p.t > t1) break;
-        if (p.bid < lo) lo = p.bid;
-        if (p.ask > hi) hi = p.ask;
-    }
-    for (let i = lowerBoundT(trades, t0); i < trades.length; i++) {
-        const tr = trades[i];
-        if (tr.t > t1) break;
-        if (tr.price < lo) lo = tr.price;
-        if (tr.price > hi) hi = tr.price;
-    }
-
+const paddedPriceRange = (lo: number, hi: number, tickSize: number): Range | null => {
     if (lo === Infinity) return null;
     const mid = (lo + hi) / 2;
     const minSpan = Math.max(tickSize > 0 ? tickSize * MIN_PRICE_SPAN_TICKS : 0, Math.abs(mid) * MIN_PRICE_SPAN_RATIO);
@@ -88,6 +74,17 @@ export const priceRange = (
     return { hi: paddedHi, lo: paddedLo };
 };
 
+const paddedSpreadRange = (lo: number, hi: number, tickSize: number): Range | null => {
+    if (hi === -Infinity) return null;
+    const floor = tickSize > 0 ? tickSize : lo === Infinity ? 0 : lo;
+    if (hi <= floor) {
+        const span = floor > 0 ? floor : 1;
+        return { hi: floor + span, lo: floor };
+    }
+    const pad = (hi - floor) * 0.1;
+    return { hi: hi + pad, lo: floor };
+};
+
 // Re-center a range on `c`, growing the smaller half to match the larger so the
 // whole original range stays visible with `c` at the vertical middle.
 export const centerRange = (r: Range, c: number): Range => {
@@ -100,38 +97,56 @@ export const normalizeSpread = (spread: number, tickSize: number): number => {
     return Math.max(tickSize, Math.round(spread / tickSize) * tickSize);
 };
 
-// Spread (ask - bid) extent. The floor is the minimum price tick when known, so
-// a constant one-tick spread reads as the bottom of the spread panel, not the top.
-export const spreadRange = (points: TickPoint[], t0: number, t1: number, tickSize: number): Range | null => {
-    let lo = Infinity;
-    let hi = -Infinity;
-    for (let i = Math.max(0, lowerBoundT(points, t0) - 1); i < points.length; i++) {
+// Visible slice and extents for one render frame. Points include the item just
+// before the left edge so the step line can hold its value into the viewport.
+export const tickWindow = (
+    points: TickPoint[],
+    trades: TradeMark[],
+    t0: number,
+    t1: number,
+    tickSize: number,
+): TickWindow => {
+    const pointStart = Math.max(0, lowerBoundT(points, t0) - 1);
+    const tradeStart = lowerBoundT(trades, t0);
+    let pointEnd = pointStart;
+    let tradeEnd = tradeStart;
+
+    let priceLo = Infinity;
+    let priceHi = -Infinity;
+    let spreadLo = Infinity;
+    let spreadHi = -Infinity;
+    let volumeMax = 0;
+
+    for (let i = pointStart; i < points.length; i++) {
         const p = points[i];
         if (p.t > t1) break;
+        pointEnd = i + 1;
+        if (p.bid < priceLo) priceLo = p.bid;
+        if (p.ask > priceHi) priceHi = p.ask;
         const s = normalizeSpread(p.ask - p.bid, tickSize);
-        if (s > 0 && s < lo) lo = s;
-        if (s > hi) hi = s;
+        if (s > 0 && s < spreadLo) spreadLo = s;
+        if (s > spreadHi) spreadHi = s;
     }
-    if (hi === -Infinity) return null;
-    const floor = tickSize > 0 ? tickSize : lo === Infinity ? 0 : lo;
-    if (hi <= floor) {
-        const span = floor > 0 ? floor : 1;
-        return { hi: floor + span, lo: floor };
-    }
-    const pad = (hi - floor) * 0.1;
-    return { hi: hi + pad, lo: floor };
-};
 
-// Largest trade notional (USD) in the window, for scaling the volume bars.
-export const maxVolume = (trades: TradeMark[], t0: number, t1: number): number => {
-    let m = 0;
-    for (let i = lowerBoundT(trades, t0); i < trades.length; i++) {
+    for (let i = tradeStart; i < trades.length; i++) {
         const tr = trades[i];
         if (tr.t > t1) break;
-        const usd = tr.size * tr.price;
-        if (usd > m) m = usd;
+        tradeEnd = i + 1;
+        if (tr.price < priceLo) priceLo = tr.price;
+        if (tr.price > priceHi) priceHi = tr.price;
+        const volume = tr.size * tr.price;
+        if (volume > volumeMax) volumeMax = volume;
     }
-    return m;
+
+    return {
+        pointEnd,
+        pointStart,
+        priceRange: paddedPriceRange(priceLo, priceHi, tickSize),
+        spreadRange: paddedSpreadRange(spreadLo, spreadHi, tickSize),
+        tradeEnd,
+        tradeStart,
+        volumeMax,
+    };
 };
 
 // "Nice" round axis tick values (1/2/5 * 10^n) covering [min, max].

@@ -17,16 +17,15 @@ import {
     type TickPoint,
     type TickView,
     type TradeMark,
+    type TickWindow,
     centerRange,
     decimalsForRange,
     fmtSpan,
     lowerBoundT,
-    maxVolume,
     niceBucket,
     niceTicks,
     normalizeSpread,
-    priceRange,
-    spreadRange,
+    tickWindow,
 } from './tickChartMath';
 
 export type TickData = { points: TickPoint[]; trades: TradeMark[] };
@@ -48,6 +47,22 @@ type Layout = {
     volH: number;
     volTop: number;
     w: number;
+};
+
+type RenderFrame = {
+    data: TickData;
+    endT: number;
+    L: Layout;
+    priceDec: number;
+    priceRange: Range | null;
+    spanMs: number;
+    spreadDec: number;
+    spreadRange: Range | null;
+    startT: number;
+    tickSize: number;
+    visible: SeriesVisibility;
+    window: TickWindow;
+    xFor: Scale;
 };
 
 export const RIGHT_GUTTER = 54; // value-axis labels live here
@@ -129,28 +144,60 @@ const computeLayout = (w: number, h: number, visible: SeriesVisibility): Layout 
 type ValueFn = (p: TickPoint) => number;
 type Scale = (v: number) => number;
 
+const makeFrame = (
+    L: Layout,
+    data: TickData,
+    view: TickView,
+    tickSize: number,
+    centered: boolean,
+    visible: SeriesVisibility,
+): RenderFrame => {
+    const startT = view.endT - view.spanMs;
+    const endT = view.endT;
+    const window = tickWindow(data.points, data.trades, startT, endT, tickSize);
+    let priceRangeForFrame = window.priceRange;
+    const latestVisiblePoint = data.points[window.pointEnd - 1];
+
+    if (centered && priceRangeForFrame && latestVisiblePoint) {
+        priceRangeForFrame = centerRange(priceRangeForFrame, (latestVisiblePoint.bid + latestVisiblePoint.ask) / 2);
+    }
+
+    return {
+        data,
+        endT,
+        L,
+        priceDec: decimalsForRange(priceRangeForFrame ? priceRangeForFrame.hi - priceRangeForFrame.lo : 1, tickSize),
+        priceRange: priceRangeForFrame,
+        spanMs: view.spanMs,
+        spreadDec: decimalsForRange(window.spreadRange ? window.spreadRange.hi : 1, tickSize) + 1,
+        spreadRange: window.spreadRange,
+        startT,
+        tickSize,
+        visible,
+        window,
+        xFor: (t) => L.padL + ((t - startT) / view.spanMs) * L.plotW,
+    };
+};
+
+const timeAtX = (F: RenderFrame, x: number) => F.startT + ((x - F.L.padL) / F.L.plotW) * F.spanMs;
+
 // Step-after line: a value holds until the next change, then jumps. The final
 // value is extended to the right edge ("now"). The point straddling the left edge
 // is clamped to the plot's left so its value fills the window start.
 const strokeStep = (
     ctx: CanvasRenderingContext2D,
-    points: TickPoint[],
+    F: RenderFrame,
     value: ValueFn,
     yFor: Scale,
-    xFor: Scale,
-    x0: number,
-    startT: number,
-    endT: number,
     color: string,
     lineWidth: number,
 ) => {
     ctx.beginPath();
     let started = false;
     let lastY = 0;
-    for (let i = Math.max(0, lowerBoundT(points, startT) - 1); i < points.length; i++) {
-        const p = points[i];
-        if (p.t > endT) break;
-        const x = Math.max(x0, xFor(p.t));
+    for (let i = F.window.pointStart; i < F.window.pointEnd; i++) {
+        const p = F.data.points[i];
+        const x = Math.max(F.L.padL, F.xFor(p.t));
         const y = yFor(value(p));
         if (!started) {
             ctx.moveTo(x, y);
@@ -161,7 +208,7 @@ const strokeStep = (
         }
         lastY = y;
     }
-    if (started) ctx.lineTo(xFor(endT), lastY);
+    if (started) ctx.lineTo(F.xFor(F.endT), lastY);
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = color;
     ctx.stroke();
@@ -169,25 +216,15 @@ const strokeStep = (
 
 // Bid and ask change at the same points, so each inter-point segment is a flat
 // rectangle between the two lines — the visible spread, filled faintly.
-const fillSpreadBand = (
-    ctx: CanvasRenderingContext2D,
-    points: TickPoint[],
-    yFor: Scale,
-    xFor: Scale,
-    x0: number,
-    startT: number,
-    endT: number,
-    color: string,
-) => {
+const fillSpreadBand = (ctx: CanvasRenderingContext2D, F: RenderFrame, yFor: Scale, color: string) => {
     ctx.fillStyle = color;
-    for (let i = Math.max(0, lowerBoundT(points, startT) - 1); i < points.length; i++) {
-        const p = points[i];
-        if (p.t > endT) break;
-        const next = points[i + 1];
-        const xL = Math.max(x0, xFor(p.t));
-        const xR = next && next.t <= endT ? xFor(next.t) : xFor(endT);
+    for (let i = F.window.pointStart; i < F.window.pointEnd; i++) {
+        const p = F.data.points[i];
+        const next = F.data.points[i + 1];
+        const xL = Math.max(F.L.padL, F.xFor(p.t));
+        const xR = next && next.t <= F.endT ? F.xFor(next.t) : F.xFor(F.endT);
         if (xR > xL) ctx.fillRect(xL, yFor(p.ask), xR - xL, yFor(p.bid) - yFor(p.ask));
-        if (!next || next.t > endT) break;
+        if (!next || next.t > F.endT) break;
     }
 };
 
@@ -271,32 +308,19 @@ type LegendSeg = { color: string; text: string };
 // Top-left caption for each sub-chart, with the values at the hovered time shown
 // next to it (bid/ask, spread, and the nearest trade's volume). Without a hover
 // only the captions render — the live values already sit on the right-edge tags.
-const drawLegend = (
-    ctx: CanvasRenderingContext2D,
-    L: Layout,
-    data: TickData,
-    view: TickView,
-    startT: number,
-    hover: Hover,
-    tickSize: number,
-    pr: Range | null,
-    sr: Range | null,
-    visible: SeriesVisibility,
-) => {
+const drawLegend = (ctx: CanvasRenderingContext2D, F: RenderFrame, hover: Hover) => {
+    const { L, data, visible } = F;
     const plotRight = L.w - L.padR;
     let point: TickPoint | null = null;
     let trade: TradeMark | null = null;
     if (hover && hover.x >= L.padL && hover.x <= plotRight) {
-        const t = startT + ((hover.x - L.padL) / L.plotW) * view.spanMs;
+        const t = timeAtX(F, hover.x);
         point = data.points[Math.max(0, lowerBoundT(data.points, t) - 1)] ?? null;
         const j = lowerBoundT(data.trades, t);
         const before = data.trades[j - 1];
         const after = data.trades[j];
         trade = before && after ? (t - before.t <= after.t - t ? before : after) : (after ?? before ?? null);
     }
-
-    const priceDec = decimalsForRange(pr ? pr.hi - pr.lo : 1, tickSize);
-    const spreadDec = decimalsForRange(sr ? sr.hi : 1, tickSize) + 1;
 
     const row = (top: number, caption: string, values: LegendSeg[]) => {
         const segs: LegendSeg[] = [{ color: palette.fgDim, text: caption }, ...values];
@@ -316,11 +340,11 @@ const drawLegend = (
     };
 
     row(L.mainTop, 'TICKS', [
-        { color: palette.fgDim, text: fmtSpan(view.spanMs) },
+        { color: palette.fgDim, text: fmtSpan(F.spanMs) },
         ...(point
             ? [
-                  { color: palette.up, text: `bid ${formatPrice(point.bid, priceDec)}` },
-                  { color: palette.down, text: `ask ${formatPrice(point.ask, priceDec)}` },
+                  { color: palette.up, text: `bid ${formatPrice(point.bid, F.priceDec)}` },
+                  { color: palette.down, text: `ask ${formatPrice(point.ask, F.priceDec)}` },
               ]
             : []),
     ]);
@@ -328,7 +352,7 @@ const drawLegend = (
         row(
             L.spreadTop,
             'SPREAD',
-            point ? [{ color: palette.heatLo, text: formatPrice(point.ask - point.bid, spreadDec) }] : [],
+            point ? [{ color: palette.heatLo, text: formatPrice(point.ask - point.bid, F.spreadDec) }] : [],
         );
     if (visible.volume)
         row(
@@ -338,14 +362,15 @@ const drawLegend = (
         );
 };
 
-const drawTimeGrid = (ctx: CanvasRenderingContext2D, L: Layout, startT: number, endT: number, xFor: Scale) => {
+const drawTimeGrid = (ctx: CanvasRenderingContext2D, F: RenderFrame) => {
+    const { L, endT, startT } = F;
     const step = pickTimeStep(endT - startT);
     const bottom = L.bottomY;
     ctx.font = fontPx(9);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     for (let t = Math.ceil(startT / step) * step; t <= endT; t += step) {
-        const x = xFor(t);
+        const x = F.xFor(t);
         if (x < L.padL || x > L.w - L.padR) continue;
         ctx.strokeStyle = palette.grid;
         ctx.lineWidth = 1;
@@ -358,20 +383,11 @@ const drawTimeGrid = (ctx: CanvasRenderingContext2D, L: Layout, startT: number, 
     }
 };
 
-const drawMain = (
-    ctx: CanvasRenderingContext2D,
-    L: Layout,
-    data: TickData,
-    startT: number,
-    endT: number,
-    xFor: Scale,
-    tickSize: number,
-    pr: Range | null,
-) => {
+const drawMain = (ctx: CanvasRenderingContext2D, F: RenderFrame) => {
+    const { L, data, priceRange: pr } = F;
     if (!pr) return;
     const span = pr.hi - pr.lo || 1;
     const yFor: Scale = (v) => L.mainTop + (1 - (v - pr.lo) / span) * L.mainH;
-    const dec = decimalsForRange(span, tickSize);
     const clampY = (y: number) => Math.max(L.mainTop + 7, Math.min(L.mainTop + L.mainH - 7, y));
 
     for (const tick of niceTicks(pr.lo, pr.hi)) {
@@ -382,31 +398,30 @@ const drawMain = (
         ctx.moveTo(L.padL, y + 0.5);
         ctx.lineTo(L.w - L.padR, y + 0.5);
         ctx.stroke();
-        drawAxisLabel(ctx, L, y, formatPrice(tick, dec), palette.fgDim);
+        drawAxisLabel(ctx, L, y, formatPrice(tick, F.priceDec), palette.fgDim);
     }
 
-    fillSpreadBand(ctx, data.points, yFor, xFor, L.padL, startT, endT, withAlpha(palette.ac, 0.05));
-    strokeStep(ctx, data.points, (p) => p.bid, yFor, xFor, L.padL, startT, endT, palette.up, 1.25);
-    strokeStep(ctx, data.points, (p) => p.ask, yFor, xFor, L.padL, startT, endT, palette.down, 1.25);
+    fillSpreadBand(ctx, F, yFor, withAlpha(palette.ac, 0.05));
+    strokeStep(ctx, F, (p) => p.bid, yFor, palette.up, 1.25);
+    strokeStep(ctx, F, (p) => p.ask, yFor, palette.down, 1.25);
 
     ctx.fillStyle = palette.ac;
     ctx.strokeStyle = palette.bg;
     ctx.lineWidth = 0.5;
-    for (let i = lowerBoundT(data.trades, startT); i < data.trades.length; i++) {
+    for (let i = F.window.tradeStart; i < F.window.tradeEnd; i++) {
         const tr = data.trades[i];
-        if (tr.t > endT) break;
         const y = yFor(tr.price);
         if (y < L.mainTop || y > L.mainTop + L.mainH) continue;
         ctx.beginPath();
-        ctx.arc(xFor(tr.t), y, 3, 0, Math.PI * 2);
+        ctx.arc(F.xFor(tr.t), y, 3, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
     }
 
     const cur = data.points[data.points.length - 1];
     if (cur) {
-        drawTag(ctx, L, clampY(yFor(cur.ask)), formatPrice(cur.ask, dec), palette.down);
-        drawTag(ctx, L, clampY(yFor(cur.bid)), formatPrice(cur.bid, dec), palette.up);
+        drawTag(ctx, L, clampY(yFor(cur.ask)), formatPrice(cur.ask, F.priceDec), palette.down);
+        drawTag(ctx, L, clampY(yFor(cur.bid)), formatPrice(cur.bid, F.priceDec), palette.up);
     }
 };
 
@@ -414,13 +429,8 @@ const drawMain = (
 // same price axis as drawMain. Grouping is derived from the visible price range so the
 // rows stay ~BOOK_ROW_PX tall at any zoom, and only buckets inside [pr.lo, pr.hi] are
 // drawn — zooming in narrows the column to the levels around the spread.
-const drawBook = (
-    ctx: CanvasRenderingContext2D,
-    L: Layout,
-    book: LocalOrderBook,
-    pr: Range | null,
-    tickSize: number,
-) => {
+const drawBook = (ctx: CanvasRenderingContext2D, F: RenderFrame, book: LocalOrderBook) => {
+    const { L, priceRange: pr, tickSize } = F;
     if (!pr || (book.bids.length === 0 && book.asks.length === 0)) return;
     const span = pr.hi - pr.lo || 1;
     const yFor: Scale = (v) => L.mainTop + (1 - (v - pr.lo) / span) * L.mainH;
@@ -454,73 +464,39 @@ const drawBook = (
     drawSide(bids, withAlpha(palette.up, 0.6));
 };
 
-const drawSpread = (
-    ctx: CanvasRenderingContext2D,
-    L: Layout,
-    data: TickData,
-    startT: number,
-    endT: number,
-    xFor: Scale,
-    tickSize: number,
-    sr: Range | null,
-) => {
+const drawSpread = (ctx: CanvasRenderingContext2D, F: RenderFrame) => {
+    const { L, data, spreadRange: sr, tickSize } = F;
     if (!sr) return;
     const span = sr.hi - sr.lo || 1;
     const yFor: Scale = (v) => L.spreadTop + (1 - (v - sr.lo) / span) * L.spreadH;
-    const dec = decimalsForRange(sr.hi, tickSize) + 1;
 
-    strokeStep(
-        ctx,
-        data.points,
-        (p) => normalizeSpread(p.ask - p.bid, tickSize),
-        yFor,
-        xFor,
-        L.padL,
-        startT,
-        endT,
-        palette.heatLo,
-        1.1,
-    );
+    strokeStep(ctx, F, (p) => normalizeSpread(p.ask - p.bid, tickSize), yFor, palette.heatLo, 1.1);
 
-    drawSubAxisLabels(ctx, L, L.spreadTop, L.spreadH, sr.lo, sr.hi, (v) => formatPrice(v, dec));
+    drawSubAxisLabels(ctx, L, L.spreadTop, L.spreadH, sr.lo, sr.hi, (v) => formatPrice(v, F.spreadDec));
     const cur = data.points[data.points.length - 1];
     if (cur) {
         const v = normalizeSpread(cur.ask - cur.bid, tickSize);
         const y = Math.max(L.spreadTop + 7, Math.min(L.spreadTop + L.spreadH - 7, yFor(v)));
-        drawTag(ctx, L, y, formatPrice(v, dec), palette.heatLo);
+        drawTag(ctx, L, y, formatPrice(v, F.spreadDec), palette.heatLo);
     }
 };
 
-const drawVolume = (
-    ctx: CanvasRenderingContext2D,
-    L: Layout,
-    data: TickData,
-    startT: number,
-    endT: number,
-    xFor: Scale,
-) => {
-    const mv = maxVolume(data.trades, startT, endT);
+const drawVolume = (ctx: CanvasRenderingContext2D, F: RenderFrame) => {
+    const { L, data } = F;
+    const mv = F.window.volumeMax;
     if (mv <= 0) return;
     const baseY = L.volTop + L.volH;
-    for (let i = lowerBoundT(data.trades, startT); i < data.trades.length; i++) {
+    for (let i = F.window.tradeStart; i < F.window.tradeEnd; i++) {
         const tr = data.trades[i];
-        if (tr.t > endT) break;
         ctx.fillStyle = tr.buy ? palette.up : palette.down;
         const usd = tr.size * tr.price;
-        ctx.fillRect(xFor(tr.t) - 0.75, baseY - (usd / mv) * L.volH, 1.5, (usd / mv) * L.volH);
+        ctx.fillRect(F.xFor(tr.t) - 0.75, baseY - (usd / mv) * L.volH, 1.5, (usd / mv) * L.volH);
     }
     drawSubAxisLabels(ctx, L, L.volTop, L.volH, 0, mv, fmtVol);
 };
 
-const drawCrosshair = (
-    ctx: CanvasRenderingContext2D,
-    L: Layout,
-    view: TickView,
-    startT: number,
-    hover: { x: number; y: number },
-    tickSize: number,
-    pr: Range | null,
-) => {
+const drawCrosshair = (ctx: CanvasRenderingContext2D, F: RenderFrame, hover: { x: number; y: number }) => {
+    const { L, priceRange: pr } = F;
     const plotRight = L.w - L.padR;
     const plotBottom = L.bottomY;
     const { x, y } = hover;
@@ -543,7 +519,7 @@ const drawCrosshair = (
     }
     ctx.setLineDash([]);
 
-    const t = startT + ((x - L.padL) / (plotRight - L.padL)) * view.spanMs;
+    const t = timeAtX(F, x);
     const label = format(t, 'HH:mm:ss');
     ctx.font = fontPx(9);
     ctx.textAlign = 'center';
@@ -559,7 +535,7 @@ const drawCrosshair = (
         if (pr) {
             const span = pr.hi - pr.lo || 1;
             const price = pr.lo + (1 - (y - L.mainTop) / L.mainH) * span;
-            drawTag(ctx, L, y, formatPrice(price, decimalsForRange(span, tickSize)), palette.bdHi, palette.fg);
+            drawTag(ctx, L, y, formatPrice(price, F.priceDec), palette.bdHi, palette.fg);
         }
     }
     ctx.restore();
@@ -580,10 +556,6 @@ export const renderTickChart = (
     ctx.clearRect(0, 0, size.w, size.h);
     if (L.plotW <= 0 || L.mainH <= 0) return;
 
-    const startT = view.endT - view.spanMs;
-    const endT = view.endT;
-    const xFor: Scale = (t) => L.padL + ((t - startT) / view.spanMs) * L.plotW;
-
     drawFrame(ctx, L, visible);
 
     if (data.points.length === 0) {
@@ -595,22 +567,13 @@ export const renderTickChart = (
         return;
     }
 
-    // Computed once per frame and threaded through; the price/spread sub-charts,
-    // the legend and the crosshair all read the same ranges. In centered mode the
-    // price range is re-centered on the latest visible mid so the current price sits
-    // in the middle and the book has symmetric room above and below.
-    let pr = priceRange(data.points, data.trades, startT, endT, tickSize);
-    const sr = spreadRange(data.points, startT, endT, tickSize);
-    if (centered && pr) {
-        const ref = data.points[Math.max(0, lowerBoundT(data.points, endT) - 1)];
-        if (ref) pr = centerRange(pr, (ref.bid + ref.ask) / 2);
-    }
+    const F = makeFrame(L, data, view, tickSize, centered, visible);
 
-    drawTimeGrid(ctx, L, startT, endT, xFor);
-    drawMain(ctx, L, data, startT, endT, xFor, tickSize, pr);
-    if (visible.book) drawBook(ctx, L, book, pr, tickSize);
-    if (visible.spread) drawSpread(ctx, L, data, startT, endT, xFor, tickSize, sr);
-    if (visible.volume) drawVolume(ctx, L, data, startT, endT, xFor);
-    drawLegend(ctx, L, data, view, startT, hover, tickSize, pr, sr, visible);
-    if (hover) drawCrosshair(ctx, L, view, startT, hover, tickSize, pr);
+    drawTimeGrid(ctx, F);
+    drawMain(ctx, F);
+    if (visible.book) drawBook(ctx, F, book);
+    if (visible.spread) drawSpread(ctx, F);
+    if (visible.volume) drawVolume(ctx, F);
+    drawLegend(ctx, F, hover);
+    if (hover) drawCrosshair(ctx, F, hover);
 };
