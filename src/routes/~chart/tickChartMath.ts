@@ -19,6 +19,8 @@ export const SPAN_MAX = 30 * 60_000;
 export const SPAN_DEFAULT = 60_000;
 
 const PRICE_PAD = 0.06; // headroom above/below the price extent so lines don't touch edges
+const MIN_PRICE_SPAN_TICKS = 64; // keeps a one-tick spread from filling the price pane
+const MIN_PRICE_SPAN_RATIO = 0.001; // keeps sparse order-book ladders visible on high-priced symbols
 
 export const clampSpan = (span: number) => Math.max(SPAN_MIN, Math.min(SPAN_MAX, span));
 
@@ -44,7 +46,13 @@ export const lowerBoundT = (arr: { t: number }[], t: number): number => {
 
 // Min/max price across the visible window, including the one point straddling the
 // left edge (its value holds into view) plus any trades. `null` when nothing visible.
-export const priceRange = (points: TickPoint[], trades: TradeMark[], t0: number, t1: number): Range | null => {
+export const priceRange = (
+    points: TickPoint[],
+    trades: TradeMark[],
+    t0: number,
+    t1: number,
+    tickSize: number,
+): Range | null => {
     let lo = Infinity;
     let hi = -Infinity;
 
@@ -62,12 +70,22 @@ export const priceRange = (points: TickPoint[], trades: TradeMark[], t0: number,
     }
 
     if (lo === Infinity) return null;
+    const mid = (lo + hi) / 2;
+    const minSpan = Math.max(tickSize > 0 ? tickSize * MIN_PRICE_SPAN_TICKS : 0, Math.abs(mid) * MIN_PRICE_SPAN_RATIO);
     if (lo === hi) {
-        const pad = lo === 0 ? 1 : Math.abs(lo) * 0.001;
-        return { hi: hi + pad, lo: lo - pad };
+        const fallbackPad = lo === 0 ? 1 : Math.abs(lo) * 0.001;
+        const halfSpan = minSpan > 0 ? minSpan / 2 : fallbackPad;
+        return { hi: mid + halfSpan, lo: mid - halfSpan };
     }
     const pad = (hi - lo) * PRICE_PAD;
-    return { hi: hi + pad, lo: lo - pad };
+    let paddedLo = lo - pad;
+    let paddedHi = hi + pad;
+    if (minSpan > 0 && paddedHi - paddedLo < minSpan) {
+        const halfSpan = minSpan / 2;
+        paddedLo = mid - halfSpan;
+        paddedHi = mid + halfSpan;
+    }
+    return { hi: paddedHi, lo: paddedLo };
 };
 
 // Re-center a range on `c`, growing the smaller half to match the larger so the
@@ -77,17 +95,31 @@ export const centerRange = (r: Range, c: number): Range => {
     return { hi: c + half, lo: c - half };
 };
 
-// Spread (ask - bid) extent, floored at 0 so the baseline is always zero.
-export const spreadRange = (points: TickPoint[], t0: number, t1: number): Range | null => {
+export const normalizeSpread = (spread: number, tickSize: number): number => {
+    if (!(tickSize > 0)) return spread;
+    return Math.max(tickSize, Math.round(spread / tickSize) * tickSize);
+};
+
+// Spread (ask - bid) extent. The floor is the minimum price tick when known, so
+// a constant one-tick spread reads as the bottom of the spread panel, not the top.
+export const spreadRange = (points: TickPoint[], t0: number, t1: number, tickSize: number): Range | null => {
+    let lo = Infinity;
     let hi = -Infinity;
     for (let i = Math.max(0, lowerBoundT(points, t0) - 1); i < points.length; i++) {
         const p = points[i];
         if (p.t > t1) break;
-        const s = p.ask - p.bid;
+        const s = normalizeSpread(p.ask - p.bid, tickSize);
+        if (s > 0 && s < lo) lo = s;
         if (s > hi) hi = s;
     }
     if (hi === -Infinity) return null;
-    return { hi: hi <= 0 ? 1 : hi * 1.1, lo: 0 };
+    const floor = tickSize > 0 ? tickSize : lo === Infinity ? 0 : lo;
+    if (hi <= floor) {
+        const span = floor > 0 ? floor : 1;
+        return { hi: floor + span, lo: floor };
+    }
+    const pad = (hi - floor) * 0.1;
+    return { hi: hi + pad, lo: floor };
 };
 
 // Largest trade notional (USD) in the window, for scaling the volume bars.

@@ -24,6 +24,7 @@ import {
     maxVolume,
     niceBucket,
     niceTicks,
+    normalizeSpread,
     priceRange,
     spreadRange,
 } from './tickChartMath';
@@ -196,6 +197,33 @@ const drawAxisLabel = (ctx: CanvasRenderingContext2D, L: Layout, y: number, text
     ctx.textBaseline = 'middle';
     ctx.fillStyle = color;
     ctx.fillText(text, L.axisLeft + 4, y);
+};
+
+const drawSubAxisLabels = (
+    ctx: CanvasRenderingContext2D,
+    L: Layout,
+    top: number,
+    height: number,
+    lo: number,
+    hi: number,
+    formatValue: (v: number) => string,
+) => {
+    const span = hi - lo;
+    if (!(span > 0) || height <= 0) return;
+
+    const yFor = (v: number) => top + (1 - (v - lo) / span) * height;
+    const values = [hi, ...niceTicks(lo, hi, 4).filter((v) => v > lo && v < hi), lo].sort((a, b) => b - a);
+    const drawnY: number[] = [];
+    const drawnText = new Set<string>();
+
+    for (const value of values) {
+        const y = Math.max(top + 6, Math.min(top + height - 7, yFor(value)));
+        const text = formatValue(value);
+        if (drawnText.has(text) || drawnY.some((drawn) => Math.abs(drawn - y) < 13)) continue;
+        drawnText.add(text);
+        drawnY.push(y);
+        drawAxisLabel(ctx, L, y, text, palette.fgDim);
+    }
 };
 
 // Filled chip in the right gutter — used for current bid/ask and the crosshair readout.
@@ -441,12 +469,23 @@ const drawSpread = (
     const yFor: Scale = (v) => L.spreadTop + (1 - (v - sr.lo) / span) * L.spreadH;
     const dec = decimalsForRange(sr.hi, tickSize) + 1;
 
-    strokeStep(ctx, data.points, (p) => p.ask - p.bid, yFor, xFor, L.padL, startT, endT, palette.heatLo, 1.1);
+    strokeStep(
+        ctx,
+        data.points,
+        (p) => normalizeSpread(p.ask - p.bid, tickSize),
+        yFor,
+        xFor,
+        L.padL,
+        startT,
+        endT,
+        palette.heatLo,
+        1.1,
+    );
 
-    drawAxisLabel(ctx, L, L.spreadTop + 6, formatPrice(sr.hi, dec), palette.fgDim);
+    drawSubAxisLabels(ctx, L, L.spreadTop, L.spreadH, sr.lo, sr.hi, (v) => formatPrice(v, dec));
     const cur = data.points[data.points.length - 1];
     if (cur) {
-        const v = cur.ask - cur.bid;
+        const v = normalizeSpread(cur.ask - cur.bid, tickSize);
         const y = Math.max(L.spreadTop + 7, Math.min(L.spreadTop + L.spreadH - 7, yFor(v)));
         drawTag(ctx, L, y, formatPrice(v, dec), palette.heatLo);
     }
@@ -470,7 +509,7 @@ const drawVolume = (
         const usd = tr.size * tr.price;
         ctx.fillRect(xFor(tr.t) - 0.75, baseY - (usd / mv) * L.volH, 1.5, (usd / mv) * L.volH);
     }
-    drawAxisLabel(ctx, L, L.volTop + 6, fmtVol(mv), palette.fgDim);
+    drawSubAxisLabels(ctx, L, L.volTop, L.volH, 0, mv, fmtVol);
 };
 
 const drawCrosshair = (
@@ -560,8 +599,8 @@ export const renderTickChart = (
     // the legend and the crosshair all read the same ranges. In centered mode the
     // price range is re-centered on the latest visible mid so the current price sits
     // in the middle and the book has symmetric room above and below.
-    let pr = priceRange(data.points, data.trades, startT, endT);
-    const sr = spreadRange(data.points, startT, endT);
+    let pr = priceRange(data.points, data.trades, startT, endT, tickSize);
+    const sr = spreadRange(data.points, startT, endT, tickSize);
     if (centered && pr) {
         const ref = data.points[Math.max(0, lowerBoundT(data.points, endT) - 1)];
         if (ref) pr = centerRange(pr, (ref.bid + ref.ask) / 2);
