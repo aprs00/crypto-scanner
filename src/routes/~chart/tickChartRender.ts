@@ -6,30 +6,56 @@
 
 import { format } from 'date-fns';
 
+import type { DepthState } from '@/services/exchanges/types';
+
 import { TERMINAL_FONT, palette, withAlpha } from '@/lib/theme';
 import { groupOrders } from '@/services/exchanges/_shared/grouping';
+import { DepthFeedStatus } from '@/services/exchanges/types';
 import { formatNumber, formatPrice } from '@/utils/number';
 
+import type { LiquidityTimeline } from './liquidityModel';
 import type { LocalOrderBook, OrderBookLevel, SeriesVisibility } from './types';
+import type { LiquidityPreferences } from './useChartSeriesStore';
 
 import {
+    type LiquidityViewport,
+    type LiquidityRenderCache,
+    drawLiquidity,
+    drawLiquidityTooltip,
+} from './liquidityRender';
+import {
+    type PriceView,
     type Range,
     type TickPoint,
     type TickView,
     type TradeMark,
     type TickWindow,
-    centerRange,
+    PriceViewMode,
     decimalsForRange,
     fmtSpan,
-    lowerBoundT,
     niceBucket,
     niceTicks,
     normalizeSpread,
+    priceRangeAround,
+    priceRangeFromExtent,
     tickWindow,
+    upperBoundT,
 } from './tickChartMath';
 
 export type TickData = { points: TickPoint[]; trades: TradeMark[] };
 export type Hover = { x: number; y: number } | null;
+
+export type TickChartInteractionFrame = {
+    axisLeft: number;
+    bottomY: number;
+    mainBottom: number;
+    mainTop: number;
+    plotLeft: number;
+    plotRight: number;
+    priceBodyRight: number;
+    priceRange: Range | null;
+    width: number;
+};
 
 type Layout = {
     axisLeft: number;
@@ -51,9 +77,13 @@ type Layout = {
 
 type RenderFrame = {
     data: TickData;
+    depthStatus: DepthState['status'];
     endT: number;
+    follow: boolean;
     L: Layout;
+    liquidityStatus: DepthState['status'];
     priceDec: number;
+    priceMode: PriceView['mode'];
     priceRange: Range | null;
     spanMs: number;
     spreadDec: number;
@@ -149,24 +179,49 @@ const makeFrame = (
     data: TickData,
     view: TickView,
     tickSize: number,
-    centered: boolean,
+    priceView: PriceView,
     visible: SeriesVisibility,
+    depth: DepthState,
+    liquidity: LiquidityTimeline,
 ): RenderFrame => {
     const startT = view.endT - view.spanMs;
     const endT = view.endT;
     const window = tickWindow(data.points, data.trades, startT, endT, tickSize);
     let priceRangeForFrame = window.priceRange;
     const latestVisiblePoint = data.points[window.pointEnd - 1];
+    let fallbackMidpoint: number | null = null;
 
-    if (centered && priceRangeForFrame && latestVisiblePoint) {
-        priceRangeForFrame = centerRange(priceRangeForFrame, (latestVisiblePoint.bid + latestVisiblePoint.ask) / 2);
+    if (depth.status === DepthFeedStatus.Healthy) {
+        const bid = depth.book.bids.find(([price, quantity]) => price > 0 && quantity > 0)?.[0];
+        const ask = depth.book.asks.find(([price, quantity]) => price > 0 && quantity > 0)?.[0];
+        if (bid && ask && ask > bid) {
+            fallbackMidpoint = (bid + ask) / 2;
+            if (!priceRangeForFrame) priceRangeForFrame = priceRangeFromExtent({ hi: ask, lo: bid }, tickSize);
+        }
+    }
+    if (!priceRangeForFrame && visible.liquidity) {
+        priceRangeForFrame = priceRangeFromExtent(liquidity.visiblePriceExtent(startT, endT), tickSize);
+    }
+
+    if (priceView.mode === PriceViewMode.Manual) {
+        priceRangeForFrame = priceView.range;
+    } else if (priceView.mode === PriceViewMode.Centered && priceRangeForFrame) {
+        const midpoint = latestVisiblePoint ? (latestVisiblePoint.bid + latestVisiblePoint.ask) / 2 : fallbackMidpoint;
+        if (midpoint != null) {
+            const span = priceView.span ?? priceRangeForFrame.hi - priceRangeForFrame.lo;
+            priceRangeForFrame = priceRangeAround(midpoint, span, tickSize);
+        }
     }
 
     return {
         data,
+        depthStatus: depth.status,
         endT,
+        follow: view.follow,
         L,
+        liquidityStatus: liquidity.status,
         priceDec: decimalsForRange(priceRangeForFrame ? priceRangeForFrame.hi - priceRangeForFrame.lo : 1, tickSize),
+        priceMode: priceView.mode,
         priceRange: priceRangeForFrame,
         spanMs: view.spanMs,
         spreadDec: decimalsForRange(window.spreadRange ? window.spreadRange.hi : 1, tickSize) + 1,
@@ -178,6 +233,18 @@ const makeFrame = (
         xFor: (t) => L.padL + ((t - startT) / view.spanMs) * L.plotW,
     };
 };
+
+const interactionFrame = (L: Layout, priceRange: Range | null): TickChartInteractionFrame => ({
+    axisLeft: L.axisLeft,
+    bottomY: L.bottomY,
+    mainBottom: L.mainTop + L.mainH,
+    mainTop: L.mainTop,
+    plotLeft: L.padL,
+    plotRight: L.padL + L.plotW,
+    priceBodyRight: L.axisLeft,
+    priceRange,
+    width: L.w,
+});
 
 const timeAtX = (F: RenderFrame, x: number) => F.startT + ((x - F.L.padL) / F.L.plotW) * F.spanMs;
 
@@ -315,11 +382,10 @@ const drawLegend = (ctx: CanvasRenderingContext2D, F: RenderFrame, hover: Hover)
     let trade: TradeMark | null = null;
     if (hover && hover.x >= L.padL && hover.x <= plotRight) {
         const t = timeAtX(F, hover.x);
-        point = data.points[Math.max(0, lowerBoundT(data.points, t) - 1)] ?? null;
-        const j = lowerBoundT(data.trades, t);
-        const before = data.trades[j - 1];
-        const after = data.trades[j];
-        trade = before && after ? (t - before.t <= after.t - t ? before : after) : (after ?? before ?? null);
+        const pointIndex = upperBoundT(data.points, t) - 1;
+        point = pointIndex >= 0 ? data.points[pointIndex] : null;
+        const tradeIndex = upperBoundT(data.trades, t) - 1;
+        trade = tradeIndex >= 0 ? data.trades[tradeIndex] : null;
     }
 
     const row = (top: number, caption: string, values: LegendSeg[]) => {
@@ -339,8 +405,33 @@ const drawLegend = (ctx: CanvasRenderingContext2D, F: RenderFrame, hover: Hover)
         }
     };
 
+    const freshness = visible.liquidity
+        ? { label: 'LIQ', status: F.liquidityStatus }
+        : visible.book
+          ? { label: 'BOOK', status: F.depthStatus }
+          : null;
+    const freshnessSegment = freshness
+        ? {
+              color:
+                  freshness.status === DepthFeedStatus.Healthy
+                      ? palette.heatLo
+                      : freshness.status === DepthFeedStatus.Stale
+                        ? palette.down
+                        : palette.ac,
+              text: `${freshness.label} ${
+                  freshness.status === DepthFeedStatus.Healthy
+                      ? 'LIVE'
+                      : freshness.status === DepthFeedStatus.Stale
+                        ? 'STALE'
+                        : 'SYNC'
+              }`,
+          }
+        : null;
+
     row(L.mainTop, 'TICKS', [
         { color: palette.fgDim, text: fmtSpan(F.spanMs) },
+        ...(F.priceMode === PriceViewMode.Manual ? [{ color: palette.ac, text: 'Y FREE' }] : []),
+        ...(freshnessSegment ? [freshnessSegment] : []),
         ...(point
             ? [
                   { color: palette.up, text: `bid ${formatPrice(point.bid, F.priceDec)}` },
@@ -388,7 +479,9 @@ const drawMain = (ctx: CanvasRenderingContext2D, F: RenderFrame) => {
     if (!pr) return;
     const span = pr.hi - pr.lo || 1;
     const yFor: Scale = (v) => L.mainTop + (1 - (v - pr.lo) / span) * L.mainH;
-    const clampY = (y: number) => Math.max(L.mainTop + 7, Math.min(L.mainTop + L.mainH - 7, y));
+    const tagTop = L.mainTop + 7;
+    const tagBottom = L.mainTop + L.mainH - 7;
+    const clampY = (y: number) => Math.max(tagTop, Math.min(tagBottom, y));
 
     for (const tick of niceTicks(pr.lo, pr.hi)) {
         const y = yFor(tick);
@@ -401,6 +494,12 @@ const drawMain = (ctx: CanvasRenderingContext2D, F: RenderFrame) => {
         drawAxisLabel(ctx, L, y, formatPrice(tick, F.priceDec), palette.fgDim);
     }
 
+    // Manual ranges may put the market entirely above or below the viewport.
+    // Clip price-series geometry so it cannot bleed into spread/volume panes.
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(L.padL, L.mainTop, L.plotW, L.mainH);
+    ctx.clip();
     fillSpreadBand(ctx, F, yFor, withAlpha(palette.ac, 0.05));
     strokeStep(ctx, F, (p) => p.bid, yFor, palette.up, 1.25);
     strokeStep(ctx, F, (p) => p.ask, yFor, palette.down, 1.25);
@@ -417,11 +516,25 @@ const drawMain = (ctx: CanvasRenderingContext2D, F: RenderFrame) => {
         ctx.fill();
         ctx.stroke();
     }
+    ctx.restore();
 
-    const cur = data.points[data.points.length - 1];
+    const cur = data.points[F.window.pointEnd - 1];
     if (cur) {
-        drawTag(ctx, L, clampY(yFor(cur.ask)), formatPrice(cur.ask, F.priceDec), palette.down);
-        drawTag(ctx, L, clampY(yFor(cur.bid)), formatPrice(cur.bid, F.priceDec), palette.up);
+        let askY = clampY(yFor(cur.ask));
+        let bidY = clampY(yFor(cur.bid));
+        if (Math.abs(askY - bidY) < 14) {
+            if ((askY + bidY) / 2 < L.mainTop + L.mainH / 2) {
+                askY = tagTop;
+                bidY = Math.min(tagBottom, tagTop + 14);
+            } else {
+                askY = Math.max(tagTop, tagBottom - 14);
+                bidY = tagBottom;
+            }
+        }
+        const priceText = (price: number) =>
+            `${price > pr.hi ? '↑' : price < pr.lo ? '↓' : ''}${formatPrice(price, F.priceDec)}`;
+        drawTag(ctx, L, askY, priceText(cur.ask), palette.down);
+        drawTag(ctx, L, bidY, priceText(cur.bid), palette.up);
     }
 };
 
@@ -473,7 +586,7 @@ const drawSpread = (ctx: CanvasRenderingContext2D, F: RenderFrame) => {
     strokeStep(ctx, F, (p) => normalizeSpread(p.ask - p.bid, tickSize), yFor, palette.heatLo, 1.1);
 
     drawSubAxisLabels(ctx, L, L.spreadTop, L.spreadH, sr.lo, sr.hi, (v) => formatPrice(v, F.spreadDec));
-    const cur = data.points[data.points.length - 1];
+    const cur = data.points[F.window.pointEnd - 1];
     if (cur) {
         const v = normalizeSpread(cur.ask - cur.bid, tickSize);
         const y = Math.max(L.spreadTop + 7, Math.min(L.spreadTop + L.spreadH - 7, yFor(v)));
@@ -548,32 +661,67 @@ export const renderTickChart = (
     size: { w: number; h: number },
     tickSize: number,
     hover: Hover,
-    book: LocalOrderBook,
-    centered: boolean,
+    depth: DepthState,
+    liquidity: LiquidityTimeline,
+    liquidityPreferences: LiquidityPreferences,
+    liquidityCache: LiquidityRenderCache,
+    priceView: PriceView,
     visible: SeriesVisibility,
-) => {
+): TickChartInteractionFrame | null => {
     const L = computeLayout(size.w, size.h, visible);
     ctx.clearRect(0, 0, size.w, size.h);
-    if (L.plotW <= 0 || L.mainH <= 0) return;
+    if (L.plotW <= 0 || L.mainH <= 0) return null;
 
-    drawFrame(ctx, L, visible);
-
-    if (data.points.length === 0) {
+    const F = makeFrame(L, data, view, tickSize, priceView, visible, depth, liquidity);
+    const interaction = interactionFrame(L, F.priceRange);
+    if (!F.priceRange) {
+        drawFrame(ctx, L, visible);
+        const status = visible.liquidity ? liquidity.status : visible.book ? depth.status : null;
+        const waitingText =
+            status === DepthFeedStatus.Stale
+                ? 'market depth stale — reconnecting…'
+                : status === DepthFeedStatus.Syncing
+                  ? 'synchronizing market depth…'
+                  : 'waiting for data…';
         ctx.font = fontPx(11);
         ctx.fillStyle = palette.fgDim;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('waiting for data…', L.padL + L.plotW / 2, L.mainTop + L.mainH / 2);
-        return;
+        ctx.fillText(waitingText, L.padL + L.plotW / 2, L.mainTop + L.mainH / 2);
+        return interaction;
     }
 
-    const F = makeFrame(L, data, view, tickSize, centered, visible);
+    let preparedLiquidity = null;
+    let liquidityViewport: LiquidityViewport | null = null;
+    if (visible.liquidity) {
+        liquidityViewport = {
+            endT: F.endT,
+            follow: F.follow,
+            mainH: L.mainH,
+            mainTop: L.mainTop,
+            plotLeft: L.padL,
+            plotW: L.plotW,
+            priceDec: F.priceDec,
+            priceHi: F.priceRange.hi,
+            priceLo: F.priceRange.lo,
+            spanMs: F.spanMs,
+            startT: F.startT,
+            tickSize: F.tickSize,
+        };
+        preparedLiquidity = liquidityCache.get(liquidity, liquidityViewport, liquidityPreferences);
+        drawLiquidity(ctx, preparedLiquidity, liquidityViewport);
+    }
 
+    drawFrame(ctx, L, visible);
     drawTimeGrid(ctx, F);
     drawMain(ctx, F);
-    if (visible.book) drawBook(ctx, F, book);
+    if (visible.book && depth.status === DepthFeedStatus.Healthy) drawBook(ctx, F, depth.book);
     if (visible.spread) drawSpread(ctx, F);
     if (visible.volume) drawVolume(ctx, F);
     drawLegend(ctx, F, hover);
     if (hover) drawCrosshair(ctx, F, hover);
+    if (hover && preparedLiquidity && liquidityViewport) {
+        drawLiquidityTooltip(ctx, preparedLiquidity, liquidityViewport, hover);
+    }
+    return interaction;
 };

@@ -12,6 +12,9 @@ export interface BookSyncerConfig<TDiff, TSnap> {
     // Fires when the caller must drop the upstream WS subscription and restart
     // (the only way to recover from a sequence gap on a multiplexed feed).
     onGap: () => void;
+    // Fires immediately when published state is no longer trustworthy. Recovery
+    // may remain delayed to avoid a retry storm, but consumers stop holding data.
+    onInvalid?: () => void;
     resyncDelayMs?: number;
 }
 
@@ -33,12 +36,16 @@ class BookSyncer<TDiff, TSnap> {
     // resolved snapshot fetch from a previous generation are ignored.
     private generation = 0;
     private resyncScheduled = false;
+    private resyncTimer: ReturnType<typeof setTimeout> | null = null;
+    private snapshotRetryTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(cfg: BookSyncerConfig<TDiff, TSnap>) {
         this.cfg = cfg;
     }
 
     onConnect(): void {
+        this.clearResync();
+        this.clearSnapshotRetry();
         this.generation++;
         this.buffer = [];
         this.synced = false;
@@ -49,6 +56,8 @@ class BookSyncer<TDiff, TSnap> {
     }
 
     onDisconnect(): void {
+        this.clearResync();
+        this.clearSnapshotRetry();
         // Invalidate any in-flight snapshot fetch and incoming messages.
         this.generation++;
         this.buffer = [];
@@ -82,6 +91,10 @@ class BookSyncer<TDiff, TSnap> {
 
     private syncFromSnapshot(snapshot: TSnap, generation: number): void {
         const snapSeq = this.cfg.snapSequence(snapshot);
+        if (!Number.isSafeInteger(snapSeq) || snapSeq < 0) {
+            this.failSync();
+            return;
+        }
         // Keep only buffered diffs that include updates newer than the snapshot.
         const events = this.buffer.filter((event) => this.cfg.diffSequence(event).to > snapSeq);
 
@@ -89,7 +102,9 @@ class BookSyncer<TDiff, TSnap> {
         // (from <= snapSeq + 1 <= to). If it starts after that, the snapshot
         // predates our buffer — refetch a fresher one.
         if (events.length > 0 && this.cfg.diffSequence(events[0]).from > snapSeq + 1) {
-            setTimeout(() => {
+            this.clearSnapshotRetry();
+            this.snapshotRetryTimer = setTimeout(() => {
+                this.snapshotRetryTimer = null;
                 if (generation === this.generation) void this.fetchSnapshot(generation);
             }, this.cfg.resyncDelayMs ?? DEFAULT_RESYNC_DELAY_MS);
             return;
@@ -97,7 +112,19 @@ class BookSyncer<TDiff, TSnap> {
 
         this.cfg.loadSnapshot(snapshot, this.bids, this.asks);
         this.lastUpdateId = snapSeq;
-        for (const event of events) this.applyDiffEvent(event);
+        for (const event of events) {
+            const { from, to } = this.cfg.diffSequence(event);
+            if (!Number.isSafeInteger(from) || !Number.isSafeInteger(to) || from > to) {
+                this.failSync();
+                return;
+            }
+            if (to <= this.lastUpdateId) continue;
+            if (from > this.lastUpdateId + 1 || to < this.lastUpdateId + 1) {
+                this.failSync();
+                return;
+            }
+            this.applyDiffEvent(event);
+        }
 
         this.buffer = [];
         this.synced = true;
@@ -106,11 +133,15 @@ class BookSyncer<TDiff, TSnap> {
 
     private applyLive(diff: TDiff): void {
         const { from, to } = this.cfg.diffSequence(diff);
+        if (!Number.isSafeInteger(from) || !Number.isSafeInteger(to) || from > to) {
+            this.failSync();
+            return;
+        }
         if (to <= this.lastUpdateId) return; // already covered
-        if (from > this.lastUpdateId + 1) {
+        if (from > this.lastUpdateId + 1 || to < this.lastUpdateId + 1) {
             // Sequence gap — a diff was missed and applying out-of-order data
             // makes top-of-book jump. Discard and ask the caller to resync.
-            this.scheduleGap();
+            this.failSync();
             return;
         }
         this.applyDiffEvent(diff);
@@ -123,10 +154,15 @@ class BookSyncer<TDiff, TSnap> {
     }
 
     private emit(): void {
+        const asks = [...this.asks].sort((a, b) => a[0] - b[0]);
+        const bids = [...this.bids].sort((a, b) => b[0] - a[0]);
+        if (!asks.length || !bids.length || asks[0][0] <= bids[0][0]) {
+            this.failSync();
+            return;
+        }
         const book: LocalOrderBook = {
-            asks: [...this.asks].sort((a, b) => a[0] - b[0]),
-            bids: [...this.bids].sort((a, b) => b[0] - a[0]),
-            lastUpdateId: this.lastUpdateId,
+            asks,
+            bids,
         };
         this.cfg.onChange(book);
     }
@@ -134,10 +170,31 @@ class BookSyncer<TDiff, TSnap> {
     private scheduleGap(): void {
         if (this.resyncScheduled) return; // collapse bursts of gaps into one
         this.resyncScheduled = true;
-        setTimeout(() => {
+        this.cfg.onInvalid?.();
+        this.resyncTimer = setTimeout(() => {
+            this.resyncTimer = null;
             this.resyncScheduled = false;
             this.cfg.onGap();
         }, this.cfg.resyncDelayMs ?? DEFAULT_RESYNC_DELAY_MS);
+    }
+
+    private failSync(): void {
+        if (!this.synced && this.resyncScheduled) return;
+        this.synced = false;
+        this.snapshotPending = true;
+        this.buffer = [];
+        this.scheduleGap();
+    }
+
+    private clearResync(): void {
+        if (this.resyncTimer) clearTimeout(this.resyncTimer);
+        this.resyncTimer = null;
+        this.resyncScheduled = false;
+    }
+
+    private clearSnapshotRetry(): void {
+        if (this.snapshotRetryTimer) clearTimeout(this.snapshotRetryTimer);
+        this.snapshotRetryTimer = null;
     }
 }
 
@@ -145,6 +202,7 @@ export const applyLevelDeltas = (side: Map<number, number>, levels: [string, str
     for (const [priceStr, qtyStr] of levels) {
         const price = +priceStr;
         const qty = +qtyStr;
+        if (!Number.isFinite(price) || !Number.isFinite(qty) || price <= 0 || qty < 0) continue;
         if (qty === 0) side.delete(price);
         else side.set(price, qty);
     }

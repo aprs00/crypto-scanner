@@ -1,8 +1,9 @@
 import type { LocalOrderBook, OrderBookLevel } from '@/routes/~chart/types';
 
-import type { BboSubscriber, NormalizedTrade, OrderBookSubscriber, TradeSubscriber } from '../types';
+import type { BboSubscriber, DepthState, DepthSubscriber, NormalizedTrade, TradeSubscriber } from '../types';
 
-import MultiplexedSocket from '../_shared/multiplexed-socket';
+import MultiplexedSocket, { SocketStatus } from '../_shared/multiplexed-socket';
+import { DepthFeedStatus } from '../types';
 
 const WS_URL = 'wss://api.hyperliquid.xyz/ws';
 const PING_INTERVAL_MS = 30_000; // server drops idle sockets ~60s
@@ -20,7 +21,17 @@ type HlBook = { coin: string; time: number; levels: [HlLevel[], HlLevel[]] };
 type HlBbo = { coin: string; time: number; bbo: [HlLevel | null, HlLevel | null] };
 type HlTrade = { coin: string; side: string; px: string; sz: string; time: number; tid: number };
 
-const toLevels = (levels: HlLevel[]): OrderBookLevel[] => levels.map((level) => [+level.px, +level.sz]);
+const toLevels = (levels: HlLevel[]): OrderBookLevel[] => {
+    const parsed: OrderBookLevel[] = [];
+    for (const level of levels) {
+        const price = +level.px;
+        const quantity = +level.sz;
+        if (Number.isFinite(price) && Number.isFinite(quantity) && price > 0 && quantity > 0) {
+            parsed.push([price, quantity]);
+        }
+    }
+    return parsed;
+};
 
 // fast & slow l2Book share channel + coin; only `fast` tells them apart, so it has
 // to be part of the routing key.
@@ -52,7 +63,6 @@ const socket = new MultiplexedSocket<HlSub>({
 const toLocal = (book: HlBook): LocalOrderBook => ({
     asks: toLevels(book.levels[1]),
     bids: toLevels(book.levels[0]),
-    lastUpdateId: book.time,
 });
 
 // Merge HL's two l2Book feeds: fast (~5 levels, ~2/s) stays authoritative near the
@@ -70,31 +80,104 @@ const mergeBooks = (fast: HlBook | null, slow: HlBook | null): LocalOrderBook | 
     return {
         asks: [...fastAsks, ...toLevels(slow.levels[1]).filter(([px]) => px > askCeil)],
         bids: [...fastBids, ...toLevels(slow.levels[0]).filter(([px]) => px < bidFloor)],
-        lastUpdateId: Math.max(fast.time, slow.time),
     };
 };
 
-export const subscribeOrderBook = (symbol: string, cb: OrderBookSubscriber): (() => void) => {
-    let fast: HlBook | null = null;
-    let slow: HlBook | null = null;
-    const emit = () => {
-        const merged = mergeBooks(fast, slow);
-        if (merged) cb(merged);
+const orderBookStreams = new Map<string, HyperliquidOrderBookStream>();
+
+class HyperliquidOrderBookStream {
+    private readonly symbol: string;
+    private readonly subscribers = new Set<DepthSubscriber>();
+    private fast: HlBook | null = null;
+    private slow: HlBook | null = null;
+    private offFast: (() => void) | null = null;
+    private offSlow: (() => void) | null = null;
+    private offStatus: (() => void) | null = null;
+    private state: DepthState = {
+        book: { asks: [], bids: [] },
+        status: DepthFeedStatus.Syncing,
     };
 
-    const offFast = socket.subscribe<HlBook>({ coin: symbol, fast: true, type: HlChannel.L2Book }, (book) => {
-        fast = book;
-        emit();
-    });
-    const offSlow = socket.subscribe<HlBook>({ coin: symbol, type: HlChannel.L2Book }, (book) => {
-        slow = book;
-        emit();
-    });
+    constructor(symbol: string) {
+        this.symbol = symbol;
+    }
 
-    return () => {
-        offFast();
-        offSlow();
-    };
+    subscribe(cb: DepthSubscriber): () => void {
+        this.subscribers.add(cb);
+        cb(this.state);
+        if (this.subscribers.size === 1) this.start();
+        return () => {
+            this.subscribers.delete(cb);
+            if (this.subscribers.size === 0) this.stop();
+        };
+    }
+
+    private start(): void {
+        this.offFast = socket.subscribe<HlBook>({ coin: this.symbol, fast: true, type: HlChannel.L2Book }, (book) => {
+            this.fast = book;
+            this.emit();
+        });
+        this.offSlow = socket.subscribe<HlBook>({ coin: this.symbol, type: HlChannel.L2Book }, (book) => {
+            this.slow = book;
+            this.emit();
+        });
+        this.offStatus = socket.subscribeStatus((status) => this.onSocketStatus(status));
+    }
+
+    private stop(): void {
+        this.offStatus?.();
+        this.offFast?.();
+        this.offSlow?.();
+        this.offStatus = null;
+        this.offFast = null;
+        this.offSlow = null;
+        this.fast = null;
+        this.slow = null;
+        orderBookStreams.delete(this.symbol);
+    }
+
+    private onSocketStatus(status: SocketStatus): void {
+        if (status === SocketStatus.Open) {
+            this.fast = null;
+            this.slow = null;
+            this.publish(DepthFeedStatus.Syncing);
+            return;
+        }
+        this.publish(status === SocketStatus.Closed ? DepthFeedStatus.Stale : DepthFeedStatus.Syncing);
+    }
+
+    private emit(): void {
+        // Both are complete snapshots. Waiting for both avoids presenting the
+        // fast five-level projection as though it were the full available book.
+        if (!this.fast || !this.slow) return;
+        const merged = mergeBooks(this.fast, this.slow);
+        if (
+            !merged ||
+            !merged.asks.length ||
+            !merged.bids.length ||
+            !Number.isFinite(merged.asks[0][0]) ||
+            !Number.isFinite(merged.bids[0][0]) ||
+            merged.asks[0][0] <= merged.bids[0][0]
+        ) {
+            this.publish(DepthFeedStatus.Syncing);
+            return;
+        }
+        this.publish(DepthFeedStatus.Healthy, merged);
+    }
+
+    private publish(status: DepthState['status'], book = this.state.book): void {
+        this.state = { book, status };
+        for (const cb of this.subscribers) cb(this.state);
+    }
+}
+
+export const subscribeDepth = (symbol: string, cb: DepthSubscriber): (() => void) => {
+    let stream = orderBookStreams.get(symbol);
+    if (!stream) {
+        stream = new HyperliquidOrderBookStream(symbol);
+        orderBookStreams.set(symbol, stream);
+    }
+    return stream.subscribe(cb);
 };
 
 // Real-time best bid/offer: pushed whenever the BBO changes on a block — far

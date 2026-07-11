@@ -13,6 +13,21 @@ export type TickView = { spanMs: number; endT: number; follow: boolean };
 
 export type Range = { lo: number; hi: number };
 
+export const PriceViewMode = {
+    Auto: 'auto',
+    Centered: 'centered',
+    Manual: 'manual',
+} as const;
+
+export type PriceViewMode = (typeof PriceViewMode)[keyof typeof PriceViewMode];
+
+// Auto derives a fresh range from visible data. Centered follows the latest
+// visible midpoint at a fixed span. Manual remains fixed in absolute prices.
+export type PriceView =
+    | { mode: typeof PriceViewMode.Auto }
+    | { mode: typeof PriceViewMode.Centered; span: number | null }
+    | { mode: typeof PriceViewMode.Manual; range: Range };
+
 export type TickWindow = {
     pointEnd: number;
     pointStart: number;
@@ -54,6 +69,19 @@ export const lowerBoundT = (arr: { t: number }[], t: number): number => {
     return lo;
 };
 
+// First index whose `t` is strictly greater than target. Subtracting one selects
+// the state active at target, including the new state at an exact boundary.
+export const upperBoundT = (arr: { t: number }[], t: number): number => {
+    let lo = 0;
+    let hi = arr.length;
+    while (lo < hi) {
+        const mid = (lo + hi) >> 1;
+        if (arr[mid].t <= t) lo = mid + 1;
+        else hi = mid;
+    }
+    return lo;
+};
+
 const paddedPriceRange = (lo: number, hi: number, tickSize: number): Range | null => {
     if (lo === Infinity) return null;
     const mid = (lo + hi) / 2;
@@ -72,6 +100,59 @@ const paddedPriceRange = (lo: number, hi: number, tickSize: number): Range | nul
         paddedHi = mid + halfSpan;
     }
     return { hi: paddedHi, lo: paddedLo };
+};
+
+export const priceRangeFromExtent = (range: Range | null, tickSize: number): Range | null =>
+    range ? paddedPriceRange(range.lo, range.hi, tickSize) : null;
+
+const minimumPriceSpan = (center: number, tickSize: number): number =>
+    Math.max(
+        tickSize > 0 ? tickSize * MIN_PRICE_SPAN_TICKS : 0,
+        Math.abs(center) * MIN_PRICE_SPAN_RATIO,
+        Number.EPSILON,
+    );
+
+// Keep manual ranges numerically valid, above the zero-price floor, and no
+// tighter than the same minimum used by automatic price fitting.
+export const constrainPriceRange = (range: Range, tickSize: number): Range => {
+    if (!Number.isFinite(range.lo) || !Number.isFinite(range.hi) || !(range.hi > range.lo)) return range;
+    const center = (range.lo + range.hi) / 2;
+    const span = Math.max(range.hi - range.lo, minimumPriceSpan(center, tickSize));
+    let lo = center - span / 2;
+    let hi = center + span / 2;
+    if (lo < 0) {
+        hi -= lo;
+        lo = 0;
+    }
+    return { hi, lo };
+};
+
+export const priceRangeAround = (center: number, span: number, tickSize: number): Range =>
+    constrainPriceRange({ hi: center + span / 2, lo: center - span / 2 }, tickSize);
+
+export const priceAtY = (range: Range, y: number, top: number, height: number): number => {
+    if (!(height > 0)) return (range.lo + range.hi) / 2;
+    const fraction = Math.max(0, Math.min(1, (y - top) / height));
+    return range.hi - fraction * (range.hi - range.lo);
+};
+
+// Price content follows the pointer: dragging down raises the visible range,
+// while dragging up reveals lower prices.
+export const panPriceRange = (range: Range, deltaY: number, height: number, tickSize: number): Range => {
+    if (!(height > 0) || !Number.isFinite(deltaY)) return range;
+    const deltaPrice = (deltaY / height) * (range.hi - range.lo);
+    return constrainPriceRange({ hi: range.hi + deltaPrice, lo: range.lo + deltaPrice }, tickSize);
+};
+
+export const zoomPriceRange = (range: Range, anchor: number, factor: number, tickSize: number): Range => {
+    if (!Number.isFinite(anchor) || !Number.isFinite(factor) || !(factor > 0)) return range;
+    return constrainPriceRange(
+        {
+            hi: anchor + (range.hi - anchor) * factor,
+            lo: anchor - (anchor - range.lo) * factor,
+        },
+        tickSize,
+    );
 };
 
 const paddedSpreadRange = (lo: number, hi: number, tickSize: number): Range | null => {
