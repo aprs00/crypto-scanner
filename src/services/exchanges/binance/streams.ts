@@ -1,5 +1,4 @@
 import type {
-    LocalOrderBook,
     OrderBookResponseType,
     StreamAggTradeResponseType,
     StreamTickerResponseType,
@@ -7,10 +6,11 @@ import type {
 
 import { binanceInstance } from '@/lib/api';
 
-import type { BboSubscriber, NormalizedTrade, OrderBookSubscriber, TradeSubscriber } from '../types';
+import type { BboSubscriber, DepthState, DepthSubscriber, NormalizedTrade, TradeSubscriber } from '../types';
 
 import BookSyncer, { applyLevelDeltas } from '../_shared/book-syncer';
-import MultiplexedSocket from '../_shared/multiplexed-socket';
+import MultiplexedSocket, { SocketStatus } from '../_shared/multiplexed-socket';
+import { DepthFeedStatus } from '../types';
 
 const WS_URL = 'wss://stream.binance.com:9443/stream';
 const SNAPSHOT_LIMIT = 5_000;
@@ -39,10 +39,14 @@ const orderBookKey = (symbol: string): string => `${symbol.toLowerCase()}@depth@
 class BinanceOrderBookStream {
     private readonly streamKey: string;
     private readonly snapshotUrl: string;
-    private readonly subscribers = new Set<OrderBookSubscriber>();
+    private readonly subscribers = new Set<DepthSubscriber>();
     private readonly syncer: BookSyncer<StreamTickerResponseType, OrderBookResponseType>;
     private socketUnsub: (() => void) | null = null;
-    private latest: LocalOrderBook | null = null;
+    private socketStatusUnsub: (() => void) | null = null;
+    private state: DepthState = {
+        book: { asks: [], bids: [] },
+        status: DepthFeedStatus.Syncing,
+    };
 
     constructor(symbol: string) {
         const lower = symbol.toLowerCase();
@@ -61,21 +65,21 @@ class BinanceOrderBookStream {
             loadSnapshot: (snap, bids, asks) => {
                 bids.clear();
                 asks.clear();
-                for (const [price, qty] of snap.bids) bids.set(+price, +qty);
-                for (const [price, qty] of snap.asks) asks.set(+price, +qty);
+                applyLevelDeltas(bids, snap.bids);
+                applyLevelDeltas(asks, snap.asks);
             },
             onChange: (book) => {
-                this.latest = book;
-                for (const cb of this.subscribers) cb(book);
+                this.publish(DepthFeedStatus.Healthy, book);
             },
             onGap: () => this.resync(),
+            onInvalid: () => this.publish(DepthFeedStatus.Syncing),
             snapSequence: (s) => s.lastUpdateId,
         });
     }
 
-    subscribe(cb: OrderBookSubscriber): () => void {
+    subscribe(cb: DepthSubscriber): () => void {
         this.subscribers.add(cb);
-        if (this.latest) cb(this.latest);
+        cb(this.state);
         if (this.subscribers.size === 1) this.start();
 
         return () => {
@@ -85,17 +89,22 @@ class BinanceOrderBookStream {
     }
 
     private start(): void {
-        this.syncer.onConnect();
         this.socketUnsub = socket.subscribe<StreamTickerResponseType>(this.streamKey, (diff) =>
             this.syncer.onDiff(diff),
         );
+        this.socketStatusUnsub = socket.subscribeStatus((status) => this.onSocketStatus(status));
     }
 
     private stop(): void {
         this.syncer.onDisconnect();
+        this.socketStatusUnsub?.();
+        this.socketStatusUnsub = null;
         this.socketUnsub?.();
         this.socketUnsub = null;
-        this.latest = null;
+        this.state = {
+            book: { asks: [], bids: [] },
+            status: DepthFeedStatus.Syncing,
+        };
         orderBookStreams.delete(this.streamKey);
     }
 
@@ -103,6 +112,7 @@ class BinanceOrderBookStream {
     // restart the state machine.
     private resync(): void {
         if (this.subscribers.size === 0) return;
+        this.publish(DepthFeedStatus.Syncing);
         this.socketUnsub?.();
         this.syncer.onDisconnect();
         this.syncer.onConnect();
@@ -110,9 +120,24 @@ class BinanceOrderBookStream {
             this.syncer.onDiff(diff),
         );
     }
+
+    private onSocketStatus(status: SocketStatus): void {
+        if (status === SocketStatus.Open) {
+            this.syncer.onConnect();
+            this.publish(DepthFeedStatus.Syncing);
+            return;
+        }
+        this.syncer.onDisconnect();
+        this.publish(status === SocketStatus.Closed ? DepthFeedStatus.Stale : DepthFeedStatus.Syncing);
+    }
+
+    private publish(status: DepthState['status'], book = this.state.book): void {
+        this.state = { book, status };
+        for (const cb of this.subscribers) cb(this.state);
+    }
 }
 
-export const subscribeOrderBook = (symbol: string, cb: OrderBookSubscriber): (() => void) => {
+export const subscribeDepth = (symbol: string, cb: DepthSubscriber): (() => void) => {
     const key = orderBookKey(symbol);
     let stream = orderBookStreams.get(key);
     if (!stream) {

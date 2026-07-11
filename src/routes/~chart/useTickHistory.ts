@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import type { ExchangeId } from '@/services/exchanges/types';
 
+import { receiptTimestamp } from '@/services/exchanges/_shared/observed-clock';
 import { getExchange } from '@/services/exchanges/registry';
 
 import type { TickPoint, TradeMark } from './tickChartMath';
@@ -20,9 +21,12 @@ const trim = <T>(arr: T[], max: number) => {
 // Accumulates a live tick history for the canvas chart. Subscribes directly to the
 // exchange streams (rather than the useOrderBook/useTrades hooks, which would
 // re-render on every message) and writes into a ref, so streaming never re-renders
-// React — the RAF render loop reads the ref each frame.
-const useTickHistory = (exchange: ExchangeId, symbol: string) => {
+// React — the imperative paint loop reads the ref, while onChange only marks its
+// canvas dirty.
+const useTickHistory = (exchange: ExchangeId, symbol: string, onChange?: () => void) => {
     const ref = useRef<TickHistory>({ points: [], trades: [] });
+    const onChangeRef = useRef(onChange);
+    onChangeRef.current = onChange;
 
     useEffect(() => {
         const h = ref.current;
@@ -34,15 +38,20 @@ const useTickHistory = (exchange: ExchangeId, symbol: string) => {
         const ex = getExchange(exchange);
 
         const unsubBook = ex.subscribeBbo(symbol, (bbo) => {
+            if (!Number.isFinite(bbo.bid) || !Number.isFinite(bbo.ask) || bbo.bid <= 0 || bbo.ask <= bbo.bid) return;
             const last = h.points[h.points.length - 1];
             if (last && last.bid === bbo.bid && last.ask === bbo.ask) return; // only record real changes
-            h.points.push({ ask: bbo.ask, bid: bbo.bid, t: Date.now() });
+            h.points.push({ ask: bbo.ask, bid: bbo.bid, t: receiptTimestamp() });
             trim(h.points, MAX_POINTS);
+            onChangeRef.current?.();
         });
 
         const unsubTrades = ex.subscribeTrades(symbol, (trade) => {
-            h.trades.push({ buy: !trade.isBuyerMaker, price: trade.price, size: trade.size, t: Date.now() });
+            if (!Number.isFinite(trade.price) || !Number.isFinite(trade.size) || trade.price <= 0 || trade.size <= 0)
+                return;
+            h.trades.push({ buy: !trade.isBuyerMaker, price: trade.price, size: trade.size, t: receiptTimestamp() });
             trim(h.trades, MAX_TRADES);
+            onChangeRef.current?.();
         });
 
         return () => {

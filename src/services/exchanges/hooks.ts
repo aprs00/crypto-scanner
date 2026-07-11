@@ -6,8 +6,9 @@ import type { LocalOrderBook } from '@/routes/~chart/types';
 import type { ExchangeId, NormalizedTrade } from './types';
 
 import { getExchange } from './registry';
+import { DepthFeedStatus } from './types';
 
-const EMPTY_BOOK: LocalOrderBook = { asks: [], bids: [], lastUpdateId: 0 };
+const EMPTY_BOOK: LocalOrderBook = { asks: [], bids: [] };
 
 export const exchangeSymbolsQueryOptions = (id: ExchangeId) =>
     queryOptions({
@@ -24,7 +25,9 @@ export const useOrderBook = (exchange: ExchangeId, symbol: string): LocalOrderBo
     useEffect(() => {
         if (!symbol) return;
         setBook(EMPTY_BOOK);
-        return getExchange(exchange).subscribeOrderBook(symbol, setBook);
+        return getExchange(exchange).subscribeDepth(symbol, (state) => {
+            setBook(state.status === DepthFeedStatus.Healthy ? state.book : EMPTY_BOOK);
+        });
     }, [exchange, symbol]);
 
     return book;

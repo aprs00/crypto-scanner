@@ -71,14 +71,13 @@ export type OrderBookResponseType = {
 export type OrderBookLevel = [number, number];
 
 export type LocalOrderBook = {
-    lastUpdateId: number;
     bids: OrderBookLevel[];
     asks: OrderBookLevel[];
 };
 
 // Which tick-chart sub-series are shown. The main price band is always on; these
-// three can be independently toggled (and a disabled one is removed entirely).
-export type SeriesVisibility = { spread: boolean; volume: boolean; book: boolean };
+// four can be independently toggled (and a disabled one is removed entirely).
+export type SeriesVisibility = { spread: boolean; volume: boolean; liquidity: boolean; book: boolean };
 
 export type StreamTickerResponseType = {
     E: number;

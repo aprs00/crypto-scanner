@@ -1,6 +1,7 @@
 # Project Guidelines
 
 - Never use `useMemo` or `useCallback` - React Compiler handles memoization automatically.
+- Do not run browser checks; they consume too many tokens. Use build, lint, type, and static checks instead.
 - Prefer inline conditional rendering using `&&` and `||` over if statements:
     ```tsx
     const displayValue = (condition1 && <Component1 />) || (condition2 && <Component2 />) || <DefaultComponent />;

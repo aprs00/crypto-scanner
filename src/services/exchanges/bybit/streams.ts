@@ -1,13 +1,14 @@
 import type { LocalOrderBook } from '@/routes/~chart/types';
 
-import type { BboSubscriber, NormalizedTrade, OrderBookSubscriber, TradeSubscriber } from '../types';
+import type { BboSubscriber, DepthState, DepthSubscriber, NormalizedTrade, TradeSubscriber } from '../types';
 
 import { applyLevelDeltas } from '../_shared/book-syncer';
-import MultiplexedSocket from '../_shared/multiplexed-socket';
+import MultiplexedSocket, { SocketStatus } from '../_shared/multiplexed-socket';
+import { DepthFeedStatus } from '../types';
 
 const WS_URL = 'wss://stream.bybit.com/v5/public/linear';
 const PING_INTERVAL_MS = 20_000; // docs: ping every 20s
-const ORDERBOOK_DEPTH = 200; // linear depths: 1 / 50 / 200 / 1000
+const ORDERBOOK_DEPTH = 1_000; // enough source depth to populate 512 storage buckets per side
 
 type BybitMessage = {
     topic?: string;
@@ -53,19 +54,24 @@ const orderBookKey = (symbol: string): string => `orderbook.${ORDERBOOK_DEPTH}.$
 // subscription on reconnect, which triggers a fresh snapshot.
 class BybitOrderBookStream {
     private readonly topic: string;
-    private readonly subscribers = new Set<OrderBookSubscriber>();
+    private readonly subscribers = new Set<DepthSubscriber>();
     private readonly bids = new Map<number, number>();
     private readonly asks = new Map<number, number>();
     private socketUnsub: (() => void) | null = null;
-    private latest: LocalOrderBook | null = null;
+    private socketStatusUnsub: (() => void) | null = null;
+    private lastUpdateId = 0;
+    private state: DepthState = {
+        book: { asks: [], bids: [] },
+        status: DepthFeedStatus.Syncing,
+    };
 
     constructor(symbol: string) {
         this.topic = orderBookKey(symbol);
     }
 
-    subscribe(cb: OrderBookSubscriber): () => void {
+    subscribe(cb: DepthSubscriber): () => void {
         this.subscribers.add(cb);
-        if (this.latest) cb(this.latest);
+        cb(this.state);
         if (this.subscribers.size === 1) this.start();
 
         return () => {
@@ -76,14 +82,21 @@ class BybitOrderBookStream {
 
     private start(): void {
         this.socketUnsub = socket.subscribe<BybitMessage>(this.topic, (msg) => this.onMessage(msg));
+        this.socketStatusUnsub = socket.subscribeStatus((status) => this.onSocketStatus(status));
     }
 
     private stop(): void {
+        this.socketStatusUnsub?.();
+        this.socketStatusUnsub = null;
         this.socketUnsub?.();
         this.socketUnsub = null;
         this.bids.clear();
         this.asks.clear();
-        this.latest = null;
+        this.lastUpdateId = 0;
+        this.state = {
+            book: { asks: [], bids: [] },
+            status: DepthFeedStatus.Syncing,
+        };
         orderBookStreams.delete(this.topic);
     }
 
@@ -91,28 +104,64 @@ class BybitOrderBookStream {
     // it, with a size of "0" meaning the level was removed.
     private onMessage(msg: BybitMessage): void {
         const data = msg.data as BybitOrderBookData | undefined;
-        if (!data) return;
+        if (!data || !Number.isSafeInteger(data.u) || data.u < 1) return;
         if (msg.type === 'snapshot' || data.u === 1) {
             this.bids.clear();
             this.asks.clear();
+        } else if (this.state.status !== DepthFeedStatus.Healthy) {
+            return;
+        } else if (data.u !== this.lastUpdateId + 1) {
+            this.recover();
+            return;
         }
         applyLevelDeltas(this.bids, data.b);
         applyLevelDeltas(this.asks, data.a);
-        this.emit(data.u);
+        this.lastUpdateId = data.u;
+        this.emit();
     }
 
-    private emit(lastUpdateId: number): void {
+    private emit(): void {
+        const asks = [...this.asks].sort((a, b) => a[0] - b[0]);
+        const bids = [...this.bids].sort((a, b) => b[0] - a[0]);
+        if (!asks.length || !bids.length || asks[0][0] <= bids[0][0]) {
+            this.recover();
+            return;
+        }
         const book: LocalOrderBook = {
-            asks: [...this.asks].sort((a, b) => a[0] - b[0]),
-            bids: [...this.bids].sort((a, b) => b[0] - a[0]),
-            lastUpdateId,
+            asks,
+            bids,
         };
-        this.latest = book;
-        for (const cb of this.subscribers) cb(book);
+        this.publish(DepthFeedStatus.Healthy, book);
+    }
+
+    private onSocketStatus(status: SocketStatus): void {
+        if (status === SocketStatus.Open) {
+            this.bids.clear();
+            this.asks.clear();
+            this.lastUpdateId = 0;
+            this.publish(DepthFeedStatus.Syncing);
+            return;
+        }
+        this.publish(status === SocketStatus.Closed ? DepthFeedStatus.Stale : DepthFeedStatus.Syncing);
+    }
+
+    private recover(): void {
+        if (this.subscribers.size === 0) return;
+        this.bids.clear();
+        this.asks.clear();
+        this.lastUpdateId = 0;
+        this.publish(DepthFeedStatus.Syncing);
+        this.socketUnsub?.();
+        this.socketUnsub = socket.subscribe<BybitMessage>(this.topic, (msg) => this.onMessage(msg));
+    }
+
+    private publish(status: DepthState['status'], book = this.state.book): void {
+        this.state = { book, status };
+        for (const cb of this.subscribers) cb(this.state);
     }
 }
 
-export const subscribeOrderBook = (symbol: string, cb: OrderBookSubscriber): (() => void) => {
+export const subscribeDepth = (symbol: string, cb: DepthSubscriber): (() => void) => {
     const key = orderBookKey(symbol);
     let stream = orderBookStreams.get(key);
     if (!stream) {

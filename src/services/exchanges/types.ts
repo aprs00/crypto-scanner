@@ -24,7 +24,22 @@ export type NormalizedTrade = {
     isBuyerMaker: boolean;
 };
 
-export type OrderBookSubscriber = (book: LocalOrderBook) => void;
+export const DepthFeedStatus = {
+    Healthy: 'healthy',
+    Stale: 'stale',
+    Syncing: 'syncing',
+} as const;
+export type DepthFeedStatus = (typeof DepthFeedStatus)[keyof typeof DepthFeedStatus];
+
+// A depth state is only `healthy` after the exchange-specific synchronization
+// contract has completed. `book` is retained across a disconnect for diagnostics,
+// but consumers must use `status` before presenting it as current liquidity.
+export type DepthState = {
+    book: LocalOrderBook;
+    status: DepthFeedStatus;
+};
+
+export type DepthSubscriber = (state: DepthState) => void;
 
 export type TradeSubscriber = (trade: NormalizedTrade) => void;
 
@@ -38,7 +53,7 @@ export type BboSubscriber = (bbo: Bbo) => void;
 export interface ExchangeAdapter {
     id: ExchangeId;
     label: string; // uppercase for the segmented control, e.g. "BINANCE"
-    subscribeOrderBook(symbol: string, cb: OrderBookSubscriber): () => void; // returns unsubscribe
+    subscribeDepth(symbol: string, cb: DepthSubscriber): () => void;
     subscribeBbo(symbol: string, cb: BboSubscriber): () => void; // returns unsubscribe
     subscribeTrades(symbol: string, cb: TradeSubscriber): () => void; // returns unsubscribe
     fetchSymbols(): Promise<ExchangeSymbol[]>;

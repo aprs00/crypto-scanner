@@ -1,5 +1,12 @@
 type Handler = (data: unknown) => void;
 
+export const SocketStatus = {
+    Closed: 'closed',
+    Connecting: 'connecting',
+    Open: 'open',
+} as const;
+export type SocketStatus = (typeof SocketStatus)[keyof typeof SocketStatus];
+
 export interface MultiplexedSocketConfig<TSub> {
     url: string;
     subscribeFrame: (sub: TSub) => unknown;
@@ -24,6 +31,8 @@ class MultiplexedSocket<TSub> {
     private readonly subs = new Map<string, TSub>();
     private pingTimer: ReturnType<typeof setInterval> | null = null;
     private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    private readonly statusHandlers = new Set<(status: SocketStatus) => void>();
+    private status: SocketStatus = SocketStatus.Closed;
 
     constructor(cfg: MultiplexedSocketConfig<TSub>) {
         this.cfg = cfg;
@@ -56,16 +65,24 @@ class MultiplexedSocket<TSub> {
         };
     }
 
+    subscribeStatus(handler: (status: SocketStatus) => void): () => void {
+        this.statusHandlers.add(handler);
+        handler(this.status);
+        return () => this.statusHandlers.delete(handler);
+    }
+
     private ensureSocket(): void {
         const open = this.ws?.readyState === WebSocket.OPEN || this.ws?.readyState === WebSocket.CONNECTING;
         if (!open) this.connect();
     }
 
     private connect(): void {
+        this.setStatus(SocketStatus.Connecting);
         const ws = new WebSocket(this.cfg.url);
         this.ws = ws;
 
         ws.onopen = () => {
+            this.setStatus(SocketStatus.Open);
             for (const sub of this.subs.values()) this.send(this.cfg.subscribeFrame(sub));
             this.startPing();
         };
@@ -86,6 +103,7 @@ class MultiplexedSocket<TSub> {
         ws.onclose = () => {
             this.stopPing();
             this.ws = null;
+            this.setStatus(SocketStatus.Closed);
             if (this.handlers.size > 0) this.scheduleReconnect();
         };
     }
@@ -136,6 +154,13 @@ class MultiplexedSocket<TSub> {
             this.ws.close();
             this.ws = null;
         }
+        this.setStatus(SocketStatus.Closed);
+    }
+
+    private setStatus(status: SocketStatus): void {
+        if (status === this.status) return;
+        this.status = status;
+        for (const handler of this.statusHandlers) handler(status);
     }
 }
 
