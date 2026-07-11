@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { SettingsIcon } from '@/components/Icons';
 import CSPanel from '@/components/Layouts/CSPanel';
 import CSButton from '@/components/UI/CSButton';
 import CSToggleButton from '@/components/UI/CSToggleButton';
@@ -65,7 +66,9 @@ const TickChart = ({ panelId, onRemove }: Props) => {
                         >
                             V
                         </CSToggleButton>
-                        <CSButton onClick={openSettings}>SET</CSButton>
+                        <CSButton onClick={openSettings} square>
+                            <SettingsIcon />
+                        </CSButton>
                         <CSButton onClick={onRemove} square>
                             -
                         </CSButton>
