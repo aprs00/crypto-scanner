@@ -13,21 +13,21 @@ export interface PanelTemplate {
 }
 
 export const panelTemplates: Record<PanelType, PanelTemplate> = {
-    [PanelType.TradingView]: { layout: { h: 15, w: 12, x: 0, y: 0 } },
-    [PanelType.OrderBook]: { layout: { h: 14, w: 5, x: 0, y: 16 } },
-    [PanelType.Depth]: { layout: { h: 14, w: 4, x: 5, y: 16 } },
-    [PanelType.Tape]: { layout: { h: 14, w: 3, x: 9, y: 16 } },
-    [PanelType.Tick]: { layout: { h: 16, w: 12, x: 0, y: 30 } },
+    [PanelType.Tick]: { layout: { h: 16, w: 12, x: 0, y: 0 } },
+    [PanelType.TradingView]: { layout: { h: 15, w: 12, x: 0, y: 17 } },
+    [PanelType.OrderBook]: { layout: { h: 14, w: 5, x: 0, y: 33 } },
+    [PanelType.Depth]: { layout: { h: 14, w: 4, x: 5, y: 33 } },
+    [PanelType.Tape]: { layout: { h: 14, w: 3, x: 9, y: 33 } },
 };
 
 const makePanel = (type: PanelType): PanelItem => ({ id: crypto.randomUUID(), type });
 
 const makeDefaults = (): PanelItem[] => [
+    makePanel(PanelType.Tick),
     makePanel(PanelType.TradingView),
     makePanel(PanelType.OrderBook),
     makePanel(PanelType.Depth),
     makePanel(PanelType.Tape),
-    makePanel(PanelType.Tick),
 ];
 
 export interface ChartLayoutStore {
@@ -77,7 +77,7 @@ const useChartLayoutStore = create<ChartLayoutStore>()(
             migrate: (persisted, version) => {
                 const state = persisted as ChartLayoutStore;
                 if (version < 3 && !state.panels?.some((p) => p.type === PanelType.Tick)) {
-                    state.panels = [...(state.panels ?? []), makePanel(PanelType.Tick)];
+                    state.panels = [makePanel(PanelType.Tick), ...(state.panels ?? [])];
                 }
                 return state;
             },
