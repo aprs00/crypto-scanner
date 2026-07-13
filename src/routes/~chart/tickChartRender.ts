@@ -523,11 +523,17 @@ const drawMain = (ctx: CanvasRenderingContext2D, F: RenderFrame) => {
         let askY = clampY(yFor(cur.ask));
         let bidY = clampY(yFor(cur.bid));
         if (Math.abs(askY - bidY) < 14) {
-            if ((askY + bidY) / 2 < L.mainTop + L.mainH / 2) {
+            const midpoint = (askY + bidY) / 2;
+            askY = midpoint - 7;
+            bidY = midpoint + 7;
+
+            // Keep the separated pair inside the pane without moving it away
+            // from the current-price line unless it is already at an edge.
+            if (askY < tagTop) {
+                bidY += tagTop - askY;
                 askY = tagTop;
-                bidY = Math.min(tagBottom, tagTop + 14);
-            } else {
-                askY = Math.max(tagTop, tagBottom - 14);
+            } else if (bidY > tagBottom) {
+                askY -= bidY - tagBottom;
                 bidY = tagBottom;
             }
         }
