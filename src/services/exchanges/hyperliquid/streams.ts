@@ -1,11 +1,13 @@
 import type { LocalOrderBook, OrderBookLevel } from '@/routes/~chart/types';
 
+import externalServiceOrigins from '@/config/externalServices';
+
 import type { BboSubscriber, DepthState, DepthSubscriber, NormalizedTrade, TradeSubscriber } from '../types';
 
 import MultiplexedSocket, { SocketStatus } from '../_shared/multiplexed-socket';
 import { DepthFeedStatus } from '../types';
 
-const WS_URL = 'wss://api.hyperliquid.xyz/ws';
+const WS_URL = `${externalServiceOrigins.hyperliquidWS}/ws`;
 const PING_INTERVAL_MS = 30_000; // server drops idle sockets ~60s
 
 export const HlChannel = {

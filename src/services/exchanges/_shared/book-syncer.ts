@@ -1,11 +1,14 @@
 import type { LocalOrderBook } from '@/routes/~chart/types';
 
+export type BookDiffSequence = { from: number; previous: number; to: number };
+
 export interface BookSyncerConfig<TDiff, TSnap> {
     fetchSnapshot: () => Promise<TSnap>;
     snapSequence: (s: TSnap) => number;
-    // Per-diff sequence window: a diff covers updates [from..to].
-    // Consecutive diffs must satisfy `next.from <= current + 1 <= next.to`.
-    diffSequence: (d: TDiff) => { from: number; to: number };
+    diffSequence: (d: TDiff) => BookDiffSequence;
+    isStaleSequence: (sequence: BookDiffSequence, snapshotSequence: number) => boolean;
+    bridgesSnapshot: (sequence: BookDiffSequence, snapshotSequence: number) => boolean;
+    continuesSequence: (sequence: BookDiffSequence, previousSequence: number) => boolean;
     loadSnapshot: (s: TSnap, bids: Map<number, number>, asks: Map<number, number>) => void;
     applyDiff: (d: TDiff, bids: Map<number, number>, asks: Map<number, number>) => void;
     onChange: (book: LocalOrderBook) => void;
@@ -30,6 +33,7 @@ class BookSyncer<TDiff, TSnap> {
     private lastUpdateId = 0;
 
     private buffer: TDiff[] = [];
+    private snapshot: TSnap | null = null;
     private synced = false;
     private snapshotPending = false;
     // Bumped on every onConnect() so messages from a stale socket and the
@@ -48,6 +52,7 @@ class BookSyncer<TDiff, TSnap> {
         this.clearSnapshotRetry();
         this.generation++;
         this.buffer = [];
+        this.snapshot = null;
         this.synced = false;
         this.snapshotPending = false;
         this.bids.clear();
@@ -61,65 +66,82 @@ class BookSyncer<TDiff, TSnap> {
         // Invalidate any in-flight snapshot fetch and incoming messages.
         this.generation++;
         this.buffer = [];
+        this.snapshot = null;
         this.synced = false;
         this.snapshotPending = false;
     }
 
     onDiff(diff: TDiff): void {
-        if (!this.snapshotPending && !this.synced) {
-            this.snapshotPending = true;
-            this.buffer.push(diff);
-            void this.fetchSnapshot(this.generation);
-        } else if (!this.synced) {
-            this.buffer.push(diff);
-        } else {
+        if (this.synced) {
             this.applyLive(diff);
+            return;
         }
+
+        this.buffer.push(diff);
+        if (this.snapshot) {
+            this.syncFromSnapshot(this.generation);
+            return;
+        }
+        if (!this.snapshotPending && !this.snapshotRetryTimer) void this.fetchSnapshot(this.generation);
     }
 
     private async fetchSnapshot(generation: number): Promise<void> {
+        this.snapshotPending = true;
         let snapshot: TSnap;
         try {
             snapshot = await this.cfg.fetchSnapshot();
         } catch {
-            if (generation === this.generation) this.scheduleGap();
+            if (generation === this.generation) {
+                this.snapshotPending = true;
+                this.scheduleGap();
+            }
             return;
         }
         if (generation !== this.generation) return; // superseded
-        this.syncFromSnapshot(snapshot, generation);
+        this.snapshotPending = false;
+        this.snapshot = snapshot;
+        this.syncFromSnapshot(generation);
     }
 
-    private syncFromSnapshot(snapshot: TSnap, generation: number): void {
+    private syncFromSnapshot(generation: number): void {
+        const snapshot = this.snapshot;
+        if (!snapshot) return;
         const snapSeq = this.cfg.snapSequence(snapshot);
         if (!Number.isSafeInteger(snapSeq) || snapSeq < 0) {
             this.failSync();
             return;
         }
-        // Keep only buffered diffs that include updates newer than the snapshot.
-        const events = this.buffer.filter((event) => this.cfg.diffSequence(event).to > snapSeq);
 
-        // The first kept diff must bridge the snapshot
-        // (from <= snapSeq + 1 <= to). If it starts after that, the snapshot
-        // predates our buffer — refetch a fresher one.
-        if (events.length > 0 && this.cfg.diffSequence(events[0]).from > snapSeq + 1) {
-            this.clearSnapshotRetry();
-            this.snapshotRetryTimer = setTimeout(() => {
-                this.snapshotRetryTimer = null;
-                if (generation === this.generation) void this.fetchSnapshot(generation);
-            }, this.cfg.resyncDelayMs ?? DEFAULT_RESYNC_DELAY_MS);
+        for (const event of this.buffer) {
+            if (!this.isValidSequence(this.cfg.diffSequence(event))) {
+                this.failSync();
+                return;
+            }
+        }
+
+        const events = this.buffer.filter((event) => !this.cfg.isStaleSequence(this.cfg.diffSequence(event), snapSeq));
+        this.buffer = events;
+        if (events.length === 0) return;
+
+        const firstSequence = this.cfg.diffSequence(events[0]);
+        if (!this.cfg.bridgesSnapshot(firstSequence, snapSeq)) {
+            this.snapshot = null;
+            this.scheduleSnapshotRetry(generation);
             return;
         }
 
         this.cfg.loadSnapshot(snapshot, this.bids, this.asks);
         this.lastUpdateId = snapSeq;
-        for (const event of events) {
-            const { from, to } = this.cfg.diffSequence(event);
-            if (!Number.isSafeInteger(from) || !Number.isSafeInteger(to) || from > to) {
-                this.failSync();
-                return;
+        for (const [index, event] of events.entries()) {
+            const sequence = this.cfg.diffSequence(event);
+            if ((index === 0 && sequence.to < this.lastUpdateId) || (index > 0 && sequence.to <= this.lastUpdateId)) {
+                continue;
             }
-            if (to <= this.lastUpdateId) continue;
-            if (from > this.lastUpdateId + 1 || to < this.lastUpdateId + 1) {
+            if (
+                index > 0 &&
+                sequence.to > this.lastUpdateId &&
+                !this.cfg.continuesSequence(sequence, this.lastUpdateId)
+            ) {
                 this.failSync();
                 return;
             }
@@ -127,18 +149,19 @@ class BookSyncer<TDiff, TSnap> {
         }
 
         this.buffer = [];
+        this.snapshot = null;
         this.synced = true;
         this.emit();
     }
 
     private applyLive(diff: TDiff): void {
-        const { from, to } = this.cfg.diffSequence(diff);
-        if (!Number.isSafeInteger(from) || !Number.isSafeInteger(to) || from > to) {
+        const sequence = this.cfg.diffSequence(diff);
+        if (!this.isValidSequence(sequence)) {
             this.failSync();
             return;
         }
-        if (to <= this.lastUpdateId) return; // already covered
-        if (from > this.lastUpdateId + 1 || to < this.lastUpdateId + 1) {
+        if (sequence.to <= this.lastUpdateId) return; // already covered
+        if (!this.cfg.continuesSequence(sequence, this.lastUpdateId)) {
             // Sequence gap — a diff was missed and applying out-of-order data
             // makes top-of-book jump. Discard and ask the caller to resync.
             this.failSync();
@@ -151,6 +174,17 @@ class BookSyncer<TDiff, TSnap> {
     private applyDiffEvent(diff: TDiff): void {
         this.cfg.applyDiff(diff, this.bids, this.asks);
         this.lastUpdateId = this.cfg.diffSequence(diff).to;
+    }
+
+    private isValidSequence({ from, previous, to }: BookDiffSequence): boolean {
+        return (
+            Number.isSafeInteger(from) &&
+            Number.isSafeInteger(to) &&
+            from >= 0 &&
+            from <= to &&
+            Number.isSafeInteger(previous) &&
+            previous >= 0
+        );
     }
 
     private emit(): void {
@@ -181,9 +215,21 @@ class BookSyncer<TDiff, TSnap> {
     private failSync(): void {
         if (!this.synced && this.resyncScheduled) return;
         this.synced = false;
+        this.snapshot = null;
         this.snapshotPending = true;
         this.buffer = [];
         this.scheduleGap();
+    }
+
+    private scheduleSnapshotRetry(generation: number): void {
+        this.clearSnapshotRetry();
+        this.snapshotPending = true;
+        this.snapshotRetryTimer = setTimeout(() => {
+            this.snapshotRetryTimer = null;
+            if (generation !== this.generation) return;
+            this.snapshotPending = false;
+            void this.fetchSnapshot(generation);
+        }, this.cfg.resyncDelayMs ?? DEFAULT_RESYNC_DELAY_MS);
     }
 
     private clearResync(): void {

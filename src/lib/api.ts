@@ -1,6 +1,7 @@
 import axios, { type CreateAxiosDefaults } from 'axios';
 
 import env from '@/config/env';
+import externalServiceOrigins from '@/config/externalServices';
 
 const commonOptions: CreateAxiosDefaults = {
     headers: {
@@ -16,24 +17,29 @@ const baseInstance = axios.create({
 });
 
 const coingeckoInstance = axios.create({
-    baseURL: env.coingeckoAPI,
+    baseURL: externalServiceOrigins.coingeckoAPI,
     ...commonOptions,
 });
 
-const binanceInstance = axios.create({
-    baseURL: env.binanceAPI,
+const fearGreedInstance = axios.create({
+    baseURL: externalServiceOrigins.fearGreedAPI,
+    ...commonOptions,
+});
+
+const binanceFuturesInstance = axios.create({
+    baseURL: externalServiceOrigins.binanceFuturesAPI,
     ...commonOptions,
 });
 
 const hyperliquidInstance = axios.create({
-    baseURL: env.hyperliquidAPI,
+    baseURL: externalServiceOrigins.hyperliquidAPI,
     ...commonOptions,
 });
 
 const bybitInstance = axios.create({
-    baseURL: env.bybitAPI,
+    baseURL: externalServiceOrigins.bybitAPI,
     ...commonOptions,
 });
 
-export { binanceInstance, bybitInstance, coingeckoInstance, hyperliquidInstance };
+export { binanceFuturesInstance, bybitInstance, coingeckoInstance, fearGreedInstance, hyperliquidInstance };
 export default baseInstance;

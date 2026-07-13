@@ -1,12 +1,14 @@
 import type { LocalOrderBook } from '@/routes/~chart/types';
 
+import externalServiceOrigins from '@/config/externalServices';
+
 import type { BboSubscriber, DepthState, DepthSubscriber, NormalizedTrade, TradeSubscriber } from '../types';
 
 import { applyLevelDeltas } from '../_shared/book-syncer';
 import MultiplexedSocket, { SocketStatus } from '../_shared/multiplexed-socket';
 import { DepthFeedStatus } from '../types';
 
-const WS_URL = 'wss://stream.bybit.com/v5/public/linear';
+const WS_URL = `${externalServiceOrigins.bybitWS}/v5/public/linear`;
 const PING_INTERVAL_MS = 20_000; // docs: ping every 20s
 const ORDERBOOK_DEPTH = 1_000; // enough source depth to populate 512 storage buckets per side
 

@@ -6,65 +6,6 @@ export type TapeStateType = {
     aggregateTradeId: number;
 };
 
-export type SymbolInfoType = {
-    symbol: string;
-    status: string;
-    baseAsset: string;
-    baseAssetPrecision: number;
-    quoteAsset: string;
-    quotePrecision: number;
-    quoteAssetPrecision: number;
-    baseCommissionPrecision: number;
-    quoteCommissionPrecision: number;
-    orderTypes: string[];
-    icebergAllowed: boolean;
-    ocoAllowed: boolean;
-    quoteOrderQtyMarketAllowed: boolean;
-    allowTrailingStop: boolean;
-    cancelReplaceAllowed: boolean;
-    isSpotTradingAllowed: boolean;
-    isMarginTradingAllowed: boolean;
-    filters: {
-        filterType: string;
-        minPrice?: string;
-        maxPrice?: string;
-        tickSize?: string;
-        multiplierUp?: string;
-        multiplierDown?: string;
-        avgPriceMins?: number;
-        minQty?: string;
-        maxQty?: string;
-        stepSize?: string;
-        minNotional?: string;
-        applyToMarket?: boolean;
-        limit?: number;
-        maxNumOrders?: number;
-        maxNumAlgoOrders?: number;
-    }[];
-    permissions: string[];
-    defaultSelfTradePreventionMode: string;
-    allowedSelfTradePreventionModes: string[];
-};
-
-export type ExchangeInfoResponseType = {
-    timezone: string;
-    serverTime: number;
-    rateLimits: {
-        rateLimitType: string;
-        interval: string;
-        intervalNum: number;
-        limit: number;
-    }[];
-    exchangeFilters: any[];
-    symbols: SymbolInfoType[];
-};
-
-export type OrderBookResponseType = {
-    lastUpdateId: number;
-    asks: [string, string][];
-    bids: [string, string][];
-};
-
 // A maintained local book with numeric [price, quantity] levels, bids sorted
 // high->low and asks low->high. This is what the order-book stream emits to
 // consumers (parsed once on ingest rather than re-parsed at every call site).
@@ -78,30 +19,6 @@ export type LocalOrderBook = {
 // Which tick-chart sub-series are shown. The main price band is always on; these
 // four can be independently toggled (and a disabled one is removed entirely).
 export type SeriesVisibility = { spread: boolean; volume: boolean; liquidity: boolean; book: boolean };
-
-export type StreamTickerResponseType = {
-    E: number;
-    U: number;
-    a: [string, string][];
-    b: [string, string][];
-    e: string;
-    s: string;
-    u: number;
-};
-
-export type StreamAggTradeResponseType = {
-    E: number;
-    M: boolean;
-    T: number;
-    a: number;
-    e: string;
-    f: number;
-    l: number;
-    m: boolean;
-    p: string;
-    q: string;
-    s: string;
-};
 
 export const Orientation = {
     V: 'V',

@@ -15,7 +15,7 @@ const binance: ExchangeAdapter = {
 
     subscribeTrades,
 
-    toTradingViewSymbol: (symbol: string): string => `BINANCE:${symbol}`,
+    toTradingViewSymbol: (symbol: string): string => `BINANCE:${symbol}.P`,
 };
 
 export default binance;

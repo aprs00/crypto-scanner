@@ -1,36 +1,43 @@
-import type {
-    OrderBookResponseType,
-    StreamAggTradeResponseType,
-    StreamTickerResponseType,
-} from '@/routes/~chart/types';
-
-import { binanceInstance } from '@/lib/api';
+import externalServiceOrigins from '@/config/externalServices';
+import { binanceFuturesInstance } from '@/lib/api';
 
 import type { BboSubscriber, DepthState, DepthSubscriber, NormalizedTrade, TradeSubscriber } from '../types';
+import type {
+    BinanceFuturesAggregateTrade,
+    BinanceFuturesBookTicker,
+    BinanceFuturesDepthUpdate,
+    BinanceFuturesOrderBookSnapshot,
+} from './types';
 
 import BookSyncer, { applyLevelDeltas } from '../_shared/book-syncer';
 import MultiplexedSocket, { SocketStatus } from '../_shared/multiplexed-socket';
 import { DepthFeedStatus } from '../types';
 
-const WS_URL = 'wss://stream.binance.com:9443/stream';
-const SNAPSHOT_LIMIT = 5_000;
+export const BINANCE_FUTURES_DEPTH_SNAPSHOT_LIMIT = 1_000;
+export const BINANCE_FUTURES_PUBLIC_STREAM_URL = `${externalServiceOrigins.binanceFuturesWS}/public/stream`;
+export const BINANCE_FUTURES_MARKET_STREAM_URL = `${externalServiceOrigins.binanceFuturesWS}/market/stream`;
+
+export const binanceFuturesDepthSnapshotPath = (symbol: string): string =>
+    `/fapi/v1/depth?symbol=${symbol.toUpperCase()}&limit=${BINANCE_FUTURES_DEPTH_SNAPSHOT_LIMIT}`;
 
 let msgId = 0;
 
-const socket = new MultiplexedSocket<string>({
-    keyOf: (key) => key,
-    route: (msg: any) => {
-        // Combined-stream wraps payloads as { stream, data }; acks have no stream
-        // and fall through to [].
-        if (typeof msg?.stream === 'string' && msg.data) {
-            return [{ data: msg.data, key: msg.stream }];
-        }
-        return [];
-    },
-    subscribeFrame: (key) => ({ id: ++msgId, method: 'SUBSCRIBE', params: [key] }),
-    unsubscribeFrame: (key) => ({ id: ++msgId, method: 'UNSUBSCRIBE', params: [key] }),
-    url: WS_URL,
-});
+const createSocket = (url: string) =>
+    new MultiplexedSocket<string>({
+        keyOf: (key) => key,
+        route: (msg: any) => {
+            if (typeof msg?.stream === 'string' && msg.data) {
+                return [{ data: msg.data, key: msg.stream }];
+            }
+            return [];
+        },
+        subscribeFrame: (key) => ({ id: String(++msgId), method: 'SUBSCRIBE', params: [key] }),
+        unsubscribeFrame: (key) => ({ id: String(++msgId), method: 'UNSUBSCRIBE', params: [key] }),
+        url,
+    });
+
+const publicSocket = createSocket(BINANCE_FUTURES_PUBLIC_STREAM_URL);
+const marketSocket = createSocket(BINANCE_FUTURES_MARKET_STREAM_URL);
 
 const orderBookStreams = new Map<string, BinanceOrderBookStream>();
 
@@ -40,7 +47,7 @@ class BinanceOrderBookStream {
     private readonly streamKey: string;
     private readonly snapshotUrl: string;
     private readonly subscribers = new Set<DepthSubscriber>();
-    private readonly syncer: BookSyncer<StreamTickerResponseType, OrderBookResponseType>;
+    private readonly syncer: BookSyncer<BinanceFuturesDepthUpdate, BinanceFuturesOrderBookSnapshot>;
     private socketUnsub: (() => void) | null = null;
     private socketStatusUnsub: (() => void) | null = null;
     private state: DepthState = {
@@ -49,19 +56,21 @@ class BinanceOrderBookStream {
     };
 
     constructor(symbol: string) {
-        const lower = symbol.toLowerCase();
         this.streamKey = orderBookKey(symbol);
-        this.snapshotUrl = `api/v3/depth?symbol=${lower.toUpperCase()}&limit=${SNAPSHOT_LIMIT}`;
-        this.syncer = new BookSyncer<StreamTickerResponseType, OrderBookResponseType>({
+        this.snapshotUrl = binanceFuturesDepthSnapshotPath(symbol);
+        this.syncer = new BookSyncer<BinanceFuturesDepthUpdate, BinanceFuturesOrderBookSnapshot>({
             applyDiff: (diff, bids, asks) => {
                 applyLevelDeltas(bids, diff.b);
                 applyLevelDeltas(asks, diff.a);
             },
-            diffSequence: (d) => ({ from: d.U, to: d.u }),
+            bridgesSnapshot: ({ from, to }, snapshotSequence) => from <= snapshotSequence && to >= snapshotSequence,
+            continuesSequence: ({ previous }, previousSequence) => previous === previousSequence,
+            diffSequence: (d) => ({ from: d.U, previous: d.pu, to: d.u }),
             fetchSnapshot: async () => {
-                const { data } = await binanceInstance.get<OrderBookResponseType>(this.snapshotUrl);
+                const { data } = await binanceFuturesInstance.get<BinanceFuturesOrderBookSnapshot>(this.snapshotUrl);
                 return data;
             },
+            isStaleSequence: ({ to }, snapshotSequence) => to < snapshotSequence,
             loadSnapshot: (snap, bids, asks) => {
                 bids.clear();
                 asks.clear();
@@ -89,10 +98,10 @@ class BinanceOrderBookStream {
     }
 
     private start(): void {
-        this.socketUnsub = socket.subscribe<StreamTickerResponseType>(this.streamKey, (diff) =>
+        this.socketUnsub = publicSocket.subscribe<BinanceFuturesDepthUpdate>(this.streamKey, (diff) =>
             this.syncer.onDiff(diff),
         );
-        this.socketStatusUnsub = socket.subscribeStatus((status) => this.onSocketStatus(status));
+        this.socketStatusUnsub = publicSocket.subscribeStatus((status) => this.onSocketStatus(status));
     }
 
     private stop(): void {
@@ -116,7 +125,7 @@ class BinanceOrderBookStream {
         this.socketUnsub?.();
         this.syncer.onDisconnect();
         this.syncer.onConnect();
-        this.socketUnsub = socket.subscribe<StreamTickerResponseType>(this.streamKey, (diff) =>
+        this.socketUnsub = publicSocket.subscribe<BinanceFuturesDepthUpdate>(this.streamKey, (diff) =>
             this.syncer.onDiff(diff),
         );
     }
@@ -147,23 +156,34 @@ export const subscribeDepth = (symbol: string, cb: DepthSubscriber): (() => void
     return stream.subscribe(cb);
 };
 
-// Real-time best bid/ask: pushed on every top-of-book change (no 100ms throttle,
-// unlike @depth). { b, a } are best bid/ask price; { B, A } their quantities.
-type BinanceBookTicker = { u: number; s: string; b: string; B: string; a: string; A: string };
+export const normalizeBinanceFuturesBookTicker = (ticker: BinanceFuturesBookTicker) => {
+    const ask = Number(ticker.a);
+    const bid = Number(ticker.b);
+    if (!Number.isFinite(ask) || !Number.isFinite(bid) || bid <= 0 || ask <= bid) return null;
+    return { ask, bid, time: ticker.T };
+};
+
+export const normalizeBinanceFuturesAggregateTrade = (trade: BinanceFuturesAggregateTrade): NormalizedTrade | null => {
+    const price = Number(trade.p);
+    const size = Number(trade.q);
+    if (!Number.isFinite(price) || !Number.isFinite(size) || price <= 0 || size <= 0) return null;
+    return {
+        id: trade.a,
+        isBuyerMaker: trade.m,
+        price,
+        size,
+        time: trade.T,
+    };
+};
 
 export const subscribeBbo = (symbol: string, cb: BboSubscriber): (() => void) =>
-    socket.subscribe<BinanceBookTicker>(`${symbol.toLowerCase()}@bookTicker`, (d) => {
-        cb({ ask: +d.a, bid: +d.b, time: Date.now() });
+    publicSocket.subscribe<BinanceFuturesBookTicker>(`${symbol.toLowerCase()}@bookTicker`, (ticker) => {
+        const bbo = normalizeBinanceFuturesBookTicker(ticker);
+        if (bbo) cb(bbo);
     });
 
 export const subscribeTrades = (symbol: string, cb: TradeSubscriber): (() => void) =>
-    socket.subscribe<StreamAggTradeResponseType>(`${symbol.toLowerCase()}@aggTrade`, (t) => {
-        const trade: NormalizedTrade = {
-            id: t.a,
-            isBuyerMaker: t.m,
-            price: +t.p,
-            size: +t.q,
-            time: t.T,
-        };
-        cb(trade);
+    marketSocket.subscribe<BinanceFuturesAggregateTrade>(`${symbol.toLowerCase()}@aggTrade`, (event) => {
+        const trade = normalizeBinanceFuturesAggregateTrade(event);
+        if (trade) cb(trade);
     });

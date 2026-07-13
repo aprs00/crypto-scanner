@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
+
+import externalServiceOrigins from '@/config/externalServices';
+import { fearGreedInstance } from '@/lib/api';
 
 const TICKER_SYMBOLS = ['BTCUSDT'] as const;
 
@@ -28,9 +30,9 @@ export type TopBarTicker = {
     fearGreed?: { value: number };
 };
 
-const buildStreamUrl = () => {
+export const buildBinanceFuturesMiniTickerUrl = () => {
     const streams = TICKER_SYMBOLS.map((s) => `${s.toLowerCase()}@miniTicker`).join('/');
-    return `wss://stream.binance.com:9443/stream?streams=${streams}`;
+    return `${externalServiceOrigins.binanceFuturesWS}/market/stream?streams=${streams}`;
 };
 
 const toPrice = ({ c, o }: BinanceMiniTicker): TopBarPrice => {
@@ -44,7 +46,7 @@ const useBinanceTopTickers = () => {
     const [prices, setPrices] = useState<Record<string, TopBarPrice>>({});
 
     useEffect(() => {
-        const ws = new WebSocket(buildStreamUrl());
+        const ws = new WebSocket(buildBinanceFuturesMiniTickerUrl());
 
         ws.onmessage = (event) => {
             const msg = JSON.parse(event.data) as { stream: string; data: BinanceMiniTicker };
@@ -63,7 +65,7 @@ const useFearGreed = () =>
     useQuery({
         queryKey: ['fear-greed'],
         queryFn: async () => {
-            const { data } = await axios.get<FearGreedResponse>('https://api.alternative.me/fng/?limit=1');
+            const { data } = await fearGreedInstance.get<FearGreedResponse>('/fng/', { params: { limit: 1 } });
             const latest = data?.data?.[0];
             if (!latest) return null;
             return {
