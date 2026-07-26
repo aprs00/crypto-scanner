@@ -1,4 +1,4 @@
-import type { LocalOrderBook, OrderBookLevel } from '@/routes/~chart/types';
+import type { LocalOrderBook, OrderBookLevel } from '../types';
 
 type RowCount = number | { bids: number; asks: number };
 
@@ -7,6 +7,12 @@ export const groupOrders = (book: LocalOrderBook, groupByVal: number, rows: RowC
     bids: groupSide(book.bids, groupByVal, false, typeof rows === 'number' ? rows : rows.bids),
 });
 
+const snapNearInteger = (value: number): number => {
+    const nearest = Math.round(value);
+    const tolerance = Number.EPSILON * Math.max(1, Math.abs(value)) * 8;
+    return Math.abs(value - nearest) <= tolerance ? nearest : value;
+};
+
 // Levels arrive best-first, so buckets fill in order: once `rows` buckets exist,
 // remaining levels only open later buckets and we can stop early.
 const groupSide = (levels: OrderBookLevel[], groupByVal: number, isAsk: boolean, rows: number): OrderBookLevel[] => {
@@ -14,7 +20,8 @@ const groupSide = (levels: OrderBookLevel[], groupByVal: number, isAsk: boolean,
     const grouped = new Map<number, number>();
 
     for (const [price, qty] of levels) {
-        const bucket = isAsk ? Math.ceil(price / groupByVal) * groupByVal : Math.floor(price / groupByVal) * groupByVal;
+        const coordinate = snapNearInteger(price / groupByVal);
+        const bucket = isAsk ? Math.ceil(coordinate) : Math.floor(coordinate);
         const existing = grouped.get(bucket);
         if (existing === undefined) {
             if (grouped.size === rows) break;
@@ -24,5 +31,7 @@ const groupSide = (levels: OrderBookLevel[], groupByVal: number, isAsk: boolean,
         }
     }
 
-    return [...grouped];
+    return [...grouped].map(
+        ([bucket, quantity]): OrderBookLevel => [Number((bucket * groupByVal).toPrecision(15)), quantity],
+    );
 };

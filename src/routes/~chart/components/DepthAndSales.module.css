@@ -1,0 +1,293 @@
+.panelBody {
+    display: flex;
+    flex-direction: column;
+}
+
+.workspace {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(360px, 1fr) minmax(170px, 0.43fr);
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto hidden;
+    background: var(--bg-inset);
+}
+
+.workspace.noTape {
+    grid-template-columns: minmax(360px, 1fr);
+}
+
+.ladder,
+.tape {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.tape {
+    border-left: 1px solid var(--bd-hi);
+}
+
+.tableWrap {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    color: var(--fg);
+    font-size: var(--fs-sm);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--ls-tight);
+}
+
+.table th,
+.table td {
+    box-sizing: border-box;
+    height: var(--row-h-xs);
+    padding: 0 var(--sp-1);
+    border-right: 1px solid var(--bd);
+    border-bottom: 1px solid var(--bd);
+    overflow: hidden;
+    line-height: calc(var(--row-h-xs) - 1px);
+    text-overflow: clip;
+    white-space: nowrap;
+}
+
+.table th:last-child,
+.table td:last-child {
+    border-right: 0;
+}
+
+.table th {
+    color: var(--fg-dim);
+    background: var(--bg-alt);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-label);
+    text-align: right;
+    text-transform: uppercase;
+}
+
+.table th.priceHead {
+    text-align: center;
+}
+
+.row:hover td {
+    background-color: rgba(255, 158, 31, 0.035);
+}
+
+.cell {
+    text-align: right;
+}
+
+.leftAlignedCell {
+    text-align: left;
+}
+
+.barCell {
+    background-image: linear-gradient(var(--bar-color), var(--bar-color));
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: var(--bar-width) calc(100% - 2px);
+}
+
+.rightAlignedBar {
+    background-position: right center;
+}
+
+.bidBar {
+    --bar-color: rgba(155, 202, 62, 0.28);
+}
+
+.askBar {
+    --bar-color: rgba(232, 65, 63, 0.28);
+}
+
+.addedBar {
+    --bar-color: rgba(59, 130, 196, 0.5);
+}
+
+.pulledBar {
+    --bar-color: rgba(232, 65, 63, 0.52);
+}
+
+.positive {
+    color: #7fb8eb;
+}
+
+.negative,
+.sell {
+    color: var(--down);
+}
+
+.buy {
+    color: var(--up);
+}
+
+.price {
+    color: var(--fg);
+    font-weight: var(--fw-semibold);
+    text-align: center;
+}
+
+.insideAsk .price {
+    background: rgba(232, 65, 63, 0.2);
+    box-shadow: inset 3px 0 var(--down);
+}
+
+.insideBid .price {
+    background: rgba(155, 202, 62, 0.2);
+    box-shadow: inset -3px 0 var(--up);
+}
+
+.lastTrade .price {
+    color: var(--bg);
+    background: var(--ac);
+    box-shadow: none;
+}
+
+.colPullStack {
+    width: 15%;
+}
+
+.colDepth {
+    width: 16%;
+}
+
+.colExecution {
+    width: 12%;
+}
+
+.colPrice {
+    width: 18%;
+}
+
+.colTapeTime {
+    width: 40%;
+}
+
+.colTapePrice {
+    width: 30%;
+}
+
+.colTapeSize {
+    width: 30%;
+}
+
+.tapeTime {
+    color: var(--fg-dim);
+    text-align: left;
+}
+
+.tapePrice,
+.tapeSize {
+    text-align: right;
+}
+
+.tapeBuy .tapeTime,
+.tapeBuy .tapePrice,
+.tapeBuy .tapeSize {
+    color: var(--up);
+}
+
+.tapeSell .tapeTime,
+.tapeSell .tapePrice,
+.tapeSell .tapeSize {
+    color: var(--down);
+}
+
+.footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr minmax(90px, 1.5fr) 1fr 1fr;
+    align-items: center;
+    flex: 0 0 32px;
+    min-width: 0;
+    border-top: 1px solid var(--bd-hi);
+    background: var(--bg-alt);
+    color: var(--fg-dim);
+    font-size: var(--fs-xs);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--ls-tight);
+}
+
+.footerMetric {
+    min-width: 0;
+    padding: 0 var(--sp-2);
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.footerMetric strong {
+    display: block;
+    color: var(--fg);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+}
+
+.meter {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: 0 var(--sp-2);
+}
+
+.meterLabels {
+    display: flex;
+    justify-content: space-between;
+    color: var(--fg-dim);
+}
+
+.meterTrack {
+    display: flex;
+    height: 7px;
+    overflow: hidden;
+    border: 1px solid var(--bd-hi);
+    background: var(--bg-inset);
+}
+
+.meterBid {
+    background: var(--up);
+}
+
+.meterAsk {
+    flex: 1;
+    background: var(--down);
+}
+
+.tapeFooter {
+    flex: 0 0 32px;
+    border-top: 1px solid var(--bd-hi);
+    background: var(--bg-alt);
+}
+
+.status {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    padding: var(--sp-2) var(--sp-4);
+    border: 1px solid var(--bd-hi);
+    background: rgba(10, 10, 10, 0.92);
+    color: var(--fg-dim);
+    font-size: var(--fs-xs);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.statusStale {
+    border-color: var(--down);
+    color: var(--down);
+}

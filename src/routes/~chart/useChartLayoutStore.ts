@@ -13,16 +13,18 @@ export interface PanelTemplate {
 }
 
 export const panelTemplates: Record<PanelType, PanelTemplate> = {
-    [PanelType.Tick]: { layout: { h: 16, w: 12, x: 0, y: 0 } },
-    [PanelType.TradingView]: { layout: { h: 15, w: 12, x: 0, y: 17 } },
-    [PanelType.OrderBook]: { layout: { h: 14, w: 5, x: 0, y: 33 } },
-    [PanelType.Depth]: { layout: { h: 14, w: 4, x: 5, y: 33 } },
-    [PanelType.Tape]: { layout: { h: 14, w: 3, x: 9, y: 33 } },
+    [PanelType.DepthAndSales]: { layout: { h: 20, w: 12, x: 0, y: 0 } },
+    [PanelType.Tick]: { layout: { h: 16, w: 12, x: 0, y: 21 } },
+    [PanelType.TradingView]: { layout: { h: 15, w: 12, x: 0, y: 38 } },
+    [PanelType.OrderBook]: { layout: { h: 14, w: 12, x: 0, y: 54 } },
+    [PanelType.Depth]: { layout: { h: 14, w: 12, x: 0, y: 69 } },
+    [PanelType.Tape]: { layout: { h: 14, w: 12, x: 0, y: 84 } },
 };
 
 const makePanel = (type: PanelType): PanelItem => ({ id: crypto.randomUUID(), type });
 
 const makeDefaults = (): PanelItem[] => [
+    makePanel(PanelType.DepthAndSales),
     makePanel(PanelType.Tick),
     makePanel(PanelType.TradingView),
     makePanel(PanelType.OrderBook),
@@ -70,14 +72,15 @@ const useChartLayoutStore = create<ChartLayoutStore>()(
         }),
         {
             name: 'chart-page-layout',
-            version: 3,
+            version: 4,
             storage: safeJSONStorage(),
-            // v3 added a full-row tick chart to the defaults — backfill it for
-            // existing users whose persisted layout predates it.
             migrate: (persisted, version) => {
                 const state = persisted as ChartLayoutStore;
                 if (version < 3 && !state.panels?.some((p) => p.type === PanelType.Tick)) {
                     state.panels = [makePanel(PanelType.Tick), ...(state.panels ?? [])];
+                }
+                if (version < 4 && !state.panels?.some((p) => p.type === PanelType.DepthAndSales)) {
+                    state.panels = [...(state.panels ?? []), makePanel(PanelType.DepthAndSales)];
                 }
                 return state;
             },

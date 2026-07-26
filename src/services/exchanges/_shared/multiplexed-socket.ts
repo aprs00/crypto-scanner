@@ -40,7 +40,9 @@ class MultiplexedSocket<TSub> {
 
     subscribe<T = unknown>(sub: TSub, handler: (data: T) => void): () => void {
         const key = this.cfg.keyOf(sub);
-        const wrapped = handler as Handler;
+        // Each call is a distinct logical subscription, even when a caller
+        // intentionally reuses the same callback function.
+        const wrapped: Handler = (data) => handler(data as T);
         let set = this.handlers.get(key);
         if (!set) {
             set = new Set();
@@ -52,7 +54,10 @@ class MultiplexedSocket<TSub> {
         }
         set.add(wrapped);
 
+        let active = true;
         return () => {
+            if (!active) return;
+            active = false;
             const current = this.handlers.get(key);
             if (!current) return;
             current.delete(wrapped);
@@ -66,9 +71,16 @@ class MultiplexedSocket<TSub> {
     }
 
     subscribeStatus(handler: (status: SocketStatus) => void): () => void {
-        this.statusHandlers.add(handler);
-        handler(this.status);
-        return () => this.statusHandlers.delete(handler);
+        const wrapped = (status: SocketStatus) => handler(status);
+        this.statusHandlers.add(wrapped);
+        wrapped(this.status);
+
+        let active = true;
+        return () => {
+            if (!active) return;
+            active = false;
+            this.statusHandlers.delete(wrapped);
+        };
     }
 
     private ensureSocket(): void {
@@ -77,30 +89,54 @@ class MultiplexedSocket<TSub> {
     }
 
     private connect(): void {
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = null;
+        }
+        const alreadyConnecting =
+            this.ws?.readyState === WebSocket.OPEN || this.ws?.readyState === WebSocket.CONNECTING;
+        if (alreadyConnecting) return;
+
         this.setStatus(SocketStatus.Connecting);
         const ws = new WebSocket(this.cfg.url);
         this.ws = ws;
 
         ws.onopen = () => {
-            this.setStatus(SocketStatus.Open);
+            if (this.ws !== ws) {
+                ws.close();
+                return;
+            }
+            // Replay wire subscriptions before consumers begin any
+            // snapshot/diff handshake in response to Open.
             for (const sub of this.subs.values()) this.send(this.cfg.subscribeFrame(sub));
             this.startPing();
+            this.setStatus(SocketStatus.Open);
         };
 
         ws.onmessage = (event) => {
+            if (this.ws !== ws) return;
             let msg: unknown;
+            let routes: { key: string; data: unknown }[];
             try {
                 msg = JSON.parse(event.data);
+                routes = this.cfg.route(msg);
             } catch {
+                // Continuing after an unparseable or unroutable market-data
+                // frame could leave a non-consecutive feed silently divergent.
+                // Reconnect so snapshot-backed subscriptions rebaseline.
+                ws.close();
                 return;
             }
-            const routes = this.cfg.route(msg);
             for (const r of routes) this.dispatch(r.key, r.data);
         };
 
         ws.onerror = () => ws.close();
 
         ws.onclose = () => {
+            // A CLOSING socket can overlap a replacement connection. Its late
+            // close must not tear down the current socket or schedule a second
+            // reconnect.
+            if (this.ws !== ws) return;
             this.stopPing();
             this.ws = null;
             this.setStatus(SocketStatus.Closed);

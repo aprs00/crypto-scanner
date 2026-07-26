@@ -1,4 +1,4 @@
-import type { LocalOrderBook } from '@/routes/~chart/types';
+import type { LocalOrderBook, OrderBookLevel } from '../types';
 
 export type BookDiffSequence = { from: number; previous: number; to: number };
 
@@ -9,23 +9,33 @@ export interface BookSyncerConfig<TDiff, TSnap> {
     isStaleSequence: (sequence: BookDiffSequence, snapshotSequence: number) => boolean;
     bridgesSnapshot: (sequence: BookDiffSequence, snapshotSequence: number) => boolean;
     continuesSequence: (sequence: BookDiffSequence, previousSequence: number) => boolean;
-    loadSnapshot: (s: TSnap, bids: Map<number, number>, asks: Map<number, number>) => void;
-    applyDiff: (d: TDiff, bids: Map<number, number>, asks: Map<number, number>) => void;
+    loadSnapshot: (s: TSnap, bids: Map<number, number>, asks: Map<number, number>) => boolean;
+    applyDiff: (d: TDiff, bids: Map<number, number>, asks: Map<number, number>) => boolean;
+    // Called after every applied event. It may enforce exchange-specific
+    // retention invariants by mutating the Maps, but it must never invent levels.
+    normalizeBook?: (bids: Map<number, number>, asks: Map<number, number>) => boolean;
+    needsRefresh?: (bids: ReadonlyMap<number, number>, asks: ReadonlyMap<number, number>) => boolean;
+    diffWeight?: (d: TDiff) => number;
     onChange: (book: LocalOrderBook) => void;
-    // Fires when the caller must drop the upstream WS subscription and restart
-    // (the only way to recover from a sequence gap on a multiplexed feed).
-    onGap: () => void;
-    // Fires immediately when published state is no longer trustworthy. Recovery
-    // may remain delayed to avoid a retry storm, but consumers stop holding data.
+    // Fires once whenever a healthy acquisition becomes untrustworthy or starts
+    // a proactive coverage refresh. The socket remains subscribed while a new
+    // snapshot handshake is performed.
     onInvalid?: () => void;
-    resyncDelayMs?: number;
+    maxBufferedDiffs?: number;
+    maxBufferedWeight?: number;
+    retryBaseMs?: number;
+    retryMaxMs?: number;
 }
 
-const DEFAULT_RESYNC_DELAY_MS = 1_000;
+const DEFAULT_MAX_BUFFERED_DIFFS = 256;
+const DEFAULT_MAX_BUFFERED_WEIGHT = 20_000;
+const DEFAULT_RETRY_BASE_MS = 1_000;
+const DEFAULT_RETRY_MAX_MS = 30_000;
 
-// Pure state machine for snapshot+diff order books: the caller pumps diffs via
-// onDiff() and lifecycle via onConnect()/onDisconnect(); we emit via onChange,
-// and call onGap() when recovery needs the upstream subscription dropped.
+// Snapshot+diff state machine. Recovery deliberately keeps the WebSocket
+// subscription alive: incoming events remain buffered while a fresh REST
+// snapshot is fetched, avoiding the blind interval created by unsubscribe /
+// subscribe recovery.
 class BookSyncer<TDiff, TSnap> {
     private readonly cfg: BookSyncerConfig<TDiff, TSnap>;
     private readonly bids = new Map<number, number>();
@@ -33,25 +43,67 @@ class BookSyncer<TDiff, TSnap> {
     private lastUpdateId = 0;
 
     private buffer: TDiff[] = [];
+    private bufferWeight = 0;
     private snapshot: TSnap | null = null;
+    private connected = false;
     private synced = false;
     private snapshotPending = false;
-    // Bumped on every onConnect() so messages from a stale socket and the
-    // resolved snapshot fetch from a previous generation are ignored.
+    // Bumped whenever a socket generation or synchronization attempt is
+    // superseded so late REST responses cannot mutate the current state.
     private generation = 0;
-    private resyncScheduled = false;
-    private resyncTimer: ReturnType<typeof setTimeout> | null = null;
     private snapshotRetryTimer: ReturnType<typeof setTimeout> | null = null;
+    private retryAttempt = 0;
 
     constructor(cfg: BookSyncerConfig<TDiff, TSnap>) {
         this.cfg = cfg;
     }
 
     onConnect(): void {
-        this.clearResync();
-        this.clearSnapshotRetry();
+        this.connected = true;
+        this.startAttempt();
+    }
+
+    onDisconnect(): void {
+        this.connected = false;
         this.generation++;
+        this.clearSnapshotRetry();
+        this.resetWorkingState();
+    }
+
+    onDiff(diff: TDiff): void {
+        const sequence = this.cfg.diffSequence(diff);
+        if (!this.isValidSequence(sequence)) {
+            if (this.synced) this.restartSync();
+            return;
+        }
+
+        if (this.synced) {
+            this.applyLive(diff, sequence);
+            return;
+        }
+
+        this.pushBuffered(diff);
+        if (this.snapshot) this.syncFromSnapshot(this.generation);
+    }
+
+    private startAttempt(seeds: readonly TDiff[] = []): void {
+        this.generation++;
+        this.clearSnapshotRetry();
+        this.resetWorkingState();
+        this.retryAttempt = 0;
+        for (const seed of seeds) this.pushBuffered(seed);
+        if (this.connected) void this.fetchSnapshot(this.generation);
+    }
+
+    private restartSync(seeds: readonly TDiff[] = []): void {
+        const wasSynced = this.synced;
+        this.startAttempt(seeds);
+        if (wasSynced) this.cfg.onInvalid?.();
+    }
+
+    private resetWorkingState(): void {
         this.buffer = [];
+        this.bufferWeight = 0;
         this.snapshot = null;
         this.synced = false;
         this.snapshotPending = false;
@@ -60,44 +112,20 @@ class BookSyncer<TDiff, TSnap> {
         this.lastUpdateId = 0;
     }
 
-    onDisconnect(): void {
-        this.clearResync();
-        this.clearSnapshotRetry();
-        // Invalidate any in-flight snapshot fetch and incoming messages.
-        this.generation++;
-        this.buffer = [];
-        this.snapshot = null;
-        this.synced = false;
-        this.snapshotPending = false;
-    }
-
-    onDiff(diff: TDiff): void {
-        if (this.synced) {
-            this.applyLive(diff);
-            return;
-        }
-
-        this.buffer.push(diff);
-        if (this.snapshot) {
-            this.syncFromSnapshot(this.generation);
-            return;
-        }
-        if (!this.snapshotPending && !this.snapshotRetryTimer) void this.fetchSnapshot(this.generation);
-    }
-
     private async fetchSnapshot(generation: number): Promise<void> {
+        if (!this.connected || generation !== this.generation || this.snapshotPending) return;
         this.snapshotPending = true;
         let snapshot: TSnap;
         try {
             snapshot = await this.cfg.fetchSnapshot();
         } catch {
-            if (generation === this.generation) {
-                this.snapshotPending = true;
-                this.scheduleGap();
+            if (generation === this.generation && this.connected) {
+                this.snapshotPending = false;
+                this.scheduleSnapshotRetry(generation);
             }
             return;
         }
-        if (generation !== this.generation) return; // superseded
+        if (generation !== this.generation || !this.connected) return;
         this.snapshotPending = false;
         this.snapshot = snapshot;
         this.syncFromSnapshot(generation);
@@ -105,32 +133,32 @@ class BookSyncer<TDiff, TSnap> {
 
     private syncFromSnapshot(generation: number): void {
         const snapshot = this.snapshot;
-        if (!snapshot) return;
+        if (!snapshot || generation !== this.generation) return;
         const snapSeq = this.cfg.snapSequence(snapshot);
         if (!Number.isSafeInteger(snapSeq) || snapSeq < 0) {
-            this.failSync();
+            this.rejectSnapshot(generation);
             return;
         }
 
-        for (const event of this.buffer) {
-            if (!this.isValidSequence(this.cfg.diffSequence(event))) {
-                this.failSync();
-                return;
-            }
-        }
-
         const events = this.buffer.filter((event) => !this.cfg.isStaleSequence(this.cfg.diffSequence(event), snapSeq));
-        this.buffer = events;
+        this.replaceBuffer(events);
         if (events.length === 0) return;
 
         const firstSequence = this.cfg.diffSequence(events[0]);
         if (!this.cfg.bridgesSnapshot(firstSequence, snapSeq)) {
-            this.snapshot = null;
-            this.scheduleSnapshotRetry(generation);
+            // The retained suffix starts after this snapshot. A newer snapshot
+            // may bridge it; until then we remain explicitly unsynchronized.
+            this.rejectSnapshot(generation);
             return;
         }
 
-        this.cfg.loadSnapshot(snapshot, this.bids, this.asks);
+        this.bids.clear();
+        this.asks.clear();
+        if (!this.cfg.loadSnapshot(snapshot, this.bids, this.asks)) {
+            this.rejectSnapshot(generation);
+            return;
+        }
+
         this.lastUpdateId = snapSeq;
         for (const [index, event] of events.entries()) {
             const sequence = this.cfg.diffSequence(event);
@@ -142,38 +170,101 @@ class BookSyncer<TDiff, TSnap> {
                 sequence.to > this.lastUpdateId &&
                 !this.cfg.continuesSequence(sequence, this.lastUpdateId)
             ) {
-                this.failSync();
+                // The gap event and every later event may bridge a newer
+                // snapshot. Preserve the complete suffix across the restart.
+                this.restartSync(events.slice(index));
                 return;
             }
-            this.applyDiffEvent(event);
+            if (!this.applyDiffEvent(event)) {
+                this.restartSync();
+                return;
+            }
+        }
+
+        const book = this.buildBook();
+        if (!book) {
+            this.restartSync();
+            return;
         }
 
         this.buffer = [];
+        this.bufferWeight = 0;
         this.snapshot = null;
         this.synced = true;
-        this.emit();
+        this.retryAttempt = 0;
+        this.clearSnapshotRetry();
+        this.cfg.onChange(book);
+        this.refreshIfNeeded();
     }
 
-    private applyLive(diff: TDiff): void {
-        const sequence = this.cfg.diffSequence(diff);
-        if (!this.isValidSequence(sequence)) {
-            this.failSync();
-            return;
-        }
-        if (sequence.to <= this.lastUpdateId) return; // already covered
+    private applyLive(diff: TDiff, sequence: BookDiffSequence): void {
+        if (sequence.to <= this.lastUpdateId) return;
         if (!this.cfg.continuesSequence(sequence, this.lastUpdateId)) {
-            // Sequence gap — a diff was missed and applying out-of-order data
-            // makes top-of-book jump. Discard and ask the caller to resync.
-            this.failSync();
+            // The gap-causing event is retained as a possible bridge for the
+            // replacement snapshot.
+            this.restartSync([diff]);
             return;
         }
-        this.applyDiffEvent(diff);
-        this.emit();
+        if (!this.applyDiffEvent(diff)) {
+            this.restartSync();
+            return;
+        }
+        const book = this.buildBook();
+        if (!book) {
+            this.restartSync();
+            return;
+        }
+        this.cfg.onChange(book);
+        this.refreshIfNeeded();
     }
 
-    private applyDiffEvent(diff: TDiff): void {
-        this.cfg.applyDiff(diff, this.bids, this.asks);
+    private applyDiffEvent(diff: TDiff): boolean {
+        if (!this.cfg.applyDiff(diff, this.bids, this.asks)) return false;
+        if (this.cfg.normalizeBook && !this.cfg.normalizeBook(this.bids, this.asks)) return false;
         this.lastUpdateId = this.cfg.diffSequence(diff).to;
+        return true;
+    }
+
+    private buildBook(): LocalOrderBook | null {
+        return materializeOrderBook(this.bids, this.asks);
+    }
+
+    private refreshIfNeeded(): void {
+        if (!this.synced || !this.cfg.needsRefresh?.(this.bids, this.asks)) return;
+        this.restartSync();
+    }
+
+    private rejectSnapshot(generation: number): void {
+        this.snapshot = null;
+        this.bids.clear();
+        this.asks.clear();
+        this.lastUpdateId = 0;
+        this.scheduleSnapshotRetry(generation);
+    }
+
+    private pushBuffered(diff: TDiff): void {
+        const weight = this.diffWeight(diff);
+        this.buffer.push(diff);
+        this.bufferWeight += weight;
+
+        const maxDiffs = Math.max(1, this.cfg.maxBufferedDiffs ?? DEFAULT_MAX_BUFFERED_DIFFS);
+        const maxWeight = Math.max(1, this.cfg.maxBufferedWeight ?? DEFAULT_MAX_BUFFERED_WEIGHT);
+        while (this.buffer.length > maxDiffs || this.bufferWeight > maxWeight) {
+            const dropped = this.buffer.shift();
+            if (dropped === undefined) break;
+            this.bufferWeight -= this.diffWeight(dropped);
+        }
+        this.bufferWeight = Math.max(0, this.bufferWeight);
+    }
+
+    private replaceBuffer(events: TDiff[]): void {
+        this.buffer = events;
+        this.bufferWeight = events.reduce((total, event) => total + this.diffWeight(event), 0);
+    }
+
+    private diffWeight(diff: TDiff): number {
+        const value = this.cfg.diffWeight?.(diff) ?? 1;
+        return Number.isSafeInteger(value) && value > 0 ? value : 1;
     }
 
     private isValidSequence({ from, previous, to }: BookDiffSequence): boolean {
@@ -187,55 +278,17 @@ class BookSyncer<TDiff, TSnap> {
         );
     }
 
-    private emit(): void {
-        const asks = [...this.asks].sort((a, b) => a[0] - b[0]);
-        const bids = [...this.bids].sort((a, b) => b[0] - a[0]);
-        if (!asks.length || !bids.length || asks[0][0] <= bids[0][0]) {
-            this.failSync();
-            return;
-        }
-        const book: LocalOrderBook = {
-            asks,
-            bids,
-        };
-        this.cfg.onChange(book);
-    }
-
-    private scheduleGap(): void {
-        if (this.resyncScheduled) return; // collapse bursts of gaps into one
-        this.resyncScheduled = true;
-        this.cfg.onInvalid?.();
-        this.resyncTimer = setTimeout(() => {
-            this.resyncTimer = null;
-            this.resyncScheduled = false;
-            this.cfg.onGap();
-        }, this.cfg.resyncDelayMs ?? DEFAULT_RESYNC_DELAY_MS);
-    }
-
-    private failSync(): void {
-        if (!this.synced && this.resyncScheduled) return;
-        this.synced = false;
-        this.snapshot = null;
-        this.snapshotPending = true;
-        this.buffer = [];
-        this.scheduleGap();
-    }
-
     private scheduleSnapshotRetry(generation: number): void {
-        this.clearSnapshotRetry();
-        this.snapshotPending = true;
+        if (this.snapshotRetryTimer || !this.connected || generation !== this.generation) return;
+        const base = Math.max(100, this.cfg.retryBaseMs ?? DEFAULT_RETRY_BASE_MS);
+        const ceiling = Math.max(base, this.cfg.retryMaxMs ?? DEFAULT_RETRY_MAX_MS);
+        const exponential = Math.min(ceiling, base * 2 ** Math.min(this.retryAttempt, 8));
+        this.retryAttempt++;
+        const delay = Math.round(exponential * (0.8 + Math.random() * 0.4));
         this.snapshotRetryTimer = setTimeout(() => {
             this.snapshotRetryTimer = null;
-            if (generation !== this.generation) return;
-            this.snapshotPending = false;
-            void this.fetchSnapshot(generation);
-        }, this.cfg.resyncDelayMs ?? DEFAULT_RESYNC_DELAY_MS);
-    }
-
-    private clearResync(): void {
-        if (this.resyncTimer) clearTimeout(this.resyncTimer);
-        this.resyncTimer = null;
-        this.resyncScheduled = false;
+            if (generation === this.generation && this.connected) void this.fetchSnapshot(generation);
+        }, delay);
     }
 
     private clearSnapshotRetry(): void {
@@ -244,14 +297,48 @@ class BookSyncer<TDiff, TSnap> {
     }
 }
 
-export const applyLevelDeltas = (side: Map<number, number>, levels: [string, string][]): void => {
-    for (const [priceStr, qtyStr] of levels) {
-        const price = +priceStr;
-        const qty = +qtyStr;
-        if (!Number.isFinite(price) || !Number.isFinite(qty) || price <= 0 || qty < 0) continue;
-        if (qty === 0) side.delete(price);
-        else side.set(price, qty);
+const numericField = (value: unknown): number | null => {
+    if ((typeof value !== 'string' && typeof value !== 'number') || String(value).trim() === '') return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+};
+
+// Parse absolute quantity updates as one validated unit. A malformed tuple must
+// not be silently skipped while the local book continues claiming to be healthy.
+// If a venue repeats a price in one batch, the last absolute value wins.
+export const parseLevelDeltas = (levels: unknown): OrderBookLevel[] | null => {
+    if (!Array.isArray(levels)) return null;
+    const parsed = new Map<number, number>();
+    for (const tuple of levels) {
+        if (!Array.isArray(tuple) || tuple.length !== 2) return null;
+        const price = numericField(tuple[0]);
+        const quantity = numericField(tuple[1]);
+        if (price === null || quantity === null || price <= 0 || quantity < 0) return null;
+        parsed.set(price, quantity);
     }
+    return [...parsed];
+};
+
+export const applyParsedLevelDeltas = (
+    side: Map<number, number>,
+    levels: readonly OrderBookLevel[],
+    accepts: (price: number) => boolean = () => true,
+): void => {
+    for (const [price, quantity] of levels) {
+        if (!accepts(price)) continue;
+        if (quantity === 0) side.delete(price);
+        else side.set(price, quantity);
+    }
+};
+
+export const materializeOrderBook = (
+    bids: ReadonlyMap<number, number>,
+    asks: ReadonlyMap<number, number>,
+): LocalOrderBook | null => {
+    const sortedAsks = [...asks].sort((a, b) => a[0] - b[0]);
+    const sortedBids = [...bids].sort((a, b) => b[0] - a[0]);
+    if (!sortedAsks.length || !sortedBids.length || sortedAsks[0][0] <= sortedBids[0][0]) return null;
+    return { asks: sortedAsks, bids: sortedBids };
 };
 
 export default BookSyncer;

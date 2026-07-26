@@ -2,7 +2,7 @@ import type { EChartsOption } from 'echarts';
 import type { CallbackDataParams, TopLevelFormatterParams } from 'echarts/types/dist/shared';
 
 import { format } from 'date-fns';
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 
 import ChartContainer from '@/components/Charts/ChartContainer';
 import CSSelect from '@/components/UI/CSSelect';
@@ -99,63 +99,60 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
     const seriesData = cointegrationHistory.data?.history ?? [];
     const hasSeriesData = seriesData.some((series) => series.length > 0);
 
-    const option: EChartsOption = useMemo(
-        () => ({
-            grid: { bottom: '30', left: '30', right: '0', top: '50' },
-            legend: { top: 4, type: 'scroll' },
-            series: seriesData.map((data, index) => ({
-                data,
-                smooth: true,
-                type: 'line',
-                symbol: 'circle',
-                name: resolvedComparisonSymbols[index] || `Series ${index + 1}`,
-            })),
-            tooltip: {
-                axisPointer: { type: 'line' },
-                formatter: (params: TopLevelFormatterParams) => {
-                    if (!Array.isArray(params) || !params.length) return '';
-                    const date = new Date((params[0].value as number[])?.[0]);
-                    const timestamp = Number.isNaN(date.getTime()) ? '' : format(date, 'M/d/yyyy h:mm a');
-                    const lines = [...params]
-                        .sort(
-                            (a: CallbackDataParams, b: CallbackDataParams) =>
-                                Number((b.value as number[])?.[1]) - Number((a.value as number[])?.[1]),
-                        )
-                        .map((point: CallbackDataParams) => {
-                            const value = (point.value as number[])?.[1];
-                            const valueText =
-                                value === null || value === undefined
-                                    ? '-'
-                                    : formatNumber(Number(value), {
-                                          maximumFractionDigits: metricDecimals[resolvedMetric] ?? 3,
-                                      });
-                            return `${point.marker}${point.seriesName}: <strong>${valueText}</strong>`;
-                        });
-                    return `${timestamp}<br/>${lines.join('<br/>')}`;
-                },
-                trigger: 'axis',
+    const option: EChartsOption = {
+        grid: { bottom: '30', left: '30', right: '0', top: '50' },
+        legend: { top: 4, type: 'scroll' },
+        series: seriesData.map((data, index) => ({
+            data,
+            smooth: true,
+            type: 'line',
+            symbol: 'circle',
+            name: resolvedComparisonSymbols[index] || `Series ${index + 1}`,
+        })),
+        tooltip: {
+            axisPointer: { type: 'line' },
+            formatter: (params: TopLevelFormatterParams) => {
+                if (!Array.isArray(params) || !params.length) return '';
+                const date = new Date((params[0].value as number[])?.[0]);
+                const timestamp = Number.isNaN(date.getTime()) ? '' : format(date, 'M/d/yyyy h:mm a');
+                const lines = [...params]
+                    .sort(
+                        (a: CallbackDataParams, b: CallbackDataParams) =>
+                            Number((b.value as number[])?.[1]) - Number((a.value as number[])?.[1]),
+                    )
+                    .map((point: CallbackDataParams) => {
+                        const value = (point.value as number[])?.[1];
+                        const valueText =
+                            value === null || value === undefined
+                                ? '-'
+                                : formatNumber(Number(value), {
+                                      maximumFractionDigits: metricDecimals[resolvedMetric] ?? 3,
+                                  });
+                        return `${point.marker}${point.seriesName}: <strong>${valueText}</strong>`;
+                    });
+                return `${timestamp}<br/>${lines.join('<br/>')}`;
             },
-            xAxis: {
-                axisLabel: {
-                    formatter: (value: number) => {
-                        const date = new Date(value);
-                        return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(
-                            date.getMinutes(),
-                        ).padStart(2, '0')}`;
-                    },
+            trigger: 'axis',
+        },
+        xAxis: {
+            axisLabel: {
+                formatter: (value: number) => {
+                    const date = new Date(value);
+                    return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(
+                        date.getMinutes(),
+                    ).padStart(2, '0')}`;
                 },
-                type: 'time',
             },
-            yAxis: {
-                axisLabel: {
-                    formatter: (value: number) =>
-                        formatNumber(value, { maximumFractionDigits: metricDecimals[resolvedMetric] ?? 3 }),
-                },
-                type: 'value',
+            type: 'time',
+        },
+        yAxis: {
+            axisLabel: {
+                formatter: (value: number) =>
+                    formatNumber(value, { maximumFractionDigits: metricDecimals[resolvedMetric] ?? 3 }),
             },
-        }),
-        [seriesData, resolvedComparisonSymbols, resolvedMetric],
-    );
+            type: 'value',
+        },
+    };
 
     const handleBaseSymbolChange = (nextSymbol: string) => {
         if (resolvedComparisonSymbols.includes(nextSymbol)) {
@@ -169,12 +166,14 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
     const controls = (
         <>
             <CSSelect<string>
+                ariaLabel="Base symbol"
                 classes="w-32"
                 onChange={handleBaseSymbolChange}
                 options={symbolOptions}
                 value={resolvedBaseSymbol}
             />
             <MultiSelectDrawer
+                ariaLabel="Comparison symbols"
                 classes="w-36"
                 defaultValue={defaultComparisonSymbols}
                 maxSelected={32}
@@ -188,18 +187,21 @@ const CointegrationPairHistory = (props: CointegrationPairHistoryProps) => {
                 value={resolvedComparisonSymbols}
             />
             <CSSelect<string>
+                ariaLabel="Window"
                 classes="w-28"
                 onChange={(nextWindow) => onConfigChange({ window: nextWindow })}
                 options={windowOptions}
                 value={resolvedWindow}
             />
             <CSSelect<string>
+                ariaLabel="Time range"
                 classes="w-28"
                 onChange={(nextHours) => onConfigChange({ hours: nextHours })}
                 options={hoursOptions}
                 value={resolvedHours}
             />
             <CSSelect<CointegrationMetric>
+                ariaLabel="Metric"
                 classes="w-36"
                 onChange={(nextMetric) => onConfigChange({ cointegrationMetric: nextMetric })}
                 options={metricOptions}

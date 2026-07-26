@@ -3,7 +3,10 @@ import { persist } from 'zustand/middleware';
 
 import { safeJSONStorage } from '@/lib/safeStorage';
 
+import type { DomPreferences } from './domPreferences';
 import type { SeriesVisibility } from './types';
+
+import { defaultDomPreferences, sanitizeDomPreferences } from './domPreferences';
 
 // All sub-series visible by default; a panel with no stored entry reads this.
 export const defaultSeriesVisibility: SeriesVisibility = { book: true, liquidity: true, spread: true, volume: true };
@@ -48,6 +51,8 @@ const safeVisibility = (value: unknown): SeriesVisibility => {
     };
 };
 
+const safeBoolean = (value: unknown): boolean => value === true;
+
 const safeLiquidityPreferences = (value: unknown): LiquidityPreferences => {
     const candidate = value as Partial<LiquidityPreferences> | null;
     const intensity = Object.values(LiquidityIntensity).includes(candidate?.intensity as LiquidityIntensity)
@@ -67,13 +72,23 @@ const safeLiquidityPreferences = (value: unknown): LiquidityPreferences => {
     };
 };
 
+const safeEntries = (value: unknown): [string, unknown][] =>
+    value !== null && typeof value === 'object' && !Array.isArray(value) ? Object.entries(value) : [];
+
+const safeRecord = <T>(value: unknown, sanitize: (item: unknown) => T): Record<string, T> =>
+    Object.fromEntries(safeEntries(value).map(([panelId, item]) => [panelId, sanitize(item)]));
+
 export interface ChartSeriesStore {
+    dom: Record<string, DomPreferences>;
     liquidity: Record<string, LiquidityPreferences>;
+    orderBookNotional: Record<string, boolean>;
     visibility: Record<string, SeriesVisibility>;
+    setDomPreferences: (panelId: string, patch: Partial<DomPreferences>) => void;
     setLiquidityContrast: (panelId: string, value: LiquidityContrast) => void;
     setLiquidityIntensity: (panelId: string, value: LiquidityIntensity) => void;
     setLiquidityMarket: (panelId: string, market: string) => void;
     setMinNotional: (panelId: string, value: number) => void;
+    setOrderBookNotional: (panelId: string, value: boolean) => void;
     toggleSeries: (panelId: string, key: keyof SeriesVisibility) => void;
     removeSeries: (panelId: string) => void;
 }
@@ -81,8 +96,16 @@ export interface ChartSeriesStore {
 const useChartSeriesStore = create<ChartSeriesStore>()(
     persist(
         (set) => ({
+            dom: {},
             liquidity: {},
+            orderBookNotional: {},
             visibility: {},
+            setDomPreferences: (panelId, patch) =>
+                set((state) => {
+                    const current = state.dom[panelId] ?? defaultDomPreferences;
+                    const preferences = sanitizeDomPreferences({ ...current, ...patch });
+                    return { dom: { ...state.dom, [panelId]: preferences } };
+                }),
             setLiquidityContrast: (panelId, contrast) =>
                 set((state) => {
                     const current = state.liquidity[panelId] ?? defaultLiquidityPreferences;
@@ -110,6 +133,10 @@ const useChartSeriesStore = create<ChartSeriesStore>()(
                     const minNotional = Number.isFinite(value) ? Math.max(0, Math.min(MAX_THRESHOLD, value)) : 0;
                     return { liquidity: { ...state.liquidity, [panelId]: { ...current, minNotional } } };
                 }),
+            setOrderBookNotional: (panelId, value) =>
+                set((state) => ({
+                    orderBookNotional: { ...state.orderBookNotional, [panelId]: value },
+                })),
             toggleSeries: (panelId, key) =>
                 set((state) => {
                     const current = state.visibility[panelId] ?? defaultSeriesVisibility;
@@ -119,28 +146,28 @@ const useChartSeriesStore = create<ChartSeriesStore>()(
                 }),
             removeSeries: (panelId) =>
                 set((state) => {
+                    const { [panelId]: _removedDom, ...dom } = state.dom;
                     const { [panelId]: _removedVisibility, ...visibility } = state.visibility;
                     const { [panelId]: _removedLiquidity, ...liquidity } = state.liquidity;
-                    return { liquidity, visibility };
+                    const { [panelId]: _removedOrderBookNotional, ...orderBookNotional } = state.orderBookNotional;
+                    return { dom, liquidity, orderBookNotional, visibility };
                 }),
         }),
         {
             name: 'chart-series',
-            version: 2,
+            version: 3,
             storage: safeJSONStorage(),
-            migrate: (persisted) => persisted as ChartSeriesStore,
+            migrate: (persisted) =>
+                persisted !== null && typeof persisted === 'object' && !Array.isArray(persisted)
+                    ? (persisted as ChartSeriesStore)
+                    : ({} as ChartSeriesStore),
             merge: (persisted, current) => {
                 const saved = persisted as Partial<ChartSeriesStore> | undefined;
-                const visibility = Object.fromEntries(
-                    Object.entries(saved?.visibility ?? {}).map(([panelId, value]) => [panelId, safeVisibility(value)]),
-                );
-                const liquidity = Object.fromEntries(
-                    Object.entries(saved?.liquidity ?? {}).map(([panelId, value]) => [
-                        panelId,
-                        safeLiquidityPreferences(value),
-                    ]),
-                );
-                return { ...current, liquidity, visibility };
+                const dom = safeRecord(saved?.dom, sanitizeDomPreferences);
+                const liquidity = safeRecord(saved?.liquidity, safeLiquidityPreferences);
+                const orderBookNotional = safeRecord(saved?.orderBookNotional, safeBoolean);
+                const visibility = safeRecord(saved?.visibility, safeVisibility);
+                return { ...current, dom, liquidity, orderBookNotional, visibility };
             },
         },
     ),

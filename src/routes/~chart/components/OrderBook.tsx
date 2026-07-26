@@ -1,183 +1,237 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 
+import { useDocumentVisibility, useIntersection, useResizeObserver } from '@mantine/hooks';
+import { useState } from 'react';
+
+import type { ExchangeId } from '@/services/exchanges/types';
+
+import { SettingsIcon } from '@/components/Icons';
 import CSPanel from '@/components/Layouts/CSPanel';
 import CSButton from '@/components/UI/CSButton';
-import CSSegmented from '@/components/UI/CSSegmented';
 import CSSpinner from '@/components/UI/CSSpinner';
-import NumberInput from '@/components/UI/NumberInput';
-import { palette, rowHeight, withAlpha } from '@/lib/theme';
-import { groupOrders } from '@/services/exchanges/_shared/grouping';
+import { rowHeight } from '@/lib/theme';
 import { useOrderBook } from '@/services/exchanges/hooks';
-import { formatNumber, formatPrice } from '@/utils/number';
+import { decimalPlaces, formatCompactUSD, formatNumber, formatPrice } from '@/utils/number';
 
-import { OrderbookType, Orientation, PanelType } from '../types';
+import type { OrderBookViewRow } from '../orderBookView';
+import type { Orientation } from '../types';
+
+import { buildOrderBookView } from '../orderBookView';
+import { Orientation as OrientationValue, PanelType } from '../types';
+import useChartSeriesStore from '../useChartSeriesStore';
 import useResolvedSource from '../useResolvedSource';
 import styles from './OrderBook.module.css';
+import OrderBookSettings from './OrderBookSettings';
 import OrderBookVolumeIndicators from './OrderBookVolumeIndicators';
 import PanelSource from './PanelSource';
 
-const orientationOptions = Object.values(Orientation);
-
-const linearGradingDegrees = {
-    [OrderbookType.Asks]: {
-        [Orientation.H]: '90deg',
-        [Orientation.V]: '90deg',
-    },
-    [OrderbookType.Bids]: {
-        [Orientation.H]: '270deg',
-        [Orientation.V]: '90deg',
-    },
-};
-
-// Per-row size bars: down/up at 30% alpha.
-const linearGradingColors = {
-    [OrderbookType.Asks]: withAlpha(palette.down, 0.3),
-    [OrderbookType.Bids]: withAlpha(palette.up, 0.3),
-};
-
-const tableBackgroundStyle = (type: OrderbookType, orientation: Orientation, percentage: number) =>
-    `linear-gradient(${linearGradingDegrees[type][orientation]}, ${
-        linearGradingColors[type]
-    } ${percentage}%, transparent 0%)`;
-
 const ORDERBOOK_ROW_HEIGHT = rowHeight.xs;
+const ORDERBOOK_PUBLISH_INTERVAL_MS = 200;
 
 type Props = { panelId: string; onRemove: () => void };
 
-const OrderBookTable = ({ panelId, onRemove }: Props) => {
-    const { exchange, symbol, tickSize: symbolTickSize } = useResolvedSource(panelId, PanelType.OrderBook);
-    const orderBook = useOrderBook(exchange, symbol);
+type OrderBookLiveBodyProps = Readonly<{
+    base: string;
+    exchange: ExchangeId;
+    groupBy: number;
+    notional: boolean;
+    orientation: Orientation;
+    symbol: string;
+}>;
 
-    const [numOfTicks, setNumOfTicks] = useState(100);
-    const [orientation, setOrientation] = useState<Orientation>(Orientation.V);
-    const [rowsThatFit, setRowsThatFit] = useState(0);
-    const rowsContainerRef = useRef<HTMLDivElement>(null);
+type OrderBookSideProps = Readonly<{
+    isAsk: boolean;
+    isHorizontal: boolean;
+    notional: boolean;
+    priceDecimals: number;
+    rows: readonly OrderBookViewRow[];
+}>;
 
-    const groupByVal = symbolTickSize * numOfTicks;
+type OrderBookRowProps = Readonly<{
+    amount: number;
+    cumulativeAmount: number;
+    cumulativePercentage: number;
+    isAsk: boolean;
+    isHorizontalBid: boolean;
+    notional: boolean;
+    price: number;
+    priceDecimals: number;
+    sizePercentage: number;
+}>;
 
-    const tickSizeDecimalPlaces = (() => {
-        const tickSizeStr = symbolTickSize.toString();
-        const decimalIndex = tickSizeStr.indexOf('.');
-        return decimalIndex === -1 ? 0 : tickSizeStr.length - decimalIndex - 1;
-    })();
+type OrderBookRowStyle = CSSProperties & {
+    '--cumulative-width': string;
+    '--size-width': string;
+};
 
-    const calculatedBidRows = orientation === Orientation.V ? Math.floor(rowsThatFit / 2) : rowsThatFit;
-    const calculatedAskRows = orientation === Orientation.V ? rowsThatFit - calculatedBidRows : rowsThatFit;
+const formatAmount = (amount: number, notional: boolean): string =>
+    notional ? formatCompactUSD(amount) : formatNumber(amount, { maximumFractionDigits: 6 });
 
-    const groupedOrderBook = groupOrders(orderBook, groupByVal, { asks: calculatedAskRows, bids: calculatedBidRows });
-
-    useLayoutEffect(() => {
-        const el = rowsContainerRef.current;
-        if (!el) return;
-        const measure = () => setRowsThatFit(Math.max(0, Math.floor(el.clientHeight / ORDERBOOK_ROW_HEIGHT)));
-        measure();
-        const observer = new ResizeObserver(measure);
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, []);
-
-    const maxQuantity = (() => {
-        const bidsAndAsks = groupedOrderBook.asks?.concat(groupedOrderBook.bids) || [];
-        return Math.max(...bidsAndAsks.map((limit: [number, number]) => limit?.[1]));
-    })();
-
-    const orderBookTable = (groupedGetter: [number, number][], type: OrderbookType) => {
-        const rows = [];
-        const isOrientationHorizontal = orientation === Orientation.H && type === OrderbookType.Bids;
-        const orientationClassRow = isOrientationHorizontal ? 'text-right' : '';
-
-        const cumulativeQuantities: number[] = [];
-        let cumulative = 0;
-        for (let i = 0; i < groupedGetter?.length; i++) {
-            if (!groupedGetter[i]) continue;
-            cumulative += groupedGetter[i][1];
-            cumulativeQuantities.push(cumulative);
-        }
-
-        const maxCumulative = cumulativeQuantities[cumulativeQuantities.length - 1] || 0;
-
-        const cumulativeColors = {
-            [OrderbookType.Asks]: withAlpha(palette.down, 0.1),
-            [OrderbookType.Bids]: withAlpha(palette.up, 0.1),
-        };
-
-        const isAsk = type === OrderbookType.Asks;
-
-        let cumulativeIndex = 0;
-        for (let i = 0; i < groupedGetter?.length; i++) {
-            if (!groupedGetter[i]) continue;
-            const [price, quantity] = groupedGetter[i];
-            const percentage = (quantity / maxQuantity) * 100;
-            const cumulativePercentage = (cumulativeQuantities[cumulativeIndex] / maxCumulative) * 100;
-            const formattedPrice = formatPrice(price, tickSizeDecimalPlaces);
-            const formattedQuantity = formatNumber(quantity, { maximumFractionDigits: 6 });
-
-            const gradientDir = linearGradingDegrees[type][orientation];
-            const cumulativeBackground = `linear-gradient(${gradientDir}, ${cumulativeColors[type]} ${cumulativePercentage}%, transparent 0%)`;
-
-            rows.push(
-                <div
-                    key={price}
-                    style={{
-                        height: ORDERBOOK_ROW_HEIGHT,
-                        background: cumulativeBackground,
-                    }}
-                >
-                    <div
-                        className={[styles.row, isAsk ? styles.ask : styles.bid, orientationClassRow || undefined]
-                            .filter(Boolean)
-                            .join(' ')}
-                        style={{ background: tableBackgroundStyle(type, orientation, percentage) }}
-                    >
-                        <div className={orientationClassRow}>{formattedPrice}</div>
-                        <div>{formattedQuantity}</div>
-                    </div>
-                </div>,
-            );
-
-            cumulativeIndex++;
-        }
-
-        return rows;
+const OrderBookRow = ({
+    amount,
+    cumulativeAmount,
+    cumulativePercentage,
+    isAsk,
+    isHorizontalBid,
+    notional,
+    price,
+    priceDecimals,
+    sizePercentage,
+}: OrderBookRowProps) => {
+    const rowStyle: OrderBookRowStyle = {
+        '--cumulative-width': `${cumulativePercentage}%`,
+        '--size-width': `${sizePercentage}%`,
     };
 
-    const isHorizontal = orientation === Orientation.H;
+    return (
+        <div
+            className={[styles.row, isAsk ? styles.ask : styles.bid, isHorizontalBid && styles.fromRight]
+                .filter(Boolean)
+                .join(' ')}
+            style={rowStyle}
+        >
+            <div className={[styles.price, isHorizontalBid && styles.priceRight].filter(Boolean).join(' ')}>
+                {formatPrice(price, priceDecimals)}
+            </div>
+            <div className={styles.size}>{formatAmount(amount, notional)}</div>
+            <div className={styles.total}>{formatAmount(cumulativeAmount, notional)}</div>
+        </div>
+    );
+};
+
+const OrderBookSide = ({ isAsk, isHorizontal, notional, priceDecimals, rows }: OrderBookSideProps) => {
+    const isHorizontalBid = isHorizontal && !isAsk;
+    const className = [isAsk ? styles.asks : styles.bids, isHorizontalBid && styles.horizontal]
+        .filter(Boolean)
+        .join(' ');
+
+    return (
+        <div className={className}>
+            {rows.map(({ amount, cumulativeAmount, cumulativePercentage, price, sizePercentage }) => (
+                <OrderBookRow
+                    amount={amount}
+                    cumulativeAmount={cumulativeAmount}
+                    cumulativePercentage={cumulativePercentage}
+                    isAsk={isAsk}
+                    isHorizontalBid={isHorizontalBid}
+                    key={price}
+                    notional={notional}
+                    price={price}
+                    priceDecimals={priceDecimals}
+                    sizePercentage={sizePercentage}
+                />
+            ))}
+        </div>
+    );
+};
+
+const OrderBookLiveBody = ({ base, exchange, groupBy, notional, orientation, symbol }: OrderBookLiveBodyProps) => {
+    const documentVisibility = useDocumentVisibility();
+    const { entry, ref: intersectionRef } = useIntersection<HTMLDivElement>();
+    const [rowsContainerRef, { height: rowsContainerHeight }] = useResizeObserver<HTMLDivElement>();
+    const active = Boolean(entry?.isIntersecting) && documentVisibility === 'visible';
+    const orderBook = useOrderBook(exchange, symbol, {
+        active,
+        publishIntervalMs: ORDERBOOK_PUBLISH_INTERVAL_MS,
+    });
+    const rowsThatFit = Math.max(0, Math.floor(rowsContainerHeight / ORDERBOOK_ROW_HEIGHT));
+    const isHorizontal = orientation === OrientationValue.H;
+    const bidRows = isHorizontal ? rowsThatFit : Math.floor(rowsThatFit / 2);
+    const askRows = isHorizontal ? rowsThatFit : rowsThatFit - bidRows;
+    const priceDecimals = decimalPlaces(groupBy);
+    const { asks, bids, volume } = buildOrderBookView(orderBook, {
+        askRows,
+        bidRows,
+        groupBy,
+        notional,
+    });
+
+    return (
+        <div className={styles.liveBody} ref={intersectionRef}>
+            {!asks.length && <CSSpinner />}
+            <OrderBookVolumeIndicators
+                askAmount={volume.askAmount}
+                askPercentage={volume.askPercentage}
+                base={base}
+                bidAmount={volume.bidAmount}
+                bidPercentage={volume.bidPercentage}
+                notional={notional}
+            />
+            <div
+                className={[styles.container, isHorizontal && styles.horizontal].filter(Boolean).join(' ')}
+                ref={rowsContainerRef}
+            >
+                <OrderBookSide
+                    isAsk
+                    isHorizontal={isHorizontal}
+                    notional={notional}
+                    priceDecimals={priceDecimals}
+                    rows={asks}
+                />
+                <OrderBookSide
+                    isAsk={false}
+                    isHorizontal={isHorizontal}
+                    notional={notional}
+                    priceDecimals={priceDecimals}
+                    rows={bids}
+                />
+            </div>
+        </div>
+    );
+};
+
+const OrderBook = ({ panelId, onRemove }: Props) => {
+    const { base, exchange, symbol, tickSize } = useResolvedSource(panelId, PanelType.OrderBook);
+    const notional = useChartSeriesStore((state) => state.orderBookNotional[panelId] ?? false);
+    const setOrderBookNotional = useChartSeriesStore((state) => state.setOrderBookNotional);
+    const [numOfTicks, setNumOfTicks] = useState(100);
+    const [orientation, setOrientation] = useState<Orientation>(OrientationValue.V);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+
+    const handleNumOfTicks = (value: number) => {
+        if (Number.isInteger(value)) setNumOfTicks(value);
+    };
+    const handleNotional = (showNotional: boolean) => setOrderBookNotional(panelId, showNotional);
+    const handleOrientation = (value: Orientation) => setOrientation(value);
+    const openSettings = () => setSettingsOpen(true);
+    const closeSettings = () => setSettingsOpen(false);
 
     return (
         <>
-            {!groupedOrderBook.asks.length && <CSSpinner />}
-
             <CSPanel
                 bodyClassName={styles.panelBody}
                 className="h-full"
                 controls={
                     <>
                         <PanelSource panelId={panelId} panelType={PanelType.OrderBook} />
-                        <NumberInput onChange={(e) => setNumOfTicks(e)} value={numOfTicks} />
-                        <CSSegmented<Orientation>
-                            onChange={setOrientation}
-                            options={orientationOptions}
-                            value={orientation}
-                        />
-                        <CSButton onClick={onRemove} square>
-                            -
+                        <CSButton ariaLabel="Settings" onClick={openSettings} square title="Settings">
+                            <SettingsIcon />
                         </CSButton>
                     </>
                 }
+                onRemove={onRemove}
             >
-                <OrderBookVolumeIndicators groupedOrderBook={groupedOrderBook} orderBook={orderBook} />
-                <div
-                    className={[styles.container, isHorizontal && styles.horizontal].filter(Boolean).join(' ')}
-                    ref={rowsContainerRef}
-                >
-                    <div className={styles.asks}>{orderBookTable(groupedOrderBook.asks, OrderbookType.Asks)}</div>
-                    <div className={[styles.bids, isHorizontal && styles.horizontal].filter(Boolean).join(' ')}>
-                        {orderBookTable(groupedOrderBook.bids, OrderbookType.Bids)}
-                    </div>
-                </div>
+                <OrderBookLiveBody
+                    base={base}
+                    exchange={exchange}
+                    groupBy={tickSize * numOfTicks}
+                    notional={notional}
+                    orientation={orientation}
+                    symbol={symbol}
+                />
             </CSPanel>
+            <OrderBookSettings
+                isOpen={settingsOpen}
+                notional={notional}
+                numOfTicks={numOfTicks}
+                onClose={closeSettings}
+                onNotionalChange={handleNotional}
+                onNumOfTicksChange={handleNumOfTicks}
+                onOrientationChange={handleOrientation}
+                orientation={orientation}
+            />
         </>
     );
 };
 
-export default OrderBookTable;
+export default OrderBook;

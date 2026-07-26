@@ -1,14 +1,22 @@
-import type { LocalOrderBook, OrderBookLevel } from '@/routes/~chart/types';
-
 import externalServiceOrigins from '@/config/externalServices';
 
-import type { BboSubscriber, DepthState, DepthSubscriber, NormalizedTrade, TradeSubscriber } from '../types';
+import type {
+    BboSubscriber,
+    DepthCoverage,
+    DepthState,
+    DepthSubscriber,
+    LocalOrderBook,
+    NormalizedTrade,
+    OrderBookLevel,
+    TradeSubscriber,
+} from '../types';
 
 import MultiplexedSocket, { SocketStatus } from '../_shared/multiplexed-socket';
 import { DepthFeedStatus } from '../types';
 
 const WS_URL = `${externalServiceOrigins.hyperliquidWS}/ws`;
 const PING_INTERVAL_MS = 30_000; // server drops idle sockets ~60s
+const ORDERBOOK_DEPTH = 20;
 
 export const HlChannel = {
     L2Book: 'l2Book',
@@ -17,35 +25,47 @@ export const HlChannel = {
 } as const;
 export type HlChannel = (typeof HlChannel)[keyof typeof HlChannel];
 
-type HlSub = { type: HlChannel; coin: string; fast?: boolean };
+type HlSub = { type: HlChannel; coin: string };
 type HlLevel = { px: string; sz: string; n: number };
 type HlBook = { coin: string; time: number; levels: [HlLevel[], HlLevel[]] };
 type HlBbo = { coin: string; time: number; bbo: [HlLevel | null, HlLevel | null] };
 type HlTrade = { coin: string; side: string; px: string; sz: string; time: number; tid: number };
 
-const toLevels = (levels: HlLevel[]): OrderBookLevel[] => {
-    const parsed: OrderBookLevel[] = [];
+const toLevels = (levels: unknown): OrderBookLevel[] | null => {
+    if (!Array.isArray(levels)) return null;
+    const parsed = new Map<number, number>();
     for (const level of levels) {
-        const price = +level.px;
-        const quantity = +level.sz;
-        if (Number.isFinite(price) && Number.isFinite(quantity) && price > 0 && quantity > 0) {
-            parsed.push([price, quantity]);
+        if (
+            !level ||
+            typeof level !== 'object' ||
+            !('px' in level) ||
+            !('sz' in level) ||
+            !('n' in level) ||
+            typeof level.px !== 'string' ||
+            typeof level.sz !== 'string' ||
+            !Number.isSafeInteger(level.n) ||
+            level.n < 0
+        ) {
+            return null;
         }
+        const price = Number(level.px);
+        const quantity = Number(level.sz);
+        if (!Number.isFinite(price) || !Number.isFinite(quantity) || price <= 0 || quantity <= 0) return null;
+        if (parsed.has(price)) return null;
+        parsed.set(price, quantity);
     }
-    return parsed;
+    return [...parsed];
 };
 
-// fast & slow l2Book share channel + coin; only `fast` tells them apart, so it has
-// to be part of the routing key.
-const bookKey = (coin: string, fast: boolean | undefined) => `l2Book${fast ? '-fast' : ''}:${coin}`;
+const bookKey = (coin: string) => `l2Book:${coin}`;
 
 const socket = new MultiplexedSocket<HlSub>({
-    keyOf: (sub) => (sub.type === HlChannel.L2Book ? bookKey(sub.coin, sub.fast) : `${sub.type}:${sub.coin}`),
+    keyOf: (sub) => (sub.type === HlChannel.L2Book ? bookKey(sub.coin) : `${sub.type}:${sub.coin}`),
     pingFrame: { method: 'ping' },
     pingIntervalMs: PING_INTERVAL_MS,
     route: (msg: any) => {
         if (msg?.channel === HlChannel.L2Book && msg.data?.coin) {
-            return [{ data: msg.data, key: bookKey(msg.data.coin, msg.data.fast) }];
+            return [{ data: msg.data, key: bookKey(msg.data.coin) }];
         }
         if (msg?.channel === HlChannel.Trades) {
             // trades payload is an array; route by the coin of the first trade.
@@ -62,41 +82,35 @@ const socket = new MultiplexedSocket<HlSub>({
     url: WS_URL,
 });
 
-const toLocal = (book: HlBook): LocalOrderBook => ({
-    asks: toLevels(book.levels[1]),
-    bids: toLevels(book.levels[0]),
-});
-
-// Merge HL's two l2Book feeds: fast (~5 levels, ~2/s) stays authoritative near the
-// spread; slow (~20 levels, ~0.2/s) only adds levels beyond the fast band. Keeps the
-// top fresh, fills depth, and drops stale overlap so the book can't cross.
-const mergeBooks = (fast: HlBook | null, slow: HlBook | null): LocalOrderBook | null => {
-    if (!fast || !slow) return fast ? toLocal(fast) : slow ? toLocal(slow) : null;
-
-    const fastBids = toLevels(fast.levels[0]);
-    const fastAsks = toLevels(fast.levels[1]);
-    // far edge of the fast band (levels are best-first); slow only adds past these
-    const bidFloor = fastBids.length ? fastBids[fastBids.length - 1][0] : Infinity;
-    const askCeil = fastAsks.length ? fastAsks[fastAsks.length - 1][0] : -Infinity;
-
+const toLocal = (book: HlBook): LocalOrderBook | null => {
+    const asks = toLevels(book.levels[1]);
+    const bids = toLevels(book.levels[0]);
+    if (!asks || !bids) return null;
+    asks.sort((a, b) => a[0] - b[0]);
+    bids.sort((a, b) => b[0] - a[0]);
     return {
-        asks: [...fastAsks, ...toLevels(slow.levels[1]).filter(([px]) => px > askCeil)],
-        bids: [...fastBids, ...toLevels(slow.levels[0]).filter(([px]) => px < bidFloor)],
+        asks: asks.slice(0, ORDERBOOK_DEPTH),
+        bids: bids.slice(0, ORDERBOOK_DEPTH),
     };
 };
 
 const orderBookStreams = new Map<string, HyperliquidOrderBookStream>();
 
+const emptyCoverage = (): DepthCoverage => ({
+    asks: { farPrice: null, truncated: true },
+    bids: { farPrice: null, truncated: true },
+});
+
 class HyperliquidOrderBookStream {
     private readonly symbol: string;
     private readonly subscribers = new Set<DepthSubscriber>();
-    private fast: HlBook | null = null;
-    private slow: HlBook | null = null;
-    private offFast: (() => void) | null = null;
-    private offSlow: (() => void) | null = null;
+    private offBook: (() => void) | null = null;
     private offStatus: (() => void) | null = null;
+    private generation = 0;
     private state: DepthState = {
         book: { asks: [], bids: [] },
+        coverage: emptyCoverage(),
+        generation: 0,
         status: DepthFeedStatus.Syncing,
     };
 
@@ -105,70 +119,106 @@ class HyperliquidOrderBookStream {
     }
 
     subscribe(cb: DepthSubscriber): () => void {
-        this.subscribers.add(cb);
-        cb(this.state);
+        const subscriber: DepthSubscriber = (state) => cb(state);
+        this.subscribers.add(subscriber);
+        subscriber(this.state);
         if (this.subscribers.size === 1) this.start();
+
+        let active = true;
         return () => {
-            this.subscribers.delete(cb);
+            if (!active) return;
+            active = false;
+            this.subscribers.delete(subscriber);
             if (this.subscribers.size === 0) this.stop();
         };
     }
 
     private start(): void {
-        this.offFast = socket.subscribe<HlBook>({ coin: this.symbol, fast: true, type: HlChannel.L2Book }, (book) => {
-            this.fast = book;
-            this.emit();
-        });
-        this.offSlow = socket.subscribe<HlBook>({ coin: this.symbol, type: HlChannel.L2Book }, (book) => {
-            this.slow = book;
-            this.emit();
-        });
+        this.offBook = socket.subscribe<HlBook>({ coin: this.symbol, type: HlChannel.L2Book }, (book) =>
+            this.onBook(book),
+        );
         this.offStatus = socket.subscribeStatus((status) => this.onSocketStatus(status));
     }
 
     private stop(): void {
         this.offStatus?.();
-        this.offFast?.();
-        this.offSlow?.();
+        this.offBook?.();
         this.offStatus = null;
-        this.offFast = null;
-        this.offSlow = null;
-        this.fast = null;
-        this.slow = null;
-        orderBookStreams.delete(this.symbol);
+        this.offBook = null;
+        this.generation = 0;
+        this.state = {
+            book: { asks: [], bids: [] },
+            coverage: emptyCoverage(),
+            generation: 0,
+            status: DepthFeedStatus.Syncing,
+        };
+        if (orderBookStreams.get(this.symbol) === this) orderBookStreams.delete(this.symbol);
     }
 
     private onSocketStatus(status: SocketStatus): void {
         if (status === SocketStatus.Open) {
-            this.fast = null;
-            this.slow = null;
-            this.publish(DepthFeedStatus.Syncing);
+            this.generation++;
+            this.publishStatus(DepthFeedStatus.Syncing);
             return;
         }
-        this.publish(status === SocketStatus.Closed ? DepthFeedStatus.Stale : DepthFeedStatus.Syncing);
+        this.publishStatus(status === SocketStatus.Closed ? DepthFeedStatus.Stale : DepthFeedStatus.Syncing);
     }
 
-    private emit(): void {
-        // Both are complete snapshots. Waiting for both avoids presenting the
-        // fast five-level projection as though it were the full available book.
-        if (!this.fast || !this.slow) return;
-        const merged = mergeBooks(this.fast, this.slow);
+    private onBook(source: HlBook): void {
         if (
-            !merged ||
-            !merged.asks.length ||
-            !merged.bids.length ||
-            !Number.isFinite(merged.asks[0][0]) ||
-            !Number.isFinite(merged.bids[0][0]) ||
-            merged.asks[0][0] <= merged.bids[0][0]
+            !source ||
+            typeof source !== 'object' ||
+            source.coin !== this.symbol ||
+            !Number.isSafeInteger(source.time) ||
+            source.time < 0 ||
+            !Array.isArray(source.levels) ||
+            source.levels.length !== 2
         ) {
-            this.publish(DepthFeedStatus.Syncing);
+            this.invalidate();
             return;
         }
-        this.publish(DepthFeedStatus.Healthy, merged);
+        const book = toLocal(source);
+        if (
+            !book ||
+            !book.asks.length ||
+            !book.bids.length ||
+            !Number.isFinite(book.asks[0][0]) ||
+            !Number.isFinite(book.bids[0][0]) ||
+            book.asks[0][0] <= book.bids[0][0]
+        ) {
+            this.invalidate();
+            return;
+        }
+        const coverage: DepthCoverage = {
+            asks: {
+                farPrice: book.asks[book.asks.length - 1]?.[0] ?? null,
+                truncated: book.asks.length >= ORDERBOOK_DEPTH,
+            },
+            bids: {
+                farPrice: book.bids[book.bids.length - 1]?.[0] ?? null,
+                truncated: book.bids.length >= ORDERBOOK_DEPTH,
+            },
+        };
+        this.state = {
+            book,
+            coverage,
+            generation: this.generation,
+            status: DepthFeedStatus.Healthy,
+        };
+        this.notify();
     }
 
-    private publish(status: DepthState['status'], book = this.state.book): void {
-        this.state = { book, status };
+    private publishStatus(status: DepthState['status']): void {
+        this.state = { ...this.state, generation: this.generation, status };
+        this.notify();
+    }
+
+    private invalidate(): void {
+        if (this.state.status === DepthFeedStatus.Healthy) this.generation++;
+        this.publishStatus(DepthFeedStatus.Syncing);
+    }
+
+    private notify(): void {
         for (const cb of this.subscribers) cb(this.state);
     }
 }

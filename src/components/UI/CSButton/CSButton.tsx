@@ -19,10 +19,12 @@ export const CSButtonAs = {
 export type CSButtonAs = (typeof CSButtonAs)[keyof typeof CSButtonAs];
 
 type CSButtonBaseProps = {
+    ariaLabel?: string;
     children: ReactNode;
     variant?: CSButtonVariant;
     square?: boolean;
     className?: string;
+    title?: string;
 };
 
 type CSButtonProps =
@@ -50,7 +52,13 @@ const CSButton = (props: CSButtonProps) => {
     }
 
     return (
-        <button className={classes} onClick={props.onClick} type={props.type ?? 'button'}>
+        <button
+            aria-label={props.ariaLabel}
+            className={classes}
+            onClick={props.onClick}
+            title={props.title ?? props.ariaLabel}
+            type={props.type ?? 'button'}
+        >
             {children}
         </button>
     );

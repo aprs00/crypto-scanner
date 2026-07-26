@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Responsive, WidthProvider } from 'react-grid-layout';
+import ReactGridLayout, { WidthProvider } from 'react-grid-layout';
 
 import CSButton, { CSButtonVariant } from '@/components/UI/CSButton';
 import CSFloatingButton from '@/components/UI/CSFloatingButton';
@@ -10,7 +10,7 @@ import ChartWrapper from './components/ChartWrapper';
 import styles from './Stats.module.css';
 import useChartStore, { chartTemplates, CHART_HEIGHT } from './useChartStore';
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
+const GridLayout = WidthProvider(ReactGridLayout);
 
 const Stats = () => {
     const chartIds = useChartStore((state) => state.chartIds);
@@ -60,8 +60,8 @@ const Stats = () => {
 
             <div className="grid-host scroll">
                 {(filteredChartIds.length && (
-                    <ResponsiveGridLayout
-                        cols={{ lg: 12, md: 12, sm: 12, xs: 12, xxs: 12 }}
+                    <GridLayout
+                        cols={12}
                         draggableCancel=".cs-no-drag"
                         draggableHandle="#drag-handle"
                         onLayoutChange={handleLayoutChange}
@@ -72,7 +72,7 @@ const Stats = () => {
                                 {grid.component}
                             </div>
                         ))}
-                    </ResponsiveGridLayout>
+                    </GridLayout>
                 )) || (
                     <div className={styles.empty}>
                         <p className={styles.emptyMsg}>NO CHARTS IN THIS GROUP</p>
@@ -83,7 +83,7 @@ const Stats = () => {
                 )}
             </div>
 
-            <CSFloatingButton label="+" onClick={handleOpenDrawer} />
+            <CSFloatingButton ariaLabel="Add chart" label="+" onClick={handleOpenDrawer} />
 
             <ChartDrawer isOpen={isDrawerOpen} onClose={handleCloseDrawer} />
         </>

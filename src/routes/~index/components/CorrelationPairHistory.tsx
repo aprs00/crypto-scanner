@@ -96,6 +96,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
     const controls = (
         <>
             <CSSelect<string>
+                ariaLabel="Base symbol"
                 classes="w-32"
                 onChange={(baseSymbol) => {
                     onConfigChange({ baseSymbol });
@@ -104,6 +105,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 value={baseSymbol}
             />
             <MultiSelectDrawer
+                ariaLabel="Comparison symbols"
                 classes="w-32"
                 defaultValue={defaultComparisonSymbols}
                 maxSelected={32}
@@ -115,6 +117,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 value={comparisonSymbols}
             />
             <CSSelect<string>
+                ariaLabel="Time range"
                 onChange={(hours) => {
                     onConfigChange({ hours });
                 }}
@@ -122,6 +125,7 @@ const CorrelationPairHistory = (props: CorrelationPairHistoryProps) => {
                 value={hours}
             />
             <CSSelect<DataType>
+                ariaLabel="Data type"
                 classes="w-24"
                 onChange={(dataType) => {
                     onConfigChange({ dataType });

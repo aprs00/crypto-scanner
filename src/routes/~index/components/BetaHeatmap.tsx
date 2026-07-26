@@ -45,6 +45,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
     const controls = (
         <>
             <MultiSelectDrawer
+                ariaLabel="Symbols"
                 classes="w-32"
                 defaultValue={defaultSymbols}
                 onChange={(nextSymbols) => {
@@ -55,6 +56,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
                 value={symbols}
             />
             <CSSelect<string>
+                ariaLabel="Time range"
                 onChange={(hours) => {
                     onConfigChange({ hours });
                 }}
@@ -62,6 +64,7 @@ const BetaHeatmap = (props: BetaHeatmapProps) => {
                 value={hours}
             />
             <CSSelect<DataType>
+                ariaLabel="Data type"
                 classes="w-24"
                 onChange={(dataType) => {
                     onConfigChange({ dataType });

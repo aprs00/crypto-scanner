@@ -58,6 +58,7 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
     const controls = (
         <>
             <MultiSelectDrawer
+                ariaLabel="Symbols"
                 classes="w-32"
                 defaultValue={defaultSymbols}
                 onChange={(nextSymbols) => {
@@ -68,6 +69,7 @@ const ZScoreScatter3D = (props: Scatter3DProps) => {
                 value={symbols}
             />
             <CSSelect<string>
+                ariaLabel="Time range"
                 onChange={(hours) => {
                     onConfigChange({ hours });
                 }}

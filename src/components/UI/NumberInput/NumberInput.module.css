@@ -9,6 +9,7 @@
     input {
         flex: 1;
         min-width: 0;
+        appearance: textfield;
         background: transparent;
         color: var(--fg);
         font-size: var(--fs-base);
@@ -17,10 +18,28 @@
         letter-spacing: var(--ls-base);
         padding: 0 var(--sp-3);
 
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+            margin: 0;
+            appearance: none;
+        }
+
         &:focus {
             outline: none;
         }
     }
+}
+
+.prefix {
+    display: inline-flex;
+    align-items: center;
+    padding-left: var(--sp-3);
+    color: var(--ac);
+    font-size: var(--fs-base);
+}
+
+.prefix + input {
+    padding-left: var(--sp-2);
 }
 
 .buttons {

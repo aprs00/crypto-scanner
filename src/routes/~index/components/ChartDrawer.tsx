@@ -25,16 +25,14 @@ const ChartDrawer = (props: ChartDrawerProps) => {
 
     return (
         <CSDrawer isOpen={isOpen} onClose={onClose} title="Add Chart">
-            <div className={styles.bodyPad}>
-                {chartTypes.map((type) => (
-                    <button className={styles.card} key={type} onClick={() => handleSelectChart(type)} type="button">
-                        <div className={styles.head}>
-                            <span className={styles.title}>{ChartTypeLabels[type]}</span>
-                        </div>
-                        <span className={styles.desc}>{ChartTypeDescriptions[type]}</span>
-                    </button>
-                ))}
-            </div>
+            {chartTypes.map((type) => (
+                <button className={styles.card} key={type} onClick={() => handleSelectChart(type)} type="button">
+                    <div className={styles.head}>
+                        <span className={styles.title}>{ChartTypeLabels[type]}</span>
+                    </div>
+                    <span className={styles.desc}>{ChartTypeDescriptions[type]}</span>
+                </button>
+            ))}
         </CSDrawer>
     );
 };

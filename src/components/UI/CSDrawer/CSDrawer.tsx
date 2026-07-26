@@ -1,6 +1,8 @@
+import type { ReactNode } from 'react';
+
 import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react';
 import { useMediaQuery } from '@mantine/hooks';
-import { Fragment, ReactNode } from 'react';
+import { Fragment } from 'react';
 
 import { XIcon } from '@/components/Icons';
 import { useDragToClose } from '@/hooks/useDragToClose';
@@ -8,14 +10,15 @@ import { useDragToClose } from '@/hooks/useDragToClose';
 import styles from './CSDrawer.module.css';
 
 interface CSDrawerProps {
+    children: ReactNode;
+    footer?: ReactNode;
     isOpen: boolean;
     onClose: () => void;
     title: string;
-    children: ReactNode;
 }
 
 const CSDrawer = (props: CSDrawerProps) => {
-    const { isOpen, onClose, title, children } = props;
+    const { children, footer, isOpen, onClose, title } = props;
     const isDesktop = useMediaQuery('(min-width: 768px)');
     const { handleTouchStart, handleTouchMove, handleTouchEnd, panelStyle, backdropStyle } = useDragToClose({
         isOpen,
@@ -70,7 +73,13 @@ const CSDrawer = (props: CSDrawerProps) => {
                                         </span>
                                         <h2 className={styles.title}>{title}</h2>
                                     </div>
-                                    <button className={styles.close} onClick={onClose} type="button">
+                                    <button
+                                        aria-label={`Close ${title}`}
+                                        className={styles.close}
+                                        onClick={onClose}
+                                        title={`Close ${title}`}
+                                        type="button"
+                                    >
                                         <XIcon className="icon-md" />
                                     </button>
                                 </div>
@@ -78,6 +87,8 @@ const CSDrawer = (props: CSDrawerProps) => {
                                 <div className={`${styles.body} scroll`} data-drag-scroll>
                                     {children}
                                 </div>
+
+                                {footer && <div className={styles.footer}>{footer}</div>}
                             </DialogPanel>
                         </TransitionChild>
                     </div>

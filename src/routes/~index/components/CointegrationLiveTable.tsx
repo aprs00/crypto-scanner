@@ -256,16 +256,19 @@ const CointegrationLiveTable = (props: CointegrationLiveTableProps) => {
     const controls = (
         <>
             <CSSelect<string>
+                ariaLabel="Window"
                 onChange={(nextWindow) => onConfigChange({ window: nextWindow })}
                 options={windowOptions}
                 value={resolvedWindow}
             />
             <CSSelect<number>
+                ariaLabel="Limit"
                 onChange={(nextLimit) => onConfigChange({ limit: nextLimit })}
                 options={limitOptions}
                 value={resolvedLimit}
             />
             <MultiSelectDrawer
+                ariaLabel="Symbols"
                 classes="w-40"
                 defaultValue={resolvedDefaultSymbols}
                 onChange={(nextSymbols) => onConfigChange({ symbols: nextSymbols })}

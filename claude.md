@@ -1,6 +1,7 @@
 # Project Guidelines
 
 - Never use `useMemo` or `useCallback` - React Compiler handles memoization automatically.
+- Model finite string domains as typed constants (`export const Foo = { ... } as const` plus a derived `Foo` type), never as hand-written string-literal unions.
 - Do not run browser checks; they consume too many tokens. Use build, lint, type, and static checks instead.
 - Prefer inline conditional rendering using `&&` and `||` over if statements:
     ```tsx
