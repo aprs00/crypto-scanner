@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 
 import CSPanel from '@/components/Layouts/CSPanel';
-import CSButton from '@/components/UI/CSButton';
 import { ChartType, ChartTypeLabels } from '@/routes/~index/types';
 
 export type ChartContainerProps = {
@@ -15,18 +14,7 @@ const ChartContainer = (props: ChartContainerProps) => {
     const { children, controls, chartType, onRemoveClick } = props;
 
     return (
-        <CSPanel
-            className="h-full"
-            controls={
-                <>
-                    {controls}
-                    <CSButton onClick={onRemoveClick} square>
-                        -
-                    </CSButton>
-                </>
-            }
-            title={ChartTypeLabels[chartType]}
-        >
+        <CSPanel className="h-full" controls={controls} onRemove={onRemoveClick} title={ChartTypeLabels[chartType]}>
             {children}
         </CSPanel>
     );

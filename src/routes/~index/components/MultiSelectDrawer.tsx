@@ -33,6 +33,7 @@ const OptionItem = ({ option, selected, disabled, onToggle }: OptionItemProps) =
 );
 
 export type MultiSelectDrawerProps<T = string> = {
+    ariaLabel: string;
     options: T[];
     value: T[];
     classes?: string;
@@ -43,7 +44,7 @@ export type MultiSelectDrawerProps<T = string> = {
 };
 
 const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) => {
-    const { classes = '', defaultValue, maxSelected, onChange, options, value, title } = props;
+    const { ariaLabel, classes = '', defaultValue, maxSelected, onChange, options, value, title } = props;
 
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -97,7 +98,13 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
     return (
         <>
             <div className={`${selectStyles.select} ${classes}`.trim()}>
-                <button className={selectStyles.btn} onClick={handleOpen} type="button">
+                <button
+                    aria-label={ariaLabel}
+                    className={selectStyles.btn}
+                    onClick={handleOpen}
+                    title={ariaLabel}
+                    type="button"
+                >
                     <span className={[selectStyles.label, isEmpty && selectStyles.empty].filter(Boolean).join(' ')}>
                         {buttonLabel}
                     </span>
@@ -105,10 +112,20 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
                 </button>
             </div>
 
-            <CSDrawer isOpen={isOpen} onClose={handleClose} title={title}>
+            <CSDrawer
+                footer={
+                    <CSButton onClick={handleClose} variant={CSButtonVariant.Primary}>
+                        Done
+                    </CSButton>
+                }
+                isOpen={isOpen}
+                onClose={handleClose}
+                title={title}
+            >
                 <div className={styles.root}>
                     <div className={styles.searchWrap}>
                         <input
+                            aria-label={`Search ${ariaLabel.toLowerCase()}`}
                             className={selectStyles.search}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="SEARCH…"
@@ -116,7 +133,13 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
                             value={searchQuery}
                         />
                         {searchQuery && (
-                            <button className={styles.clear} onClick={handleClearSearch} type="button">
+                            <button
+                                aria-label={`Clear ${ariaLabel.toLowerCase()} search`}
+                                className={styles.clear}
+                                onClick={handleClearSearch}
+                                title={`Clear ${ariaLabel.toLowerCase()} search`}
+                                type="button"
+                            >
                                 <XIcon className="icon-md" />
                             </button>
                         )}
@@ -124,7 +147,12 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
 
                     <div className={styles.actions}>
                         <div className={styles.actionsLeft}>
-                            <CSSegmented onChange={setFilterMode} options={FILTER_OPTIONS} value={filterMode} />
+                            <CSSegmented
+                                ariaLabel={`${ariaLabel} filter`}
+                                onChange={setFilterMode}
+                                options={FILTER_OPTIONS}
+                                value={filterMode}
+                            />
 
                             {maxSelected !== undefined && (
                                 <span className={styles.maxFlag}>
@@ -160,12 +188,6 @@ const MultiSelectDrawer = <T extends string>(props: MultiSelectDrawerProps<T>) =
                         ) : (
                             <div className={styles.empty}>No matches found</div>
                         )}
-                    </div>
-
-                    <div className={styles.foot}>
-                        <CSButton onClick={handleClose} variant={CSButtonVariant.Primary}>
-                            Done
-                        </CSButton>
                     </div>
                 </div>
             </CSDrawer>

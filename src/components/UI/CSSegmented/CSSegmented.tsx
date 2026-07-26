@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import styles from './CSSegmented.module.css';
 
 export type CSSegmentedProps<T> = {
+    ariaLabel: string;
     options: readonly T[];
     value: T;
     onChange: (value: T) => void;
@@ -11,6 +12,7 @@ export type CSSegmentedProps<T> = {
 };
 
 const CSSegmented = <T extends string | number>({
+    ariaLabel,
     options,
     value,
     onChange,
@@ -18,7 +20,12 @@ const CSSegmented = <T extends string | number>({
     className = '',
 }: CSSegmentedProps<T>) => {
     return (
-        <span className={[styles.group, className].filter(Boolean).join(' ')}>
+        <span
+            aria-label={ariaLabel}
+            className={[styles.group, className].filter(Boolean).join(' ')}
+            role="group"
+            title={ariaLabel}
+        >
             {options.map((opt) => {
                 const isActive = opt === value;
                 return (

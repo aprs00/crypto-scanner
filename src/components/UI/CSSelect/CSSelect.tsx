@@ -5,6 +5,7 @@ import styles from './CSSelect.module.css';
 
 export type SelectProps<T = string> =
     | {
+          ariaLabel: string;
           options: Record<string, string> | T[];
           value: T | undefined;
           classes?: string;
@@ -12,6 +13,7 @@ export type SelectProps<T = string> =
           multiple?: false;
       }
     | {
+          ariaLabel: string;
           options: Record<string, string> | T[];
           value: T[];
           classes?: string;
@@ -22,7 +24,7 @@ export type SelectProps<T = string> =
 const SHOW_SEARCH_LIMIT = 16;
 
 const CSSelect = <T = string,>(props: SelectProps<T>) => {
-    const { classes = '', onChange, options, value, multiple = false } = props;
+    const { ariaLabel, classes = '', onChange, options, value, multiple = false } = props;
     const [searchQuery, setSearchQuery] = useState('');
 
     const normalizedOptions = Array.isArray(options)
@@ -54,7 +56,11 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
         <Listbox multiple={multiple} onChange={onChange as (value: T | T[]) => void} value={value}>
             {({ open }) => (
                 <div className={`${styles.select} ${classes}`.trim()}>
-                    <ListboxButton className={[styles.btn, open && styles.open].filter(Boolean).join(' ')}>
+                    <ListboxButton
+                        aria-label={ariaLabel}
+                        className={[styles.btn, open && styles.open].filter(Boolean).join(' ')}
+                        title={ariaLabel}
+                    >
                         <span className={[styles.label, isEmpty && styles.empty].filter(Boolean).join(' ')}>
                             {displayText}
                         </span>
@@ -81,6 +87,7 @@ const CSSelect = <T = string,>(props: SelectProps<T>) => {
                                 {showSearch && (
                                     <div className={styles.searchWrap}>
                                         <input
+                                            aria-label={`Search ${ariaLabel.toLowerCase()}`}
                                             className={styles.search}
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             placeholder="SEARCH…"

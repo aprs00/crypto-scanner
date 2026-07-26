@@ -4,7 +4,6 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { sumBy } from 'lodash-es';
 import { useRef } from 'react';
 
-import CSPanel from '@/components/Layouts/CSPanel';
 import { echarts, ECHARTS_THEME } from '@/lib/echarts';
 import { ReactEChartsCore } from '@/lib/ReactECharts';
 import { fontSize, fontWeightSemibold, treemapColorFor } from '@/lib/theme';
@@ -73,16 +72,14 @@ const CSTreemap = () => {
             </div>
 
             <div className="page-body">
-                <CSPanel className="flex-1 min-w-0" title="Market Treemap">
-                    <ReactEChartsCore
-                        echarts={echarts}
-                        onChartReady={() => resizeEChart(chartRef)}
-                        option={option}
-                        ref={chartRef}
-                        style={{ height: '100%', width: '100%' }}
-                        theme={ECHARTS_THEME}
-                    />
-                </CSPanel>
+                <ReactEChartsCore
+                    echarts={echarts}
+                    onChartReady={() => resizeEChart(chartRef)}
+                    option={option}
+                    ref={chartRef}
+                    style={{ height: '100%', width: '100%' }}
+                    theme={ECHARTS_THEME}
+                />
             </div>
         </>
     );

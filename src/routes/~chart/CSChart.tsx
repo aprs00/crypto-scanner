@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Responsive, WidthProvider } from 'react-grid-layout';
+import ReactGridLayout, { WidthProvider } from 'react-grid-layout';
 
 import CSFloatingButton from '@/components/UI/CSFloatingButton';
 
 import ChartTape from './components/ChartTape';
+import DepthAndSales from './components/DepthAndSales';
 import DepthChart from './components/DepthChart';
 import Table from './components/OrderBook';
 import PanelDrawer from './components/PanelDrawer';
@@ -14,7 +15,7 @@ import useChartLayoutStore, { panelTemplates } from './useChartLayoutStore';
 import useChartSeriesStore from './useChartSeriesStore';
 import useChartSourceStore from './useChartSourceStore';
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
+const GridLayout = WidthProvider(ReactGridLayout);
 
 const gridLayoutRowHeight = 30;
 const gridLayoutMargin: [number, number] = [8, 8];
@@ -27,6 +28,8 @@ const renderPanel = (panel: PanelItem, onRemove: () => void) => {
             return <Table onRemove={onRemove} panelId={panel.id} />;
         case PanelType.Depth:
             return <DepthChart onRemove={onRemove} panelId={panel.id} />;
+        case PanelType.DepthAndSales:
+            return <DepthAndSales onRemove={onRemove} panelId={panel.id} />;
         case PanelType.Tape:
             return <ChartTape onRemove={onRemove} panelId={panel.id} />;
         case PanelType.Tick:
@@ -44,6 +47,9 @@ const CSChart = () => {
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+    const handleOpenDrawer = () => setIsDrawerOpen(true);
+    const handleCloseDrawer = () => setIsDrawerOpen(false);
+
     const handleRemove = (id: string) => {
         removePanel(id);
         removeSource(id);
@@ -59,8 +65,8 @@ const CSChart = () => {
     return (
         <>
             <div className="grid-host scroll">
-                <ResponsiveGridLayout
-                    cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
+                <GridLayout
+                    cols={12}
                     draggableCancel=".cs-no-drag"
                     draggableHandle="#drag-handle"
                     margin={gridLayoutMargin}
@@ -72,12 +78,12 @@ const CSChart = () => {
                             {renderPanel(panel, () => handleRemove(panel.id))}
                         </div>
                     ))}
-                </ResponsiveGridLayout>
+                </GridLayout>
             </div>
 
-            <CSFloatingButton label="+" onClick={() => setIsDrawerOpen(true)} />
+            <CSFloatingButton ariaLabel="Add chart panel" label="+" onClick={handleOpenDrawer} />
 
-            <PanelDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+            <PanelDrawer isOpen={isDrawerOpen} onClose={handleCloseDrawer} />
         </>
     );
 };

@@ -4,7 +4,7 @@ import styles from './CSToggleButton.module.css';
 
 type Props = {
     active: boolean;
-    ariaLabel?: string;
+    ariaLabel: string;
     children: ReactNode;
     onClick: () => void;
     title?: string;
@@ -17,7 +17,7 @@ const CSToggleButton = ({ active, ariaLabel, children, onClick, title }: Props) 
             aria-pressed={active}
             className={`${styles.toggle} ${active ? styles.on : ''}`.trim()}
             onClick={onClick}
-            title={title}
+            title={title ?? ariaLabel}
             type="button"
         >
             {children}

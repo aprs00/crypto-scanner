@@ -66,14 +66,12 @@ const TickChart = ({ panelId, onRemove }: Props) => {
                         >
                             V
                         </CSToggleButton>
-                        <CSButton onClick={openSettings} square>
+                        <CSButton ariaLabel="Settings" onClick={openSettings} square title="Settings">
                             <SettingsIcon />
-                        </CSButton>
-                        <CSButton onClick={onRemove} square>
-                            -
                         </CSButton>
                     </>
                 }
+                onRemove={onRemove}
             >
                 <div className={`${styles.body} cs-no-drag`} ref={wrapRef}>
                     <canvas className={styles.canvas} ref={canvasRef} />

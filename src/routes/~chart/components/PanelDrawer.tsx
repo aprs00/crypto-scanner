@@ -23,14 +23,12 @@ const PanelDrawer = ({ isOpen, onClose }: PanelDrawerProps) => {
 
     return (
         <CSDrawer isOpen={isOpen} onClose={onClose} title="Add Panel">
-            <div className={styles.bodyPad}>
-                {panelTypes.map((type) => (
-                    <button className={styles.card} key={type} onClick={() => handleSelect(type)} type="button">
-                        <span className={styles.title}>{PanelTypeLabels[type]}</span>
-                        <span className={styles.desc}>{PanelTypeDescriptions[type]}</span>
-                    </button>
-                ))}
-            </div>
+            {panelTypes.map((type) => (
+                <button className={styles.card} key={type} onClick={() => handleSelect(type)} type="button">
+                    <span className={styles.title}>{PanelTypeLabels[type]}</span>
+                    <span className={styles.desc}>{PanelTypeDescriptions[type]}</span>
+                </button>
+            ))}
         </CSDrawer>
     );
 };

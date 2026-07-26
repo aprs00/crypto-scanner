@@ -1,15 +1,17 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 
 import type { DepthState, ExchangeId } from '@/services/exchanges/types';
 
 import { receiptTimestamp } from '@/services/exchanges/_shared/observed-clock';
 import { getExchange } from '@/services/exchanges/registry';
-import { DepthFeedStatus } from '@/services/exchanges/types';
+import { DepthFeedStatus, EMPTY_DEPTH_COVERAGE } from '@/services/exchanges/types';
 
 import { LiquidityTimeline } from './liquidityModel';
 
 export const EMPTY_DEPTH_STATE: DepthState = {
     book: { asks: [], bids: [] },
+    coverage: EMPTY_DEPTH_COVERAGE,
+    generation: 0,
     status: DepthFeedStatus.Syncing,
 };
 
@@ -40,8 +42,10 @@ const useDepthLiquidity = ({
     if (!timelineRef.current)
         timelineRef.current = new LiquidityTimeline(() => onChangeRef.current(depthRef.current, true));
 
-    onChangeRef.current = onChange;
-    liquidityEnabledRef.current = liquidityEnabled;
+    useLayoutEffect(() => {
+        onChangeRef.current = onChange;
+        liquidityEnabledRef.current = liquidityEnabled;
+    }, [liquidityEnabled, onChange]);
 
     const needDepth = bookEnabled || liquidityEnabled;
     const identity = `${exchange}:${symbol}:${tickSize}`;

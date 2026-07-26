@@ -50,7 +50,7 @@
     }
 }
 
-.usd {
+.amount {
     color: var(--fg);
     font-size: var(--fs-lg);
     font-weight: var(--fw-semibold);

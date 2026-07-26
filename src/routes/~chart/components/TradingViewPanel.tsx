@@ -1,6 +1,5 @@
 import CSPanel from '@/components/Layouts/CSPanel';
 import TradingViewRealTimeChart from '@/components/TradingViewWidgets/RealTimeChart';
-import CSButton from '@/components/UI/CSButton';
 import { palette } from '@/lib/theme';
 import { getExchange } from '@/services/exchanges/registry';
 
@@ -36,14 +35,8 @@ const TradingViewPanel = ({ panelId, onRemove }: Props) => {
     return (
         <CSPanel
             className="h-full"
-            controls={
-                <>
-                    <PanelSource panelId={panelId} panelType={PanelType.TradingView} />
-                    <CSButton onClick={onRemove} square>
-                        -
-                    </CSButton>
-                </>
-            }
+            controls={<PanelSource panelId={panelId} panelType={PanelType.TradingView} />}
+            onRemove={onRemove}
         >
             {symbol && (
                 <TradingViewRealTimeChart

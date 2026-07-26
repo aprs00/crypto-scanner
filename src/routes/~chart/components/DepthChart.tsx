@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
 import CSPanel from '@/components/Layouts/CSPanel';
-import CSButton from '@/components/UI/CSButton';
 import CSSegmented from '@/components/UI/CSSegmented';
 import { palette, withAlpha } from '@/lib/theme';
 import { useOrderBook } from '@/services/exchanges/hooks';
@@ -334,13 +333,16 @@ const DepthChart = ({ panelId, onRemove }: Props) => {
                     <PanelSource panelId={panelId} panelType={PanelType.Depth} />
                     <span className={styles.controls}>
                         <span className={styles.zoom}>±{rangeLabel}%</span>
-                        <CSSegmented onChange={setOrientation} options={ORIENTATIONS} value={orientation} />
+                        <CSSegmented
+                            ariaLabel="Orientation"
+                            onChange={setOrientation}
+                            options={ORIENTATIONS}
+                            value={orientation}
+                        />
                     </span>
-                    <CSButton onClick={onRemove} square>
-                        -
-                    </CSButton>
                 </>
             }
+            onRemove={onRemove}
         >
             <div className={styles.body} ref={wrapRef}>
                 <canvas className={styles.canvas} ref={canvasRef} />

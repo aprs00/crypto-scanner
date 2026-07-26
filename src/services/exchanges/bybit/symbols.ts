@@ -17,6 +17,27 @@ type BybitInstrumentsResponse = {
 
 const PAGE_LIMIT = 1_000;
 
+export const normalizeBybitSymbols = (instruments: readonly BybitInstrument[]): ExchangeSymbol[] =>
+    instruments.flatMap((instrument) => {
+        if (
+            instrument.status !== 'Trading' ||
+            instrument.quoteCoin !== 'USDT' ||
+            instrument.contractType !== 'LinearPerpetual'
+        ) {
+            return [];
+        }
+        const tickSize = Number(instrument.priceFilter.tickSize);
+        if (!instrument.symbol || !instrument.baseCoin || !Number.isFinite(tickSize) || tickSize <= 0) return [];
+        return [
+            {
+                base: instrument.baseCoin,
+                label: instrument.symbol,
+                symbol: instrument.symbol,
+                tickSize,
+            },
+        ];
+    });
+
 export const fetchBybitSymbols = async (): Promise<ExchangeSymbol[]> => {
     const instruments: BybitInstrument[] = [];
     let cursor = '';
@@ -30,12 +51,5 @@ export const fetchBybitSymbols = async (): Promise<ExchangeSymbol[]> => {
 
     // USDT-margined perpetuals only — matches toTradingViewSymbol's `.P` suffix
     // and the linear public WS feed.
-    return instruments
-        .filter((i) => i.status === 'Trading' && i.quoteCoin === 'USDT' && i.contractType === 'LinearPerpetual')
-        .map((i) => ({
-            base: i.baseCoin,
-            label: i.symbol,
-            symbol: i.symbol,
-            tickSize: Number(i.priceFilter.tickSize),
-        }));
+    return normalizeBybitSymbols(instruments);
 };

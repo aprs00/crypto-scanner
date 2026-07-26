@@ -55,6 +55,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
     const controls = (
         <>
             <CSSelect<string>
+                ariaLabel="Time frame"
                 onChange={(hours) => {
                     onConfigChange({ hours });
                 }}
@@ -62,6 +63,7 @@ const PriceChangePercentage = (props: PriceChangePercentageProps) => {
                 value={hours}
             />
             <CSSelect<string>
+                ariaLabel="Symbol"
                 classes="w-32"
                 onChange={(symbol) => {
                     onConfigChange({ symbol });
