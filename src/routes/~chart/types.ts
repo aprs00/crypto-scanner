@@ -26,6 +26,7 @@ export const PanelType = {
     DepthAndSales: 'depthAndSales',
     Tape: 'tape',
     Tick: 'tick',
+    Footprint: 'footprint',
 } as const;
 
 export type PanelType = (typeof PanelType)[keyof typeof PanelType];
@@ -42,6 +43,7 @@ export const PanelTypeLabels: Record<PanelType, string> = {
     [PanelType.DepthAndSales]: 'DOM Ladder',
     [PanelType.Tape]: 'Tape',
     [PanelType.Tick]: 'Tick Chart',
+    [PanelType.Footprint]: 'Footprint',
 };
 
 export const PanelTypeDescriptions: Record<PanelType, string> = {
@@ -51,4 +53,5 @@ export const PanelTypeDescriptions: Record<PanelType, string> = {
     [PanelType.DepthAndSales]: 'Price ladder with depth, executions, tape, and pulled/added liquidity',
     [PanelType.Tape]: 'Live trade tape with side coloring',
     [PanelType.Tick]: 'Live bid/ask step chart with spread & trade volume',
+    [PanelType.Footprint]: 'Bid/ask volume at every traded price',
 };

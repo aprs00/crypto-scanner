@@ -1,48 +1,41 @@
-import React, { createRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { WidgetType, type WidgetProps } from './types';
 
 declare const TradingView: any;
 
 const Widget: React.FC<WidgetProps> = ({ containerId, scriptHTML, scriptSRC, type }) => {
-    const ref: { current: HTMLDivElement | null } = createRef();
+    const ref = useRef<HTMLDivElement>(null);
+    const serializedScriptHTML = JSON.stringify(scriptHTML);
 
     useEffect(() => {
-        let refValue: any;
+        const container = ref.current;
+        if (!container) return;
 
-        if (ref.current) {
-            const script = document.createElement('script');
-            script.setAttribute('data-nscript', 'afterInteractive');
-            script.src = scriptSRC;
-            script.async = true;
-            script.type = 'text/javascript';
+        const script = document.createElement('script');
+        script.setAttribute('data-nscript', 'afterInteractive');
+        script.src = scriptSRC;
+        script.async = true;
+        script.type = 'text/javascript';
 
-            if (type === WidgetType.Widget || type === WidgetType.MediumWidget) {
-                script.onload = () => {
-                    if (TradingView !== undefined) {
-                        script.innerHTML = JSON.stringify(
-                            type === WidgetType.Widget
-                                ? new TradingView.widget(scriptHTML)
-                                : type === WidgetType.MediumWidget
-                                  ? new TradingView.MediumWidget(scriptHTML)
-                                  : undefined,
-                        );
-                    }
-                };
-            } else {
-                script.innerHTML = JSON.stringify(scriptHTML);
-            }
-            ref.current.appendChild(script);
-            refValue = ref.current;
+        if (type === WidgetType.Widget || type === WidgetType.MediumWidget) {
+            script.onload = () => {
+                if (typeof TradingView === 'undefined') return;
+
+                const widgetOptions = JSON.parse(serializedScriptHTML);
+                if (type === WidgetType.Widget) new TradingView.widget(widgetOptions);
+                else new TradingView.MediumWidget(widgetOptions);
+            };
+        } else {
+            script.textContent = serializedScriptHTML;
         }
+        container.appendChild(script);
+
         return () => {
-            if (refValue) {
-                while (refValue.firstChild) {
-                    refValue.removeChild(refValue.firstChild);
-                }
-            }
+            script.onload = null;
+            container.replaceChildren();
         };
-    }, [ref, scriptHTML, type, scriptSRC]);
+    }, [scriptSRC, serializedScriptHTML, type]);
 
     return <div id={containerId} ref={ref} />;
 };

@@ -19,6 +19,7 @@ export const panelTemplates: Record<PanelType, PanelTemplate> = {
     [PanelType.OrderBook]: { layout: { h: 14, w: 12, x: 0, y: 54 } },
     [PanelType.Depth]: { layout: { h: 14, w: 12, x: 0, y: 69 } },
     [PanelType.Tape]: { layout: { h: 14, w: 12, x: 0, y: 84 } },
+    [PanelType.Footprint]: { layout: { h: 18, w: 12, x: 0, y: 99 } },
 };
 
 const makePanel = (type: PanelType): PanelItem => ({ id: crypto.randomUUID(), type });

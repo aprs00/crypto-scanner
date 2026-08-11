@@ -6,10 +6,12 @@ import CSFloatingButton from '@/components/UI/CSFloatingButton';
 import ChartTape from './components/ChartTape';
 import DepthAndSales from './components/DepthAndSales';
 import DepthChart from './components/DepthChart';
+import FootprintChart from './components/FootprintChart';
 import Table from './components/OrderBook';
 import PanelDrawer from './components/PanelDrawer';
 import TickChart from './components/TickChart';
 import TradingViewPanel from './components/TradingViewPanel';
+import useFootprintSettingsStore from './footprint/useFootprintSettingsStore';
 import { PanelType, type PanelItem } from './types';
 import useChartLayoutStore, { panelTemplates } from './useChartLayoutStore';
 import useChartSeriesStore from './useChartSeriesStore';
@@ -20,20 +22,23 @@ const GridLayout = WidthProvider(ReactGridLayout);
 const gridLayoutRowHeight = 30;
 const gridLayoutMargin: [number, number] = [8, 8];
 
-const renderPanel = (panel: PanelItem, onRemove: () => void) => {
+const renderPanel = (panel: PanelItem, removePanel: (id: string) => void) => {
+    const handleRemovePanel = () => removePanel(panel.id);
     switch (panel.type) {
         case PanelType.TradingView:
-            return <TradingViewPanel onRemove={onRemove} panelId={panel.id} />;
+            return <TradingViewPanel onRemove={handleRemovePanel} panelId={panel.id} />;
         case PanelType.OrderBook:
-            return <Table onRemove={onRemove} panelId={panel.id} />;
+            return <Table onRemove={handleRemovePanel} panelId={panel.id} />;
         case PanelType.Depth:
-            return <DepthChart onRemove={onRemove} panelId={panel.id} />;
+            return <DepthChart onRemove={handleRemovePanel} panelId={panel.id} />;
         case PanelType.DepthAndSales:
-            return <DepthAndSales onRemove={onRemove} panelId={panel.id} />;
+            return <DepthAndSales onRemove={handleRemovePanel} panelId={panel.id} />;
         case PanelType.Tape:
-            return <ChartTape onRemove={onRemove} panelId={panel.id} />;
+            return <ChartTape onRemove={handleRemovePanel} panelId={panel.id} />;
         case PanelType.Tick:
-            return <TickChart onRemove={onRemove} panelId={panel.id} />;
+            return <TickChart onRemove={handleRemovePanel} panelId={panel.id} />;
+        case PanelType.Footprint:
+            return <FootprintChart onRemove={handleRemovePanel} panelId={panel.id} />;
     }
 };
 
@@ -44,6 +49,7 @@ const CSChart = () => {
     const removePanel = useChartLayoutStore((state) => state.removePanel);
     const removeSource = useChartSourceStore((state) => state.removeSource);
     const removeSeries = useChartSeriesStore((state) => state.removeSeries);
+    const removeFootprintSettings = useFootprintSettingsStore((state) => state.removeSettings);
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -54,6 +60,7 @@ const CSChart = () => {
         removePanel(id);
         removeSource(id);
         removeSeries(id);
+        removeFootprintSettings(id);
     };
 
     const layoutFor = (panel: PanelItem) => ({
@@ -75,7 +82,7 @@ const CSChart = () => {
                 >
                     {panels.map((panel) => (
                         <div className="grid-card" data-grid={layoutFor(panel)} key={panel.id}>
-                            {renderPanel(panel, () => handleRemove(panel.id))}
+                            {renderPanel(panel, handleRemove)}
                         </div>
                     ))}
                 </GridLayout>

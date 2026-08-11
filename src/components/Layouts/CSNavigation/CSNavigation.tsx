@@ -18,6 +18,8 @@ const formatClock = (d: Date) =>
         d.getUTCSeconds(),
     ).padStart(2, '0')} UTC`;
 
+const initialClock = '--:--:-- UTC';
+
 const PriceCell = ({ label, data }: { label: string; data?: TopBarPrice }) => {
     const isUp = (data?.changePercent ?? 0) >= 0;
     return (
@@ -33,11 +35,13 @@ const PriceCell = ({ label, data }: { label: string; data?: TopBarPrice }) => {
 
 const CSNavigation = () => {
     const path = useLocation({ select: selectPathname });
-    const [clock, setClock] = useState(() => formatClock(new Date()));
+    const [clock, setClock] = useState(initialClock);
     const ticker = useTopBarTicker();
 
     useEffect(() => {
-        const id = window.setInterval(() => setClock(formatClock(new Date())), 1000);
+        const updateClock = () => setClock(formatClock(new Date()));
+        updateClock();
+        const id = window.setInterval(updateClock, 1000);
         return () => window.clearInterval(id);
     }, []);
 

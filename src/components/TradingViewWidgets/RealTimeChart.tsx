@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 import type { AdvancedRealTimeChartProps } from './types';
 
@@ -9,7 +9,7 @@ const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({
     allow_symbol_change = true,
     autosize = false,
     calendar = false,
-    container_id = `tradingview_${crypto.randomUUID()}`,
+    container_id,
     copyrightStyles,
     details = false,
     disabled_features = undefined,
@@ -41,10 +41,14 @@ const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({
     overrides,
     ...props
 }) => {
+    const reactId = useId();
+    const generatedContainerId = `tradingview_${reactId.replace(/:/g, '')}`;
+    const containerId = container_id ?? generatedContainerId;
+
     return (
         <div id="tradingview_widget_wrapper">
             <Widget
-                containerId={container_id}
+                containerId={containerId}
                 scriptHTML={{
                     ...(!autosize ? { width } : { width: '100%' }),
                     ...(!autosize ? { height } : { height: '100%' }),
@@ -74,7 +78,7 @@ const AdvancedRealTimeChart: React.FC<AdvancedRealTimeChartProps> = ({
                     ...(backgroundColor && { backgroundColor }),
                     ...(gridColor && { gridColor }),
                     ...(overrides && { overrides }),
-                    container_id,
+                    container_id: containerId,
                     disabled_features,
                     enabled_features,
                     studies,
