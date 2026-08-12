@@ -146,9 +146,6 @@ const useFootprintChart = ({ bars, currentTickSize, marketKey, scopeKey, ticksPe
 
         const scopeChanged = activeScopeRef.current !== scopeKey;
         const previousBarCount = barCountRef.current;
-        const logicalRange = scopeChanged ? null : chart.timeScale().getVisibleLogicalRange();
-        const visibleRange = scopeChanged ? null : chart.timeScale().getVisibleRange();
-        const wasAtLiveEdge = Boolean(logicalRange && logicalRange.to >= previousBarCount - 1);
         const points = bars.map((bar) => toFootprintSeriesData(bar, ticksPerRow));
 
         if (scopeChanged) crosshairTimeRef.current = null;
@@ -170,10 +167,6 @@ const useFootprintChart = ({ bars, currentTickSize, marketKey, scopeKey, ticksPe
                 from: Math.max(0, lastIndex - 14),
                 to: lastIndex + 2,
             });
-        } else if (wasAtLiveEdge) {
-            chart.timeScale().scrollToRealTime();
-        } else if (visibleRange) {
-            chart.timeScale().setVisibleRange(visibleRange);
         }
     }, [bars, marketKey, scopeKey, ticksPerRow]);
 
