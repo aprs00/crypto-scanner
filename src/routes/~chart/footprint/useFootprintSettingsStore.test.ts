@@ -30,6 +30,7 @@ describe('footprint settings', () => {
         useFootprintSettingsStore.getState().setSettings('panel-1', {
             ...defaultFootprintSettings,
             continuationTicks: 0,
+            lookbackDays: 100,
             reversalTicks: 5_000,
             ticksPerRow: 2_000,
             tradesPerBar: 2_000_000,
@@ -37,6 +38,7 @@ describe('footprint settings', () => {
 
         expect(useFootprintSettingsStore.getState().settings['panel-1']).toMatchObject({
             continuationTicks: 1,
+            lookbackDays: 30,
             reversalTicks: 4_000,
             ticksPerRow: 1_000,
             tradesPerBar: 4_000,

@@ -8,6 +8,7 @@ describe('chart series requests', () => {
     it('creates the minimal Tick request', () => {
         expect(createChartSeriesRequest(defaultFootprintSettings, 'binance:perpetual:BTCUSDT')).toEqual({
             chartType: ChartType.Tick,
+            lookbackDays: 2,
             marketKey: 'binance:perpetual:BTCUSDT',
             tradesPerBar: 500,
         });
@@ -27,14 +28,15 @@ describe('chart series requests', () => {
         ).toEqual({
             chartType: ChartType.Trev,
             continuationTicks: 25,
+            lookbackDays: 2,
             marketKey: 'hyperliquid:perpetual:BTC',
             reversalTicks: 40,
         });
     });
 
     it('polls builds and renews ready-series leases every five minutes', () => {
-        expect(chartSeriesRefetchInterval(ChartSeriesStatus.Queued)).toBe(1_000);
-        expect(chartSeriesRefetchInterval(ChartSeriesStatus.Building)).toBe(1_000);
+        expect(chartSeriesRefetchInterval(ChartSeriesStatus.Queued)).toBe(100);
+        expect(chartSeriesRefetchInterval(ChartSeriesStatus.Building)).toBe(100);
         expect(chartSeriesRefetchInterval(ChartSeriesStatus.Ready)).toBe(SERIES_LEASE_RENEWAL_MS);
         expect(chartSeriesRefetchInterval(ChartSeriesStatus.Failed)).toBe(false);
     });

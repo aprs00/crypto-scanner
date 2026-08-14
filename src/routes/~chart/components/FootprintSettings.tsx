@@ -31,6 +31,7 @@ const FootprintSettings = ({ isOpen, onApply, onClose, settings }: Props) => {
     }, [isOpen, settings]);
 
     const handleChartType = (chartType: ChartTypeValue) => setDraft((current) => ({ ...current, chartType }));
+    const handleLookbackDays = (lookbackDays: number) => setDraft((current) => ({ ...current, lookbackDays }));
     const handleTradesPerBar = (tradesPerBar: number) => setDraft((current) => ({ ...current, tradesPerBar }));
     const handleContinuationTicks = (continuationTicks: number) =>
         setDraft((current) => ({ ...current, continuationTicks }));
@@ -60,6 +61,16 @@ const FootprintSettings = ({ isOpen, onApply, onClose, settings }: Props) => {
                         options={chartTypeOptions}
                         renderLabel={chartTypeLabel}
                         value={draft.chartType}
+                    />
+                </CSSettingsRow>
+                <CSSettingsRow label="Lookback days">
+                    <NumberInput
+                        ariaLabel="Footprint history lookback days"
+                        max={FOOTPRINT_SETTING_LIMITS.lookbackDays.max}
+                        min={FOOTPRINT_SETTING_LIMITS.lookbackDays.min}
+                        onChange={handleLookbackDays}
+                        step={1}
+                        value={draft.lookbackDays}
                     />
                 </CSSettingsRow>
             </CSSettingsSection>

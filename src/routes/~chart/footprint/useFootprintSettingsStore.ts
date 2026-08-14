@@ -8,6 +8,7 @@ import { ChartType, type ChartType as ChartTypeValue } from './types';
 export type FootprintSettings = {
     chartType: ChartTypeValue;
     continuationTicks: number;
+    lookbackDays: number;
     marketKey?: string;
     reversalTicks: number;
     ticksPerRow: number;
@@ -15,6 +16,7 @@ export type FootprintSettings = {
 };
 
 export const FOOTPRINT_SETTING_LIMITS = {
+    lookbackDays: { max: 30, min: 1 },
     ticksPerRow: { max: 1_000, min: 1 },
     tradesPerBar: { max: 4_000, min: 1 },
     trevTicks: { max: 4_000, min: 1 },
@@ -23,6 +25,7 @@ export const FOOTPRINT_SETTING_LIMITS = {
 export const defaultFootprintSettings: FootprintSettings = {
     chartType: ChartType.Tick,
     continuationTicks: 20,
+    lookbackDays: 2,
     reversalTicks: 30,
     ticksPerRow: 5,
     tradesPerBar: 500,
@@ -40,6 +43,12 @@ const normalizeSettings = (value: FootprintSettings): FootprintSettings => ({
         defaultFootprintSettings.continuationTicks,
         FOOTPRINT_SETTING_LIMITS.trevTicks.min,
         FOOTPRINT_SETTING_LIMITS.trevTicks.max,
+    ),
+    lookbackDays: clampInteger(
+        value.lookbackDays,
+        defaultFootprintSettings.lookbackDays,
+        FOOTPRINT_SETTING_LIMITS.lookbackDays.min,
+        FOOTPRINT_SETTING_LIMITS.lookbackDays.max,
     ),
     marketKey: typeof value.marketKey === 'string' ? value.marketKey : undefined,
     reversalTicks: clampInteger(
@@ -69,8 +78,10 @@ type FootprintSettingsStore = {
     setSettings: (panelId: string, settings: FootprintSettings) => void;
 };
 
-const settingsFor = (settings: Record<string, FootprintSettings>, panelId: string): FootprintSettings =>
-    settings[panelId] ?? defaultFootprintSettings;
+const settingsFor = (settings: Record<string, FootprintSettings>, panelId: string): FootprintSettings => ({
+    ...defaultFootprintSettings,
+    ...settings[panelId],
+});
 
 const useFootprintSettingsStore = create<FootprintSettingsStore>()(
     persist(

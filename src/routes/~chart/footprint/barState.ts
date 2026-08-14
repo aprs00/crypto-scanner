@@ -1,6 +1,6 @@
 import type { ChartBar, ChartBarsResponse } from './types';
 
-export const MAX_VISIBLE_CHART_BARS = 500;
+export const MAX_LIVE_UPDATE_BARS = 500;
 
 export type ChartLiveState = {
     activeBar: ChartBar | null | undefined;
@@ -19,7 +19,7 @@ export const applyChartUpdate = (
 ): ChartLiveState => {
     const next = new Map(current.bars);
     for (const bar of bars) next.set(bar.barIndex, bar);
-    while (next.size > MAX_VISIBLE_CHART_BARS) {
+    while (next.size > MAX_LIVE_UPDATE_BARS) {
         const oldest = next.keys().next().value;
         if (oldest === undefined) break;
         next.delete(oldest);
@@ -51,7 +51,5 @@ export const mergeChartBars = (snapshot: ChartBarsResponse | undefined, live: Ch
     for (const bar of live.bars.values()) merged.set(bar.barIndex, bar);
     const activeBar = live.activeBar !== undefined ? live.activeBar : snapshot?.activeBar;
     if (activeBar) merged.set(activeBar.barIndex, activeBar);
-    return [...merged.values()]
-        .sort((first, second) => first.barIndex - second.barIndex)
-        .slice(-MAX_VISIBLE_CHART_BARS);
+    return [...merged.values()].sort((first, second) => first.barIndex - second.barIndex);
 };

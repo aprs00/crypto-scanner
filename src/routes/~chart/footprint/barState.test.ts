@@ -6,7 +6,7 @@ import {
     applyChartUpdate,
     chartUpdateHasGap,
     emptyChartLiveState,
-    MAX_VISIBLE_CHART_BARS,
+    MAX_LIVE_UPDATE_BARS,
     mergeChartBars,
 } from './barState';
 
@@ -29,6 +29,8 @@ const makeBar = (barIndex: number, buyUnits = barIndex): ChartBar => ({
 const snapshot = (bars: ChartBar[], activeBar: ChartBar | null = null): ChartBarsResponse => ({
     activeBar,
     bars,
+    hasMore: (bars[0]?.barIndex ?? 0) > 0,
+    nextBeforeBarIndex: bars[0]?.barIndex || null,
     seriesKey: 'series-1',
 });
 
@@ -59,14 +61,20 @@ describe('chart live state', () => {
         expect(merged.find((bar) => bar.barIndex === 52)?.buyUnits).toBe(52);
     });
 
+    it('keeps paged historical bars outside the live update window', () => {
+        const history = Array.from({ length: MAX_LIVE_UPDATE_BARS + 100 }, (_value, barIndex) => makeBar(barIndex));
+
+        expect(mergeChartBars(snapshot(history), emptyChartLiveState())).toHaveLength(history.length);
+    });
+
     it('bounds long-running live state to the latest snapshot-sized window', () => {
-        const bars = Array.from({ length: MAX_VISIBLE_CHART_BARS + 1 }, (_value, barIndex) => makeBar(barIndex));
+        const bars = Array.from({ length: MAX_LIVE_UPDATE_BARS + 1 }, (_value, barIndex) => makeBar(barIndex));
 
         const live = applyChartUpdate(emptyChartLiveState(), bars, null);
 
-        expect(live.bars.size).toBe(MAX_VISIBLE_CHART_BARS);
+        expect(live.bars.size).toBe(MAX_LIVE_UPDATE_BARS);
         expect(live.bars.has(0)).toBe(false);
-        expect(live.bars.has(MAX_VISIBLE_CHART_BARS)).toBe(true);
+        expect(live.bars.has(MAX_LIVE_UPDATE_BARS)).toBe(true);
     });
 
     it('detects skipped publications without flagging contiguous catch-up chunks', () => {

@@ -32,6 +32,11 @@ const chartBarWithLevels = (levelCount: number): ChartBar => ({
     levels: Array.from({ length: levelCount }, (_value, index) => [index + 1, 1, 1]),
 });
 
+const historyPage = {
+    hasMore: false,
+    nextBeforeBarIndex: null,
+};
+
 describe('chart wire schemas', () => {
     it('accepts the minimal series response', () => {
         expect(
@@ -67,6 +72,7 @@ describe('chart wire schemas', () => {
         const result = chartBarsResponseSchema.parse({
             activeBar: chartBar,
             bars: [{ ...chartBar, barIndex: 79 }],
+            ...historyPage,
             seriesKey: 'series-1',
         });
 
@@ -94,6 +100,7 @@ describe('chart wire schemas', () => {
             chartBarsResponseSchema.safeParse({
                 activeBar: null,
                 bars: Array.from({ length: 10 }, () => chartBarWithLevels(CHART_WIRE_LIMITS.barLevels)),
+                ...historyPage,
                 seriesKey: 'series-1',
             }).success,
         ).toBe(true);
@@ -101,6 +108,7 @@ describe('chart wire schemas', () => {
             chartBarsResponseSchema.safeParse({
                 activeBar: null,
                 bars: [chartBarWithLevels(CHART_WIRE_LIMITS.barLevels + 1)],
+                ...historyPage,
                 seriesKey: 'series-1',
             }).success,
         ).toBe(false);
@@ -108,6 +116,7 @@ describe('chart wire schemas', () => {
             chartBarsResponseSchema.safeParse({
                 activeBar: null,
                 bars: Array.from({ length: CHART_WIRE_LIMITS.httpBars + 1 }, () => chartBar),
+                ...historyPage,
                 seriesKey: 'series-1',
             }).success,
         ).toBe(false);
@@ -115,6 +124,7 @@ describe('chart wire schemas', () => {
             chartBarsResponseSchema.safeParse({
                 activeBar: chartBarWithLevels(CHART_WIRE_LIMITS.barLevels),
                 bars: Array.from({ length: 10 }, () => chartBarWithLevels(CHART_WIRE_LIMITS.barLevels)),
+                ...historyPage,
                 seriesKey: 'series-1',
             }).success,
         ).toBe(false);

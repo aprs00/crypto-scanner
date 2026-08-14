@@ -30,7 +30,8 @@ const formatChange = (open: number, close: number): { label: string; value: numb
 };
 
 const FootprintChart = ({ onRemove, panelId }: Props) => {
-    const settings = useFootprintSettingsStore((state) => state.settings[panelId]) ?? defaultFootprintSettings;
+    const savedSettings = useFootprintSettingsStore((state) => state.settings[panelId]);
+    const settings = { ...defaultFootprintSettings, ...savedSettings };
     const setMarketKey = useFootprintSettingsStore((state) => state.setMarketKey);
     const setSettings = useFootprintSettingsStore((state) => state.setSettings);
     const [settingsOpen, setSettingsOpen] = useState(false);
@@ -60,6 +61,8 @@ const FootprintChart = ({ onRemove, panelId }: Props) => {
     const { legendBar, wrapRef } = useFootprintChart({
         bars: feed.bars,
         currentTickSize: market?.currentTickSize,
+        hasMore: barsQuery.hasMore,
+        loadOlder: barsQuery.loadOlder,
         marketKey: market?.marketKey,
         scopeKey: seriesKey ?? '',
         ticksPerRow: settings.ticksPerRow,
@@ -106,7 +109,9 @@ const FootprintChart = ({ onRemove, panelId }: Props) => {
             ? chartErrorLabel(feed.streamError, settings.chartType).toUpperCase()
             : feed.bars.length > 0 && feed.reconnecting
               ? 'LIVE FEED RECONNECTING'
-              : null;
+              : feed.bars.length > 0 && barsQuery.loadingOlder
+                ? 'LOADING EARLIER HISTORY'
+                : null;
     const priceDecimals = legendBar ? decimalPlaces(legendBar.tickSize) : 0;
     const change = legendBar ? formatChange(legendBar.open, legendBar.close) : null;
     const changeClass = [

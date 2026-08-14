@@ -4,6 +4,7 @@ import {
     createChart,
     type IChartApi,
     type ISeriesApi,
+    type LogicalRange,
     type MouseEventParams,
     type Time,
     type WhitespaceData,
@@ -26,6 +27,8 @@ type FootprintSeriesApi = ISeriesApi<'Custom', Time, FootprintSeriesData | White
 type Options = {
     bars: ChartBar[];
     currentTickSize: string | undefined;
+    hasMore: boolean;
+    loadOlder: () => Promise<void>;
     marketKey: string | undefined;
     scopeKey: string;
     ticksPerRow: number;
@@ -46,7 +49,15 @@ export const formatChartCoordinateLabel = (coordinate: number, timestamps: Reado
     return `${iso.slice(5, 10)} ${iso.slice(11, 19)}`;
 };
 
-const useFootprintChart = ({ bars, currentTickSize, marketKey, scopeKey, ticksPerRow }: Options) => {
+const useFootprintChart = ({
+    bars,
+    currentTickSize,
+    hasMore,
+    loadOlder,
+    marketKey,
+    scopeKey,
+    ticksPerRow,
+}: Options) => {
     const wrapRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<IChartApi | null>(null);
     const seriesRef = useRef<FootprintSeriesApi | null>(null);
@@ -55,7 +66,11 @@ const useFootprintChart = ({ bars, currentTickSize, marketKey, scopeKey, ticksPe
     const crosshairTimeRef = useRef<number | null>(null);
     const activeScopeRef = useRef('');
     const barCountRef = useRef(0);
+    const hasMoreRef = useRef(hasMore);
+    const loadOlderRef = useRef(loadOlder);
     const [legendBar, setLegendBar] = useState<FootprintSeriesData | null>(null);
+    hasMoreRef.current = hasMore;
+    loadOlderRef.current = loadOlder;
 
     useEffect(() => {
         const element = wrapRef.current;
@@ -118,10 +133,15 @@ const useFootprintChart = ({ bars, currentTickSize, marketKey, scopeKey, ticksPe
             crosshairTimeRef.current = null;
             setLegendBar([...pointsRef.current.values()].at(-1) ?? null);
         };
+        const handleVisibleRangeChange = (range: LogicalRange | null) => {
+            if (range && range.from < 20 && hasMoreRef.current) void loadOlderRef.current();
+        };
 
         chart.subscribeCrosshairMove(handleCrosshairMove);
+        chart.timeScale().subscribeVisibleLogicalRangeChange(handleVisibleRangeChange);
         return () => {
             chart.unsubscribeCrosshairMove(handleCrosshairMove);
+            chart.timeScale().unsubscribeVisibleLogicalRangeChange(handleVisibleRangeChange);
             chart.remove();
             chartRef.current = null;
             seriesRef.current = null;

@@ -11,6 +11,7 @@ import {
     mergeChartBars,
     type ChartLiveState,
 } from './barState';
+import { writeCachedBars } from './chartCache';
 import chartSocket from './chartSocket';
 
 type Options = {
@@ -96,6 +97,7 @@ const useChartFeed = ({ refreshSnapshot, seriesKey, snapshot }: Options) => {
                 refreshOnce();
                 return;
             }
+            void writeCachedBars(scopeKey, message.bars).catch(() => undefined);
             const current =
                 liveStateRef.current.seriesKey === scopeKey
                     ? liveStateRef.current

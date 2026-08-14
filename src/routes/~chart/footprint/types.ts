@@ -81,6 +81,8 @@ export const chartBarsResponseSchema = z
     .object({
         activeBar: chartBarSchema.nullable(),
         bars: z.array(chartBarSchema).max(CHART_WIRE_LIMITS.httpBars),
+        hasMore: z.boolean(),
+        nextBeforeBarIndex: nonnegativeSafeIntegerSchema.nullable(),
         seriesKey: z.string().min(1),
     })
     .superRefine((snapshot, context) => {
