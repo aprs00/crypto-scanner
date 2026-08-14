@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { SettingsIcon } from '@/components/Icons';
 import CSPanel from '@/components/Layouts/CSPanel';
@@ -30,8 +31,9 @@ const formatChange = (open: number, close: number): { label: string; value: numb
 };
 
 const FootprintChart = ({ onRemove, panelId }: Props) => {
-    const savedSettings = useFootprintSettingsStore((state) => state.settings[panelId]);
-    const settings = { ...defaultFootprintSettings, ...savedSettings };
+    const settings = useFootprintSettingsStore(
+        useShallow((state) => ({ ...defaultFootprintSettings, ...state.settings[panelId] })),
+    );
     const setMarketKey = useFootprintSettingsStore((state) => state.setMarketKey);
     const setSettings = useFootprintSettingsStore((state) => state.setSettings);
     const [settingsOpen, setSettingsOpen] = useState(false);
@@ -132,7 +134,7 @@ const FootprintChart = ({ onRemove, panelId }: Props) => {
 
     return (
         <>
-            <CSPanel className="h-full" controls={controls} onRemove={onRemove} title="Footprint">
+            <CSPanel className="h-full" controls={controls} onRemove={onRemove}>
                 <div className={`${styles.body} cs-no-drag`}>
                     <div className={styles.chart} ref={wrapRef} />
                     {legendBar && change && (
