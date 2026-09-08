@@ -4,7 +4,7 @@ import CSButton from '@/components/UI/CSButton';
 
 import styles from './CSPanel.module.css';
 
-export type CSPanelProps = {
+type CSPanelProps = {
     children: ReactNode;
     title?: ReactNode;
     controls?: ReactNode;

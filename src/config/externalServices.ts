@@ -4,7 +4,6 @@ const externalServiceOrigins = {
     bybitAPI: 'https://api.bybit.com',
     bybitWS: 'wss://stream.bybit.com',
     coingeckoAPI: 'https://api.coingecko.com',
-    fearGreedAPI: 'https://api.alternative.me',
     hyperliquidAPI: 'https://api.hyperliquid.xyz',
     hyperliquidWS: 'wss://api.hyperliquid.xyz',
 } as const;

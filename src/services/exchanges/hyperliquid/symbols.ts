@@ -22,7 +22,7 @@ const referencePrice = (context: HlAssetContext | undefined): number => {
     return 0;
 };
 
-export const hyperliquidTickSize = (szDecimals: number, price: number): number => {
+const hyperliquidTickSize = (szDecimals: number, price: number): number => {
     const normalizedSizeDecimals =
         Number.isInteger(szDecimals) && szDecimals >= 0 ? Math.min(PERP_MAX_DECIMALS, szDecimals) : 0;
     const decimalLimitTick = 10 ** -(PERP_MAX_DECIMALS - normalizedSizeDecimals);

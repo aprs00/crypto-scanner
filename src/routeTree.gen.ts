@@ -8,87 +8,51 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/~__root'
-import { Route as TreemapRouteRouteImport } from './routes/~treemap/~route'
-import { Route as ChartRouteRouteImport } from './routes/~chart/~route'
-import { Route as IndexRouteRouteImport } from './routes/~index/~route'
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 
-const TreemapRouteRoute = TreemapRouteRouteImport.update({
-  id: '/treemap',
-  path: '/treemap',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChartRouteRoute = ChartRouteRouteImport.update({
-  id: '/chart',
-  path: '/chart',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRouteRoute = IndexRouteRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
-  path: '',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRouteRoute
-  '/chart': typeof ChartRouteRoute
-  '/treemap': typeof TreemapRouteRoute
+  '/': typeof IndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRouteRoute
-  '/chart': typeof ChartRouteRoute
-  '/treemap': typeof TreemapRouteRoute
+  '/': typeof IndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRouteRoute
-  '/chart': typeof ChartRouteRoute
-  '/treemap': typeof TreemapRouteRoute
+  '/': typeof IndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/chart' | '/treemap'
+  fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chart' | '/treemap'
-  id: '__root__' | '/' | '/chart' | '/treemap'
+  to: '/'
+  id: '__root__' | '/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRouteRoute: typeof IndexRouteRoute
-  ChartRouteRoute: typeof ChartRouteRoute
-  TreemapRouteRoute: typeof TreemapRouteRoute
+  IndexRoute: typeof IndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/treemap': {
-      id: '/treemap'
-      path: '/treemap'
-      fullPath: '/treemap'
-      preLoaderRoute: typeof TreemapRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/chart': {
-      id: '/chart'
-      path: '/chart'
-      fullPath: '/chart'
-      preLoaderRoute: typeof ChartRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
-      path: ''
+      path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteRouteImport
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRouteRoute: IndexRouteRoute,
-  ChartRouteRoute: ChartRouteRoute,
-  TreemapRouteRoute: TreemapRouteRoute,
+  IndexRoute: IndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

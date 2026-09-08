@@ -1,4 +1,5 @@
 import externalServiceOrigins from '@/config/externalServices';
+import MultiplexedSocket, { SocketStatus } from '@/lib/realtime/MultiplexedSocket';
 
 import type {
     BboSubscriber,
@@ -10,8 +11,7 @@ import type {
     TradeSubscriber,
 } from '../types';
 
-import { applyParsedLevelDeltas, parseLevelDeltas } from '../_shared/book-syncer';
-import MultiplexedSocket, { SocketStatus } from '../_shared/multiplexed-socket';
+import { applyParsedLevelDeltas, parseLevelDeltas } from '../internal/bookSyncer';
 import { DepthFeedStatus } from '../types';
 
 const WS_URL = `${externalServiceOrigins.bybitWS}/v5/public/linear`;

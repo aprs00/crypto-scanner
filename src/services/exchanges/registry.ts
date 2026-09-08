@@ -5,7 +5,7 @@ import bybit from './bybit/adapter';
 import hyperliquid from './hyperliquid/adapter';
 import { ExchangeId } from './types';
 
-export const exchanges: Record<ExchangeId, ExchangeAdapter> = {
+const exchanges: Record<ExchangeId, ExchangeAdapter> = {
     binance,
     bybit,
     hyperliquid,

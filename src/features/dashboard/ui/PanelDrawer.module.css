@@ -1,0 +1,33 @@
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    width: 100%;
+    padding: var(--sp-4) var(--sp-6);
+    color: var(--fg);
+    text-align: left;
+    background: var(--bg-inset);
+    border: 1px solid var(--bd);
+    cursor: pointer;
+    transition:
+        border-color 120ms,
+        background 120ms;
+
+    &:hover {
+        background: var(--bg-panel);
+        border-color: var(--ac);
+    }
+}
+
+.title {
+    color: var(--fg);
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-base);
+}

@@ -17,7 +17,7 @@ type BybitInstrumentsResponse = {
 
 const PAGE_LIMIT = 1_000;
 
-export const normalizeBybitSymbols = (instruments: readonly BybitInstrument[]): ExchangeSymbol[] =>
+const normalizeBybitSymbols = (instruments: readonly BybitInstrument[]): ExchangeSymbol[] =>
     instruments.flatMap((instrument) => {
         if (
             instrument.status !== 'Trading' ||

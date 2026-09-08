@@ -1,0 +1,14 @@
+.state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-4);
+    padding: var(--sp-6);
+    color: var(--fg-dim);
+    font-size: var(--control-fs);
+    letter-spacing: var(--ls-label);
+    text-align: center;
+}

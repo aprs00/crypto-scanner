@@ -3,9 +3,9 @@ import { binanceFuturesInstance } from '@/lib/api';
 import type { ExchangeSymbol } from '../types';
 import type { BinanceFuturesExchangeInfoResponse, BinanceFuturesSymbolInfo } from './types';
 
-export const BINANCE_FUTURES_EXCHANGE_INFO_PATH = '/fapi/v1/exchangeInfo';
+const BINANCE_FUTURES_EXCHANGE_INFO_PATH = '/fapi/v1/exchangeInfo';
 
-export const normalizeBinanceFuturesSymbols = (symbols: readonly BinanceFuturesSymbolInfo[]): ExchangeSymbol[] =>
+const normalizeBinanceFuturesSymbols = (symbols: readonly BinanceFuturesSymbolInfo[]): ExchangeSymbol[] =>
     symbols.flatMap((symbol) => {
         if (
             symbol.status !== 'TRADING' ||

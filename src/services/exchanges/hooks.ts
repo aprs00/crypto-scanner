@@ -12,7 +12,7 @@ const EMPTY_BOOK: LocalOrderBook = { asks: [], bids: [] };
 const EMPTY_TRADES: NormalizedTrade[] = [];
 const HYPERLIQUID_SYMBOL_REFRESH_MS = 60_000;
 
-export const exchangeSymbolsQueryOptions = (id: ExchangeId) =>
+const exchangeSymbolsQueryOptions = (id: ExchangeId) =>
     queryOptions({
         queryFn: () => getExchange(id).fetchSymbols(),
         queryKey: ['exchange-symbols', id],

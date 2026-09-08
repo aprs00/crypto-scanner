@@ -21,11 +21,6 @@ const coingeckoInstance = axios.create({
     ...commonOptions,
 });
 
-const fearGreedInstance = axios.create({
-    baseURL: externalServiceOrigins.fearGreedAPI,
-    ...commonOptions,
-});
-
 const binanceFuturesInstance = axios.create({
     baseURL: externalServiceOrigins.binanceFuturesAPI,
     ...commonOptions,
@@ -41,5 +36,5 @@ const bybitInstance = axios.create({
     ...commonOptions,
 });
 
-export { binanceFuturesInstance, bybitInstance, coingeckoInstance, fearGreedInstance, hyperliquidInstance };
+export { binanceFuturesInstance, bybitInstance, coingeckoInstance, hyperliquidInstance };
 export default baseInstance;

@@ -19,12 +19,3 @@
 .ac2 {
     color: var(--ac2);
 }
-
-.blink {
-    animation: blink 1.1s steps(2, end) infinite;
-}
-@keyframes blink {
-    50% {
-        opacity: 0;
-    }
-}

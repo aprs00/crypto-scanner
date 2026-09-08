@@ -25,8 +25,6 @@ export const palette = {
 
 export const TERMINAL_FONT = "'JetBrains Mono', ui-monospace, monospace";
 
-export const spacing = { 1: 4, 2: 6, 3: 8, 4: 10, 5: 12, 6: 14, 7: 16, 8: 24 } as const;
-
 // Mirrors the --fs-* scale in src/styles/tokens.css.
 export const fontSize = { '2xs': 8, xs: 9, sm: 10, base: 11, md: 12, lg: 13, xl: 16 } as const;
 
@@ -76,9 +74,9 @@ export const heatmapGradient = [
 // index for the most extreme magnitude is 0 and the index for the smallest non-zero
 // magnitude is the last slot. Tile color is picked by `|change|` bucket via
 // `treemapColorFor(change)` — this keeps a -0.9% tile visibly distinct from a -4%.
-export const treemapRampNeg = ['#3a1416', '#5e1b1f', '#8a2329', '#b82a32', '#dc3545', '#e55a63', '#ec8088'] as const;
-export const treemapRampPos = ['#1a2a08', '#2d4a0e', '#456f15', '#5e8f1c', '#84cc16', '#a3d652', '#bfe18a'] as const;
-export const treemapNeutral = '#2a2522';
+const treemapRampNeg = ['#3a1416', '#5e1b1f', '#8a2329', '#b82a32', '#dc3545', '#e55a63', '#ec8088'] as const;
+const treemapRampPos = ['#1a2a08', '#2d4a0e', '#456f15', '#5e8f1c', '#84cc16', '#a3d652', '#bfe18a'] as const;
+const treemapNeutral = '#2a2522';
 
 export const treemapColorFor = (change: number) => {
     const a = Math.abs(change);

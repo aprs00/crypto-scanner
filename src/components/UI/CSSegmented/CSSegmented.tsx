@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import styles from './CSSegmented.module.css';
 
-export type CSSegmentedProps<T> = {
+type CSSegmentedProps<T> = {
     ariaLabel: string;
     options: readonly T[];
     value: T;

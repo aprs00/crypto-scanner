@@ -2,7 +2,7 @@ import type { ChangeEvent, ReactNode } from 'react';
 
 import styles from './NumberInput.module.css';
 
-export type NumberInputPropsType = {
+type NumberInputPropsType = {
     ariaDescribedBy?: string;
     ariaLabel?: string;
     className?: string;

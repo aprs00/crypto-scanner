@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import styles from './CSSelect.module.css';
 
-export type SelectProps<T = string> =
+type SelectProps<T = string> =
     | {
           ariaLabel: string;
           options: Record<string, string> | T[];

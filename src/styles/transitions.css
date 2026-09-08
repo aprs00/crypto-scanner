@@ -42,9 +42,6 @@
 .translate-x-full {
     transform: translateX(100%);
 }
-.translate-x-neg-full {
-    transform: translateX(-100%);
-}
 .translate-y-0 {
     transform: translateY(0);
 }

@@ -1,5 +1,6 @@
 import externalServiceOrigins from '@/config/externalServices';
 import { binanceFuturesInstance } from '@/lib/api';
+import MultiplexedSocket, { SocketStatus } from '@/lib/realtime/MultiplexedSocket';
 
 import type {
     BboSubscriber,
@@ -16,17 +17,16 @@ import type {
     BinanceFuturesOrderBookSnapshot,
 } from './types';
 
-import BookSyncer, { applyParsedLevelDeltas, parseLevelDeltas } from '../_shared/book-syncer';
-import MultiplexedSocket, { SocketStatus } from '../_shared/multiplexed-socket';
+import BookSyncer, { applyParsedLevelDeltas, parseLevelDeltas } from '../internal/bookSyncer';
 import { DepthFeedStatus } from '../types';
 
-export const BINANCE_FUTURES_DEPTH_SNAPSHOT_LIMIT = 1_000;
-export const BINANCE_FUTURES_PUBLIC_STREAM_URL = `${externalServiceOrigins.binanceFuturesWS}/public/stream`;
-export const BINANCE_FUTURES_MARKET_STREAM_URL = `${externalServiceOrigins.binanceFuturesWS}/market/stream`;
+const BINANCE_FUTURES_DEPTH_SNAPSHOT_LIMIT = 1_000;
+const BINANCE_FUTURES_PUBLIC_STREAM_URL = `${externalServiceOrigins.binanceFuturesWS}/public/stream`;
+const BINANCE_FUTURES_MARKET_STREAM_URL = `${externalServiceOrigins.binanceFuturesWS}/market/stream`;
 const BINANCE_COVERAGE_LOW_WATER = 650;
 const BINANCE_COVERAGE_REFRESH_COOLDOWN_MS = 30_000;
 
-export const binanceFuturesDepthSnapshotPath = (symbol: string): string =>
+const binanceFuturesDepthSnapshotPath = (symbol: string): string =>
     `/fapi/v1/depth?symbol=${symbol.toUpperCase()}&limit=${BINANCE_FUTURES_DEPTH_SNAPSHOT_LIMIT}`;
 
 let msgId = 0;
@@ -321,14 +321,14 @@ export const subscribeDepth = (symbol: string, cb: DepthSubscriber): (() => void
     return stream.subscribe(cb);
 };
 
-export const normalizeBinanceFuturesBookTicker = (ticker: BinanceFuturesBookTicker) => {
+const normalizeBinanceFuturesBookTicker = (ticker: BinanceFuturesBookTicker) => {
     const ask = Number(ticker.a);
     const bid = Number(ticker.b);
     if (!Number.isFinite(ask) || !Number.isFinite(bid) || bid <= 0 || ask <= bid) return null;
     return { ask, bid, time: ticker.T };
 };
 
-export const normalizeBinanceFuturesAggregateTrade = (trade: BinanceFuturesAggregateTrade): NormalizedTrade | null => {
+const normalizeBinanceFuturesAggregateTrade = (trade: BinanceFuturesAggregateTrade): NormalizedTrade | null => {
     const price = Number(trade.p);
     const size = Number(trade.q);
     if (!Number.isFinite(price) || !Number.isFinite(size) || price <= 0 || size <= 0) return null;

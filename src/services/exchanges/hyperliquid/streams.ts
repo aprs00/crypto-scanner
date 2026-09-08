@@ -1,4 +1,5 @@
 import externalServiceOrigins from '@/config/externalServices';
+import MultiplexedSocket, { SocketStatus } from '@/lib/realtime/MultiplexedSocket';
 
 import type {
     BboSubscriber,
@@ -11,19 +12,18 @@ import type {
     TradeSubscriber,
 } from '../types';
 
-import MultiplexedSocket, { SocketStatus } from '../_shared/multiplexed-socket';
 import { DepthFeedStatus } from '../types';
 
 const WS_URL = `${externalServiceOrigins.hyperliquidWS}/ws`;
 const PING_INTERVAL_MS = 30_000; // server drops idle sockets ~60s
 const ORDERBOOK_DEPTH = 20;
 
-export const HlChannel = {
+const HlChannel = {
     L2Book: 'l2Book',
     Trades: 'trades',
     Bbo: 'bbo',
 } as const;
-export type HlChannel = (typeof HlChannel)[keyof typeof HlChannel];
+type HlChannel = (typeof HlChannel)[keyof typeof HlChannel];
 
 type HlSub = { type: HlChannel; coin: string };
 type HlLevel = { px: string; sz: string; n: number };

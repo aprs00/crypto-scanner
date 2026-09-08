@@ -1,4 +1,4 @@
-export type BinanceFuturesSymbolFilter = {
+type BinanceFuturesSymbolFilter = {
     filterType: string;
     tickSize?: string;
 };
