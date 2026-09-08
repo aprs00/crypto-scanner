@@ -8,7 +8,7 @@ import { DASHBOARD_PERSISTENCE_VERSION, isRecord } from '../../../model/persiste
 
 // `base` is the coin (e.g. "BTC"); it carries the selection across an exchange
 // switch even though the native `symbol` differs ("BTCUSDT" vs "BTC").
-export type PanelSource = { exchange: ExchangeIdValue; symbol: string; base: string };
+type PanelSource = { exchange: ExchangeIdValue; symbol: string; base: string };
 
 export const defaultPanelSource: PanelSource = {
     base: 'BTC',
@@ -27,7 +27,7 @@ type ChartSourcePersistence = Pick<ChartSourceStore, 'sources'>;
 
 const exchangeIds = new Set<string>(Object.values(ExchangeId));
 
-export const normalizeChartSourcePersistence = (value: unknown): ChartSourcePersistence => {
+const normalizeChartSourcePersistence = (value: unknown): ChartSourcePersistence => {
     if (!isRecord(value) || !isRecord(value.sources)) return { sources: {} };
 
     const sources: Record<string, PanelSource> = {};

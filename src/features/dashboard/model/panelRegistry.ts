@@ -24,7 +24,7 @@ export type DashboardPanelDefinition = {
     type: PanelType;
 };
 
-export const dashboardPanelRegistry = {
+const dashboardPanelRegistry = {
     [DashboardPanelType.Footprint]: {
         catalogOrder: 0,
         cleanup: async (panelId) =>
@@ -202,7 +202,7 @@ export const layoutForPanel = (type: PanelType, id: string, y: number): Layout =
     y,
 });
 
-export type InitialDashboardPanels = {
+type InitialDashboardPanels = {
     panels: DashboardPanelItem[];
     savedGridLayouts: Record<string, DashboardPanelLayout>;
 };

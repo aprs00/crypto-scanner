@@ -96,7 +96,7 @@ interface ChartSeriesStore {
 
 type ChartSeriesPersistence = Pick<ChartSeriesStore, 'dom' | 'liquidity' | 'orderBookNotional' | 'visibility'>;
 
-export const normalizeChartSeriesPersistence = (persisted: unknown): ChartSeriesPersistence => {
+const normalizeChartSeriesPersistence = (persisted: unknown): ChartSeriesPersistence => {
     const saved = persisted as Partial<ChartSeriesPersistence> | undefined;
     return {
         dom: safeRecord(saved?.dom, sanitizeDomPreferences),

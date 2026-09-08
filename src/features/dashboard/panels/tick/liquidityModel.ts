@@ -18,16 +18,16 @@ export const LiquiditySide = {
 } as const;
 export type LiquiditySide = (typeof LiquiditySide)[keyof typeof LiquiditySide];
 
-export type LiquidityGap = Readonly<{ end: number | null; start: number }>;
+type LiquidityGap = Readonly<{ end: number | null; start: number }>;
 
-export type LiquidityProjection = Readonly<{
+type LiquidityProjection = Readonly<{
     askAnchor: number;
     bidAnchor: number;
     bucketTicks: number;
     values: Float32Array;
 }>;
 
-export type LiquiditySampleView = Readonly<{
+type LiquiditySampleView = Readonly<{
     askAnchor: number;
     bidAnchor: number;
     offset: number;

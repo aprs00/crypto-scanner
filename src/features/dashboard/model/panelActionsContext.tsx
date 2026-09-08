@@ -4,7 +4,7 @@ import { createContext, use } from 'react';
 
 import type { ExchangeChartConfig } from '../panels/shared/settings/config';
 
-export type DashboardPanelActions = {
+type DashboardPanelActions = {
     setChartExchange: (panelId: string, exchange: string) => void;
     updateExchangeConfig: (panelId: string, exchange: string, config: ExchangeChartConfig) => void;
 };

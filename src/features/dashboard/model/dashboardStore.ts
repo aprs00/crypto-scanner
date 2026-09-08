@@ -28,7 +28,7 @@ const defaultPersistedState: DashboardPersistedState = {
     savedGridLayouts: defaultDashboard.savedGridLayouts,
 };
 
-export interface DashboardStore extends DashboardPersistedState {
+interface DashboardStore extends DashboardPersistedState {
     addPanelToGroup: (type: DashboardPanelType, groupId?: string) => string;
     createGroup: (name: string) => string;
     deleteGroup: (groupId: string) => Promise<void>;

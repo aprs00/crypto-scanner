@@ -17,13 +17,13 @@ type OrderBookVolumeSummary = Readonly<{
     bidPercentage: number;
 }>;
 
-export type OrderBookView = Readonly<{
+type OrderBookView = Readonly<{
     asks: readonly OrderBookViewRow[];
     bids: readonly OrderBookViewRow[];
     volume: OrderBookVolumeSummary;
 }>;
 
-export type BuildOrderBookViewOptions = Readonly<{
+type BuildOrderBookViewOptions = Readonly<{
     askRows: number;
     bidRows: number;
     groupBy: number;

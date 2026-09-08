@@ -85,7 +85,7 @@ type FootprintSettingsStore = {
 
 type FootprintSettingsPersistence = Pick<FootprintSettingsStore, 'settings'>;
 
-export const normalizeFootprintSettingsPersistence = (value: unknown): FootprintSettingsPersistence => {
+const normalizeFootprintSettingsPersistence = (value: unknown): FootprintSettingsPersistence => {
     if (!isRecord(value) || !isRecord(value.settings)) return { settings: {} };
 
     return {

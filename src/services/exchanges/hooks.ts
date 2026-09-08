@@ -22,7 +22,7 @@ const exchangeSymbolsQueryOptions = (id: ExchangeId) =>
 
 export const useExchangeSymbols = (id: ExchangeId) => useQuery(exchangeSymbolsQueryOptions(id));
 
-export type UseOrderBookOptions = Readonly<{
+type UseOrderBookOptions = Readonly<{
     active?: boolean;
     publishIntervalMs?: number;
 }>;
@@ -107,7 +107,7 @@ export const useOrderBook = (
     return published.sourceKey === sourceKey ? published.book : EMPTY_BOOK;
 };
 
-export type UseTradesOptions = Readonly<{
+type UseTradesOptions = Readonly<{
     active?: boolean;
     limit?: number;
     publishIntervalMs?: number;

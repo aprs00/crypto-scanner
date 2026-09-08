@@ -42,7 +42,7 @@ import {
     upperBoundT,
 } from './tickChartMath';
 
-export type TickData = { points: TickPoint[]; trades: TradeMark[] };
+type TickData = { points: TickPoint[]; trades: TradeMark[] };
 export type Hover = { x: number; y: number } | null;
 
 export type TickChartInteractionFrame = {

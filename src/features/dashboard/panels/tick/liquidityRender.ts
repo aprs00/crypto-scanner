@@ -53,7 +53,7 @@ type LiquidityRaster = {
     width: number;
 };
 
-export type PreparedLiquidity = {
+type PreparedLiquidity = {
     cells: Cell[];
     raster: LiquidityRaster | null;
 };
