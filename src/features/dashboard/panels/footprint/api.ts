@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 
 import api from '@/lib/api';
@@ -88,6 +88,15 @@ export const chartSeriesRefetchInterval = (status: ChartSeriesStatus | undefined
     return status === ChartSeriesStatus.Ready ? SERIES_LEASE_RENEWAL_MS : false;
 };
 
+export const retireChartSeries = (client: QueryClient, queryKey: unknown[], series: ChartSeriesResponse): boolean => {
+    if (isRetiredSeries(series.seriesKey)) return false;
+    void retireCachedSeries(series.seriesKey).catch(() => undefined);
+    void client.cancelQueries({ queryKey: ['footprint-chart-bars', series.seriesKey] });
+    client.removeQueries({ queryKey: ['footprint-chart-bars', series.seriesKey] });
+    client.setQueryData<ChartSeriesResponse>(queryKey, { ...series, status: ChartSeriesStatus.Queued });
+    return true;
+};
+
 const useChartSeries = (request: ChartSeriesRequest | undefined) => {
     const client = useQueryClient();
     const queryKey = ['footprint-chart-series', ...chartSeriesRequestKey(request)];
@@ -100,14 +109,21 @@ const useChartSeries = (request: ChartSeriesRequest | undefined) => {
         refetchOnWindowFocus: 'always',
         staleTime: 1_000,
     });
+    const requestScope = JSON.stringify(queryKey);
+    const previous = useRef({ requestScope, seriesKey: query.data?.seriesKey });
+    useEffect(() => {
+        const old = previous.current;
+        const currentKey = query.data?.seriesKey;
+        previous.current = { requestScope, seriesKey: currentKey };
+        // Periodic lease renewal also discovers replacements if a WS notice was lost.
+        if (old.requestScope !== requestScope || !old.seriesKey || !currentKey || old.seriesKey === currentKey) return;
+        void retireCachedSeries(old.seriesKey).catch(() => undefined);
+        client.removeQueries({ queryKey: ['footprint-chart-bars', old.seriesKey] });
+    }, [client, query.data?.seriesKey, requestScope]);
     const replaceSeries = (seriesKey: string) => {
-        if (query.data?.seriesKey !== seriesKey || isRetiredSeries(seriesKey)) return;
-        void retireCachedSeries(seriesKey).catch(() => undefined);
-        void client.cancelQueries({ queryKey: ['footprint-chart-bars', seriesKey] });
-        client.removeQueries({ queryKey: ['footprint-chart-bars', seriesKey] });
+        if (query.data?.seriesKey !== seriesKey) return;
         // Shared query state disables the retired feed in every matching panel.
-        client.setQueryData<ChartSeriesResponse>(queryKey, { ...query.data, status: ChartSeriesStatus.Queued });
-        void query.refetch();
+        if (retireChartSeries(client, queryKey, query.data)) void query.refetch();
     };
     return { ...query, replaceSeries };
 };
