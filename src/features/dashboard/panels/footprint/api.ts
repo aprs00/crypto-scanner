@@ -5,6 +5,7 @@ import api from '@/lib/api';
 
 import type { FootprintSettings } from './useFootprintSettingsStore';
 
+import { mergeContiguousBars } from './barState';
 import { isRetiredSeries, readCachedBars, retireCachedSeries, writeCachedBars } from './chartCache';
 import { isReplacedSeriesError } from './presentation';
 import {
@@ -15,7 +16,6 @@ import {
     ChartType,
     footprintMarketsResponseSchema,
     type ChartBarsResponse,
-    type ChartBar,
     type ChartSeriesResponse,
 } from './types';
 
@@ -137,17 +137,9 @@ const fetchChartBars = async (seriesKey: string, beforeBarIndex?: number): Promi
     return snapshot;
 };
 
-const mergeBars = (...groups: ChartBar[][]): ChartBar[] => {
-    const merged = new Map<number, ChartBar>();
-    for (const bars of groups) {
-        for (const bar of bars) merged.set(bar.barIndex, bar);
-    }
-    return [...merged.values()].sort((first, second) => first.barIndex - second.barIndex);
-};
-
 type CachedHistory = {
-    bars: ChartBar[];
-    exhausted: boolean;
+    bars: ChartBarsResponse['bars'];
+    exhaustedBefore?: number;
     seriesKey: string;
 };
 
@@ -159,7 +151,7 @@ const useChartBars = (seriesKey: string | undefined, enabled: boolean, onSeriesR
         retry: (count, error) => !isReplacedSeriesError(error) && count < 3,
         staleTime: Infinity,
     });
-    const [history, setHistory] = useState<CachedHistory>({ bars: [], exhausted: false, seriesKey: '' });
+    const [history, setHistory] = useState<CachedHistory>({ bars: [], seriesKey: '' });
     const [loadingOlder, setLoadingOlder] = useState(false);
     const loadingOlderRef = useRef(false);
     const seriesKeyRef = useRef(seriesKey);
@@ -173,14 +165,14 @@ const useChartBars = (seriesKey: string | undefined, enabled: boolean, onSeriesR
 
     useEffect(() => {
         let disposed = false;
-        setHistory({ bars: [], exhausted: false, seriesKey: seriesKey ?? '' });
+        setHistory({ bars: [], seriesKey: seriesKey ?? '' });
         if (!enabled || !seriesKey) return;
         void readCachedBars(seriesKey, undefined, CHART_WIRE_LIMITS.httpBars)
             .then((bars) => {
                 if (disposed || bars.length === 0) return;
                 setHistory((current) => ({
-                    bars: mergeBars(current.seriesKey === seriesKey ? current.bars : [], bars),
-                    exhausted: current.seriesKey === seriesKey && current.exhausted,
+                    bars: mergeContiguousBars(current.seriesKey === seriesKey ? current.bars : [], bars),
+                    exhaustedBefore: current.seriesKey === seriesKey ? current.exhaustedBefore : undefined,
                     seriesKey,
                 }));
             })
@@ -193,17 +185,17 @@ const useChartBars = (seriesKey: string | undefined, enabled: boolean, onSeriesR
     useEffect(() => {
         if (!seriesKey || !query.data) return;
         setHistory((current) => ({
-            bars: mergeBars(current.seriesKey === seriesKey ? current.bars : [], query.data.bars),
-            exhausted: current.seriesKey === seriesKey && current.exhausted,
+            bars: mergeContiguousBars(current.seriesKey === seriesKey ? current.bars : [], query.data.bars),
+            exhaustedBefore: current.seriesKey === seriesKey ? current.exhaustedBefore : undefined,
             seriesKey,
         }));
         void writeCachedBars(seriesKey, query.data.bars).catch(() => undefined);
     }, [query.data, seriesKey]);
 
     const scopedHistory = history.seriesKey === seriesKey ? history.bars : [];
-    const bars = mergeBars(scopedHistory, query.data?.bars ?? []);
+    const bars = mergeContiguousBars(scopedHistory, query.data?.bars ?? []);
     const oldestBarIndex = bars[0]?.barIndex;
-    const exhausted = history.seriesKey === seriesKey && history.exhausted;
+    const exhausted = history.seriesKey === seriesKey && history.exhaustedBefore === oldestBarIndex;
     const hasMore = !exhausted && oldestBarIndex !== undefined && oldestBarIndex > 0;
     const data =
         (query.data || bars.length > 0) && seriesKey
@@ -219,7 +211,7 @@ const useChartBars = (seriesKey: string | undefined, enabled: boolean, onSeriesR
     const loadOlder = async () => {
         if (!seriesKey || loadingOlderRef.current) return;
         const current = historyRef.current.seriesKey === seriesKey ? historyRef.current.bars : [];
-        const beforeBarIndex = current[0]?.barIndex ?? query.data?.bars[0]?.barIndex;
+        const beforeBarIndex = mergeContiguousBars(current, query.data?.bars ?? [])[0]?.barIndex;
         if (beforeBarIndex === undefined || beforeBarIndex <= 0) return;
         loadingOlderRef.current = true;
         setLoadingOlder(true);
@@ -228,16 +220,24 @@ const useChartBars = (seriesKey: string | undefined, enabled: boolean, onSeriesR
             if (seriesKeyRef.current !== seriesKey) return;
             if (cached.length > 0) {
                 setHistory((value) => ({
-                    bars: mergeBars(value.seriesKey === seriesKey ? value.bars : [], cached),
-                    exhausted: value.seriesKey === seriesKey && value.exhausted,
+                    bars: mergeContiguousBars(
+                        value.seriesKey === seriesKey ? value.bars : [],
+                        query.data?.bars ?? [],
+                        cached,
+                    ),
+                    exhaustedBefore: value.seriesKey === seriesKey ? value.exhaustedBefore : undefined,
                     seriesKey,
                 }));
             }
             const page = await fetchChartBars(seriesKey, beforeBarIndex);
             if (seriesKeyRef.current !== seriesKey) return;
             setHistory((value) => ({
-                bars: mergeBars(value.seriesKey === seriesKey ? value.bars : [], page.bars),
-                exhausted: !page.hasMore,
+                bars: mergeContiguousBars(
+                    value.seriesKey === seriesKey ? value.bars : [],
+                    query.data?.bars ?? [],
+                    page.bars,
+                ),
+                exhaustedBefore: page.hasMore ? undefined : (page.bars[0]?.barIndex ?? beforeBarIndex),
                 seriesKey,
             }));
             await writeCachedBars(seriesKey, page.bars).catch(() => undefined);

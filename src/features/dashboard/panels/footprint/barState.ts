@@ -2,6 +2,17 @@ import type { ChartBar, ChartBarsResponse } from './types';
 
 export const MAX_LIVE_UPDATE_BARS = 500;
 
+export const mergeContiguousBars = (...groups: ChartBar[][]): ChartBar[] => {
+    const merged = new Map<number, ChartBar>();
+    for (const bars of groups) {
+        for (const bar of bars) merged.set(bar.barIndex, bar);
+    }
+    const sorted = [...merged.values()].sort((first, second) => first.barIndex - second.barIndex);
+    let start = sorted.length - 1;
+    while (start > 0 && sorted[start - 1].barIndex + 1 === sorted[start].barIndex) start -= 1;
+    return sorted.slice(Math.max(0, start));
+};
+
 export type ChartLiveState = {
     activeBar: ChartBar | null | undefined;
     bars: ReadonlyMap<number, ChartBar>;
@@ -33,6 +44,9 @@ export const chartUpdateHasGap = (
     bars: ChartBar[],
     activeBar: ChartBar | null,
 ): boolean => {
+    const snapshotMax = snapshot?.bars.at(-1)?.barIndex;
+    const latestClosed = Math.max(-1, ...current.bars.keys(), ...bars.map((bar) => bar.barIndex));
+    if (snapshotMax !== undefined && latestClosed - snapshotMax >= MAX_LIVE_UPDATE_BARS) return true;
     const knownClosedIndexes = [...(snapshot?.bars ?? []), ...current.bars.values()].map((bar) => bar.barIndex);
     const knownClosedMax = knownClosedIndexes.length ? Math.max(...knownClosedIndexes) : undefined;
     if (bars.length) {
@@ -47,9 +61,10 @@ export const chartUpdateHasGap = (
 };
 
 export const mergeChartBars = (snapshot: ChartBarsResponse | undefined, live: ChartLiveState): ChartBar[] => {
-    const merged = new Map((snapshot?.bars ?? []).map((bar) => [bar.barIndex, bar]));
-    for (const bar of live.bars.values()) merged.set(bar.barIndex, bar);
+    const closed = mergeContiguousBars(snapshot?.bars ?? [], [...live.bars.values()]);
     const activeBar = live.activeBar !== undefined ? live.activeBar : snapshot?.activeBar;
-    if (activeBar) merged.set(activeBar.barIndex, activeBar);
-    return [...merged.values()].sort((first, second) => first.barIndex - second.barIndex);
+    const lastClosed = closed.at(-1)?.barIndex;
+    // Catch-up messages can include the active bar before intervening closed bars arrive.
+    if (activeBar && (lastClosed === undefined || activeBar.barIndex === lastClosed + 1)) return [...closed, activeBar];
+    return closed;
 };
