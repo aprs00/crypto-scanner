@@ -11,6 +11,7 @@ export type ChartType = (typeof ChartType)[keyof typeof ChartType];
 
 export const ChartSeriesStatus = {
     Building: 'building',
+    CatchingUp: 'catching_up',
     Failed: 'failed',
     Queued: 'queued',
     Ready: 'ready',
@@ -82,6 +83,7 @@ export const chartBarsResponseSchema = z
         activeBar: chartBarSchema.nullable(),
         bars: z.array(chartBarSchema).max(CHART_WIRE_LIMITS.httpBars),
         hasMore: z.boolean(),
+        historyStartBarIndex: nonnegativeSafeIntegerSchema,
         nextBeforeBarIndex: nonnegativeSafeIntegerSchema.nullable(),
         seriesKey: z.string().min(1),
     })

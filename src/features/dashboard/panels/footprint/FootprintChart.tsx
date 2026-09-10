@@ -10,6 +10,7 @@ import type { DashboardPanelProps } from '../../model/panelTypes';
 import type { FootprintSettings as FootprintSettingsValue } from './useFootprintSettingsStore';
 
 import { createChartSeriesRequest, useChartBars, useChartSeries, useFootprintMarkets } from './api';
+import { isRetiredSeries } from './chartCache';
 import styles from './FootprintChart.module.css';
 import { formatFootprintQuantity } from './FootprintSeries';
 import FootprintSettings from './FootprintSettings';
@@ -48,9 +49,14 @@ const FootprintChart = ({ onRemove, panel, title }: DashboardPanelProps) => {
     const request = market ? createChartSeriesRequest(settings, market.marketKey) : undefined;
     const seriesQuery = useChartSeries(request);
     const series = seriesQuery.data;
-    const isSeriesReady = series?.status === ChartSeriesStatus.Ready;
-    const seriesKey = isSeriesReady ? series.seriesKey : undefined;
-    const barsQuery = useChartBars(seriesKey, isSeriesReady, seriesQuery.replaceSeries);
+    const seriesKey =
+        seriesQuery.isFetchedAfterMount &&
+        series &&
+        series.status !== ChartSeriesStatus.Failed &&
+        !isRetiredSeries(series.seriesKey)
+            ? series.seriesKey
+            : undefined;
+    const barsQuery = useChartBars(seriesKey, settings.lookbackDays, seriesQuery.replaceSeries);
     const refreshSnapshot = async () => {
         const result = await barsQuery.refetch();
         return result.isSuccess;
@@ -58,11 +64,17 @@ const FootprintChart = ({ onRemove, panel, title }: DashboardPanelProps) => {
     const feed = useChartFeed({
         onSeriesReplaced: seriesQuery.replaceSeries,
         refreshSnapshot,
-        seriesKey: barsQuery.data ? seriesKey : undefined,
+        seriesKey:
+            series?.status === ChartSeriesStatus.Ready ||
+            series?.status === ChartSeriesStatus.CatchingUp ||
+            barsQuery.data
+                ? seriesKey
+                : undefined,
         snapshot: barsQuery.data,
     });
+    const bars = barsQuery.data ? feed.bars : [];
     const { legendBar, wrapRef } = useFootprintChart({
-        bars: feed.bars,
+        bars,
         currentTickSize: market?.currentTickSize,
         hasMore: barsQuery.hasMore,
         loadOlder: barsQuery.loadOlder,
@@ -93,26 +105,28 @@ const FootprintChart = ({ onRemove, panel, title }: DashboardPanelProps) => {
               : feed.streamError
                 ? chartErrorLabel(feed.streamError, settings.chartType)
                 : null;
-    const building = series?.status === ChartSeriesStatus.Queued || series?.status === ChartSeriesStatus.Building;
+    const building =
+        !barsQuery.data &&
+        (series?.status === ChartSeriesStatus.Queued || series?.status === ChartSeriesStatus.Building);
     const loadingText = marketsQuery.isLoading
         ? 'Loading footprint markets…'
         : market && seriesQuery.isLoading
           ? `Loading ${settings.chartType.toUpperCase()} series…`
           : building
             ? `Building ${settings.chartType.toUpperCase()} series…`
-            : isSeriesReady && barsQuery.isLoading
-              ? 'Loading chart history…'
+            : seriesKey && !barsQuery.data
+              ? 'Catching up chart…'
               : null;
     const stateText =
-        (feed.bars.length === 0 && (errorText || loadingText)) ||
-        (barsQuery.isSuccess && feed.bars.length === 0 ? 'Waiting for chart data…' : null);
-    const stateIsError = Boolean(errorText && feed.bars.length === 0);
+        (bars.length === 0 && (errorText || loadingText)) ||
+        (barsQuery.data && bars.length === 0 ? 'Waiting for chart data…' : null);
+    const stateIsError = Boolean(errorText && bars.length === 0);
     const statusText =
-        feed.bars.length > 0 && feed.streamError
+        bars.length > 0 && feed.streamError
             ? chartErrorLabel(feed.streamError, settings.chartType).toUpperCase()
-            : feed.bars.length > 0 && feed.reconnecting
+            : bars.length > 0 && feed.reconnecting
               ? 'LIVE FEED RECONNECTING'
-              : feed.bars.length > 0 && barsQuery.loadingOlder
+              : bars.length > 0 && barsQuery.loadingOlder
                 ? 'LOADING EARLIER HISTORY'
                 : null;
     const priceDecimals = legendBar ? decimalPlaces(legendBar.tickSize) : 0;

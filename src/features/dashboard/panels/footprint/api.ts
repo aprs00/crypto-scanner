@@ -7,7 +7,7 @@ import type { FootprintSettings } from './useFootprintSettingsStore';
 
 import { mergeContiguousBars } from './barState';
 import { isRetiredSeries, readCachedBars, retireCachedSeries, writeCachedBars } from './chartCache';
-import { isReplacedSeriesError } from './presentation';
+import { isChartPending, isReplacedSeriesError } from './presentation';
 import {
     chartBarsResponseSchema,
     chartSeriesResponseSchema,
@@ -19,7 +19,7 @@ import {
     type ChartSeriesResponse,
 } from './types';
 
-const SERIES_POLL_MS = 100;
+export const SNAPSHOT_RETRY_MS = 1_000;
 export const SERIES_LEASE_RENEWAL_MS = 5 * 60_000;
 
 const fetchFootprintMarkets = async () => {
@@ -67,16 +67,10 @@ export const createChartSeriesRequest = (settings: FootprintSettings, marketKey:
               reversalTicks: settings.reversalTicks,
           };
 
-const chartSeriesRequestKey = (request: ChartSeriesRequest | undefined) =>
+export const chartSeriesRequestKey = (request: ChartSeriesRequest | undefined) =>
     request?.chartType === ChartType.Tick
         ? [request.marketKey, request.chartType, request.tradesPerBar, request.lookbackDays]
-        : [
-              request?.marketKey,
-              request?.chartType,
-              request?.continuationTicks,
-              request?.reversalTicks,
-              request?.lookbackDays,
-          ];
+        : [request?.marketKey, request?.chartType, request?.continuationTicks, request?.reversalTicks];
 
 const createChartSeries = async (request: ChartSeriesRequest): Promise<ChartSeriesResponse> => {
     const response = await api.post('api/v1/footprints/chart-series', request);
@@ -84,8 +78,7 @@ const createChartSeries = async (request: ChartSeriesRequest): Promise<ChartSeri
 };
 
 export const chartSeriesRefetchInterval = (status: ChartSeriesStatus | undefined): number | false => {
-    if (status === ChartSeriesStatus.Queued || status === ChartSeriesStatus.Building) return SERIES_POLL_MS;
-    return status === ChartSeriesStatus.Ready ? SERIES_LEASE_RENEWAL_MS : false;
+    return status && status !== ChartSeriesStatus.Failed ? SERIES_LEASE_RENEWAL_MS : false;
 };
 
 export const retireChartSeries = (client: QueryClient, queryKey: unknown[], series: ChartSeriesResponse): boolean => {
@@ -102,10 +95,16 @@ const useChartSeries = (request: ChartSeriesRequest | undefined) => {
     const queryKey = ['footprint-chart-series', ...chartSeriesRequestKey(request)];
     const query = useQuery({
         enabled: Boolean(request),
-        queryFn: () => createChartSeries(request!),
+        queryFn: async () => {
+            const series = await createChartSeries(request!);
+            // POST requests catch-up once. GET retries observe its completion.
+            void client.invalidateQueries({ queryKey: ['footprint-chart-bars', series.seriesKey] });
+            return series;
+        },
         queryKey,
         refetchInterval: (query) => chartSeriesRefetchInterval(query.state.data?.status),
         refetchOnReconnect: true,
+        refetchOnMount: 'always',
         refetchOnWindowFocus: 'always',
         staleTime: 1_000,
     });
@@ -128,9 +127,15 @@ const useChartSeries = (request: ChartSeriesRequest | undefined) => {
     return { ...query, replaceSeries };
 };
 
-const fetchChartBars = async (seriesKey: string, beforeBarIndex?: number): Promise<ChartBarsResponse> => {
+export const fetchChartBars = async (
+    seriesKey: string,
+    lookbackDays: number,
+    beforeBarIndex?: number,
+    signal?: AbortSignal,
+): Promise<ChartBarsResponse> => {
     const response = await api.get('api/v1/footprints/chart-bars', {
-        params: { beforeBarIndex, seriesKey },
+        params: { beforeBarIndex, lookbackDays, seriesKey },
+        signal,
     });
     const snapshot = chartBarsResponseSchema.parse(response.data);
     if (snapshot.seriesKey !== seriesKey) throw new Error('Chart snapshot does not match the requested series');
@@ -140,23 +145,49 @@ const fetchChartBars = async (seriesKey: string, beforeBarIndex?: number): Promi
 type CachedHistory = {
     bars: ChartBarsResponse['bars'];
     exhaustedBefore?: number;
-    seriesKey: string;
+    historyStartBarIndex: number;
+    scopeKey: string;
 };
 
-const useChartBars = (seriesKey: string | undefined, enabled: boolean, onSeriesReplaced?: (key: string) => void) => {
+export const retryChartSnapshot = (count: number, error: unknown): boolean =>
+    isChartPending(error) || (!isReplacedSeriesError(error) && count < 3);
+
+export const mergeSnapshotHistory = (snapshot: ChartBarsResponse, cached: ChartBarsResponse['bars']) => {
+    const newestClosed = snapshot.bars.at(-1)?.barIndex ?? -1;
+    return mergeContiguousBars(
+        cached.filter((bar) => bar.barIndex >= snapshot.historyStartBarIndex && bar.barIndex <= newestClosed),
+        snapshot.bars,
+    );
+};
+
+const useChartBars = (
+    seriesKey: string | undefined,
+    lookbackDays: number,
+    onSeriesReplaced?: (key: string) => void,
+) => {
+    const client = useQueryClient();
+    const scopeKey = JSON.stringify([seriesKey, lookbackDays]);
     const query = useQuery({
-        enabled: Boolean(enabled && seriesKey),
-        queryFn: () => fetchChartBars(seriesKey!),
-        queryKey: ['footprint-chart-bars', seriesKey],
-        retry: (count, error) => !isReplacedSeriesError(error) && count < 3,
+        enabled: Boolean(seriesKey && !isRetiredSeries(seriesKey)),
+        queryFn: ({ signal }) => fetchChartBars(seriesKey!, lookbackDays, undefined, signal),
+        queryKey: ['footprint-chart-bars', seriesKey, lookbackDays],
+        refetchOnMount: 'always',
+        retry: retryChartSnapshot,
+        retryDelay: SNAPSHOT_RETRY_MS,
         staleTime: Infinity,
     });
-    const [history, setHistory] = useState<CachedHistory>({ bars: [], seriesKey: '' });
-    const [loadingOlder, setLoadingOlder] = useState(false);
-    const loadingOlderRef = useRef(false);
-    const seriesKeyRef = useRef(seriesKey);
+    // Cached query/IndexedDB data cannot satisfy the first render after opening.
+    // Once accepted, keep the chart visible during later refreshes and outages.
+    const accepted = useRef({ ready: false, scopeKey });
+    if (accepted.current.scopeKey !== scopeKey) accepted.current = { ready: false, scopeKey };
+    if (query.isFetchedAfterMount && query.isSuccess && !query.isFetching) accepted.current.ready = true;
+    const snapshotReady = accepted.current.ready && Boolean(query.data);
+    const [history, setHistory] = useState<CachedHistory>({ bars: [], historyStartBarIndex: 0, scopeKey: '' });
+    const [loadingScope, setLoadingScope] = useState<string>();
+    const loadingOlderRef = useRef<string | undefined>(undefined);
+    const scopeRef = useRef(scopeKey);
     const historyRef = useRef(history);
-    seriesKeyRef.current = seriesKey;
+    scopeRef.current = scopeKey;
     historyRef.current = history;
 
     useEffect(() => {
@@ -165,80 +196,95 @@ const useChartBars = (seriesKey: string | undefined, enabled: boolean, onSeriesR
 
     useEffect(() => {
         let disposed = false;
-        setHistory({ bars: [], seriesKey: seriesKey ?? '' });
-        if (!enabled || !seriesKey) return;
+        setHistory({ bars: [], historyStartBarIndex: 0, scopeKey });
+        if (!snapshotReady || !seriesKey) return;
         void readCachedBars(seriesKey, undefined, CHART_WIRE_LIMITS.httpBars)
             .then((bars) => {
                 if (disposed || bars.length === 0) return;
                 setHistory((current) => ({
-                    bars: mergeContiguousBars(current.seriesKey === seriesKey ? current.bars : [], bars),
-                    exhaustedBefore: current.seriesKey === seriesKey ? current.exhaustedBefore : undefined,
-                    seriesKey,
+                    ...current,
+                    bars: mergeContiguousBars(current.scopeKey === scopeKey ? current.bars : [], bars),
+                    scopeKey,
                 }));
             })
             .catch(() => undefined);
         return () => {
             disposed = true;
         };
-    }, [enabled, seriesKey]);
+    }, [scopeKey, seriesKey, snapshotReady]);
 
     useEffect(() => {
-        if (!seriesKey || !query.data) return;
+        if (!snapshotReady || !seriesKey || !query.data) return;
+        const snapshot = query.data;
+        client.setQueriesData<ChartSeriesResponse>({ queryKey: ['footprint-chart-series'] }, (current) =>
+            current?.seriesKey === seriesKey && current.status !== ChartSeriesStatus.Ready
+                ? { ...current, errorCode: null, status: ChartSeriesStatus.Ready }
+                : current,
+        );
         setHistory((current) => ({
-            bars: mergeContiguousBars(current.seriesKey === seriesKey ? current.bars : [], query.data.bars),
-            exhaustedBefore: current.seriesKey === seriesKey ? current.exhaustedBefore : undefined,
-            seriesKey,
+            bars: mergeSnapshotHistory(snapshot, current.scopeKey === scopeKey ? current.bars : []),
+            exhaustedBefore: current.scopeKey === scopeKey ? current.exhaustedBefore : undefined,
+            historyStartBarIndex: Math.max(
+                snapshot.historyStartBarIndex,
+                current.scopeKey === scopeKey ? current.historyStartBarIndex : 0,
+            ),
+            scopeKey,
         }));
-        void writeCachedBars(seriesKey, query.data.bars).catch(() => undefined);
-    }, [query.data, seriesKey]);
+        void writeCachedBars(seriesKey, snapshot.bars).catch(() => undefined);
+    }, [client, query.data, scopeKey, seriesKey, snapshotReady]);
 
-    const scopedHistory = history.seriesKey === seriesKey ? history.bars : [];
-    const bars = mergeContiguousBars(scopedHistory, query.data?.bars ?? []);
+    const scopedHistory = history.scopeKey === scopeKey ? history : undefined;
+    const historyStartBarIndex = Math.max(
+        query.data?.historyStartBarIndex ?? 0,
+        scopedHistory?.historyStartBarIndex ?? 0,
+    );
+    const bars = query.data
+        ? mergeSnapshotHistory({ ...query.data, historyStartBarIndex }, scopedHistory?.bars ?? [])
+        : [];
     const oldestBarIndex = bars[0]?.barIndex;
-    const exhausted = history.seriesKey === seriesKey && history.exhaustedBefore === oldestBarIndex;
-    const hasMore = !exhausted && oldestBarIndex !== undefined && oldestBarIndex > 0;
+    const exhausted = scopedHistory?.exhaustedBefore === oldestBarIndex;
+    const hasMore =
+        snapshotReady && !exhausted && oldestBarIndex !== undefined && oldestBarIndex > historyStartBarIndex;
     const data =
-        (query.data || bars.length > 0) && seriesKey
+        snapshotReady && query.data && seriesKey
             ? {
-                  activeBar: query.data?.activeBar ?? null,
+                  activeBar: query.data.activeBar,
                   bars,
                   hasMore,
+                  historyStartBarIndex,
                   nextBeforeBarIndex: hasMore ? oldestBarIndex : null,
                   seriesKey,
               }
             : undefined;
 
     const loadOlder = async () => {
-        if (!seriesKey || loadingOlderRef.current) return;
-        const current = historyRef.current.seriesKey === seriesKey ? historyRef.current.bars : [];
-        const beforeBarIndex = mergeContiguousBars(current, query.data?.bars ?? [])[0]?.barIndex;
-        if (beforeBarIndex === undefined || beforeBarIndex <= 0) return;
-        loadingOlderRef.current = true;
-        setLoadingOlder(true);
+        if (!seriesKey || !data || !hasMore || loadingOlderRef.current === scopeKey) return;
+        const current = historyRef.current.scopeKey === scopeKey ? historyRef.current.bars : [];
+        const beforeBarIndex = mergeSnapshotHistory(data, current)[0]?.barIndex;
+        if (beforeBarIndex === undefined || beforeBarIndex <= historyStartBarIndex) return;
+        loadingOlderRef.current = scopeKey;
+        setLoadingScope(scopeKey);
         try {
             const cached = await readCachedBars(seriesKey, beforeBarIndex, CHART_WIRE_LIMITS.httpBars).catch(() => []);
-            if (seriesKeyRef.current !== seriesKey) return;
+            if (scopeRef.current !== scopeKey) return;
             if (cached.length > 0) {
                 setHistory((value) => ({
-                    bars: mergeContiguousBars(
-                        value.seriesKey === seriesKey ? value.bars : [],
-                        query.data?.bars ?? [],
-                        cached,
+                    bars: mergeSnapshotHistory(
+                        data,
+                        mergeContiguousBars(value.scopeKey === scopeKey ? value.bars : [], cached),
                     ),
-                    exhaustedBefore: value.seriesKey === seriesKey ? value.exhaustedBefore : undefined,
-                    seriesKey,
+                    exhaustedBefore: value.scopeKey === scopeKey ? value.exhaustedBefore : undefined,
+                    historyStartBarIndex,
+                    scopeKey,
                 }));
             }
-            const page = await fetchChartBars(seriesKey, beforeBarIndex);
-            if (seriesKeyRef.current !== seriesKey) return;
+            const page = await fetchChartBars(seriesKey, lookbackDays, beforeBarIndex);
+            if (scopeRef.current !== scopeKey) return;
             setHistory((value) => ({
-                bars: mergeContiguousBars(
-                    value.seriesKey === seriesKey ? value.bars : [],
-                    query.data?.bars ?? [],
-                    page.bars,
-                ),
+                bars: mergeContiguousBars(value.scopeKey === scopeKey ? value.bars : [], data.bars, page.bars),
                 exhaustedBefore: page.hasMore ? undefined : (page.bars[0]?.barIndex ?? beforeBarIndex),
-                seriesKey,
+                historyStartBarIndex: Math.max(historyStartBarIndex, page.historyStartBarIndex),
+                scopeKey,
             }));
             await writeCachedBars(seriesKey, page.bars).catch(() => undefined);
         } catch (error) {
@@ -246,12 +292,21 @@ const useChartBars = (seriesKey: string | undefined, enabled: boolean, onSeriesR
             // History remains usable from memory or IndexedDB when an older
             // network page is temporarily unavailable.
         } finally {
-            loadingOlderRef.current = false;
-            setLoadingOlder(false);
+            if (loadingOlderRef.current === scopeKey) {
+                loadingOlderRef.current = undefined;
+                setLoadingScope(undefined);
+            }
         }
     };
 
-    return { ...query, data, hasMore, loadOlder, loadingOlder };
+    return {
+        ...query,
+        catchingUp: isChartPending(query.failureReason),
+        data,
+        hasMore,
+        loadOlder,
+        loadingOlder: loadingScope === scopeKey,
+    };
 };
 
 export { useChartBars, useChartSeries, useFootprintMarkets };

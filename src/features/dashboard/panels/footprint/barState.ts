@@ -61,8 +61,18 @@ export const chartUpdateHasGap = (
 };
 
 export const mergeChartBars = (snapshot: ChartBarsResponse | undefined, live: ChartLiveState): ChartBar[] => {
-    const closed = mergeContiguousBars(snapshot?.bars ?? [], [...live.bars.values()]);
-    const activeBar = live.activeBar !== undefined ? live.activeBar : snapshot?.activeBar;
+    const closed = mergeContiguousBars(snapshot?.bars ?? [], [...live.bars.values()]).filter(
+        (bar) => bar.barIndex >= (snapshot?.historyStartBarIndex ?? 0),
+    );
+    const liveProgress = Math.max(-1, ...live.bars.keys(), live.activeBar?.barIndex ?? -1);
+    const snapshotProgress = Math.max(snapshot?.bars.at(-1)?.barIndex ?? -1, snapshot?.activeBar?.barIndex ?? -1);
+    const snapshotHasMoreTrades =
+        snapshot?.activeBar?.barIndex === live.activeBar?.barIndex &&
+        (snapshot?.activeBar?.tradeCount ?? 0) > (live.activeBar?.tradeCount ?? 0);
+    const activeBar =
+        live.activeBar !== undefined && liveProgress >= snapshotProgress && !snapshotHasMoreTrades
+            ? live.activeBar
+            : snapshot?.activeBar;
     const lastClosed = closed.at(-1)?.barIndex;
     // Catch-up messages can include the active bar before intervening closed bars arrive.
     if (activeBar && (lastClosed === undefined || activeBar.barIndex === lastClosed + 1)) return [...closed, activeBar];

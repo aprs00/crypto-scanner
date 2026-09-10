@@ -34,6 +34,7 @@ const chartBarWithLevels = (levelCount: number): ChartBar => ({
 
 const historyPage = {
     hasMore: false,
+    historyStartBarIndex: 0,
     nextBeforeBarIndex: null,
 };
 

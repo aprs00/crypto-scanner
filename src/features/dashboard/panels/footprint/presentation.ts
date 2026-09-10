@@ -1,11 +1,25 @@
 import { isAxiosError } from 'axios';
 
-import { ChartType, type ChartType as ChartTypeValue } from './types';
+import { ChartSeriesStatus, ChartType, type ChartType as ChartTypeValue } from './types';
+
+export const isChartPending = (error: unknown): boolean => {
+    if (!isAxiosError(error) || error.response?.status !== 409) return false;
+    const data = error.response.data;
+    return (
+        data?.code === 'CHART_SERIES_NOT_READY' &&
+        [ChartSeriesStatus.Queued, ChartSeriesStatus.Building, ChartSeriesStatus.CatchingUp].some(
+            (status) => status === data.status,
+        )
+    );
+};
 
 export const footprintErrorCode = (error: unknown): string | undefined => {
     if (typeof error === 'string') return error;
     if (isAxiosError(error)) {
         const data = error.response?.data;
+        if (data?.code === 'CHART_SERIES_NOT_READY' && data.status === ChartSeriesStatus.Failed) {
+            return typeof data.errorCode === 'string' ? data.errorCode : 'CHART_SERIES_FAILED';
+        }
         if (typeof data === 'object' && data !== null && 'code' in data && typeof data.code === 'string') {
             return data.code;
         }

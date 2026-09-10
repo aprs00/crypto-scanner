@@ -30,11 +30,17 @@ const snapshot = (bars: ChartBar[], activeBar: ChartBar | null = null): ChartBar
     activeBar,
     bars,
     hasMore: (bars[0]?.barIndex ?? 0) > 0,
+    historyStartBarIndex: 0,
     nextBeforeBarIndex: bars[0]?.barIndex || null,
     seriesKey: 'series-1',
 });
 
 describe('chart live state', () => {
+    it('keeps the newer caught-up snapshot when an earlier live active update is still cached', () => {
+        const live = applyChartUpdate(emptyChartLiveState(), [makeBar(1)], makeBar(2));
+        const current = { ...snapshot([makeBar(4), makeBar(5)], makeBar(6)), historyStartBarIndex: 4 };
+        expect(mergeChartBars(current, live).map((bar) => bar.barIndex)).toEqual([4, 5, 6]);
+    });
     it('merges snapshot bars, absolute live replacements, and the current active bar', () => {
         const live = applyChartUpdate(emptyChartLiveState(), [makeBar(31, 20)], makeBar(32, 30));
 
