@@ -39,6 +39,29 @@ const historyPage = {
 };
 
 describe('chart wire schemas', () => {
+    it('retains coverage and accepts status updates without changing bars', () => {
+        const coverage = { status: 'repair_pending', verifiedThroughMs: 1_800_000_000_000 };
+        expect(
+            chartSeriesResponseSchema.parse({
+                coverage,
+                errorCode: null,
+                seriesKey: 'rust-series',
+                status: ChartSeriesStatus.Ready,
+            }).coverage,
+        ).toEqual(coverage);
+        expect(chartSocketMessageSchema.parse({ coverage, seriesKey: 'rust-series', type: 'coverage' })).toEqual({
+            coverage,
+            seriesKey: 'rust-series',
+            type: 'coverage',
+        });
+        expect(
+            chartSocketMessageSchema.safeParse({
+                coverage: { ...coverage, status: 'complete' },
+                seriesKey: 'rust-series',
+                type: 'coverage',
+            }).success,
+        ).toBe(false);
+    });
     it('accepts the minimal series response', () => {
         expect(
             chartSeriesResponseSchema.parse({

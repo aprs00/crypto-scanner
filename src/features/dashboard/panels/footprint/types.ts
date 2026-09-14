@@ -19,6 +19,21 @@ export const ChartSeriesStatus = {
 
 export type ChartSeriesStatus = (typeof ChartSeriesStatus)[keyof typeof ChartSeriesStatus];
 
+export const ChartCoverageStatus = {
+    GapRecorded: 'gap_recorded',
+    Live: 'live',
+    RepairPending: 'repair_pending',
+} as const;
+
+export type ChartCoverageStatus = (typeof ChartCoverageStatus)[keyof typeof ChartCoverageStatus];
+
+const chartCoverageSchema = z.object({
+    status: z.enum(ChartCoverageStatus),
+    verifiedThroughMs: z.number().int().safe().nonnegative().nullable(),
+});
+
+export type ChartCoverage = z.infer<typeof chartCoverageSchema>;
+
 export const CHART_WIRE_LIMITS = {
     barLevels: 4_000,
     httpBars: 500,
@@ -70,6 +85,7 @@ const chartBarSchema = z.object({
 });
 
 export const chartSeriesResponseSchema = z.object({
+    coverage: chartCoverageSchema.optional(),
     errorCode: z.string().min(1).nullable(),
     seriesKey: z.string().min(1),
     status: z.enum(ChartSeriesStatus),
@@ -82,6 +98,7 @@ export const chartBarsResponseSchema = z
     .object({
         activeBar: chartBarSchema.nullable(),
         bars: z.array(chartBarSchema).max(CHART_WIRE_LIMITS.httpBars),
+        coverage: chartCoverageSchema.optional(),
         hasMore: z.boolean(),
         historyStartBarIndex: nonnegativeSafeIntegerSchema,
         nextBeforeBarIndex: nonnegativeSafeIntegerSchema.nullable(),
@@ -105,6 +122,7 @@ const chartSubscribedMessageSchema = z.object({
 const chartUpdateMessageSchema = z.object({
     activeBar: chartBarSchema.nullable(),
     bars: z.array(chartBarSchema).max(CHART_WIRE_LIMITS.updateBars),
+    coverage: chartCoverageSchema.optional(),
     seriesKey: z.string().min(1),
     type: z.literal('update'),
 });
@@ -115,8 +133,19 @@ const chartErrorMessageSchema = z.object({
     type: z.literal('error'),
 });
 
+const chartCoverageMessageSchema = z.object({
+    coverage: chartCoverageSchema,
+    seriesKey: z.string().min(1),
+    type: z.literal('coverage'),
+});
+
 export const chartSocketMessageSchema = z
-    .discriminatedUnion('type', [chartSubscribedMessageSchema, chartUpdateMessageSchema, chartErrorMessageSchema])
+    .discriminatedUnion('type', [
+        chartSubscribedMessageSchema,
+        chartUpdateMessageSchema,
+        chartErrorMessageSchema,
+        chartCoverageMessageSchema,
+    ])
     .superRefine((message, context) => {
         if (
             message.type === 'update' &&

@@ -1,10 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import { chartErrorLabel } from './presentation';
-import { ChartType } from './types';
+import { chartCoverageLabel, chartErrorLabel } from './presentation';
+import { ChartCoverageStatus, ChartType } from './types';
 import { formatChartCoordinateLabel } from './useFootprintChart';
 
 describe('chart presentation', () => {
+    it('distinguishes pending repair from recorded Hyperliquid gaps', () => {
+        expect(chartCoverageLabel({ status: ChartCoverageStatus.RepairPending, verifiedThroughMs: null })).toContain(
+            'REPAIR',
+        );
+        expect(chartCoverageLabel({ status: ChartCoverageStatus.GapRecorded, verifiedThroughMs: null })).toBe(
+            'TRADE GAP RECORDED',
+        );
+        expect(chartCoverageLabel({ status: ChartCoverageStatus.Live, verifiedThroughMs: null })).toBeNull();
+    });
     it('explains a bounded TRev expansion failure', () => {
         expect(chartErrorLabel('TREV_EXPANSION_LIMIT', ChartType.Trev)).toContain('too many synthetic bars');
     });

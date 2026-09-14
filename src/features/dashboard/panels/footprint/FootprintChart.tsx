@@ -15,7 +15,7 @@ import styles from './FootprintChart.module.css';
 import { formatFootprintQuantity } from './FootprintSeries';
 import FootprintSettings from './FootprintSettings';
 import FootprintSource from './FootprintSource';
-import { chartErrorLabel, footprintErrorCode } from './presentation';
+import { chartCoverageLabel, chartErrorLabel, footprintErrorCode } from './presentation';
 import { ChartSeriesStatus } from './types';
 import useChartFeed from './useChartFeed';
 import useFootprintChart from './useFootprintChart';
@@ -128,7 +128,7 @@ const FootprintChart = ({ onRemove, panel, title }: DashboardPanelProps) => {
               ? 'LIVE FEED RECONNECTING'
               : bars.length > 0 && barsQuery.loadingOlder
                 ? 'LOADING EARLIER HISTORY'
-                : null;
+                : chartCoverageLabel(feed.coverage ?? series?.coverage);
     const priceDecimals = legendBar ? decimalPlaces(legendBar.tickSize) : 0;
     const change = legendBar ? formatChange(legendBar.open, legendBar.close) : null;
     const changeClass = [

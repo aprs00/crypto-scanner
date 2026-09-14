@@ -1,6 +1,17 @@
 import { isAxiosError } from 'axios';
 
-import { ChartSeriesStatus, ChartType, type ChartType as ChartTypeValue } from './types';
+import {
+    ChartCoverageStatus,
+    ChartSeriesStatus,
+    ChartType,
+    type ChartCoverage,
+    type ChartType as ChartTypeValue,
+} from './types';
+
+export const chartCoverageLabel = (coverage: ChartCoverage | undefined): string | null =>
+    (coverage?.status === ChartCoverageStatus.RepairPending && 'HISTORY INCOMPLETE · REPAIR PENDING') ||
+    (coverage?.status === ChartCoverageStatus.GapRecorded && 'TRADE GAP RECORDED') ||
+    null;
 
 export const isChartPending = (error: unknown): boolean => {
     if (!isAxiosError(error) || error.response?.status !== 409) return false;

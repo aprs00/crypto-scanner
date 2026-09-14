@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { SocketStatus } from '@/lib/realtime/MultiplexedSocket';
 
-import type { ChartBar, ChartBarsResponse, ChartScopedMessage } from './types';
+import type { ChartBar, ChartBarsResponse, ChartCoverage, ChartScopedMessage } from './types';
 
 import {
     applyChartUpdate,
@@ -35,6 +35,10 @@ const EMPTY_BARS: ChartBar[] = [];
 
 const useChartFeed = ({ onSeriesReplaced, refreshSnapshot, seriesKey, snapshot }: Options) => {
     const scopeKey = seriesKey ?? '';
+    const [coverage, setCoverage] = useState<{ seriesKey: string; value: ChartCoverage | undefined }>({
+        seriesKey: '',
+        value: undefined,
+    });
     const [liveState, setLiveState] = useState<ScopedLiveState>({
         ...emptyChartLiveState(),
         seriesKey: '',
@@ -86,11 +90,16 @@ const useChartFeed = ({ onSeriesReplaced, refreshSnapshot, seriesKey, snapshot }
         liveStateRef.current = emptyState;
         setLiveState(emptyState);
         setStreamError({ code: null, seriesKey: scopeKey });
+        setCoverage({ seriesKey: scopeKey, value: undefined });
         if (!seriesKey) return;
 
         const handleMessage = (message: ChartScopedMessage) => {
             if (disposed) return;
             if (message.type === 'error') {
+                if (message.code === 'CHART_RESYNC_REQUIRED') {
+                    refreshOnce();
+                    return;
+                }
                 if (isReplacedSeriesError(message.code)) {
                     disposed = true;
                     onSeriesReplacedRef.current(scopeKey);
@@ -98,6 +107,10 @@ const useChartFeed = ({ onSeriesReplaced, refreshSnapshot, seriesKey, snapshot }
                 }
                 setStreamError({ code: message.code, seriesKey: scopeKey });
                 return;
+            }
+            if (message.type === 'coverage' || message.type === 'update') {
+                if (message.coverage) setCoverage({ seriesKey: scopeKey, value: message.coverage });
+                if (message.type === 'coverage') return;
             }
             setStreamError({ code: null, seriesKey: scopeKey });
             if (message.type === 'subscribed') {
@@ -139,6 +152,7 @@ const useChartFeed = ({ onSeriesReplaced, refreshSnapshot, seriesKey, snapshot }
 
     return {
         bars: mergedBars.seriesKey === scopeKey ? mergedBars.bars : EMPTY_BARS,
+        coverage: (coverage.seriesKey === scopeKey && coverage.value) || snapshot?.coverage,
         reconnecting: Boolean(seriesKey && transportStatus !== SocketStatus.Open),
         streamError: streamError.seriesKey === scopeKey ? streamError.code : null,
     };

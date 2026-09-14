@@ -250,6 +250,7 @@ const useChartBars = (
             ? {
                   activeBar: query.data.activeBar,
                   bars,
+                  coverage: query.data.coverage,
                   hasMore,
                   historyStartBarIndex,
                   nextBeforeBarIndex: hasMore ? oldestBarIndex : null,
