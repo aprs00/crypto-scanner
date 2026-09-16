@@ -21,7 +21,6 @@ describe('dashboard panel catalog', () => {
         const catalogTypes = new Set(dashboardPanelCatalog.map((definition) => definition.type));
 
         expect(defaultDashboardPanelTypes).toEqual([
-            DashboardPanelType.Footprint,
             DashboardPanelType.BetaHeatmap,
             DashboardPanelType.CorrelationPairHistory,
             DashboardPanelType.Tick,
@@ -58,9 +57,5 @@ describe('dashboard panel catalog', () => {
         }
         expect(Object.keys(dashboard.savedGridLayouts)).toHaveLength(defaultDashboardPanelTypes.length);
         expect(dashboard.savedGridLayouts['panel-7']?.layout?.h).toBe(20);
-    });
-
-    it('gives new Footprint panels a 20-row default height', () => {
-        expect(panelDefinitionFor(DashboardPanelType.Footprint).defaultHeight).toBe(20);
     });
 });

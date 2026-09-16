@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import useFootprintSettingsStore, { defaultFootprintSettings } from '../panels/footprint/useFootprintSettingsStore';
+import useFootprintSettingsStore from '../panels/footprint/useFootprintSettingsStore';
 import useChartSeriesStore from '../panels/shared/settings/useChartSeriesStore';
 import useChartSourceStore from '../panels/shared/source/useChartSourceStore';
 import useDashboardStore from './dashboardStore';
@@ -24,10 +24,6 @@ const resetStores = () => {
 const attachPanelSettings = (panelId: string) => {
     useChartSourceStore.getState().setSymbol(panelId, 'ETHUSDT', 'ETH');
     useChartSeriesStore.getState().toggleSeries(panelId, 'book');
-    const panel = useDashboardStore.getState().panels.find((candidate) => candidate.id === panelId);
-    if (panel?.type === DashboardPanelType.Footprint) {
-        useFootprintSettingsStore.getState().setSettings(panelId, defaultFootprintSettings);
-    }
 };
 
 const expectPanelSettingsRemoved = (panelId: string) => {
@@ -63,37 +59,5 @@ describe('dashboard store', () => {
 
         expect(useDashboardStore.getState().panels.some((panel) => panel.id === panelId)).toBe(false);
         expectPanelSettingsRemoved(panelId);
-    });
-
-    it('clears every panel and its auxiliary state when a group is deleted', async () => {
-        const store = useDashboardStore.getState();
-        const groupId = store.createGroup('Trading');
-        const firstPanelId = useDashboardStore.getState().addPanelToGroup(DashboardPanelType.Tick, groupId);
-        const secondPanelId = useDashboardStore.getState().addPanelToGroup(DashboardPanelType.Footprint, groupId);
-        attachPanelSettings(firstPanelId);
-        attachPanelSettings(secondPanelId);
-
-        await useDashboardStore.getState().deleteGroup(groupId);
-
-        const after = useDashboardStore.getState();
-        expect(after.groups.some((group) => group.id === groupId)).toBe(false);
-        expect(after.activeGroupId).toBe(DEFAULT_GROUP_ID);
-        expect(after.panels.some((panel) => panel.id === firstPanelId || panel.id === secondPanelId)).toBe(false);
-        expectPanelSettingsRemoved(firstPanelId);
-        expectPanelSettingsRemoved(secondPanelId);
-    });
-
-    it('preserves another panel settings when a market panel is removed', async () => {
-        const footprintId = useDashboardStore.getState().addPanelToGroup(DashboardPanelType.Footprint);
-        const tickId = useDashboardStore.getState().addPanelToGroup(DashboardPanelType.Tick);
-        attachPanelSettings(footprintId);
-        attachPanelSettings(tickId);
-
-        await useDashboardStore.getState().removePanel(tickId);
-
-        expectPanelSettingsRemoved(tickId);
-        expect(useChartSourceStore.getState().sources[footprintId]?.symbol).toBe('ETHUSDT');
-        expect(useChartSeriesStore.getState().visibility[footprintId]?.book).toBe(false);
-        expect(useFootprintSettingsStore.getState().settings[footprintId]).toEqual(defaultFootprintSettings);
     });
 });
