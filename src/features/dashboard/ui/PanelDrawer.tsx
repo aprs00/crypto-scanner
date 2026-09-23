@@ -5,7 +5,7 @@ import type { DashboardPanelDefinition } from '../model/panelRegistry';
 import type { DashboardPanelType } from '../model/panelTypes';
 
 import useDashboardStore from '../model/dashboardStore';
-import { dashboardPanelCatalog } from '../model/panelRegistry';
+import { dashboardPanelCatalog, panelCatalogForSearch } from '../model/panelRegistry';
 import styles from './PanelDrawer.module.css';
 
 type PanelOptionProps = {
@@ -31,6 +31,7 @@ type PanelDrawerProps = {
 const PanelDrawer = ({ isOpen, onClose }: PanelDrawerProps) => {
     const addPanelToGroup = useDashboardStore((state) => state.addPanelToGroup);
     const showToast = useToastStore((state) => state.showToast);
+    const availablePanels = panelCatalogForSearch(typeof window === 'undefined' ? '' : window.location.search);
 
     const handleSelect = (type: DashboardPanelType) => {
         const definition = dashboardPanelCatalog.find((candidate) => candidate.type === type);
@@ -41,7 +42,7 @@ const PanelDrawer = ({ isOpen, onClose }: PanelDrawerProps) => {
     return (
         <CSDrawer isOpen={isOpen} onClose={onClose} title="Add Panel">
             <div className={styles.options}>
-                {dashboardPanelCatalog.map((definition) => (
+                {availablePanels.map((definition) => (
                     <PanelOption definition={definition} key={definition.type} onSelect={handleSelect} />
                 ))}
             </div>

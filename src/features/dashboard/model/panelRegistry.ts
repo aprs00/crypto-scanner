@@ -25,16 +25,15 @@ export type DashboardPanelDefinition = {
 };
 
 const dashboardPanelRegistry = {
-    // [DashboardPanelType.Footprint]: {
-    //     catalogOrder: 0,
-    //     cleanup: async (panelId) =>
-    //         (await import('../panels/footprint/cleanupFootprintPanelState')).cleanupFootprintPanelState(panelId),
-    //     defaultHeight: 20,
-    //     defaultOrder: 0,
-    //     label: 'Footprint (Beta)',
-    //     load: () => import('../panels/footprint/FootprintChart'),
-    //     type: DashboardPanelType.Footprint,
-    // },
+    [DashboardPanelType.Footprint]: {
+        catalogOrder: 0,
+        cleanup: async (panelId) =>
+            (await import('../panels/footprint/cleanupFootprintPanelState')).cleanupFootprintPanelState(panelId),
+        defaultHeight: 20,
+        label: 'Footprint (Beta)',
+        load: () => import('../panels/footprint/FootprintChart'),
+        type: DashboardPanelType.Footprint,
+    },
     [DashboardPanelType.DepthAndSales]: {
         catalogOrder: 1,
         cleanup: async (panelId) =>
@@ -185,6 +184,11 @@ const hasDefaultOrder = (
 export const dashboardPanelCatalog = [...panelDefinitions].sort(
     (left, right) => left.catalogOrder - right.catalogOrder,
 );
+
+export const panelCatalogForSearch = (search: string): DashboardPanelDefinition[] =>
+    new URLSearchParams(search).get('beta') === '1'
+        ? dashboardPanelCatalog
+        : dashboardPanelCatalog.filter((definition) => definition.type !== DashboardPanelType.Footprint);
 
 export const defaultDashboardPanelTypes = panelDefinitions
     .filter(hasDefaultOrder)

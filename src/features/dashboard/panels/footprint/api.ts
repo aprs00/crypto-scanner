@@ -70,7 +70,13 @@ export const createChartSeriesRequest = (settings: FootprintSettings, marketKey:
 export const chartSeriesRequestKey = (request: ChartSeriesRequest | undefined) =>
     request?.chartType === ChartType.Tick
         ? [request.marketKey, request.chartType, request.tradesPerBar, request.lookbackDays]
-        : [request?.marketKey, request?.chartType, request?.continuationTicks, request?.reversalTicks];
+        : [
+              request?.marketKey,
+              request?.chartType,
+              request?.continuationTicks,
+              request?.reversalTicks,
+              request?.lookbackDays,
+          ];
 
 const createChartSeries = async (request: ChartSeriesRequest): Promise<ChartSeriesResponse> => {
     const response = await api.post('api/v1/footprints/chart-series', request);

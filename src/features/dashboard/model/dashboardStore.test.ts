@@ -52,7 +52,7 @@ describe('dashboard store', () => {
     });
 
     it('clears auxiliary state when a panel is removed', async () => {
-        const panelId = useDashboardStore.getState().panels[0]!.id;
+        const panelId = useDashboardStore.getState().addPanelToGroup(DashboardPanelType.Footprint);
         attachPanelSettings(panelId);
 
         await useDashboardStore.getState().removePanel(panelId);

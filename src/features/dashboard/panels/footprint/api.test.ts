@@ -16,10 +16,10 @@ import { ChartSeriesStatus, ChartType } from './types';
 import { defaultFootprintSettings } from './useFootprintSettingsStore';
 
 describe('chart series requests', () => {
-    it('shares TRev identity across display lookbacks while preserving Tick identities', () => {
+    it('requests a separate TRev series when its calculation window changes', () => {
         const request = (chartType: typeof ChartType.Trev | typeof ChartType.Tick, lookbackDays: number) =>
             createChartSeriesRequest({ ...defaultFootprintSettings, chartType, lookbackDays }, 'test-market');
-        expect(chartSeriesRequestKey(request(ChartType.Trev, 1))).toEqual(
+        expect(chartSeriesRequestKey(request(ChartType.Trev, 1))).not.toEqual(
             chartSeriesRequestKey(request(ChartType.Trev, 30)),
         );
         expect(chartSeriesRequestKey(request(ChartType.Tick, 1))).not.toEqual(
