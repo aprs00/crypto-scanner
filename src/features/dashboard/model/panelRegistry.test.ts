@@ -4,7 +4,6 @@ import {
     createDefaultDashboardPanels,
     dashboardPanelCatalog,
     defaultDashboardPanelTypes,
-    panelCatalogForSearch,
     panelDefinitionFor,
 } from './panelRegistry';
 import { DashboardPanelType } from './panelTypes';
@@ -13,24 +12,9 @@ describe('dashboard panel catalog', () => {
     it('contains every panel type exactly once', () => {
         const catalogTypes = dashboardPanelCatalog.map((definition) => definition.type);
 
-        expect(catalogTypes).toHaveLength(17);
-        expect(new Set(catalogTypes).size).toBe(17);
+        expect(catalogTypes).toHaveLength(16);
+        expect(new Set(catalogTypes).size).toBe(16);
         expect(new Set(catalogTypes)).toEqual(new Set(Object.values(DashboardPanelType)));
-    });
-
-    it('shows Footprint in the selector only for beta=1', () => {
-        expect(panelCatalogForSearch('').some((definition) => definition.type === DashboardPanelType.Footprint)).toBe(
-            false,
-        );
-        expect(
-            panelCatalogForSearch('?beta=0').some((definition) => definition.type === DashboardPanelType.Footprint),
-        ).toBe(false);
-        expect(
-            panelCatalogForSearch('?beta=1').some((definition) => definition.type === DashboardPanelType.Footprint),
-        ).toBe(true);
-        expect(panelCatalogForSearch('?foo=bar&beta=1').map((definition) => definition.type)).toEqual(
-            dashboardPanelCatalog.map((definition) => definition.type),
-        );
     });
 
     it('includes every available panel in the defaults while preserving the original order', () => {
@@ -56,10 +40,8 @@ describe('dashboard panel catalog', () => {
         ]);
         expect(new Set(defaultDashboardPanelTypes).size).toBe(defaultDashboardPanelTypes.length);
         expect(defaultDashboardPanelTypes.every((type) => catalogTypes.has(type))).toBe(true);
-        expect(new Set(defaultDashboardPanelTypes)).toEqual(
-            new Set([...catalogTypes].filter((type) => type !== DashboardPanelType.Footprint)),
-        );
-        expect(catalogTypes.size).toBe(17);
+        expect(new Set(defaultDashboardPanelTypes)).toEqual(catalogTypes);
+        expect(catalogTypes.size).toBe(16);
     });
 
     it('creates full-width, ordered, non-overlapping defaults', () => {

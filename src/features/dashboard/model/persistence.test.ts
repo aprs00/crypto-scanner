@@ -40,6 +40,23 @@ describe('dashboard persistence normalization', () => {
         ).toBe(fallback);
     });
 
+    it('drops retired panel types without resetting the dashboard', () => {
+        const normalized = normalizeDashboardPersistence(
+            {
+                panels: [
+                    { id: 'panel-a', type: DashboardPanelType.BetaHeatmap },
+                    { id: 'retired', type: 'footprint' },
+                ],
+                groups: [{ id: DEFAULT_GROUP_ID, name: 'Default', panelIds: ['panel-a', 'retired'] }],
+                savedGridLayouts: {},
+            },
+            fallbackState(),
+        );
+
+        expect(normalized.panels).toEqual([{ id: 'panel-a', type: DashboardPanelType.BetaHeatmap }]);
+        expect(normalized.groups).toEqual([{ id: DEFAULT_GROUP_ID, name: 'Default', panelIds: ['panel-a'] }]);
+    });
+
     it('repairs groups and strips stale or invalid layouts', () => {
         const normalized = normalizeDashboardPersistence(
             {

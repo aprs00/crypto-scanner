@@ -25,6 +25,9 @@ const panelTypes = new Set<string>(Object.values(DashboardPanelType));
 const isPanelType = (value: unknown): value is DashboardPanelItem['type'] =>
     typeof value === 'string' && panelTypes.has(value);
 
+// Panel types that were removed from the app. Saved dashboards drop them instead of resetting.
+const retiredPanelTypes = new Set<unknown>(['footprint']);
+
 const normalizePanels = (value: unknown): DashboardPanelItem[] | null => {
     if (!Array.isArray(value)) return null;
 
@@ -32,6 +35,7 @@ const normalizePanels = (value: unknown): DashboardPanelItem[] | null => {
     const panels: DashboardPanelItem[] = [];
 
     for (const item of value) {
+        if (isRecord(item) && retiredPanelTypes.has(item.type)) continue;
         if (!isRecord(item) || !isNonEmptyString(item.id) || !isPanelType(item.type) || ids.has(item.id)) return null;
         ids.add(item.id);
         panels.push({ id: item.id, type: item.type });

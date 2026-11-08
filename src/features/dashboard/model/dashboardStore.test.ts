@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import useFootprintSettingsStore from '../panels/footprint/useFootprintSettingsStore';
 import useChartSeriesStore from '../panels/shared/settings/useChartSeriesStore';
 import useChartSourceStore from '../panels/shared/source/useChartSourceStore';
 import useDashboardStore from './dashboardStore';
@@ -18,7 +17,6 @@ const resetStores = () => {
     });
     useChartSourceStore.setState({ sources: {} });
     useChartSeriesStore.setState({ dom: {}, liquidity: {}, orderBookNotional: {}, visibility: {} });
-    useFootprintSettingsStore.setState({ settings: {} });
 };
 
 const attachPanelSettings = (panelId: string) => {
@@ -29,7 +27,6 @@ const attachPanelSettings = (panelId: string) => {
 const expectPanelSettingsRemoved = (panelId: string) => {
     expect(useChartSourceStore.getState().sources[panelId]).toBeUndefined();
     expect(useChartSeriesStore.getState().visibility[panelId]).toBeUndefined();
-    expect(useFootprintSettingsStore.getState().settings[panelId]).toBeUndefined();
 };
 
 describe('dashboard store', () => {
@@ -52,7 +49,7 @@ describe('dashboard store', () => {
     });
 
     it('clears auxiliary state when a panel is removed', async () => {
-        const panelId = useDashboardStore.getState().addPanelToGroup(DashboardPanelType.Footprint);
+        const panelId = useDashboardStore.getState().addPanelToGroup(DashboardPanelType.DepthAndSales);
         attachPanelSettings(panelId);
 
         await useDashboardStore.getState().removePanel(panelId);

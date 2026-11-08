@@ -30,13 +30,11 @@
         "echarts": "^6.0.0",
         "echarts-for-react": "^3.0.2",
         "echarts-gl": "^2.0.9",
-        "lightweight-charts": "^5.2.0",
         "lodash-es": "^4.17.21",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
         "react-grid-layout": "^1.5.2",
         "vite-plugin-svgr": "^4.5.0",
-        "zod": "^4.4.3",
         "zustand": "^5.0.8"
     },
     "devDependencies": {

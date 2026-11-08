@@ -18,7 +18,6 @@ export const DashboardPanelType = {
     DepthAndSales: 'depthAndSales',
     Tape: 'tape',
     Tick: 'tick',
-    Footprint: 'footprint',
     Treemap: 'treemap',
 } as const;
 

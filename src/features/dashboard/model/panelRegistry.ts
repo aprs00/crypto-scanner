@@ -25,17 +25,8 @@ export type DashboardPanelDefinition = {
 };
 
 const dashboardPanelRegistry = {
-    [DashboardPanelType.Footprint]: {
-        catalogOrder: 0,
-        cleanup: async (panelId) =>
-            (await import('../panels/footprint/cleanupFootprintPanelState')).cleanupFootprintPanelState(panelId),
-        defaultHeight: 20,
-        label: 'Footprint (Beta)',
-        load: () => import('../panels/footprint/FootprintChart'),
-        type: DashboardPanelType.Footprint,
-    },
     [DashboardPanelType.DepthAndSales]: {
-        catalogOrder: 1,
+        catalogOrder: 0,
         cleanup: async (panelId) =>
             (await import('../panels/shared/settings/cleanupMarketPanelState')).cleanupMarketPanelState(panelId),
         defaultHeight: 20,
@@ -45,7 +36,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.DepthAndSales,
     },
     [DashboardPanelType.BetaHeatmap]: {
-        catalogOrder: 2,
+        catalogOrder: 1,
         defaultHeight: 25,
         defaultOrder: 1,
         label: 'Pearson Correlation',
@@ -53,7 +44,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.BetaHeatmap,
     },
     [DashboardPanelType.ZScoreHeatmap]: {
-        catalogOrder: 3,
+        catalogOrder: 2,
         defaultHeight: 25,
         defaultOrder: 5,
         label: 'Z·Score Heatmap',
@@ -61,7 +52,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.ZScoreHeatmap,
     },
     [DashboardPanelType.Scatter]: {
-        catalogOrder: 4,
+        catalogOrder: 3,
         defaultHeight: 25,
         defaultOrder: 8,
         label: 'Z·Score Scatter',
@@ -69,7 +60,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.Scatter,
     },
     [DashboardPanelType.Scatter3D]: {
-        catalogOrder: 5,
+        catalogOrder: 4,
         defaultHeight: 20,
         defaultOrder: 4,
         label: 'Z·Score 3D',
@@ -77,7 +68,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.Scatter3D,
     },
     [DashboardPanelType.PriceChangePercentageDay]: {
-        catalogOrder: 6,
+        catalogOrder: 5,
         defaultHeight: 25,
         defaultOrder: 9,
         label: 'Price Change · Day of Week',
@@ -85,7 +76,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.PriceChangePercentageDay,
     },
     [DashboardPanelType.PriceChangePercentageHour]: {
-        catalogOrder: 7,
+        catalogOrder: 6,
         defaultHeight: 20,
         defaultOrder: 7,
         label: 'Price Change · Hour of Day (UTC)',
@@ -93,7 +84,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.PriceChangePercentageHour,
     },
     [DashboardPanelType.CorrelationPairHistory]: {
-        catalogOrder: 8,
+        catalogOrder: 7,
         defaultHeight: 12,
         defaultOrder: 2,
         label: 'Correlation Pair History',
@@ -101,7 +92,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.CorrelationPairHistory,
     },
     [DashboardPanelType.CointegrationPairHistory]: {
-        catalogOrder: 9,
+        catalogOrder: 8,
         defaultHeight: 14,
         defaultOrder: 10,
         label: 'Cointegration Pair History',
@@ -109,7 +100,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.CointegrationPairHistory,
     },
     [DashboardPanelType.CointegrationLiveTable]: {
-        catalogOrder: 10,
+        catalogOrder: 9,
         defaultHeight: 20,
         defaultOrder: 11,
         label: 'Cointegration',
@@ -117,7 +108,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.CointegrationLiveTable,
     },
     [DashboardPanelType.TradingView]: {
-        catalogOrder: 11,
+        catalogOrder: 10,
         cleanup: async (panelId) =>
             (await import('../panels/shared/settings/cleanupMarketPanelState')).cleanupMarketPanelState(panelId),
         defaultHeight: 15,
@@ -127,7 +118,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.TradingView,
     },
     [DashboardPanelType.OrderBook]: {
-        catalogOrder: 12,
+        catalogOrder: 11,
         cleanup: async (panelId) =>
             (await import('../panels/shared/settings/cleanupMarketPanelState')).cleanupMarketPanelState(panelId),
         defaultHeight: 14,
@@ -137,7 +128,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.OrderBook,
     },
     [DashboardPanelType.Depth]: {
-        catalogOrder: 13,
+        catalogOrder: 12,
         cleanup: async (panelId) =>
             (await import('../panels/shared/settings/cleanupMarketPanelState')).cleanupMarketPanelState(panelId),
         defaultHeight: 14,
@@ -147,7 +138,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.Depth,
     },
     [DashboardPanelType.Tape]: {
-        catalogOrder: 14,
+        catalogOrder: 13,
         cleanup: async (panelId) =>
             (await import('../panels/shared/settings/cleanupMarketPanelState')).cleanupMarketPanelState(panelId),
         defaultHeight: 14,
@@ -157,7 +148,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.Tape,
     },
     [DashboardPanelType.Tick]: {
-        catalogOrder: 15,
+        catalogOrder: 14,
         cleanup: async (panelId) =>
             (await import('../panels/shared/settings/cleanupMarketPanelState')).cleanupMarketPanelState(panelId),
         defaultHeight: 16,
@@ -167,7 +158,7 @@ const dashboardPanelRegistry = {
         type: DashboardPanelType.Tick,
     },
     [DashboardPanelType.Treemap]: {
-        catalogOrder: 16,
+        catalogOrder: 15,
         defaultHeight: 20,
         defaultOrder: 16,
         label: 'Market Treemap',
@@ -184,11 +175,6 @@ const hasDefaultOrder = (
 export const dashboardPanelCatalog = [...panelDefinitions].sort(
     (left, right) => left.catalogOrder - right.catalogOrder,
 );
-
-export const panelCatalogForSearch = (search: string): DashboardPanelDefinition[] =>
-    new URLSearchParams(search).get('beta') === '1'
-        ? dashboardPanelCatalog
-        : dashboardPanelCatalog.filter((definition) => definition.type !== DashboardPanelType.Footprint);
 
 export const defaultDashboardPanelTypes = panelDefinitions
     .filter(hasDefaultOrder)
