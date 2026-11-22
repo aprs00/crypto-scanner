@@ -6,10 +6,6 @@ import {
     AveragePriceChangeParams,
     AveragePriceChangeResponse,
     BootstrapResponse,
-    CointegrationLiveTableParams,
-    CointegrationLiveTableResponse,
-    CointegrationPairHistoryParams,
-    CointegrationPairHistoryResponse,
     CorrelationHeatmapResponse,
     CorrelationPairHistoryParams,
     CorrelationPairHistoryResponse,
@@ -73,34 +69,6 @@ const correlationPairHistoryQueryOptions = (params: CorrelationPairHistoryParams
         queryKey: ['correlation-pair-history', params],
     });
 
-const cointegrationPairHistoryQueryOptions = (params: CointegrationPairHistoryParams) =>
-    queryOptions({
-        enabled: Boolean(
-            params.exchange &&
-                params.baseSymbol &&
-                params.comparisonSymbols.length > 0 &&
-                params.window &&
-                params.hours &&
-                params.metric,
-        ),
-        placeholderData: keepPreviousData,
-        queryFn: async () =>
-            (await api.post<CointegrationPairHistoryResponse>('cointegration-pair-history', params)).data,
-        queryKey: ['cointegration-pair-history', params],
-        refetchInterval: 60_000,
-        staleTime: 60_000,
-    });
-
-const cointegrationLiveTableQueryOptions = (params: CointegrationLiveTableParams) =>
-    queryOptions({
-        gcTime: 60_000,
-        placeholderData: keepPreviousData,
-        queryFn: async () => (await api.post<CointegrationLiveTableResponse>('cointegration-live-table', params)).data,
-        queryKey: ['cointegration-live-table', params],
-        refetchInterval: 60_000,
-        staleTime: 60_000,
-    });
-
 const usePriceChangePercentage = (params: AveragePriceChangeParams) =>
     useQuery(priceChangePercentageQueryOptions(params));
 
@@ -117,17 +85,9 @@ const useBootstrap = () => useQuery(bootstrapQueryOptions());
 const useCorrelationPairHistory = (params: CorrelationPairHistoryParams) =>
     useQuery(correlationPairHistoryQueryOptions(params));
 
-const useCointegrationPairHistory = (params: CointegrationPairHistoryParams) =>
-    useQuery(cointegrationPairHistoryQueryOptions(params));
-
-const useCointegrationLiveTable = (params: CointegrationLiveTableParams) =>
-    useQuery(cointegrationLiveTableQueryOptions(params));
-
 export {
     useBetaHeatmapData,
     useBootstrap,
-    useCointegrationLiveTable,
-    useCointegrationPairHistory,
     useCorrelationPairHistory,
     usePriceChangePercentage,
     useZScoreHeatmap,

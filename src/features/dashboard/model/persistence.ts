@@ -3,10 +3,11 @@ import type { Layout } from 'react-grid-layout';
 import type { ExchangeChartConfig } from '../panels/shared/settings/config';
 import type { DashboardGroup, DashboardPanelItem, DashboardPanelLayout } from './panelTypes';
 
-import { CointegrationMetric, DataType, SortDirection, TimePeriodType } from '../panels/shared/settings/config';
+import { DataType, TimePeriodType } from '../panels/shared/settings/config';
 import { DashboardPanelType, DEFAULT_GROUP_ID } from './panelTypes';
 
-export const DASHBOARD_PERSISTENCE_VERSION = 1;
+// Bumping this rewrites saved state through normalization, which purges retired panels and settings from storage.
+export const DASHBOARD_PERSISTENCE_VERSION = 2;
 
 export type DashboardPersistedState = {
     activeGroupId: string;
@@ -26,7 +27,7 @@ const isPanelType = (value: unknown): value is DashboardPanelItem['type'] =>
     typeof value === 'string' && panelTypes.has(value);
 
 // Panel types that were removed from the app. Saved dashboards drop them instead of resetting.
-const retiredPanelTypes = new Set<unknown>(['footprint']);
+const retiredPanelTypes = new Set<unknown>(['footprint', 'cointegrationPairHistory', 'cointegrationLiveTable']);
 
 const normalizePanels = (value: unknown): DashboardPanelItem[] | null => {
     if (!Array.isArray(value)) return null;
@@ -80,7 +81,7 @@ const normalizeExchangeConfig = (value: unknown): ExchangeChartConfig => {
     if (!isRecord(value)) return {};
 
     const config: ExchangeChartConfig = {};
-    const stringFields = ['hours', 'xAxis', 'yAxis', 'zAxis', 'symbol', 'baseSymbol', 'window', 'sort'] as const;
+    const stringFields = ['hours', 'xAxis', 'yAxis', 'zAxis', 'symbol', 'baseSymbol'] as const;
     for (const field of stringFields) {
         const normalized = optionalString(value[field]);
         if (normalized !== undefined) config[field] = normalized;
@@ -90,18 +91,11 @@ const normalizeExchangeConfig = (value: unknown): ExchangeChartConfig => {
     const symbols = stringArray(value.symbols);
     const dataType = enumValue(value.dataType, DataType);
     const periodType = enumValue(value.periodType, TimePeriodType);
-    const sortDirection = enumValue(value.sortDirection, SortDirection);
-    const cointegrationMetric = enumValue(value.cointegrationMetric, CointegrationMetric);
 
     if (comparisonSymbols) config.comparisonSymbols = comparisonSymbols;
     if (symbols) config.symbols = symbols;
     if (dataType) config.dataType = dataType;
     if (periodType) config.periodType = periodType;
-    if (sortDirection) config.sortDirection = sortDirection;
-    if (cointegrationMetric) config.cointegrationMetric = cointegrationMetric;
-    if (typeof value.limit === 'number' && Number.isFinite(value.limit) && value.limit >= 0) {
-        config.limit = Math.floor(value.limit);
-    }
 
     return config;
 };

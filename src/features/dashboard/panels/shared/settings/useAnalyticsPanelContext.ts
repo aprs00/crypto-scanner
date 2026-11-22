@@ -18,7 +18,6 @@ export const useAnalyticsPanelContext = ({ onRemove, panel, savedLayout, title }
 
     return {
         chartDefaults: exchangeData?.chart_defaults,
-        cointegrationConfig: bootstrap.data?.cointegration_live_table,
         commonProps: {
             exchange,
             exchanges: bootstrap.data?.exchanges || [],

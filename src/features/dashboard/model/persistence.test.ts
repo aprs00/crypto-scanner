@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createDefaultDashboardPanels } from './panelRegistry';
 import { DashboardPanelType, DEFAULT_GROUP_ID } from './panelTypes';
@@ -41,20 +41,86 @@ describe('dashboard persistence normalization', () => {
     });
 
     it('drops retired panel types without resetting the dashboard', () => {
+        const retiredTypes = ['footprint', 'cointegrationPairHistory', 'cointegrationLiveTable'];
         const normalized = normalizeDashboardPersistence(
             {
                 panels: [
                     { id: 'panel-a', type: DashboardPanelType.BetaHeatmap },
-                    { id: 'retired', type: 'footprint' },
+                    ...retiredTypes.map((type) => ({ id: type, type })),
                 ],
-                groups: [{ id: DEFAULT_GROUP_ID, name: 'Default', panelIds: ['panel-a', 'retired'] }],
-                savedGridLayouts: {},
+                groups: [{ id: DEFAULT_GROUP_ID, name: 'Default', panelIds: ['panel-a', ...retiredTypes] }],
+                savedGridLayouts: Object.fromEntries(
+                    retiredTypes.map((type) => [type, { layout: { h: 14, i: type, w: 12, x: 0, y: 0 } }]),
+                ),
             },
             fallbackState(),
         );
 
         expect(normalized.panels).toEqual([{ id: 'panel-a', type: DashboardPanelType.BetaHeatmap }]);
         expect(normalized.groups).toEqual([{ id: DEFAULT_GROUP_ID, name: 'Default', panelIds: ['panel-a'] }]);
+        expect(normalized.savedGridLayouts).toEqual({});
+    });
+
+    it('strips settings that only retired panels used', () => {
+        const normalized = normalizeDashboardPersistence(
+            {
+                panels: [{ id: 'panel-a', type: DashboardPanelType.BetaHeatmap }],
+                groups: [],
+                savedGridLayouts: {
+                    'panel-a': {
+                        exchangeConfigs: {
+                            binance: {
+                                cointegrationMetric: 'spread_z',
+                                hours: '4',
+                                limit: 50,
+                                sort: 'abs_z',
+                                sortDirection: 'desc',
+                                window: '1440',
+                            },
+                        },
+                    },
+                },
+            },
+            fallbackState(),
+        );
+
+        expect(normalized.savedGridLayouts['panel-a']?.exchangeConfigs).toEqual({ binance: { hours: '4' } });
+    });
+
+    it('rewrites stored dashboards so retired panels leave browser storage', async () => {
+        const stored = new Map([
+            [
+                'dashboard-layout',
+                JSON.stringify({
+                    state: {
+                        activeGroupId: DEFAULT_GROUP_ID,
+                        groups: [{ id: DEFAULT_GROUP_ID, name: 'Default', panelIds: ['panel-a', 'retired'] }],
+                        panels: [
+                            { id: 'panel-a', type: DashboardPanelType.BetaHeatmap },
+                            { id: 'retired', type: 'cointegrationLiveTable' },
+                        ],
+                        savedGridLayouts: {
+                            retired: { exchangeConfigs: { binance: { cointegrationMetric: 'adf_t' } } },
+                        },
+                    },
+                    version: 1,
+                }),
+            ],
+        ]);
+        vi.stubGlobal('window', {
+            localStorage: {
+                getItem: (key: string) => stored.get(key) ?? null,
+                removeItem: (key: string) => stored.delete(key),
+                setItem: (key: string, value: string) => stored.set(key, value),
+            },
+        });
+        vi.resetModules();
+
+        await import('./dashboardStore');
+        vi.unstubAllGlobals();
+
+        expect(stored.get('dashboard-layout')).toContain('panel-a');
+        expect(stored.get('dashboard-layout')).not.toMatch(/retired|cointegration/);
     });
 
     it('repairs groups and strips stale or invalid layouts', () => {

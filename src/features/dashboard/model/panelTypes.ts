@@ -10,8 +10,6 @@ export const DashboardPanelType = {
     PriceChangePercentageDay: 'priceChangePercentageDay',
     PriceChangePercentageHour: 'priceChangePercentageHour',
     CorrelationPairHistory: 'correlationPairHistory',
-    CointegrationPairHistory: 'cointegrationPairHistory',
-    CointegrationLiveTable: 'cointegrationLiveTable',
     TradingView: 'tradingView',
     OrderBook: 'orderbook',
     Depth: 'depth',
