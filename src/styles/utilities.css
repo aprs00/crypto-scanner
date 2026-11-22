@@ -35,9 +35,6 @@
 .overflow-hidden {
     overflow: hidden;
 }
-.overflow-auto {
-    overflow: auto;
-}
 .truncate {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -47,25 +44,12 @@
     text-align: right;
 }
 
-.h-body {
-    height: 100%;
-}
-
 /* Sizing */
 .w-24 {
     width: 6rem;
 }
-.w-28 {
-    width: 7rem;
-}
 .w-32 {
     width: 8rem;
-}
-.w-36 {
-    width: 9rem;
-}
-.w-40 {
-    width: 10rem;
 }
 
 .icon-sm {

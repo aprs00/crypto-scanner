@@ -12,8 +12,8 @@ describe('dashboard panel catalog', () => {
     it('contains every panel type exactly once', () => {
         const catalogTypes = dashboardPanelCatalog.map((definition) => definition.type);
 
-        expect(catalogTypes).toHaveLength(16);
-        expect(new Set(catalogTypes).size).toBe(16);
+        expect(catalogTypes).toHaveLength(14);
+        expect(new Set(catalogTypes).size).toBe(14);
         expect(new Set(catalogTypes)).toEqual(new Set(Object.values(DashboardPanelType)));
     });
 
@@ -30,8 +30,6 @@ describe('dashboard panel catalog', () => {
             DashboardPanelType.PriceChangePercentageHour,
             DashboardPanelType.Scatter,
             DashboardPanelType.PriceChangePercentageDay,
-            DashboardPanelType.CointegrationPairHistory,
-            DashboardPanelType.CointegrationLiveTable,
             DashboardPanelType.TradingView,
             DashboardPanelType.OrderBook,
             DashboardPanelType.Depth,
@@ -41,7 +39,7 @@ describe('dashboard panel catalog', () => {
         expect(new Set(defaultDashboardPanelTypes).size).toBe(defaultDashboardPanelTypes.length);
         expect(defaultDashboardPanelTypes.every((type) => catalogTypes.has(type))).toBe(true);
         expect(new Set(defaultDashboardPanelTypes)).toEqual(catalogTypes);
-        expect(catalogTypes.size).toBe(16);
+        expect(catalogTypes.size).toBe(14);
     });
 
     it('creates full-width, ordered, non-overlapping defaults', () => {

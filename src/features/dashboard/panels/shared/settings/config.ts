@@ -13,23 +13,6 @@ export const TimePeriodType = {
 
 export type TimePeriodType = (typeof TimePeriodType)[keyof typeof TimePeriodType];
 
-export const SortDirection = {
-    Asc: 'asc',
-    Desc: 'desc',
-} as const;
-
-export type SortDirection = (typeof SortDirection)[keyof typeof SortDirection];
-
-export const CointegrationMetric = {
-    SpreadZ: 'spread_z',
-    HalfLife: 'half_life',
-    AdfT: 'adf_t',
-    HedgeRatio: 'hedge_ratio',
-    SpreadStd: 'spread_std',
-} as const;
-
-export type CointegrationMetric = (typeof CointegrationMetric)[keyof typeof CointegrationMetric];
-
 export interface ExchangeChartConfig {
     hours?: string;
     xAxis?: string;
@@ -41,9 +24,4 @@ export interface ExchangeChartConfig {
     symbols?: string[];
     dataType?: DataType;
     periodType?: TimePeriodType;
-    window?: string;
-    sort?: string;
-    sortDirection?: SortDirection;
-    limit?: number;
-    cointegrationMetric?: CointegrationMetric;
 }
